@@ -122,14 +122,11 @@ class Sede:
         a_producir = []
         lista_espera = []
 
-        lista_espera_vacia = []
         lista_de_ceros = [0, 0]
+        lista_espera_vacia = [lista_de_ceros.copy() , lista_de_ceros.copy()]
         maq_sede_p = []
         maq_sede_2 = []
         senal = 0
-
-        lista_espera_vacia.append(lista_de_ceros)
-        lista_espera_vacia.append(lista_de_ceros)
 
         # Dividir las máquinas disponibles por sedes
         for tod_maquinas in maq_disponible:
