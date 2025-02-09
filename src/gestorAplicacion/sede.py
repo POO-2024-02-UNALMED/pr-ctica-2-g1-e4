@@ -7,6 +7,8 @@ from typing import List
 class Sede:
     lista_sedes = []
     def __init__(self):
+        self.maq_produccion = []
+        self.maq_oficina = []
         Sede.set_lista_sedes(self)
         
     @staticmethod
@@ -156,23 +158,23 @@ class Sede:
         if senal == 5:
             Main.prints_int_2(1)
             opcion = 0
-            while opcion not in [1, 2]:
-                opcion = scanner.next_int()
+            while opcion != 1 and opcion != 2:
+                opcion = int(input())
                 if opcion == 1:
-                    a_producir.append(self.prod_sede_p(fecha))
-                    a_producir.append(lista_de_ceros)
+                    a_producir.insert(0, self.prod_sede_p(fecha))
+                    a_producir.insert(1, lista_de_ceros)
 
-                    a_producir_final.append(a_producir)
-                    a_producir_final.append(lista_espera_vacia)
+                    a_producir_final.insert(0, a_producir)
+                    a_producir_final.insert(1, lista_espera_vacia)
                 elif opcion == 2:
-                    a_producir.append(self.calc_produccion_sedes(fecha)[0])
-                    a_producir.append(lista_de_ceros)
+                    a_producir.insert(0, self.calc_produccion_sedes(fecha)[0])
+                    a_producir.insert(1, lista_de_ceros)
 
-                    lista_espera.append(self.prod_transferida_1(fecha))
-                    lista_espera.append(lista_de_ceros)
+                    lista_espera.insert(0, self.prod_transferida1(fecha))
+                    lista_espera.insert(1, lista_de_ceros)
 
-                    a_producir_final.append(a_producir)
-                    a_producir_final.append(lista_espera)
+                    a_producir_final.insert(0, a_producir)
+                    a_producir_final.insert(1, lista_espera)
                 else:
                     Main.prints_int_2(2)
         
@@ -180,18 +182,18 @@ class Sede:
             Main.prints_int2(3)
 
             opcion = 0
-            while opcion not in [1, 2]:
+            while opcion != 1 and opcion != 2:
                 opcion = int(input())
 
                 if opcion == 1:
                     # Producir todo en la sede 2
-                    a_producir = [[0, 0], self.prod_sede2(fecha)]
-                    a_producir_final = [a_producir, []]
+                    a_producir = [lista_de_ceros.copy(), self.prod_sede2(fecha)]
+                    a_producir_final = [a_producir, lista_espera_vacia]
 
                 elif opcion == 2:
                     # Pasar producción a lista de espera
-                    a_producir = [[0, 0], self.calc_produccion_sedes(fecha)[1]]
-                    lista_espera = [[0, 0], self.prod_transferida2(fecha)]
+                    a_producir = [lista_de_ceros.copy(), self.calc_produccion_sedes(fecha)[1]]
+                    lista_espera = [lista_de_ceros.copy(), self.prod_transferida2(fecha)]
                     a_producir_final = [a_producir, lista_espera]
 
                 else:
