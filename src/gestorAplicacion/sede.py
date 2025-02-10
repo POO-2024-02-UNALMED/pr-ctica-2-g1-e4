@@ -269,6 +269,158 @@ class Sede:
                     a_transferir.remove(empleado_reemplazo)
                     break
 
+    def quitarInsumos(self,insumos, cantidad):
+        hay_insumos = True
+        for insumo in insumos:
+            if insumo not in self.listaInsumosBodega:
+                hay_insumos = False
+                break
+            idx_insumo_en_sede = self.listaInsumosBodega.index(insumo)
+            if self.cantidadInsumosBodega[idx_insumo_en_sede] < cantidad[insumos.index(insumo)]:
+                hay_insumos = False
+                break
+        if hay_insumos:
+            for insumo in insumos:
+                idx_insumo_en_sede = self.listaInsumosBodega.index(insumo)
+                self.cantidadInsumosBodega[idx_insumo_en_sede] -= cantidad[insumos.index(insumo)]
+        return hay_insumos
+
+    # Devuelve la cantidad de empleados que hay en la sede con el rol dado
+    # metodo ayudante para reorganizarEmpleados
+    def cantidadPorRol(rol):
+        cantidad = 0
+        for empleado in Sede.listaEmpleado:
+            if empleado.getRol() == rol:
+                cantidad += 1
+        return cantidad
+
+    def cantidadPorArea(area):
+        cantidad = 0
+        for empleado in Sede.listaEmpleado:
+            if empleado.getAreaActual() == area:
+                cantidad += 1
+        return cantidad
+
+    def __str__(self):
+        return self.nombre
+
+    # Usado para eliminar un Insumo limpiamente
+    @classmethod
+    def quitarInsumoDeBodegas(cls,insumo):
+        for sede in cls.listaSedes:
+            for idx_insumo in range(len(sede.getListaInsumosBodega()())):
+                if sede.getListaInsumosBodega()[idx_insumo] == insumo:
+                    sede.getListaInsumosBodega().remove(sede.getListaInsumosBodega()()[idx_insumo])
+                    sede.getCantidadInsumosBodega().remove(sede.getCantidadInsumosBodega()[idx_insumo])
+
+
+
+    def cantidad_por_area(self, area_actual) -> int:
+        cantidad = 0
+        for emp in self.getListaEmpleados():
+            if emp.area_actual == area_actual:
+                cantidad +=1
+        return cantidad
+
+                                    #PARA LA INTERACCION 2 DE PRODUCCION
+    def sobre_cargada(self, fecha: 'Fecha') -> int:
+        senal = 0
+        produccion_sedes = self.calc_produccion_sedes(fecha)
+        modistas = self.modistasQueHay()
+
+        if modistas[0] > 0 and ((produccion_sedes[0][0] + produccion_sedes[0][1]) / modistas[0]) > 10:
+            senal = 5
+        if modistas[1] > 0 and ((produccion_sedes[1][0] + produccion_sedes[1][1]) / modistas[1]) > 10:
+            senal += 10
+
+        return senal
+    
+    def calc_produccion_sedes(self, fecha: 'Fecha') -> List[List[int]]:
+        prod_sedes_calculada = []
+        prod_calculada_sede_p = []
+        prod_calculada_sede_2 = []
+
+        prod_calculada_sede_p.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Pantalon"))
+        prod_calculada_sede_p.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Camisa"))
+
+        prod_calculada_sede_2.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[1], "Pantalon"))
+        prod_calculada_sede_2.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[1], "Camisa"))
+
+        prod_sedes_calculada.append(prod_calculada_sede_p)
+        prod_sedes_calculada.append(prod_calculada_sede_2)
+
+        return prod_sedes_calculada
+
+    def prod_sede_p(self, fecha: 'Fecha') -> List[int]:
+        pantalones_sede_p = self.calc_produccion_sedes(fecha)[0][0] + self.calc_produccion_sedes(fecha)[1][0]
+        camisas_sede_p = self.calc_produccion_sedes(fecha)[0][1] + self.calc_produccion_sedes(fecha)[1][1]
+
+        prod_aproximada = [pantalones_sede_p, camisas_sede_p]
+        return prod_aproximada
+
+    def prod_sede_2(self, fecha: 'Fecha') -> List[int]:
+        pantalones_sede_2 = self.calc_produccion_sedes(fecha)[1][0]
+        camisas_sede_2 = self.calc_produccion_sedes(fecha)[1][1]
+
+        prod_aproximada = [pantalones_sede_2, camisas_sede_2]
+        return prod_aproximada
+
+    def modistasQueHay(self) -> List[int]:
+        modistas_en_cada_sede = [0, 0]
+
+        for emp_creados in self.lista_empleados_total:
+            if emp_creados.get_area_actual().get_nombre().lower() == "corte":
+                if emp_creados.getSede().get_nombre().lower() == "sede principal":
+                    modistas_en_cada_sede[0] += 1
+                elif emp_creados.getSede().get_nombre().lower() == "sede 2":
+                    modistas_en_cada_sede[1] += 1
+
+        return modistas_en_cada_sede
+
+    def prod_transferida1(self, fecha) -> List[int]:
+        produccion_sedes = self.calc_produccion_sedes(fecha)
+        return [produccion_sedes[1][0], produccion_sedes[1][1]]
+
+    def prod_transferida2(self, fecha) -> List[int]:
+        produccion_sedes = self.calc_produccion_sedes(fecha)
+        return [produccion_sedes[0][0], produccion_sedes[0][1]]
+
+    def plan_produccion(self, maq_disponible: List['Maquinaria'], fecha: 'Fecha', scanner: 'int') -> List[List[List[int]]]:
+        a_producir_final = []
+        a_producir = []
+        lista_espera = []
+
+        lista_de_ceros = [0, 0]
+        lista_espera_vacia = [lista_de_ceros.copy() , lista_de_ceros.copy()]
+        maq_sede_p = []
+        maq_sede_2 = []
+        senal = 0
+
+        # Dividir las máquinas disponibles por sedes
+        for tod_maquinas in maq_disponible:
+            if tod_maquinas.getSede().get_nombre().lower() == "sede principal":
+                maq_sede_p.append(tod_maquinas)
+            else:
+                maq_sede_2.append(tod_maquinas)
+
+        # Dividir las máquinas de cada sede por función
+        for tod_maq_sede_p in maq_sede_p:
+            if tod_maq_sede_p.es_de_produccion():
+                Sede.getListaSedes()[0].maqProduccion.append(tod_maq_sede_p)
+            else:
+                Sede.getListaSedes()[0].maqOficina.append(tod_maq_sede_p)
+
+        for tod_maq_sede_2 in maq_sede_2:
+            if tod_maq_sede_2.es_de_produccion():
+                Sede.getListaSedes()[1].maqProduccion.append(tod_maq_sede_2)
+            else:
+                Sede.getListaSedes()[1].maqOficina.append(tod_maq_sede_2)
+
+        if len(Sede.getListaSedes()[0].maqProduccion) >= 3:
+            senal = 5
+        if len(Sede.getListaSedes()[1].maqProduccion) >= 3:
+            senal += 10
+
         if senal == 5:
             Main.prints_int_2(1)
             opcion = 0
