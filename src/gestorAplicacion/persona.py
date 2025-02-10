@@ -21,30 +21,30 @@ class Persona:
     def __str__(self) -> str:
         return f"Nombre: {self.nombre} - Documento: {self.documento} - Rol: {self.rol}"
 
-    def get_rol(self):
+    def getRol(self):
         return self.rol
 
-    def get_membresia(self):
+    def getMembresia(self):
         return self.membresia
 
-    def get_documento(self):
+    def getDocumento(self):
         return self.documento
 
-    def get_nombre(self):
+    def getNombre(self):
         return self.nombre
 
-    def get_experiencia(self):
+    def getExperiencia(self):
         return self.experiencia
 
-    def is_trabaja(self):
+    def isTrabaja(self):
         return self.trabaja
 
     @staticmethod
-    def get_lista_personas():
+    def getListaPersonas():
         return Persona.lista_personas
 
     @staticmethod
-    def set_lista_personas(lista):
+    def setListaPersonas(lista):
         Persona.lista_personas = lista  # Used when deserializing
 
     # Interaction 3 of Human Management
@@ -82,12 +82,12 @@ class Persona:
                     break
             if area is not None and sede is not None:
                 emp = Empleado(area, fecha, sede, persona)
-                Maquinaria.asignar_maquinaria(emp)
+                Maquinaria.asignarMaquinaria(emp)
                 emp.set_salario(int(persona.get_rol().get_salario_inicial() + persona.get_rol().get_salario_inicial() * 0.5 * persona.get_experiencia()))
             else:
                 Main.error_de_reemplazo(persona)
 
-    def rol_string(self) -> str:
+    def rolString(self) -> str:
         rol_string = str(self.rol) if self.rol is not None else "Sin rol"
         trabaja_string = "Trabaja" if self.trabaja else "No trabaja"
         membresia_string = str(self.membresia) if self.membresia is not None else "Sin membresía"
@@ -96,11 +96,11 @@ class Persona:
                 f"Experiencia: {self.experiencia}, Trabaja: {trabaja_string}, "
                 f"Membresía: {membresia_string}")
 
-    def calcular_salario(self) -> int:
+    def calcularSalario(self) -> int:
         return round((self.rol.get_salario_inicial() * 0.05) * self.experiencia) + self.rol.get_salario_inicial()
 
     @staticmethod
-    def valor_esperado_salario() -> int:
+    def valorEsperadoSalario() -> int:
         valor_esperado = 0
         for persona in Persona.lista_personas:
             if not isinstance(persona, Empleado):
@@ -108,5 +108,5 @@ class Persona:
         return valor_esperado // len(Persona.lista_personas) if Persona.lista_personas else 0
 
     @staticmethod
-    def diferencia_salarios() -> int:
-        return Persona.valor_esperado_salario() - Empleado.valor_esperado_salario()
+    def diferenciaSalarios() -> int:
+        return Persona.valorEsperadoSalario() - Empleado.valorEsperadoSalario()

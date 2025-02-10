@@ -1,10 +1,14 @@
+from src.gestorAplicacion.administracion.banco import Banco
+from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
+from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+from src.gestorAplicacion.persona import Persona
 from ..fecha import Fecha
 from ..sede import Sede
 from ..venta import Venta
 from .area import Area
 from typing import List
 
-class Empleado:
+class Empleado(Persona,GastoMensual):
     def __init__(self, nombre: str , area_actual:Area, traslados:int, areas:List[Area], sede:Sede):
         self.nombre = nombre
         self.area_actual = area_actual
@@ -13,7 +17,7 @@ class Empleado:
         self.sede = sede
 
 
-    def calcular_rendimiento(self, fecha: Fecha) -> float:
+    def calcularRendimiento(self, fecha: Fecha) -> float:
         rendimiento = 0
         match self.area_actual:
             case Area.CORTE:
@@ -45,7 +49,7 @@ class Empleado:
 
     # Parte de la interacción 1 de gestion humana
     @classmethod
-    def lista_inicial_despedir_empleado(cls, fecha: Fecha) -> List[List]:
+    def listaInicialDespedirEmpleado(cls, fecha: Fecha) -> List[List]:
         lista_a_despedir = []
         mensajes = []
         retorno = [lista_a_despedir, mensajes]
@@ -89,18 +93,18 @@ class Empleado:
 
         return retorno
     
-    def trasladar_empleado(self, sede_nueva) -> List[str]:
+    def trasladarEmpleado(self, sede_nueva) -> List[str]:
         mensajes = []
-        a_pagar = Maquinaria.remuneracion_danos(self)
+        a_pagar = Maquinaria.remuneracionDanos(self)
         if Banco.get_cuenta_principal() is not None:
             Banco.get_cuenta_principal().transaccion(a_pagar)
         else:
             mensajes.append("Perdonenos pero disculpenos: No se ha podido recibir la remuneración de daños, no hay cuenta principal, sugerimos añadir una.")
         self.modificar_bonificacion(a_pagar * -1)
-        Maquinaria.liberar_maquinaria_de(self)
+        Maquinaria.liberarMaquinariaDe(self)
 
         self.traslados += 1
         self.set_sede(sede_nueva)
 
-        Maquinaria.asignar_maquinaria(self)
+        Maquinaria.asignarMaquinaria(self)
         return mensajes

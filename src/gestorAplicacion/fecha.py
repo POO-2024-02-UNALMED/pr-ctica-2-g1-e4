@@ -4,32 +4,26 @@ class Fecha:
         self.mes = mes
         self.año = año
 
-    @property
-    def get_dia(self):
+    def getDia(self):
         return self.dia
 
-    @get_dia.setter
-    def set_dia(self, dia):
+    def setDia(self, dia):
         self.dia = dia
 
-    @property
-    def get_mes(self):
+    def getMes(self):
         return self.mes
 
-    @get_mes.setter
-    def set_mes(self, mes):
+    def setMes(self, mes):
         self.mes = mes
 
-    @property
-    def get_año(self):
+    def getAño(self):
         return self.año
 
-    @get_año.setter
-    def set_año(self, año):
+    def setAño(self, año):
         self.año = año
 
 
-    def restar_meses(self, meses):
+    def restarMeses(self, meses):
         mes = self.mes - meses
         año = self.año
         if mes <= 0:
@@ -38,18 +32,18 @@ class Fecha:
         return Fecha(self.dia, mes, año)
 
     @staticmethod
-    def comparar_fecha(fecha1, fecha2):
+    def compararFecha(fecha1, fecha2):
         return (Fecha.comparar_año(fecha1.año, fecha2.año) and
                 Fecha.comparar_mes(fecha1.mes, fecha2.mes) and
                 Fecha.comparar_dia(fecha1.dia, fecha2.dia))
 
-    def dias_hasta(self, hasta):
+    def diasHasta(self, hasta):
         dias = (hasta.año - self.año) * 365
         dias += (hasta.mes - self.mes) * 30
         dias += hasta.dia - self.dia
         return dias
 
-    def dia_siguiente(self):
+    def diaSiguiente(self):
         nueva_fecha = Fecha(self.dia, self.mes, self.año)
         nueva_fecha.dia += 1
         if nueva_fecha.dia > 31:

@@ -30,7 +30,7 @@ class Venta:
             sede.get_cuenta_sede().set_ahorro_banco(sede.get_cuenta_sede().get_ahorro_banco() + monto_pagado)
 
     @staticmethod
-    def acumulado_ventas_asesoradas(empleado):
+    def acumuladoVentasAsesoradas(empleado):
         acumulado = 0
         for venta in empleado.get_sede().get_historial_ventas():
             if venta.asesor == empleado:
@@ -38,7 +38,7 @@ class Venta:
         return acumulado
 
     @staticmethod
-    def cantidad_ventas_encargadas_en_mes(empleado, fecha):
+    def cantidadVentasEncargadasEnMes(empleado, fecha):
         cantidad = 0
         for venta in empleado.get_ventas_encargadas():
             if venta.get_fecha_venta().get_mes() == fecha.get_mes() and venta.get_fecha_venta().get_ano() == fecha.get_ano():
@@ -46,7 +46,7 @@ class Venta:
         return cantidad
 
     @staticmethod
-    def acumulado_ventas_empleado_encargado(empleado):
+    def acumuladoVentasEmpleadoEncargado(empleado):
         acumulado = 0
         for venta in empleado.get_sede().get_historial_ventas():
             if venta.encargado == empleado:
@@ -54,7 +54,7 @@ class Venta:
         return acumulado
 
     @staticmethod
-    def calcular_balance_venta_produccion(fecha):
+    def calcularBalanceVentaProduccion(fecha):
         valor_calculado = 0
         costos = 0
         for sede in Sede.get_lista_sedes():
@@ -69,7 +69,7 @@ class Venta:
         return balance_costos_produccion
 
     @staticmethod
-    def black_friday(fecha):
+    def blackFriday(fecha):
         ano = fecha.get_ano() if fecha.get_mes() > 11 or (fecha.get_mes() == 11 and fecha.get_dia() >= 24) else fecha.get_ano() - 1
         dias_black_friday = [Fecha(28, 11, ano), Fecha(29, 11, ano), Fecha(30, 11, ano)]
         fechas_normales = [Fecha(23, 11, ano), Fecha(24, 11, ano), Fecha(25, 11, ano)]
@@ -102,7 +102,7 @@ class Venta:
         return asesoradas
 
     @staticmethod
-    def cantidad_producto(ventas, prenda):
+    def cantidadProducto(ventas, prenda):
         cantidad = 0
         for venta in ventas:
             for articulo in venta.get_articulos():
@@ -112,11 +112,11 @@ class Venta:
 
     @staticmethod
     def predecirVentas(fecha_actual, sede, prenda):
-        ventas_mes1 = Venta.cantidad_producto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(3)), prenda)
-        ventas_mes2 = Venta.cantidad_producto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(2)), prenda)
+        ventas_mes1 = Venta.cantidadProducto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(3)), prenda)
+        ventas_mes2 = Venta.cantidadProducto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(2)), prenda)
         pendiente_mes1a2 = ventas_mes2 - ventas_mes1
 
-        ventas_mes3 = Venta.cantidad_producto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(1)), prenda)
+        ventas_mes3 = Venta.cantidadProducto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(1)), prenda)
         pendiente_mes2a3 = ventas_mes3 - ventas_mes2
 
         pendiente_promedio = (pendiente_mes1a2 + pendiente_mes2a3) / 2
@@ -129,46 +129,46 @@ class Venta:
             acumulado += venta.monto_pagado
         return acumulado
 
-    def get_articulos(self):
+    def getArticulos(self):
         return self.articulos
 
-    def set_articulos(self, articulos):
+    def setArticulos(self, articulos):
         self.articulos = articulos
 
-    def get_bolsas(self):
+    def getBolsas(self):
         return self.bolsas
 
-    def set_bolsas(self, bolsas):
+    def setBolsas(self, bolsas):
         self.bolsas = bolsas
 
-    def get_encargado(self):
+    def getEncargado(self):
         return self.encargado
 
-    def set_encargado(self, emp):
+    def setEncargado(self, emp):
         self.encargado = emp
 
-    def get_asesor(self):
+    def getAsesor(self):
         return self.asesor
 
-    def set_asesor(self, emp):
+    def setAsesor(self, emp):
         self.asesor = emp
 
-    def get_sede(self):
+    def getSede(self):
         return self.sede
 
-    def set_sede(self, sede):
+    def setSede(self, sede):
         self.sede = sede
 
-    def get_fecha_venta(self):
+    def getFechaVenta(self):
         return self.fecha_venta
 
-    def set_fecha_venta(self, fecha):
+    def setFechaVenta(self, fecha):
         self.fecha_venta = fecha
 
-    def get_monto_pagado(self):
+    def getMontoPagado(self):
         return self.monto_pagado
 
-    def set_monto_pagado(self, monto):
+    def setMontoPagado(self, monto):
         if self.monto_pagado == 0:
             self.sede.get_cuenta_sede().set_ahorro_banco(self.sede.get_cuenta_sede().get_ahorro_banco() + monto)
             self.monto_pagado = monto
@@ -177,28 +177,28 @@ class Venta:
             self.monto_pagado = monto
             self.sede.get_cuenta_sede().set_ahorro_banco(self.sede.get_cuenta_sede().get_ahorro_banco() - monto)
 
-    def get_cliente(self):
+    def getCliente(self):
         return self.cliente
 
-    def set_cliente(self, persona):
+    def setCliente(self, persona):
         self.cliente = persona
 
-    def get_numero(self):
+    def getNumero(self):
         return self.numero
 
-    def set_numero(self, numero):
+    def setNumero(self, numero):
         self.numero = numero
 
-    def get_costo_envio(self):
+    def getCostoEnvio(self):
         return self.costo_envio
 
-    def set_costo_envio(self, monto):
+    def setCostoEnvio(self, monto):
         self.costo_envio = monto
 
-    def get_subtotal(self):
+    def getsubtotal(self):
         return self.subtotal
 
-    def set_subtotal(self, monto):
+    def setsubtotal(self, monto):
         self.subtotal = monto
 
     @staticmethod
@@ -206,21 +206,21 @@ class Venta:
         Venta.pesimismo = new_pesimism
 
     @staticmethod
-    def get_pesimismo():
+    def getPesimismo():
         return Venta.pesimismo
 
     @staticmethod
-    def get_codigos_regalo():
+    def getCodigosRegalo():
         return Venta.codigos_regalo
 
     @staticmethod
-    def set_codigos_regalo(codigo):
+    def setCodigosRegalo(codigo):
         Venta.codigos_regalo = codigo
 
     @staticmethod
-    def get_montos_regalo():
+    def getMontosRegalo():
         return Venta.montos_regalo
 
     @staticmethod
-    def set_montos_regalo(montos):
+    def setMontosRegalo(montos):
         Venta.montos_regalo = montos

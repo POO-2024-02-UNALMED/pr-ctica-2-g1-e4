@@ -10,7 +10,7 @@ class Pantalon(Prenda):
     def __init__(self, fecha, modista, descartada, terminada, sede, insumos):
         super().__init__(fecha, sede, "Pantalon", modista, descartada, terminada, insumos)
 
-    def calcular_gasto_mensual(self):
+    def calcularGastoMensual(self):
         gasto = 0
         for index in range(len(self.insumo)):
             tipo = self.insumo[index]
@@ -19,7 +19,7 @@ class Pantalon(Prenda):
         return gasto
 
     @staticmethod
-    def precio_venta():
+    def PrecioVenta():
         total_precios = 0
         total_cantidades = 0
         for pantalon in Sede.get_prendas_inventadas_total():
@@ -31,7 +31,7 @@ class Pantalon(Prenda):
         return precio_venta
 
     # Usa el modista en el atributo de la clase Prenda
-    def siguiente_paso(self):
+    def siguientePaso(self):
         retorno = []
         if self.paso_actual == 1:
             retorno.append("Maquina de Corte")
@@ -48,7 +48,7 @@ class Pantalon(Prenda):
         self.ultimo_paso = retorno
         return retorno
 
-    def realizar_paso(self, modista):
+    def realizarPaso(self, modista):
         self.modista = modista
         probabilidad_de_exito = modista.get_pericia()
         if self.paso_actual == 3:
@@ -67,21 +67,21 @@ class Pantalon(Prenda):
     maquinaria_necesaria = ["Maquina de Corte", "Maquina de Coser Industrial", "Maquina de Tijereado"]
 
     @staticmethod
-    def get_tipo_insumo():
+    def getTipoInsumo():
         return Pantalon.tipo_insumo
 
     @staticmethod
-    def get_cantidad_insumo():
+    def getCantidadInsumo():
         return Pantalon.cantidad_insumo
 
     @staticmethod
-    def set_tipo_insumo(tipos):
+    def setTipoInsumo(tipos):
         Pantalon.tipo_insumo = tipos
 
     @staticmethod
-    def set_cantidad_insumo(cantidades):
+    def setCantidadInsumo(cantidades):
         Pantalon.cantidad_insumo = cantidades
 
     @staticmethod
-    def get_maquinaria_necesaria():
+    def getMaquinariaNecesaria():
         return Pantalon.maquinaria_necesaria

@@ -222,7 +222,7 @@ class Main:
 
     def calcularBalanceAnterior(fecha):
         print("\nObteniendo balance entre Ventas y Deudas para saber si las ventas cubren los gastos de la producción de nuestras prendas...")
-        balance_costos_produccion = Venta.calcular_balance_venta_produccion(fecha)
+        balance_costos_produccion = Venta.calcularBalanceVentaProduccion(fecha)
         eleccion = 0
         while eleccion <= 0 or eleccion > 3:
             print("\nIngrese las deudas que quiere calcular")
@@ -480,7 +480,7 @@ class Main:
                             monto_deuda += insumos[idx_insumo].getPrecioIndividual() * cantidad[idx_insumo]
                         if monto_deuda > 0:
                             if proveedor.getDeuda() is None:
-                                deuda = Deuda(fecha, monto_deuda, proveedor.nombre, "Proveedor", Deuda.calcular_cuotas(monto_deuda))
+                                deuda = Deuda(fecha, monto_deuda, proveedor.nombre, "Proveedor", Deuda.calcularCuotas(monto_deuda))
                             elif not proveedor.getDeuda().getEstadodePago():
                                 proveedor.unificarDeudasXProveedor(fecha, monto_deuda)
                                 deuda = proveedor.getDeuda()
@@ -904,7 +904,7 @@ class Main:
         sede_p = next((sede for sede in Sede.getlistaSedes() if sede.getNombre() == "Sede Principal"), None)
         if sede_p:
             for insumo in sede_p.getListaInsumosBodega():
-                compatibles = [prov for prov in Proveedor.get_lista_proveedores() if prov.getInsumo().getNombre() == insumo.getNombre()]
+                compatibles = [prov for prov in Proveedor.getListaProveedores() if prov.getInsumo().getNombre() == insumo.getNombre()]
                 nuevos = compatibles[:]
                 random.shuffle(nuevos)
                 for i, prov in enumerate(compatibles):

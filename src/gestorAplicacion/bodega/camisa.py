@@ -17,7 +17,7 @@ class Camisa(Prenda):
     def __init__(self, fecha: Fecha, modista: Empleado, descartada: bool, terminada: bool, sede: Sede, insumos: List[Insumo]):
         super().__init__(fecha, sede, "Camisa", modista, descartada, terminada, insumos)
 
-    def calcular_gasto_mensual(self) -> int:
+    def calcularGastoMensual(self) -> int:
         gasto = 0
         for i in range(len(self.insumo)):
             tipo = self.insumo[i]
@@ -26,7 +26,7 @@ class Camisa(Prenda):
         return gasto
 
     @staticmethod
-    def precio_venta() -> int:
+    def precioVenta() -> int:
         precios = 0
         cantidades = 0
         precio_venta = 0
@@ -39,7 +39,7 @@ class Camisa(Prenda):
         # Se promedian todos los "precios por los que se deberían vender las prendas para que todas las camisas se vendan al mismo"
         return precio_venta
 
-    def siguiente_paso(self) -> List[Optional[int]]:
+    def siguientePaso(self) -> List[Optional[int]]:
         retorno = []
         if self.paso_actual == 1:
             retorno.extend(["Maquina de Corte", 5])
@@ -57,7 +57,7 @@ class Camisa(Prenda):
         self.ultimo_paso = retorno
         return retorno
 
-    def realizar_paso(self, modista: Empleado) -> str:
+    def realizarPaso(self, modista: Empleado) -> str:
         self.modista = modista
         probabilidad_de_exito = modista.get_pericia()
         if self.paso_actual == 2:
@@ -78,21 +78,21 @@ class Camisa(Prenda):
         return retorno
 
     @staticmethod
-    def get_tipo_insumo() -> List[str]:
+    def getTipoInsumo():
         return Camisa.tipo_insumo
 
     @staticmethod
-    def get_cantidad_insumo() -> List[int]:
+    def getCantidadInsumo():
         return Camisa.cantidad_insumo
 
     @staticmethod
-    def set_tipo_insumo(tipos: List[str]):
+    def setTipoInsumo(tipos):
         Camisa.tipo_insumo = tipos
 
     @staticmethod
-    def set_cantidad_insumo(cantidades: List[int]):
+    def setCantidadInsumo(cantidades):
         Camisa.cantidad_insumo = cantidades
 
     @staticmethod
-    def get_maquinaria_necesaria() -> List[str]:
+    def getMaquinariaNecesaria():
         return Camisa.maquinaria_necesaria

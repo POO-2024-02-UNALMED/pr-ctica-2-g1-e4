@@ -26,7 +26,7 @@ class Banco:
         return f"La Cuenta: {self.nombreCuenta} en: {self.nombreEntidad} tiene un Ahorro de: {self.ahorroBanco:,} y para pedir un préstamo el Banco tiene un interés de: {self.interes * 100}%"
 
     @classmethod
-    def total_ahorros(cls):
+    def totalAhorros(cls):
         total = sum(b.getAhorroBanco() for b in cls.listaBancos)
         return total
 

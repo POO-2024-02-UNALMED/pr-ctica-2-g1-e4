@@ -7,26 +7,26 @@ class Resultado:
         self.precio = precio
         self.sede = sede
 
-    def get_precio(self):
+    def getPrecio(self):
         return self.precio
 
-    def set_precio(self, precio):
+    def setPrecio(self, precio):
         self.precio = precio
 
-    def get_encontrado(self):
+    def getEncontrado(self):
         return self.encontrado
 
-    def set_encontrado(self, encontrado):
+    def setEncontrado(self, encontrado):
         self.encontrado = encontrado
 
-    def get_index(self):
+    def getIndex(self):
         return self.index
 
-    def set_index(self, index):
+    def setIndex(self, index):
         self.index = index
 
-    def get_sede(self):
+    def getSede(self):
         return self.sede
 
-    def set_sede(self, sede):
+    def setSede(self, sede):
         self.sede = sede

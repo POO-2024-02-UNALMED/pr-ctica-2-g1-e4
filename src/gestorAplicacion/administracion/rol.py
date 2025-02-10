@@ -13,5 +13,5 @@ class Rol(Enum):
     def __init__(self, initial_salary):
         self.initial_salary = initial_salary
 
-    def get_initial_salary(self):
+    def getSalarioInicial(self):
         return self.initial_salary

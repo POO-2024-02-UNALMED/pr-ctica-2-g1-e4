@@ -27,7 +27,7 @@ class EvaluacionFinanciera:
         return f"El monto del balance a cargo de: {self.presidente} fue de: ${self.balance} pesos"
 
     @staticmethod
-    def estimado_ventas_gastos(fecha_actual: 'Fecha', porcentaje_usuario: float, balance_anterior: 'EvaluacionFinanciera') -> int:
+    def estimadoVentasGastos(fecha_actual: 'Fecha', porcentaje_usuario: float, balance_anterior: 'EvaluacionFinanciera') -> int:
         monto_ventas_pasado = 0
         for sede in Sede.lista_sedes:
             for venta in sede.historial_ventas:
@@ -48,37 +48,37 @@ class EvaluacionFinanciera:
                                                     porcentaje_fidelidad_plata + 
                                                     porcentaje_fidelidad_bronce + 
                                                     porcentaje_fidelidad_null)
-        gastos_mensuales = GastoMensual.gastos_mensuales(fecha_actual)
+        gastos_mensuales = GastoMensual.gastosMensuales(fecha_actual)
         diferencia_estimada = round((prediccion_ventas - gastos_mensuales * 0.8) + (Banco.total_ahorros() * 0.05))
         return diferencia_estimada
 
-    def get_pago_personas(self) -> int:
+    def getPagoPersonas(self) -> int:
         return self.pago_personas
 
-    def set_pago_personas(self, pago: int) -> None:
+    def setPagoPersonas(self, pago: int) -> None:
         self.pago_personas = pago
 
-    def get_balance(self) -> float:
+    def getBalance(self) -> float:
         return self.balance
 
-    def set_balance(self, balance: float) -> None:
+    def setBalance(self, balance: float) -> None:
         self.balance = balance
 
-    def get_proyeccion(self) -> bool:
+    def getProyeccion(self) -> bool:
         return self.proyeccion
 
-    def set_proyeccion(self, proyeccion: bool) -> None:
+    def setProyeccion(self, proyeccion: bool) -> None:
         self.proyeccion = proyeccion
 
-    def get_presidente(self) -> Empleado:
+    def getPresidente(self) -> Empleado:
         return self.presidente
 
-    def set_presidente(self, presidente: Empleado) -> None:
+    def setPresidente(self, presidente: Empleado) -> None:
         if presidente.area_actual == Area.DIRECCION and presidente.rol == Rol.PRESIDENTE:
             self.presidente = presidente
 
     @staticmethod
-    def promedio_balance() -> float:
+    def promedioBalance() -> float:
         promedio = 0
         for evaluacion in Sede.get_evaluaciones_financieras():
             promedio += evaluacion.balance

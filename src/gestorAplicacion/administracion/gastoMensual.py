@@ -7,10 +7,10 @@ from src.gestorAplicacion.bodega.maquinaria import Maquinaria
 class GastoMensual:
     
     @abstractmethod
-    def calcular_gasto_mensual(self):
+    def calcularGastoMensual(self):
         pass
 
-    def gasto_mensual_tipo(self, fecha, fecha_objeto, objeto):
+    def gastoMensualTipo(self, fecha, fecha_objeto, objeto):
         gasto_actual = 0
         gasto_pasado = 0
         gasto_total = [0, 0]
@@ -26,9 +26,9 @@ class GastoMensual:
         return gasto_total
 
     @staticmethod
-    def gastos_mensuales(fecha):
-        gastos_maquinaria = Maquinaria.gasto_mensual_clase(fecha)
+    def gastosMensuales(fecha):
+        gastos_maquinaria = Maquinaria.gastoMensualClase(fecha)
         gastos_nomina = Empleado.gasto_mensual_clase()
-        gasto_bolsa = Insumo.gasto_mensual_clase(fecha)
+        gasto_bolsa = Insumo.gastoMensualClase(fecha)
         suma = gastos_maquinaria + gastos_nomina + gasto_bolsa
         return suma
