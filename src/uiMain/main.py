@@ -18,11 +18,7 @@ from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
 from ..gestorAplicacion.administracion import Empleado
 from ..gestorAplicacion import Persona, Sede
-import locale
 from typing import List
-
-locale.setlocale(locale.LC_ALL, 'es_ES')
-comparador = locale.strxfrm
 
 class Main:
         
@@ -185,7 +181,7 @@ class Main:
             for _ in range(cantidad):
                 nombre = input().strip()
                 for emp in sede.getlistaEmpleados():
-                    if comparador.compare(emp.getNombre(), nombre) == 0:
+                    if emp.getNombre()==nombre:
                         a_transferir.append(emp)
 
         Sede.reemplazarPorCambioSede(despedidos, a_transferir)
@@ -214,7 +210,7 @@ class Main:
             for cantidad_contratada in range(cantidad_necesaria):
                 nombre = input().strip()
                 for persona in aptos:
-                    if comparador.compare(persona.getNombre(), nombre) == 0:
+                    if persona.getNombre()==nombre:
                         a_contratar.append(persona)
                         print(f"Seleccionaste a {persona.getNombre()} con {persona.calcularSalario() - persona.valorEsperadoSalario()} de diferencia salarial sobre el promedio")
 
@@ -1475,5 +1471,5 @@ class Main:
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia , 300, sede2)
         pass 
     
-    if __name__=="__main__":
-        main()
+if __name__=="__main__":
+    Main.main()
