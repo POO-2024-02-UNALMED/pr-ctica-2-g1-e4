@@ -1,7 +1,6 @@
-from src.gestorAplicacion.Bodega import Prenda
-from src.gestorAplicacion.Administracion import Empleado
-from src.gestorAplicacion.Fecha import Fecha
-from src.gestorAplicacion.Sede import Sede
+from src.gestorAplicacion.administracion import Empleado
+from src.gestorAplicacion.bodega.prenda import Prenda
+from src.gestorAplicacion.sede import Sede
 import random
 
 class Pantalon(Prenda):

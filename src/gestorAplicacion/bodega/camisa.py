@@ -1,6 +1,6 @@
-from src.gestorAplicacion.Administracion import Empleado
-from src.gestorAplicacion.Fecha import Fecha
-from src.gestorAplicacion.Sede import Sede
+from src.gestorAplicacion.administracion import Empleado
+from src.gestorAplicacion.fecha import Fecha
+from src.gestorAplicacion.sede import Sede
 from typing import List, Optional
 import random
 from src.gestorAplicacion.bodega.prenda import Prenda
@@ -32,7 +32,7 @@ class Camisa(Prenda):
         precio_venta = 0
         for camisa in Sede.get_prendas_inventadas_total():
             if isinstance(camisa, Camisa):
-                precios += camisa.calcular_precio()
+                precios += camisa.calcularPrecio()
                 cantidades += 1
         if cantidades > 0:
             precio_venta = round(precios / cantidades)
