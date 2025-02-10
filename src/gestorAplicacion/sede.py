@@ -340,11 +340,11 @@ class Sede:
         prod_calculada_sede_p = []
         prod_calculada_sede_2 = []
 
-        prod_calculada_sede_p.append(Venta.predecir_ventas(fecha, Sede.getListaSedes()[0], "Pantalon"))
-        prod_calculada_sede_p.append(Venta.predecir_ventas(fecha, Sede.getListaSedes()[0], "Camisa"))
+        prod_calculada_sede_p.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Pantalon"))
+        prod_calculada_sede_p.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Camisa"))
 
-        prod_calculada_sede_2.append(Venta.predecir_ventas(fecha, Sede.getListaSedes()[1], "Pantalon"))
-        prod_calculada_sede_2.append(Venta.predecir_ventas(fecha, Sede.getListaSedes()[1], "Camisa"))
+        prod_calculada_sede_2.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[1], "Pantalon"))
+        prod_calculada_sede_2.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[1], "Camisa"))
 
         prod_sedes_calculada.append(prod_calculada_sede_p)
         prod_sedes_calculada.append(prod_calculada_sede_2)

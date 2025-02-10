@@ -111,7 +111,7 @@ class Venta:
         return cantidad
 
     @staticmethod
-    def predecir_ventas(fecha_actual, sede, prenda):
+    def predecirVentas(fecha_actual, sede, prenda):
         ventas_mes1 = Venta.cantidad_producto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(3)), prenda)
         ventas_mes2 = Venta.cantidad_producto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(2)), prenda)
         pendiente_mes1a2 = ventas_mes2 - ventas_mes1
@@ -202,7 +202,7 @@ class Venta:
         self.subtotal = monto
 
     @staticmethod
-    def set_pesimismo(new_pesimism):
+    def setPesimismo(new_pesimism):
         Venta.pesimismo = new_pesimism
 
     @staticmethod
