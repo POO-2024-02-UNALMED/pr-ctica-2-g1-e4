@@ -20,29 +20,21 @@ class Persona:
 
     def __str__(self) -> str:
         return f"Nombre: {self.nombre} - Documento: {self.documento} - Rol: {self.rol}"
-
     def getRol(self):
         return self.rol
-
     def getMembresia(self):
         return self.membresia
-
     def getDocumento(self):
         return self.documento
-
     def getNombre(self):
         return self.nombre
-
     def getExperiencia(self):
         return self.experiencia
-
     def isTrabaja(self):
         return self.trabaja
-
     @staticmethod
     def getListaPersonas():
         return Persona.lista_personas
-
     @staticmethod
     def setListaPersonas(lista):
         Persona.lista_personas = lista  # Used when deserializing

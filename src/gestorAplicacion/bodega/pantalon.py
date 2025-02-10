@@ -69,19 +69,15 @@ class Pantalon(Prenda):
     @staticmethod
     def getTipoInsumo():
         return Pantalon.tipo_insumo
-
     @staticmethod
     def getCantidadInsumo():
         return Pantalon.cantidad_insumo
-
     @staticmethod
     def setTipoInsumo(tipos):
         Pantalon.tipo_insumo = tipos
-
     @staticmethod
     def setCantidadInsumo(cantidades):
         Pantalon.cantidad_insumo = cantidades
-
     @staticmethod
     def getMaquinariaNecesaria():
         return Pantalon.maquinaria_necesaria

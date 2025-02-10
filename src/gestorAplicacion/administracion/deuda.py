@@ -85,53 +85,38 @@ class Deuda:
         return f"La deuda con el {self.tipo_entidad} {self.entidad} inició con un valor de: {self.valorinicial_deuda}\n" + \
                f"Con un interés de: {self.interes} y se debía pagar en: {self.cuotas} cuotas\n" + \
                f"Por ahora se ha pagado {self.capital_pagado}"
-
     @classmethod
     def getListaDeudas(cls):
         return cls.lista_deudas
-
     def getValorinicialDeuda(self):
         return self.valorinicial_deuda
-
     def getInteres(self):
         return self.interes
-
     def getEstadodePago(self):
         return self.estadode_pago
-
     def getEntidad(self):
         return self.entidad
-
     def getTipoEntidad(self):
         return self.tipo_entidad
-
     def getCapitalPagado(self):
         return self.capital_pagado
-
     def getFechaCreacion(self):
         return self.FECHACREACION
-
     @classmethod
     def setListaDeudas(cls, lista_deudas):
         if lista_deudas is None:
             raise ValueError("La lista no puede ser nula")
         cls.lista_deudas = lista_deudas
-
     def setValorinicialDeuda(self, valorinicial_deuda):
         self.valorinicial_deuda = valorinicial_deuda
-
     def setInteres(self, interes):
         self.interes = interes
-
     def setEstadodePago(self, estadode_pago):
         self.estadode_pago = estadode_pago
-
     def setEntidad(self, entidad):
         self.entidad = entidad
-
     def setCapitalPagado(self, capital_pagado):
         self.capital_pagado = capital_pagado
-
     def actualizarDeuda(self, fecha, monto_deuda, cuotas):
         deuda_actual = self.deudaActual(fecha.get_año())
         self.valorinicial_deuda = monto_deuda + deuda_actual
