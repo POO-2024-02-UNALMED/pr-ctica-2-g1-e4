@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+from PIL import Image, ImageTk
 
 
 class Aplication(tk.Frame):
@@ -17,20 +18,20 @@ class Aplication(tk.Frame):
 
         self.infoSistema = infoSistema(window = self.master, master = self)
         self.infoSistema.grid(row = 1, column = 1, sticky="sewn")
-        self.columnconfigure(1,weight=10)
 
-        # La columna 2 sirve de margen entre infoSistema y infoDesarrolladores
-        # Y para funcionar como tal, debe tener algo.
-        self.columna2 = tk.Label(master = self)
-        self.columna2.grid(row = 1, column = 2,sticky="sewn")
-        self.columnconfigure(2,weight=1)
 
         self.infoDesarrolladores = infoDesarrolladores(self.master, master = self)
-        self.infoDesarrolladores.grid(row = 1, column = 2,sticky="sewn")
-        self.columnconfigure(3,weight=10)
+        self.infoDesarrolladores.grid(row = 1, column = 3,sticky="sewn")
 
-        self.columnconfigure(4,weight=1)
         self.columnconfigure(0,weight=1)
+        self.columnconfigure(1,weight=10)
+        self.columnconfigure(2,weight=1)
+        self.columnconfigure(3,weight=10)
+        self.columnconfigure(4,weight=1)
+
+        self.rowconfigure(0,weight=1)
+        self.rowconfigure(1,weight=9)
+        self.rowconfigure(2,weight=1)
 
         
 
@@ -57,6 +58,8 @@ Para mi no alumbra el Sol Pa' mi todo es tinieblas"""
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=10)
 
+        self.columnconfigure(0,weight=10)
+
 class infoSistema(tk.Frame):
     def __init__(self, window, master=None):
         super().__init__(master)
@@ -73,12 +76,12 @@ teoría es cuando sabemos todo pero nada funciona, y la practica es cuando
 todo funciona pero no se sabe porqué. En ecomoda, juntamos la teoría y la practica: Nada
 funciona, y no sabemos porqué."""
         self.saludo = tk.Label(frameArriba, text=mensaje)
-        self.saludo.grid(row = 0, column = 0)
+        self.saludo.grid(row = 0, column = 0, sticky="nswe")
         
-        frameArriba.grid(row = 0, column = 0, padx=10, pady=10)
+        frameArriba.grid(row = 0, column = 0, padx=10, pady=10, sticky="nswe")
 
         self.parteAbajo = p4FotosEInicio(self.window ,master = self)
-        self.parteAbajo.grid(row = 1, column = 0)
+        self.parteAbajo.grid(row = 1, column = 0, padx=10, pady=10, sticky="nswe")
 
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=10)
@@ -96,7 +99,7 @@ class p4FotosEInicio(tk.Frame):
         self.perroCosiendo = tk.PhotoImage(master=self.window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\perroCosiendo.png")
         self.foto = tk.Label(master = self, image=self.perroCosiendo)
         self.foto.grid(row = 0, column = 0)
-        self.inicio = tk.Button(master = self,text="Seguir a la ventana principal")
+        self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command=self.window.destroy)
         self.inicio.grid(row = 1, column = 0)
 
 def bienvenida():
