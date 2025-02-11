@@ -24,10 +24,11 @@ inicio.pack(fill="both", expand=True, padx=7, pady=7)
 primerInicio = tk.Frame(inicio, height=150)
 primerInicio.pack(side="top", fill="x")
 
-lbl_font = Font(family="Roboto Cn", size=14) 
+#lbl_font = Font(family="Roboto Cn", size=17) 
 
-label1 = tk.Label(primerInicio, text="Sistema Operativo de Ecomoda", bg="medium purple", relief="ridge", font=lbl_font)
-label1.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") ## relwidth: sirve para saber con respecto al frame que tan grande será
+label1 = tk.Label(primerInicio, text="Sistema Operativo de Ecomoda", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+label1.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
 label2 = tk.Label(primerInicio, text="Realiza un proceso de facturación, surte insumos, produce prendas, gestiona a tus empleados y revisa el estado financiero de tu empresa :)", relief="ridge")
 label2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
@@ -48,14 +49,25 @@ logo = tk.PhotoImage(master=label3, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\
 
 # Redimensionar la imagen usando subsample()
 # La imagen será reducida al tamaño deseado sin recortes
-logo_resized = logo.subsample(2, 2)  # Ajusta los valores (3, 3) según el tamaño deseado
+logo_resized = logo.subsample(2, 2)  
 
 # Crear el label con la imagen redimensionada
 foto = tk.Label(master=label3, image=logo_resized, bg="light gray")
 foto.image = logo_resized  # Mantener la referencia de la imagen
 foto.place(relx=0.5, rely=0.24, anchor="n")
 
-label4 = tk.Label(pedirFecha, text="Para iniciar ingresa la fecha de hoy ", relief="ridge")
+label4 = tk.Label(pedirFecha, text="Para iniciar ingresa la fecha de hoy ", relief="ridge", anchor="w")
 label4.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
+label4.config(padx=200)  
+
+entradaDia =tk.Entry(pedirFecha, bg="plum3")
+entradaDia.place(relx=0.55, rely=0.8, relwidth=0.06, relheight=0.1, anchor="n")
+entradaDia.insert(0,"d/ ")
+entradaMes =tk.Entry(pedirFecha, bg="plum3")
+entradaMes.place(relx=0.615, rely=0.8, relwidth=0.06, relheight=0.1, anchor="n")
+entradaMes.insert(0,"m/ ")
+entradaAño =tk.Entry(pedirFecha, bg="plum3")
+entradaAño.place(relx=0.6849, rely=0.8, relwidth=0.07, relheight=0.1, anchor="n")
+entradaAño.insert(0,"a/ 20")
 
 ventana.mainloop()
