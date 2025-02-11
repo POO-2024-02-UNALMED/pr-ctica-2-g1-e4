@@ -1,28 +1,21 @@
 import math
 import random
-from src.gestorAplicacion.administracion.area import Area
 from src.gestorAplicacion.administracion.banco import Banco
-from src.gestorAplicacion.administracion.deuda import Deuda
-from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
 from src.gestorAplicacion.administracion.rol import Rol
 from src.gestorAplicacion.bodega.bolsa import Bolsa
-from src.gestorAplicacion.bodega.camisa import Camisa
 from src.gestorAplicacion.bodega.insumo import Insumo
-from src.gestorAplicacion.bodega.maquinaria import Maquinaria
-from src.gestorAplicacion.bodega.pantalon import Pantalon
-from src.gestorAplicacion.bodega.prenda import Prenda
-from src.gestorAplicacion.bodega.proveedor import Proveedor
-from src.gestorAplicacion.bodega.repuesto import Repuesto
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
-from ..gestorAplicacion.administracion import Empleado
-from ..gestorAplicacion import Persona, Sede
+from ..gestorAplicacion.persona import Persona
+from src.gestorAplicacion.sede import Sede
 from typing import List
 
 class Main:
         
     def main():
+        from src.gestorAplicacion.bodega.prenda import Prenda
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
         fecha = Main.ingresarFecha()
         print("Ecomoda a la orden, presiona enter para continuar")
         input()
@@ -89,10 +82,12 @@ class Main:
         return fecha
     
     def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
+        from src.gestorAplicacion.bodega.prenda import Prenda
         print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
         print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
 
     def despedirEmpleados(fecha):
+        from ..gestorAplicacion.administracion.empleado import Empleado
         print("Obteniendo lista sugerida de empleados")
         info_despidos= Empleado.listaInicialDespedirEmpleado(fecha)
         a_despedir = info_despidos[0]
@@ -220,6 +215,9 @@ class Main:
         print(f"No se pudo contratar a {persona.getNombre()}, no sabemos a quien reemplaza.")
 
     def calcularBalanceAnterior(fecha):
+        from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
+        from src.gestorAplicacion.administracion.deuda import Deuda
+        from src.gestorAplicacion.administracion.area import Area
         print("\nObteniendo balance entre Ventas y Deudas para saber si las ventas cubren los gastos de la producción de nuestras prendas...")
         balance_costos_produccion = Venta.calcularBalanceVentaProduccion(fecha)
         eleccion = 0
@@ -250,6 +248,7 @@ class Main:
 
     # Interaccion 2 Sistema Financiero
     def calcularEstimado(fecha, balance_anterior):
+        from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         print("\nCalculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...")
         porcentaje = -1.0
         while porcentaje < 0.0 or porcentaje > 1:
@@ -262,6 +261,8 @@ class Main:
         return diferencia_estimado
 
     def planRecuperacion(diferencia_estimada, fecha, bancos):
+        from src.gestorAplicacion.bodega.prenda import Prenda
+        from src.gestorAplicacion.administracion.deuda import Deuda
         if diferencia_estimada > 0:
             print("\nEl estimado es positivo, las ventas superan las deudas")
             print("Hay dinero suficiente para hacer el pago de algunas Deudas")
@@ -314,6 +315,8 @@ class Main:
         return analisis_futuro
     
     def planificar_produccion(fecha):
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        from src.gestorAplicacion.bodega.camisa import Camisa
         retorno = []
 
         for sede in Sede.getlistaSedes():
@@ -428,6 +431,8 @@ class Main:
 
 
     def comprarInsumos(fecha, lista_a):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        from src.gestorAplicacion.administracion.deuda import Deuda
         deudas = []
 
         for sede in lista_a:
@@ -531,6 +536,10 @@ class Main:
         return Main.proveedorBdelmain
 
     def vender():
+        from ..gestorAplicacion.administracion.empleado import Empleado
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        from src.gestorAplicacion.administracion.area import Area
         venta = None
         productos_seleccionados = []
         cantidad_productos = []
@@ -634,6 +643,7 @@ class Main:
         return venta 
 
     def imprimirNoEmpleados():
+        from ..gestorAplicacion.administracion.empleado import Empleado
         no_empleados = []
         print("Lista de clientes:")
         for persona in Persona.getListaPersonas():
@@ -645,6 +655,7 @@ class Main:
             index+=1
 
     def realizarVenta(venta):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
         productos_seleccionados = venta.getArticulos()
         sede = venta.getSede()
         banco = sede.getCuentaSede()
@@ -760,6 +771,9 @@ class Main:
                 print("No se pudieron transferir todas las prendas faltantes. Faltan " + str(faltantes - prendas_transferidas) + " unidades.")
     
     def tarjetaRegalo (venta):
+                    from src.gestorAplicacion.bodega.pantalon import Pantalon
+                    
+                    from src.gestorAplicacion.bodega.camisa import Camisa
                     sede = venta.getSede()
                     banco = sede.getCuentaSede()
 
@@ -900,6 +914,7 @@ class Main:
                 return codigo
 
     def actualizarProveedores():
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
         sede_p = next((sede for sede in Sede.getlistaSedes() if sede.getNombre() == "Sede Principal"), None)
         if sede_p:
             for insumo in sede_p.getListaInsumosBodega():
@@ -955,225 +970,10 @@ class Main:
         if senal == 4:
             print(f"\n--> La {maq.getNombre()} de la {maq.getSede().getNombre()} requiere mantenimiento.\n")
         #can you please translate this to python
-import tkinter as tk
-import tkinter.ttk as ttk
-import os
-
-style = ttk.Style()
-window = tk.Tk()
-
-class Aplication(ttk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.pack(expand=True)
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.titulo = ttk.Label(self)
-        self.titulo["font"] = ("Arial", 30)
-        self.titulo["text"] = "Bienvenido"
-        self.titulo.grid(row = 0, column = 0, sticky="sew")
-
-        self.infoSistema = infoSistema(master = self)
-        self.infoSistema.grid(row = 1, column = 0)
-        self.infoDesarrolladores = infoDesarrolladores(master = self)
-        self.infoDesarrolladores.grid(row = 1, column = 1)
-
-class infoDesarrolladores(ttk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.create_widgets()
-
-    def create_widgets(self):
-        hojaDeVida = """Oye, te hablo desde la prisión
-En el mundo en que yo vivo Siempre hay cuatro esquinas
-Pero entre esquina y esquina Siempre habrá lo mismo
-Para mi no existe el cielo Ni Luna ni estrellas
-Para mi no alumbra el Sol Pa' mi todo es tinieblas"""
-        self.desarrolladores = ttk.Label(master = self, text=hojaDeVida)
-        self.desarrolladores.grid(row = 0, column = 0)
-        self.bettyYElOtro = tk.PhotoImage(master = window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\bettyYElOtro.png")
-        self.abajo = ttk.Label(master = self, image =self.bettyYElOtro) 
-        self.abajo.grid(row = 1, column = 0)
-
-class infoSistema(ttk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.create_widgets()
-
-    def create_widgets(self):
-        mensaje = """Bienvenido a ecomoda, donde aplicamos la teoría y la practica:
-teoría es cuando sabemos todo pero nada funciona, y la practica es cuando
-todo funciona pero no se sabe porqué. En ecomoda, juntamos la teoría y la practica: Nada
-funciona, y no sabemos porqué."""
-        self.saludo = ttk.Label(master = self, text=mensaje)
-        self.saludo.grid(row = 0, column = 0)
-        self.parteAbajo = p4FotosEInicio(master = self)
-        self.parteAbajo.grid(row = 1, column = 0)
-        
-class p4FotosEInicio(ttk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.perroCosiendo = tk.PhotoImage(master=window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\perroCosiendo.png")
-        self.foto = ttk.Label(master = self, image=self.perroCosiendo)
-        self.foto.grid(row = 0, column = 0)
-        self.inicio = ttk.Button(master = self,text="Seguir a la ventana principal")
-        self.inicio.grid(row = 1, column = 0)
-
-app = Aplication(window)
-window.mainloop()
-import tkinter as tk
-import tkinter.ttk as ttk
-import os
-
-window = tk.Tk()
-style = ttk.Style(master = window)
-
-class Aplication(ttk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.pack(expand=True)
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.titulo = ttk.Label(self)
-        self.titulo["font"] = ("Arial", 30)
-        self.titulo["text"] = "Bienvenido"
-        self.titulo.grid(row = 0, column = 0, sticky="sew")
-
-        self.infoSistema = infoSistema(master = self)
-        self.infoSistema.grid(row = 1, column = 0)
-        self.infoDesarrolladores = infoDesarrolladores(master = self)
-        self.infoDesarrolladores.grid(row = 1, column = 1)
-
-class infoDesarrolladores(ttk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.create_widgets()
-
-    def create_widgets(self):
-        hojaDeVida = """Oye, te hablo desde la prisión
-En el mundo en que yo vivo Siempre hay cuatro esquinas
-Pero entre esquina y esquina Siempre habrá lo mismo
-Para mi no existe el cielo Ni Luna ni estrellas
-Para mi no alumbra el Sol Pa' mi todo es tinieblas"""
-        self.desarrolladores = ttk.Label(master = self, text=hojaDeVida)
-        self.desarrolladores.grid(row = 0, column = 0)
-        self.bettyYElOtro = tk.PhotoImage(master = window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\bettyYElOtro.png")
-        self.abajo = ttk.Label(master = self, image =self.bettyYElOtro) 
-        self.abajo.grid(row = 1, column = 0)
-
-class infoSistema(ttk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.create_widgets()
-
-    def create_widgets(self):
-        mensaje = """Bienvenido a ecomoda, donde aplicamos la teoría y la practica:
-teoría es cuando sabemos todo pero nada funciona, y la practica es cuando
-todo funciona pero no se sabe porqué. En ecomoda, juntamos la teoría y la practica: Nada
-funciona, y no sabemos porqué."""
-        self.saludo = ttk.Label(master = self, text=mensaje)
-        self.saludo.grid(row = 0, column = 0)
-        self.parteAbajo = p4FotosEInicio(master = self)
-        self.parteAbajo.grid(row = 1, column = 0)
-        
-class p4FotosEInicio(ttk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.perroCosiendo = tk.PhotoImage(master=window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\perroCosiendo.png")
-        self.foto = ttk.Label(master = self, image=self.perroCosiendo)
-        self.foto.grid(row = 0, column = 0)
-        self.inicio = ttk.Button(master = self,text="Seguir a la ventana principal")
-        self.inicio.grid(row = 1, column = 0)
-
-app = Aplication(window)
-window.mainloop()
-import tkinter as tk
-import os
-
-window = tk.Tk()
-
-class Aplication(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.pack(expand=1,fill="both")
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.titulo = tk.Label(self)
-        self.titulo["font"] = ("Arial", 30)
-        self.titulo["text"] = "Bienvenido"
-        self.titulo.grid(row = 0, column = 0, sticky="sew")
-
-        self.infoSistema = infoSistema(master = self)
-        self.infoSistema.grid(row = 1, column = 0)
-        self.infoDesarrolladores = infoDesarrolladores(master = self)
-        self.infoDesarrolladores.grid(row = 1, column = 1)
-
-class infoDesarrolladores(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.create_widgets()
-
-    def create_widgets(self):
-        hojaDeVida = """Oye, te hablo desde la prisión
-En el mundo en que yo vivo Siempre hay cuatro esquinas
-Pero entre esquina y esquina Siempre habrá lo mismo
-Para mi no existe el cielo Ni Luna ni estrellas
-Para mi no alumbra el Sol Pa' mi todo es tinieblas"""
-        self.desarrolladores = tk.Label(master = self, text=hojaDeVida)
-        self.desarrolladores.grid(row = 0, column = 0)
-        self.bettyYElOtro = tk.PhotoImage(master = window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\bettyYElOtro.png")
-        self.abajo = tk.Label(master = self, image =self.bettyYElOtro) 
-        self.abajo.grid(row = 1, column = 0)
-
-class infoSistema(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.create_widgets()
-
-    def create_widgets(self):
-        mensaje = """Bienvenido a ecomoda, donde aplicamos la teoría y la practica:
-teoría es cuando sabemos todo pero nada funciona, y la practica es cuando
-todo funciona pero no se sabe porqué. En ecomoda, juntamos la teoría y la practica: Nada
-funciona, y no sabemos porqué."""
-        self.saludo = tk.Label(master = self, text=mensaje)
-        self.saludo.grid(row = 0, column = 0)
-        self.parteAbajo = p4FotosEInicio(master = self)
-        self.parteAbajo.grid(row = 1, column = 0)
-        
-class p4FotosEInicio(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.perroCosiendo = tk.PhotoImage(master=window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\perroCosiendo.png")
-        self.foto = tk.Label(master = self, image=self.perroCosiendo)
-        self.foto.grid(row = 0, column = 0)
-        self.inicio = tk.Button(master = self,text="Seguir a la ventana principal")
-        self.inicio.grid(row = 1, column = 0)
-
-    def crearVentaAleatoria(deTantosProductos, aTantosProductos, fecha, asesor, encargado, cantidad, sede):
+    
+    def crearVentaAleatoria(deTantosProductos, aTantosProductos, fecha, asesor, encargado, cantidad, sede): 
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        from src.gestorAplicacion.bodega.camisa import Camisa
         for _ in range(cantidad):
             precio = 0
             costoEnvio = 0
@@ -1197,6 +997,15 @@ class p4FotosEInicio(tk.Frame):
             venta.setCostoEnvio(costoEnvio)
     
     def crearSedesMaquinasRepuestos():
+        from ..gestorAplicacion.administracion.empleado import Empleado
+        from src.gestorAplicacion.bodega.repuesto import Repuesto
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        from src.gestorAplicacion.bodega.pantalon import Pantalon 
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
+        from src.gestorAplicacion.administracion.deuda import Deuda    
+        from src.gestorAplicacion.administracion.area import Area
         #Episodio 43
         p1 = Proveedor(600, "Rag Tela")
         p1.setInsumo(Insumo("Tela", p1))
@@ -1688,6 +1497,5 @@ class p4FotosEInicio(tk.Frame):
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia , 300, sede2)
         pass 
 
-import bienvenida
-
+import src.uiMain.bienvenida as bienvenida
 bienvenida.bienvenida()

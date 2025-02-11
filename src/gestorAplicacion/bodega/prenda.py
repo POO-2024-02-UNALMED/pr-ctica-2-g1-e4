@@ -6,7 +6,6 @@ from src.gestorAplicacion.bodega.maquinaria import Maquinaria
 from src.gestorAplicacion.bodega.pantalon import Pantalon
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.venta import Venta
-from src.uiMain.main import Main
 
 class Prenda(ABC,GastoMensual):
     porcentajeGanancia = 0.40
@@ -50,6 +49,7 @@ class Prenda(ABC,GastoMensual):
 
     @staticmethod
     def producirListaPrendas(plan_produccion, sede, fecha_produccion):
+        from src.uiMain.main import Main
         alcanza_insumos = True
         cantidad_pantalones = plan_produccion[0]
         cantidad_camisas = plan_produccion[1]
@@ -156,6 +156,7 @@ class Prenda(ABC,GastoMensual):
         return self.costo_insumos
 
     def calcularCostoProduccion(self):
+        from src.gestorAplicacion.administracion.rol import Rol
         sum_salarios = sum(empleado.rol.salario_inicial for empleado in self.sede.lista_empleados if empleado.rol == Rol.MODISTA)
         self.costo_produccion = round(sum_salarios * 0.01)
         return self.costo_produccion

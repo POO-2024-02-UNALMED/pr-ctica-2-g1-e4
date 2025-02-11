@@ -1,6 +1,5 @@
 from src.gestorAplicacion.administracion.banco import Banco
 from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
-from src.gestorAplicacion.bodega.maquinaria import Maquinaria
 from src.gestorAplicacion.persona import Persona
 from ..fecha import Fecha
 from ..sede import Sede
@@ -94,6 +93,7 @@ class Empleado(Persona,GastoMensual):
         return retorno
     
     def trasladarEmpleado(self, sede_nueva) -> List[str]:
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
         mensajes = []
         a_pagar = Maquinaria.remuneracionDanos(self)
         if Banco.get_cuenta_principal() is not None:

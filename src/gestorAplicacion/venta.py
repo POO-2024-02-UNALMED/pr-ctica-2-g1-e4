@@ -1,5 +1,4 @@
-from src.gestorAplicacion.bodega import Bolsa, Prenda
-from src.gestorAplicacion import Fecha, Sede, Persona
+from src.gestorAplicacion.fecha import Fecha
 import math
 
 class Venta:
@@ -54,6 +53,7 @@ class Venta:
 
     @staticmethod
     def calcularBalanceVentaProduccion(fecha):
+        from src.gestorAplicacion.sede import Sede
         valor_calculado = 0
         costos = 0
         for sede in Sede.get_lista_sedes():
@@ -69,6 +69,7 @@ class Venta:
 
     @staticmethod
     def blackFriday(fecha):
+        from src.gestorAplicacion.sede import Sede
         ano = fecha.get_ano() if fecha.get_mes() > 11 or (fecha.get_mes() == 11 and fecha.get_dia() >= 24) else fecha.get_ano() - 1
         dias_black_friday = [Fecha(28, 11, ano), Fecha(29, 11, ano), Fecha(30, 11, ano)]
         fechas_normales = [Fecha(23, 11, ano), Fecha(24, 11, ano), Fecha(25, 11, ano)]

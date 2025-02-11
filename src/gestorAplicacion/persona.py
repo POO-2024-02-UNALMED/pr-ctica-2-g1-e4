@@ -1,10 +1,7 @@
 from typing import List, Any
 from src.gestorAplicacion.administracion.rol import Rol
-from src.gestorAplicacion.administracion.membresia import Membresia
+from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.fecha import Fecha
-from src.gestorAplicacion.administracion.empleado import Empleado
-from src.uiMain.bienvenida import Main
-from src.gestorAplicacion.bodega.maquinaria import Maquinaria
 
 class Persona:
     lista_personas = []  # List of people
@@ -63,6 +60,9 @@ class Persona:
     # Interaction 3 of Human Management
     @staticmethod
     def contratar(a_contratar, a_reemplazar, fecha: Fecha):
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+        from src.uiMain.main import Main
+        from src.gestorAplicacion.administracion.empleado import Empleado
         for persona in a_contratar:
             area = None
             sede = None
@@ -95,10 +95,12 @@ class Persona:
     def valorEsperadoSalario() -> int:
         valor_esperado = 0
         for persona in Persona.lista_personas:
+            from src.gestorAplicacion.administracion.empleado import Empleado
             if not isinstance(persona, Empleado):
                 valor_esperado += persona.calcular_salario()
         return valor_esperado // len(Persona.lista_personas) if Persona.lista_personas else 0
 
     @staticmethod
     def diferenciaSalarios() -> int:
+        from src.gestorAplicacion.administracion.empleado import Empleado
         return Persona.valorEsperadoSalario() - Empleado.valorEsperadoSalario()
