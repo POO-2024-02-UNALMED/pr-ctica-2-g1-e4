@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+from PIL import Image, ImageTk
 
 
 class Aplication(tk.Frame):
@@ -12,41 +13,66 @@ class Aplication(tk.Frame):
     def create_widgets(self):
         self.titulo = tk.Label(self)
         self.titulo["font"] = ("Arial", 30)
-        self.titulo["text"] = "Bienvenido"
-        self.titulo.grid(row = 0, column = 0, sticky="sew",columnspan=2)
+        self.titulo["text"] = "Inicio"
+        self.titulo.grid(row = 0, column = 0,columnspan=2, sticky="w")
 
         self.infoSistema = infoSistema(window = self.master, master = self)
         self.infoSistema.grid(row = 1, column = 1, sticky="sewn")
-        self.columnconfigure(1,weight=10)
+
 
         self.infoDesarrolladores = infoDesarrolladores(self.master, master = self)
-        self.infoDesarrolladores.grid(row = 1, column = 2,sticky="sewn")
-        self.columnconfigure(2,weight=10)
+        self.infoDesarrolladores.grid(row = 1, column = 3,sticky="sewn")
+
+        self.columnconfigure(0,weight=1)
+        self.columnconfigure(1,weight=10)
+        self.columnconfigure(2,weight=1)
+        self.columnconfigure(3,weight=10)
+        self.columnconfigure(4,weight=1)
 
         self.rowconfigure(0,weight=1)
         self.rowconfigure(1,weight=9)
+        self.rowconfigure(2,weight=1)
+
+        
 
 class infoDesarrolladores(tk.Frame):
     def __init__(self,window, master=None):
         super().__init__(master)
         self.master = master
         self.window = window
+        self.config(highlightbackground="black",highlightthickness=2)
         self.create_widgets()
 
     def create_widgets(self):
+
+        self.p5HojaDeVida = tk.Frame(master = self, highlightbackground="black",highlightthickness=2)
         hojaDeVida = """Oye, te hablo desde la prisión
 En el mundo en que yo vivo Siempre hay cuatro esquinas
 Pero entre esquina y esquina Siempre habrá lo mismo
 Para mi no existe el cielo Ni Luna ni estrellas
 Para mi no alumbra el Sol Pa' mi todo es tinieblas"""
-        self.desarrolladores = tk.Label(master = self, text=hojaDeVida)
-        self.desarrolladores.grid(row = 0, column = 0)
+        self.desarrolladores = tk.Label(master = self.p5HojaDeVida, text=hojaDeVida)
+        self.desarrolladores.grid(row = 1, column = 0, padx=10, pady=10)
+        self.tituloHojaDeVida = tk.Label(master = self.p5HojaDeVida, text="Hoja de vida de Beatriz")
+        self.tituloHojaDeVida.grid(row = 0, column = 0, padx=10, pady=10)
+
+        self.p5HojaDeVida.grid(row = 0, column = 0, padx=10, pady=10, sticky="nswe")
+        self.p5HojaDeVida.rowconfigure(0,weight=2)
+        self.p5HojaDeVida.rowconfigure(1,weight=10)
+        self.p5HojaDeVida.columnconfigure(0,weight=10)
+
+        self.contenedorAbajoP6 = tk.Frame(master = self, highlightbackground="black",highlightthickness=2)
         self.bettyYElOtro = tk.PhotoImage(master = self.window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\bettyYElOtro.png")
-        self.abajo = tk.Label(master = self, image =self.bettyYElOtro) 
-        self.abajo.grid(row = 1, column = 0)
+        self.abajo = tk.Label(master = self.contenedorAbajoP6, image =self.bettyYElOtro) 
+        self.abajo.grid(row = 1, column = 0,sticky="nswe")
+        self.contenedorAbajoP6.grid(row = 1, column = 0, padx=10, pady=10, sticky="nswe")
+        self.contenedorAbajoP6.rowconfigure(0,weight=10)
+        self.contenedorAbajoP6.columnconfigure(0,weight=10)
 
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=10)
+
+        self.columnconfigure(0,weight=10)
 
 class infoSistema(tk.Frame):
     def __init__(self, window, master=None):
@@ -54,16 +80,25 @@ class infoSistema(tk.Frame):
         self.master = master
         self.window = window
         self.create_widgets()
+        self.config(highlightbackground="black",highlightthickness=2)
 
     def create_widgets(self):
+        # P3 en el enunciado de la practica
+        self.frameArriba = tk.Frame(master = self, highlightbackground="black",highlightthickness=2)
         mensaje = """Bienvenido a ecomoda, donde aplicamos teoría y practica:
 teoría es cuando sabemos todo pero nada funciona, y la practica es cuando
 todo funciona pero no se sabe porqué. En ecomoda, juntamos la teoría y la practica: Nada
 funciona, y no sabemos porqué."""
-        self.saludo = tk.Label(master = self, text=mensaje)
-        self.saludo.grid(row = 0, column = 0)
+
+        self.saludo = tk.Label(self.frameArriba, text=mensaje, justify="center")
+        self.frameArriba.bind('<Configure>', lambda e: self.saludo.config(wraplength=self.frameArriba.winfo_width()*0.9))
+        self.saludo.pack(expand=True)
+        
+        self.frameArriba.grid(row = 0, column = 0, padx=10, pady=10, sticky="nswe")
+
         self.parteAbajo = p4FotosEInicio(self.window ,master = self)
-        self.parteAbajo.grid(row = 1, column = 0)
+        self.parteAbajo.grid(row = 1, column = 0, padx=10, pady=10, sticky="nswe")
+
 
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=10)
@@ -75,13 +110,20 @@ class p4FotosEInicio(tk.Frame):
         self.master = master
         self.window = window
         self.create_widgets()
+        self.config(highlightbackground="black",highlightthickness=2, padx=10, pady=10)
 
     def create_widgets(self):
-        self.perroCosiendo = tk.PhotoImage(master=self.window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\perroCosiendo.png")
-        self.foto = tk.Label(master = self, image=self.perroCosiendo)
-        self.foto.grid(row = 0, column = 0)
-        self.inicio = tk.Button(master = self,text="Seguir a la ventana principal")
+        self.archivoImagenSistema = Image.open(f"{os.getcwd()}\\src\\uiMain\\imagenes\\logoEcomoda.png")
+        self.imagenSistema =ImageTk.PhotoImage(self.archivoImagenSistema)
+        self.display = tk.Canvas(self, bd=0, highlightthickness=0)
+        self.display.create_image(0, 0, image=self.imagenSistema, anchor="nw", tags="IMG")
+        self.display.grid(row = 0, column = 0)
+        self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command=self.window.destroy)
         self.inicio.grid(row = 1, column = 0)
+
+        self.columnconfigure(0,weight=10)
+        self.rowconfigure(0,weight=10)
+        self.rowconfigure(1,weight=2)
 
 def bienvenida():
     window = tk.Tk()

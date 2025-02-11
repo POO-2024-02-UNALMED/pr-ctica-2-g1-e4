@@ -3,3 +3,6 @@ __pycache__/
 
 # Ignore all .pyc files
 *.pyc
+
+# Ignore .venv directory created by VSCode
+.venv/
