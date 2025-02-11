@@ -12,11 +12,11 @@ from src.gestorAplicacion.sede import Sede
 from typing import List
 
 class Main:
-        
+    fecha=None 
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
-        fecha = Main.ingresarFecha()
+        #fecha = Main.ingresarFecha()
         print("Ecomoda a la orden, presiona enter para continuar")
         input()
         while True:
@@ -30,7 +30,7 @@ class Main:
             
             opcion = Main.nextIntSeguro()
             if opcion == 1:
-                despedidos = Main.despedirEmpleados(fecha)
+                despedidos = Main.despedirEmpleados(Main.fecha)
                 a_contratar = Main.reorganizarEmpleados(despedidos)
                 Main.contratarEmpleados(a_contratar)
             elif opcion == 2:
@@ -56,8 +56,8 @@ class Main:
             elif opcion == 5:
                 maquina = Maquinaria()
                 sedePrueba = Sede() 
-                plan = sedePrueba.planProduccion(maquina.agruparMaquinasDisponibles(fecha), fecha)
-                creadas = Prenda.producirPrendas(plan,fecha)
+                plan = sedePrueba.planProduccion(maquina.agruparMaquinasDisponibles(Main.fecha), Main.fecha)
+                creadas = Prenda.producirPrendas(plan,Main.fecha)
                 if (creadas):
                     print(Prenda.getCantidadUltimaProduccion()+" Prendas creadas con éxito")
                 else:
@@ -70,15 +70,30 @@ class Main:
             else:
                 print("Esa opción no es valida.")
 
-    def ingresarFecha():
-        dia = -1
-        mes = -1
-        while dia <= 0 or dia > 31:
-            dia = int(input("Ingrese día: "))
-            while mes <= 0 or mes > 12:
-                mes = int(input("Ingrese mes: "))
-        año = int(input("Ingrese año: "))
-        fecha = Fecha(dia, mes, año)
+    def ingresarFecha(diaI,mesI,añoI):
+        fecha=None
+        partes = diaI.split()
+        numero=-1
+        if partes[-1].isdigit():
+            numero = int(partes[-1])
+        dia = numero
+        partes = mesI.split()
+        if partes[-1].isdigit():
+            numero = int(partes[-1])
+        mes = numero
+        partes = añoI.split()
+        if partes[-1].isdigit():
+            numero = int(partes[-1])
+        año = numero
+        if dia <= 0 or dia > 31:
+            startFrame.borrar()
+        elif mes <= 0 or mes > 12:
+            startFrame.borrar()
+        elif año <= 0:
+            startFrame.borrar()
+        else:
+            fecha = Fecha(dia, mes, año)
+            Main.fecha=fecha
         return fecha
     
     def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):

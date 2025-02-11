@@ -3,7 +3,10 @@ import tkinter as tk
 from tkinter.font import Font
 import winsound
 import pygame
+import sys
+from src.uiMain.main import Main
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
 pygame.mixer.init()
 
@@ -81,6 +84,28 @@ entradaMes.place(relx=0.615, rely=0.8, relwidth=0.06, relheight=0.1, anchor="n")
 entradaMes.insert(0,"m/ ")
 entradaAño =tk.Entry(pedirFecha, bg="plum3")
 entradaAño.place(relx=0.6849, rely=0.8, relwidth=0.07, relheight=0.1, anchor="n")
-entradaAño.insert(0,"a/ 20")
+entradaAño.insert(0,"a/ ")
+
+# Función que se ejecutará al presionar el botón
+def Ok(event):
+    global entradaDia, entradaMes, entradaAño
+    # Leer los valores de las entradas
+    FDia = entradaDia.get() # Obtener el texto de la entrada para el día
+    FMes = entradaMes.get() # Obtener el texto de la entrada para el mes
+    FAño = entradaAño.get() # Obtener el texto de la entrada para el año
+    fecha=Main.ingresarFecha(FDia,FMes,FAño)
+    pass
+
+def borrar():
+    entradaDia.delete(0, tk.END)
+    entradaMes.delete(0, tk.END)
+    entradaAño.delete(0, tk.END)
+    entradaDia.insert(0,"d/ ")
+    entradaMes.insert(0,"m/ ")
+    entradaAño.insert(0,"a/ ")
+
+boton1=tk.Button(pedirFecha,text="Enviar")
+boton1.place(relx=0.820, rely=0.8, relwidth=0.1, relheight=0.1, anchor="n")
+boton1.bind("<Button-1>", Ok)
 
 ventana.mainloop()
