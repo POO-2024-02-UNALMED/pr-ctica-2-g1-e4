@@ -385,7 +385,7 @@ class Sede:
         produccion_sedes = self.calc_produccion_sedes(fecha)
         return [produccion_sedes[0][0], produccion_sedes[0][1]]
 
-    def plan_produccion(self, maq_disponible: List['Maquinaria'], fecha: 'Fecha', scanner: 'int') -> List[List[List[int]]]:
+    def plan_produccion(self, maq_disponible: List, fecha: 'Fecha', scanner: 'int') -> List[List[List[int]]]:
         from .bodega.maquinaria import Maquinaria
         from src.uiMain import Main
         a_producir_final = []
