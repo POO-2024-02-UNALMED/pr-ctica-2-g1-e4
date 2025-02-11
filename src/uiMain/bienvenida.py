@@ -115,15 +115,24 @@ class p4FotosEInicio(tk.Frame):
     def create_widgets(self):
         self.archivoImagenSistema = Image.open(f"{os.getcwd()}\\src\\uiMain\\imagenes\\logoEcomoda.png")
         self.imagenSistema =ImageTk.PhotoImage(self.archivoImagenSistema)
+
         self.display = tk.Canvas(self, bd=0, highlightthickness=0)
         self.display.create_image(0, 0, image=self.imagenSistema, anchor="nw", tags="IMG")
         self.display.grid(row = 0, column = 0)
+        self.display.bind("<Configure>", lambda e: cambiarTamano(e, self.archivoImagenSistema,self.display ,self))
+
         self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command=self.window.destroy)
         self.inicio.grid(row = 1, column = 0)
 
         self.columnconfigure(0,weight=10)
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=2)
+
+def cambiarTamano(event, imagen:Image,display:tk.Canvas ,contenedor:tk.Frame):
+    imagen = imagen.resize((contenedor.winfo_width(),contenedor.winfo_height()))
+    display.delete("IMG")
+    display.create_image(0, 0, image=ImageTk.PhotoImage(imagen), anchor="nw", tags="IMG")
+    
 
 def bienvenida():
     window = tk.Tk()
