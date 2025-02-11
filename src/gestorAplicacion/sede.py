@@ -2,7 +2,6 @@ from src.gestorAplicacion.administracion.resultado import Resultado
 from src.gestorAplicacion.administracion.rol import Rol
 from src.gestorAplicacion.bodega.insumo import Insumo
 from .fecha import Fecha
-from .bodega.maquinaria import Maquinaria
 from typing import List
 
 class Sede:
@@ -257,6 +256,7 @@ class Sede:
         return retorno
 
     def reemplazarPorCambioSede(despedidos, a_transferir):
+        from .bodega.maquinaria import Maquinaria
         for empleado_despedido in despedidos:
             # Buscamos en la lista de empleados a transferir, quien pudo ser seleccionado como reemplazo.
             for empleado_reemplazo in a_transferir:
@@ -386,6 +386,7 @@ class Sede:
         return [produccion_sedes[0][0], produccion_sedes[0][1]]
 
     def plan_produccion(self, maq_disponible: List['Maquinaria'], fecha: 'Fecha', scanner: 'int') -> List[List[List[int]]]:
+        from .bodega.maquinaria import Maquinaria
         from src.uiMain import Main
         a_producir_final = []
         a_producir = []
