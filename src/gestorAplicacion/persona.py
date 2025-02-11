@@ -3,7 +3,7 @@ from src.gestorAplicacion.administracion.rol import Rol
 from src.gestorAplicacion.administracion.membresia import Membresia
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.administracion.empleado import Empleado
-from src.uiMain.main import Main
+from src.uiMain.bienvenida import Main
 from src.gestorAplicacion.bodega.maquinaria import Maquinaria
 
 class Persona:

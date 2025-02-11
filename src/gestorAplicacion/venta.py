@@ -1,6 +1,5 @@
-from gestorAplicacion.administracion import Empleado
-from gestorAplicacion.bodega import Bolsa, Prenda
-from gestorAplicacion import Fecha, Sede, Persona
+from src.gestorAplicacion.bodega import Bolsa, Prenda
+from src.gestorAplicacion import Fecha, Sede, Persona
 import math
 
 class Venta:

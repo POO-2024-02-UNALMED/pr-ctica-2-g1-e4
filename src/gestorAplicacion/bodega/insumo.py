@@ -1,5 +1,4 @@
 from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
-from src.gestorAplicacion.sede import Sede;
 
 class Insumo(GastoMensual):
     precio_stock_total = 0
@@ -22,6 +21,7 @@ class Insumo(GastoMensual):
 
     @staticmethod
     def gastoMensualClase(fecha):
+        from src.gestorAplicacion.sede import Sede;
         gasto_insumo = 0
         gasto_actual = 0
         gasto_pasado = 0

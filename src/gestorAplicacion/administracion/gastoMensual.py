@@ -1,8 +1,5 @@
 from abc import abstractmethod
 
-from src.gestorAplicacion.administracion.empleado import Empleado
-from src.gestorAplicacion.bodega.insumo import Insumo
-from src.gestorAplicacion.bodega.maquinaria import Maquinaria
 
 class GastoMensual:
     
@@ -27,6 +24,9 @@ class GastoMensual:
 
     @staticmethod
     def gastosMensuales(fecha):
+        from src.gestorAplicacion.administracion.empleado import Empleado
+        from src.gestorAplicacion.bodega.insumo import Insumo
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
         gastos_maquinaria = Maquinaria.gastoMensualClase(fecha)
         gastos_nomina = Empleado.gasto_mensual_clase()
         gasto_bolsa = Insumo.gastoMensualClase(fecha)

@@ -1,7 +1,6 @@
 from src.gestorAplicacion.administracion.resultado import Resultado
 from src.gestorAplicacion.administracion.rol import Rol
 from src.gestorAplicacion.bodega.insumo import Insumo
-from .administracion.area import Area
 from .fecha import Fecha
 from .venta import Venta
 from .bodega.maquinaria import Maquinaria
@@ -100,6 +99,7 @@ class Sede:
         pass
     
     def getRendimientoDeseado(self,area,fecha):
+        from .administracion.area import Area
         Area.rendimientoDeseadoActual(self,fecha)
         return area.rendimiento_deseado
     
@@ -386,6 +386,7 @@ class Sede:
         return [produccion_sedes[0][0], produccion_sedes[0][1]]
 
     def plan_produccion(self, maq_disponible: List['Maquinaria'], fecha: 'Fecha', scanner: 'int') -> List[List[List[int]]]:
+        from src.uiMain import Main
         a_producir_final = []
         a_producir = []
         lista_espera = []
