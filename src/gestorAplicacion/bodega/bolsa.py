@@ -1,4 +1,4 @@
-from src.gestorAplicacion.Bodega import Insumo
+from src.gestorAplicacion.bodega.insumo import Insumo
 
 class Bolsa(Insumo):
     def __init__(self, nombre, proveedor, cantidad=0,  sede=None, capacidad_maxima=0):

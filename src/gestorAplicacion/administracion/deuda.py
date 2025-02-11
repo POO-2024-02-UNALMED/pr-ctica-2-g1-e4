@@ -1,9 +1,8 @@
-from gestorAplicacion import fecha
+from src.gestorAplicacion import fecha
 from typing import List
 
 from src.gestorAplicacion.administracion.banco import Banco
 from src.gestorAplicacion.fecha import Fecha
-from src.gestorAplicacion.bodega.proveedor import Proveedor
 from src.gestorAplicacion.bodega.pantalon import Pantalon
 from src.gestorAplicacion.bodega.camisa import Camisa
 
@@ -42,6 +41,7 @@ class Deuda:
 
     @staticmethod
     def calcularDeudaMensual(fecha, eleccion: int) -> int:
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
         deuda_calculada = 0
         if eleccion == 1:
             for proveedor in Proveedor.getListaProveedores():
@@ -125,6 +125,7 @@ class Deuda:
 
     @staticmethod
     def compararDeudas(fecha):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
         mayor_banco = None
         mayor_proveedor = None
         mayor_precio_b = 0

@@ -1,4 +1,4 @@
-from src.gestorAplicacion.administracion import Empleado
+from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.bodega.prenda import Prenda
 from src.gestorAplicacion.sede import Sede
 import random

@@ -1,4 +1,4 @@
-from src.gestorAplicacion.administracion import Empleado
+from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.sede import Sede
 from typing import List, Optional

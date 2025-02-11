@@ -1,28 +1,21 @@
 import math
 import random
-from src.gestorAplicacion.administracion.area import Area
 from src.gestorAplicacion.administracion.banco import Banco
-from src.gestorAplicacion.administracion.deuda import Deuda
-from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
 from src.gestorAplicacion.administracion.rol import Rol
 from src.gestorAplicacion.bodega.bolsa import Bolsa
-from src.gestorAplicacion.bodega.camisa import Camisa
 from src.gestorAplicacion.bodega.insumo import Insumo
-from src.gestorAplicacion.bodega.maquinaria import Maquinaria
-from src.gestorAplicacion.bodega.pantalon import Pantalon
-from src.gestorAplicacion.bodega.prenda import Prenda
-from src.gestorAplicacion.bodega.proveedor import Proveedor
-from src.gestorAplicacion.bodega.repuesto import Repuesto
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
-from ..gestorAplicacion.administracion import Empleado
-from ..gestorAplicacion import Persona, Sede
+from ..gestorAplicacion.persona import Persona
+from src.gestorAplicacion.sede import Sede
 from typing import List
 
 class Main:
         
     def main():
+        from src.gestorAplicacion.bodega.prenda import Prenda
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
         fecha = Main.ingresarFecha()
         print("Ecomoda a la orden, presiona enter para continuar")
         input()
@@ -89,10 +82,12 @@ class Main:
         return fecha
     
     def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
+        from src.gestorAplicacion.bodega.prenda import Prenda
         print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
         print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
 
     def despedirEmpleados(fecha):
+        from ..gestorAplicacion.administracion.empleado import Empleado
         print("Obteniendo lista sugerida de empleados")
         info_despidos= Empleado.listaInicialDespedirEmpleado(fecha)
         a_despedir = info_despidos[0]
@@ -220,6 +215,9 @@ class Main:
         print(f"No se pudo contratar a {persona.getNombre()}, no sabemos a quien reemplaza.")
 
     def calcularBalanceAnterior(fecha):
+        from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
+        from src.gestorAplicacion.administracion.deuda import Deuda
+        from src.gestorAplicacion.administracion.area import Area
         print("\nObteniendo balance entre Ventas y Deudas para saber si las ventas cubren los gastos de la producción de nuestras prendas...")
         balance_costos_produccion = Venta.calcularBalanceVentaProduccion(fecha)
         eleccion = 0
@@ -250,6 +248,7 @@ class Main:
 
     # Interaccion 2 Sistema Financiero
     def calcularEstimado(fecha, balance_anterior):
+        from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         print("\nCalculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...")
         porcentaje = -1.0
         while porcentaje < 0.0 or porcentaje > 1:
@@ -262,6 +261,8 @@ class Main:
         return diferencia_estimado
 
     def planRecuperacion(diferencia_estimada, fecha, bancos):
+        from src.gestorAplicacion.bodega.prenda import Prenda
+        from src.gestorAplicacion.administracion.deuda import Deuda
         if diferencia_estimada > 0:
             print("\nEl estimado es positivo, las ventas superan las deudas")
             print("Hay dinero suficiente para hacer el pago de algunas Deudas")
@@ -314,6 +315,8 @@ class Main:
         return analisis_futuro
     
     def planificar_produccion(fecha):
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        from src.gestorAplicacion.bodega.camisa import Camisa
         retorno = []
 
         for sede in Sede.getlistaSedes():
@@ -428,6 +431,8 @@ class Main:
 
 
     def comprarInsumos(fecha, lista_a):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        from src.gestorAplicacion.administracion.deuda import Deuda
         deudas = []
 
         for sede in lista_a:
@@ -531,6 +536,10 @@ class Main:
         return Main.proveedorBdelmain
 
     def vender():
+        from ..gestorAplicacion.administracion.empleado import Empleado
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        from src.gestorAplicacion.administracion.area import Area
         venta = None
         productos_seleccionados = []
         cantidad_productos = []
@@ -634,6 +643,7 @@ class Main:
         return venta 
 
     def imprimirNoEmpleados():
+        from ..gestorAplicacion.administracion.empleado import Empleado
         no_empleados = []
         print("Lista de clientes:")
         for persona in Persona.getListaPersonas():
@@ -645,6 +655,7 @@ class Main:
             index+=1
 
     def realizarVenta(venta):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
         productos_seleccionados = venta.getArticulos()
         sede = venta.getSede()
         banco = sede.getCuentaSede()
@@ -760,6 +771,9 @@ class Main:
                 print("No se pudieron transferir todas las prendas faltantes. Faltan " + str(faltantes - prendas_transferidas) + " unidades.")
     
     def tarjetaRegalo (venta):
+                    from src.gestorAplicacion.bodega.pantalon import Pantalon
+                    
+                    from src.gestorAplicacion.bodega.camisa import Camisa
                     sede = venta.getSede()
                     banco = sede.getCuentaSede()
 
@@ -900,6 +914,7 @@ class Main:
                 return codigo
 
     def actualizarProveedores():
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
         sede_p = next((sede for sede in Sede.getlistaSedes() if sede.getNombre() == "Sede Principal"), None)
         if sede_p:
             for insumo in sede_p.getListaInsumosBodega():
@@ -1173,7 +1188,9 @@ class p4FotosEInicio(tk.Frame):
         self.inicio = tk.Button(master = self,text="Seguir a la ventana principal")
         self.inicio.grid(row = 1, column = 0)
 
-    def crearVentaAleatoria(deTantosProductos, aTantosProductos, fecha, asesor, encargado, cantidad, sede):
+    def crearVentaAleatoria(deTantosProductos, aTantosProductos, fecha, asesor, encargado, cantidad, sede): 
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        from src.gestorAplicacion.bodega.camisa import Camisa
         for _ in range(cantidad):
             precio = 0
             costoEnvio = 0
@@ -1197,6 +1214,15 @@ class p4FotosEInicio(tk.Frame):
             venta.setCostoEnvio(costoEnvio)
     
     def crearSedesMaquinasRepuestos():
+        from ..gestorAplicacion.administracion.empleado import Empleado
+        from src.gestorAplicacion.bodega.repuesto import Repuesto
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        from src.gestorAplicacion.bodega.pantalon import Pantalon 
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
+        from src.gestorAplicacion.administracion.deuda import Deuda    
+        from src.gestorAplicacion.administracion.area import Area
         #Episodio 43
         p1 = Proveedor(600, "Rag Tela")
         p1.setInsumo(Insumo("Tela", p1))

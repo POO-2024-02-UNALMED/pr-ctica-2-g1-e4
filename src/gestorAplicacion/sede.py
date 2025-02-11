@@ -2,7 +2,6 @@ from src.gestorAplicacion.administracion.resultado import Resultado
 from src.gestorAplicacion.administracion.rol import Rol
 from src.gestorAplicacion.bodega.insumo import Insumo
 from .fecha import Fecha
-from .venta import Venta
 from .bodega.maquinaria import Maquinaria
 from typing import List
 
@@ -336,6 +335,7 @@ class Sede:
         return senal
     
     def calc_produccion_sedes(self, fecha: 'Fecha') -> List[List[int]]:
+        from .venta import Venta
         prod_sedes_calculada = []
         prod_calculada_sede_p = []
         prod_calculada_sede_2 = []
