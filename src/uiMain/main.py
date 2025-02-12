@@ -71,31 +71,7 @@ class Main:
             else:
                 print("Esa opción no es valida.")
 
-    def ingresarFecha(diaI,mesI,añoI):
-        fecha=None
-        partes = diaI.split()
-        numero=-1
-        if partes[-1].isdigit():
-            numero = int(partes[-1])
-        dia = numero
-        partes = mesI.split()
-        if partes[-1].isdigit():
-            numero = int(partes[-1])
-        mes = numero
-        partes = añoI.split()
-        if partes[-1].isdigit():
-            numero = int(partes[-1])
-        año = numero
-        if dia <= 0 or dia > 31:
-            startFrame.borrar()
-        elif mes <= 0 or mes > 12:
-            startFrame.borrar()
-        elif año <= 0:
-            startFrame.borrar()
-        else:
-            fecha = Fecha(dia, mes, año)
-            Main.fecha=fecha
-        return fecha
+
     
     def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
         from src.gestorAplicacion.bodega.prenda import Prenda
