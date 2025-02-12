@@ -6,6 +6,7 @@ from tkinter.font import Font
 import sys
 from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
+from src.uiMain.F1Financiera import deudas
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -42,7 +43,7 @@ class startFrame(tk.Tk):
         self.procesosMenu.add_command(label="Facturacion")
         self.procesosMenu.add_command(label="Producir prendas")
         self.procesosMenu.add_command(label="Pedir insumos")
-        self.procesosMenu.add_command(label="Ver el desglose economico de la empresa")
+        self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.cambiarVentana(deudas(self)))
 
         self.ayudaMenu = tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Ayuda", menu=self.ayudaMenu)
@@ -51,9 +52,9 @@ class startFrame(tk.Tk):
         self.areaPrincipal = frameInicial(self)
         self.areaPrincipal.pack(fill="both", expand=True, padx=7, pady=7)
 
-    def cambiarVentana(event, reemplazo:tk.Frame):
-        areaPrincipal.destroy()
-        areaPrincipal = reemplazo
+    def cambiarVentana(self,reemplazo:tk.Frame):
+        self.areaPrincipal.destroy()
+        self.areaPrincipal = reemplazo
         reemplazo.pack(fill="both", expand=True, padx=7, pady=7)
 
 

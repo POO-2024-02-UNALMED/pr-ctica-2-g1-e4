@@ -7,7 +7,7 @@ from src.gestorAplicacion.bodega.insumo import Insumo
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
-from src.uiMain import F1
+from src.uiMain import F1Financiera
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from typing import List
@@ -217,7 +217,7 @@ class Main:
             print("\nIngrese las deudas que quiere calcular")
             print("Ingrese 1 para proveedor, 2 para Banco o 3 para ambos")
             #eleccion = Main.nextIntSeguro()
-            eleccion=F1.Pedir()
+            eleccion=F1Financiera.Pedir()
         
         deuda_calculada = Deuda.calcularDeudaMensual(fecha, eleccion)
         balance_total = balance_costos_produccion - deuda_calculada
