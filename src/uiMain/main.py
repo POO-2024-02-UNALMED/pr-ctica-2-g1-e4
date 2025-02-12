@@ -7,7 +7,7 @@ from src.gestorAplicacion.bodega.insumo import Insumo
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
-from src.uiMain import F1Financiera
+from src.uiMain import F3Financiera
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from typing import List

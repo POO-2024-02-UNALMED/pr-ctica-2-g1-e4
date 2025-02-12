@@ -6,7 +6,7 @@ from tkinter.font import Font
 import sys
 from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
-from src.uiMain.F1Financiera import deudas
+from src.uiMain.F3Financiera import deudas
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -26,10 +26,6 @@ class startFrame(tk.Tk):
         # Llamar a la función de audio al abrir la ventana
         #reproducir_audio()
 
-        self.opciones = tk.Frame(self, height=25)
-        self.opciones.pack(side= "top", fill="x", padx=15, pady=2)
-
-
         self.barraMenus = tk.Menu(self)
         self.config(menu=self.barraMenus)
 
@@ -40,10 +36,11 @@ class startFrame(tk.Tk):
         self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
         self.procesosMenu.add_command(label="Despedir y reemplazar empleados")
-        self.procesosMenu.add_command(label="Facturacion")
-        self.procesosMenu.add_command(label="Producir prendas")
         self.procesosMenu.add_command(label="Pedir insumos")
         self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.cambiarVentana(deudas(self)))
+        self.procesosMenu.add_command(label="Facturacion")
+        self.procesosMenu.add_command(label="Producir prendas")
+    
 
         self.ayudaMenu = tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Ayuda", menu=self.ayudaMenu)
