@@ -1,6 +1,5 @@
 import tkinter as tk
 import os
-from PIL import Image, ImageTk
 
 
 class Aplication(tk.Frame):
@@ -113,13 +112,14 @@ class p4FotosEInicio(tk.Frame):
         self.config(highlightbackground="black",highlightthickness=2, padx=10, pady=10)
 
     def create_widgets(self):
-        self.archivoImagenSistema = Image.open(f"{os.getcwd()}\\src\\uiMain\\imagenes\\logoEcomoda.png")
-        self.imagenSistema =ImageTk.PhotoImage(self.archivoImagenSistema)
+        self.archivoImagenSistema = tk.PhotoImage(f"{os.getcwd()}\\src\\uiMain\\imagenes\\logoEcomoda.png")
+        self.imagenSistema =tk.PhotoImage(master=self,file=self.archivoImagenSistema)
+        img_resized = self.imagenSistema.subsample(2, 2)  
 
-        self.display = tk.Canvas(self, bd=0, highlightthickness=0)
-        self.display.create_image(0, 0, image=self.imagenSistema, anchor="nw", tags="IMG")
-        self.display.grid(row = 0, column = 0)
-        self.display.bind("<Configure>", lambda e: cambiarTamano(e, self.archivoImagenSistema,self.display ,self))
+        # Crear el label con la imagen redimensionada
+        foto = tk.Label(master=self, image=img_resized)
+        foto.image = img_resized  # Mantener la referencia de la imagen
+        foto.grid(row = 0, column = 0)
 
         self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command=self.window.destroy)
         self.inicio.grid(row = 1, column = 0)
@@ -128,10 +128,10 @@ class p4FotosEInicio(tk.Frame):
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=2)
 
-def cambiarTamano(event, imagen:Image,display:tk.Canvas ,contenedor:tk.Frame):
-    imagen = imagen.resize((contenedor.winfo_width(),contenedor.winfo_height()))
-    display.delete("IMG")
-    display.create_image(0, 0, image=ImageTk.PhotoImage(imagen), anchor="nw", tags="IMG")
+#def cambiarTamano(event, imagen:tk.PhotoImage,display:tk.Canvas ,contenedor:tk.Frame):
+    #imagen = imagen.resize((contenedor.winfo_width(),contenedor.winfo_height()))
+    #display.delete("IMG")
+    #display.create_image(0, 0, image=tk.PhotoImage(imagen), anchor="nw", tags="IMG")
     
 
 def bienvenida():
