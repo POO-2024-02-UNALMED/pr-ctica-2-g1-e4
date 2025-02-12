@@ -6,6 +6,7 @@ from tkinter.font import Font
 import sys
 from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
+from src.uiMain.F1Financiera import deudas
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -17,33 +18,45 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
     #pygame.mixer.music.load(ruta_audio)  # Cambia la ruta del archivo de audio
     #pygame.mixer.music.play()
 
-ventana = tk.Tk()
-ventana.title("Ecomoda")
-ventana.geometry("800x500")
-# Llamar a la función de audio al abrir la ventana
-#reproducir_audio()
+class startFrame(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Ecomoda")
+        self.geometry("800x500")
+        # Llamar a la función de audio al abrir la ventana
+        #reproducir_audio()
+
+        self.opciones = tk.Frame(self, height=25)
+        self.opciones.pack(side= "top", fill="x", padx=15, pady=2)
 
 
-opciones = tk.Frame(ventana, height=25)
-opciones.pack(side= "top", fill="x", padx=15, pady=2)
+        self.barraMenus = tk.Menu(self)
+        self.config(menu=self.barraMenus)
+
+        self.archivoMenu = tk.Menu(self.barraMenus, tearoff=0)
+        self.barraMenus.add_cascade(label="Archivo", menu=self.archivoMenu)
 
 
-barraMenus = tk.Menu(ventana)
-ventana.config(menu=barraMenus)
+        self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
+        self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
+        self.procesosMenu.add_command(label="Despedir y reemplazar empleados")
+        self.procesosMenu.add_command(label="Facturacion")
+        self.procesosMenu.add_command(label="Producir prendas")
+        self.procesosMenu.add_command(label="Pedir insumos")
+        self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.cambiarVentana(deudas(self)))
+
+        self.ayudaMenu = tk.Menu(self.barraMenus, tearoff=0)
+        self.barraMenus.add_cascade(label="Ayuda", menu=self.ayudaMenu)
+        self.ayudaMenu.add_command(label="Acerca de")
+
+        self.areaPrincipal = frameInicial(self)
+        self.areaPrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+
+    def cambiarVentana(self,reemplazo:tk.Frame):
+        self.areaPrincipal.destroy()
+        self.areaPrincipal = reemplazo
+        reemplazo.pack(fill="both", expand=True, padx=7, pady=7)
 
 
-ayudaMenu = tk.Menu(barraMenus, tearoff=0)
-barraMenus.add_cascade(label="Ayuda", menu=ayudaMenu)
-
-procesosMenu= tk.Menu(barraMenus, tearoff=0)
-barraMenus.add_cascade(label="Procesos y Consultas", menu=procesosMenu)
-
-archivoMenu = tk.Menu(barraMenus, tearoff=0)
-barraMenus.add_cascade(label="Archivo", menu=archivoMenu)
-
-
-areaPrincipal = frameInicial(ventana) # Será eliminado y reemplazado par alguna funcionalidad, cuando se use una 
-# de las opciones de procesosButton
-areaPrincipal.pack(fill="both", expand=True, padx=7, pady=7)
-
+ventana = startFrame()
 ventana.mainloop()
