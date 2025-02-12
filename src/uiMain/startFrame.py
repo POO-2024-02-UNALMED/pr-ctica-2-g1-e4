@@ -54,6 +54,6 @@ class startFrame(tk.Tk):
         self.areaPrincipal = reemplazo
         reemplazo.pack(fill="both", expand=True, padx=7, pady=7)
 
-
-ventana = startFrame()
-ventana.mainloop()
+def pasarAVentanaPrincipal():
+    ventana = startFrame()
+    ventana.mainloop()

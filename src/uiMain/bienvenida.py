@@ -1,6 +1,7 @@
 import tkinter as tk
 import os
 import random
+from src.uiMain.startFrame import pasarAVentanaPrincipal
 
 desarrolladores=[
     """ANDREA MERINO""",
@@ -24,6 +25,7 @@ class Aplication(tk.Frame):
         self.master = master
         self.pack(expand=1,fill="both")
         self.create_widgets()
+
 
     def create_widgets(self):
         self.titulo = tk.Label(self)
@@ -57,6 +59,38 @@ class infoDesarrolladores(tk.Frame):
         self.window = window
         self.config(highlightbackground="black",highlightthickness=2)
         self.create_widgets()
+        self.fotosDesarrolladores=[
+            [
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\1.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\2.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\3.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\4.png"),
+            ],
+            [
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\1.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\2.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\3.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\4.png"),
+            ],
+            [
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\1.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\2.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\3.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\4.png"),
+            ],
+            [
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\1.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\2.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\3.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\4.png"),
+            ],
+            [
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\1.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\2.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\3.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\4.png"),
+            ]
+        ]
 
     def cambiarHojaDeVida(self):
         if (self.desarrollador == 4):
@@ -68,6 +102,8 @@ class infoDesarrolladores(tk.Frame):
         nombre = desarrolladores[self.desarrollador]
         self.nombreDesarrollador.config(text=nombre)
         self.hojaDeVida.config(text=hojaDeVida)
+        fotosDesarrollador = self.fotosDesarrolladores[self.desarrollador]
+
 
         
 
@@ -94,14 +130,15 @@ class infoDesarrolladores(tk.Frame):
 
         self.contenedorAbajoP6 = tk.Frame(master = self, highlightbackground="black",highlightthickness=2)
         self.bettyYElOtro = tk.PhotoImage(master = self.window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\bettyYElOtro.png")
-        self.abajo = tk.Label(master = self.contenedorAbajoP6, image =self.bettyYElOtro) 
-        self.abajo.grid(row = 1, column = 0,sticky="nswe")
+        self.labelsImagenesDesarrollador=[]
+
+
         self.contenedorAbajoP6.grid(row = 1, column = 0, padx=10, pady=10, sticky="nswe")
         self.contenedorAbajoP6.rowconfigure(0,weight=10)
         self.contenedorAbajoP6.columnconfigure(0,weight=10)
 
         self.rowconfigure(0,weight=10)
-        self.rowconfigure(1,weight=10)
+        self.rowconfigure(1,weight=15)
 
         self.columnconfigure(0,weight=10)
 
@@ -134,7 +171,8 @@ funciona, y no sabemos porqué."""
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=10)
         self.columnconfigure(0,weight=10)
-        
+
+
 class p4FotosEInicio(tk.Frame):
     def __init__(self,window, master=None):
         super().__init__(master)
@@ -142,6 +180,11 @@ class p4FotosEInicio(tk.Frame):
         self.window = window
         self.create_widgets()
         self.config(highlightbackground="black",highlightthickness=2, padx=10, pady=10)
+
+    def pasarAPrincipal(self):
+        self.window.destroy()
+        pasarAVentanaPrincipal()
+
 
     def create_widgets(self):
         self.archivoImagenSistema = tk.PhotoImage(f"{os.getcwd()}\\src\\uiMain\\imagenes\\logoEcomoda.png")
@@ -153,7 +196,7 @@ class p4FotosEInicio(tk.Frame):
         foto.image = img_resized  # Mantener la referencia de la imagen
         foto.grid(row = 0, column = 0)
 
-        self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command=self.window.destroy)
+        self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command= lambda : self.pasarAPrincipal())
         self.inicio.grid(row = 1, column = 0)
 
         self.columnconfigure(0,weight=10)
