@@ -27,14 +27,20 @@ ventana.geometry("800x500")
 opciones = tk.Frame(ventana, height=25)
 opciones.pack(side= "top", fill="x", padx=15, pady=2)
 
-archivoButton = tk.Button(opciones, text="Archivo")
-archivoButton.place(relx=0, rely=0.5, relwidth=0.1, relheight=1, anchor="w")
 
-procesosButton = tk.Button(opciones, text="Procesos y Consultas")
-procesosButton.place(relx=0.1, rely=0.5, relwidth=0.2, relheight=1, anchor="w")
+barraMenus = tk.Menu(ventana)
+ventana.config(menu=barraMenus)
 
-ayudaButton = tk.Button(opciones, text="Ayuda")
-ayudaButton.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=1, anchor="w")
+
+ayudaMenu = tk.Menu(barraMenus, tearoff=0)
+barraMenus.add_cascade(label="Ayuda", menu=ayudaMenu)
+
+procesosMenu= tk.Menu(barraMenus, tearoff=0)
+barraMenus.add_cascade(label="Procesos y Consultas", menu=procesosMenu)
+
+archivoMenu = tk.Menu(barraMenus, tearoff=0)
+barraMenus.add_cascade(label="Archivo", menu=archivoMenu)
+
 
 areaPrincipal = frameInicial(ventana) # Será eliminado y reemplazado par alguna funcionalidad, cuando se use una 
 # de las opciones de procesosButton
