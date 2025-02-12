@@ -131,7 +131,8 @@ class infoDesarrolladores(tk.Frame):
         self.contenedorAbajoP6 = tk.Frame(master = self, highlightbackground="black",highlightthickness=2)
         self.bettyYElOtro = tk.PhotoImage(master = self.window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\bettyYElOtro.png")
         self.labelsImagenesDesarrollador=[]
-
+        self.labelsImagenesDesarrollador.append(tk.Label(master = self.contenedorAbajoP6, image=self.bettyYElOtro))
+        self.labelsImagenesDesarrollador[0].grid(row = 0, column = 0, padx=10, pady=10)
 
         self.contenedorAbajoP6.grid(row = 1, column = 0, padx=10, pady=10, sticky="nswe")
         self.contenedorAbajoP6.rowconfigure(0,weight=10)
@@ -172,7 +173,7 @@ funciona, y no sabemos porqué."""
         self.rowconfigure(1,weight=10)
         self.columnconfigure(0,weight=10)
 
-
+# Donde se muestran fotos del sistema
 class p4FotosEInicio(tk.Frame):
     def __init__(self,window, master=None):
         super().__init__(master)
@@ -180,21 +181,33 @@ class p4FotosEInicio(tk.Frame):
         self.window = window
         self.create_widgets()
         self.config(highlightbackground="black",highlightthickness=2, padx=10, pady=10)
+        self.imagenSistema=0
 
     def pasarAPrincipal(self):
         self.window.destroy()
         pasarAVentanaPrincipal()
 
+    def cambiarImagenSistema(self):
+        print("Hola")
+        if (self.imagenSistema==4):
+            self.imagenSistema=0
+        else:
+            self.imagenSistema+=1
+        
+        pathImagenSistema= f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\{self.imagenSistema}.png"
+        self.foto.config(image = tk.PhotoImage(master=self, file=pathImagenSistema))
+
+
 
     def create_widgets(self):
-        self.archivoImagenSistema = tk.PhotoImage(f"{os.getcwd()}\\src\\uiMain\\imagenes\\logoEcomoda.png")
-        self.imagenSistema =tk.PhotoImage(master=self,file=self.archivoImagenSistema)
-        img_resized = self.imagenSistema.subsample(2, 2)  
+        self.archivoImagenSistema = tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\0.png")
+        img_resized = self.archivoImagenSistema.subsample(2, 2)  
 
         # Crear el label con la imagen redimensionada
-        foto = tk.Label(master=self, image=img_resized)
-        foto.image = img_resized  # Mantener la referencia de la imagen
-        foto.grid(row = 0, column = 0)
+        self.foto = tk.Label(master=self, image=img_resized)
+        self.foto.image = img_resized  # Mantener la referencia de la imagen
+        self.foto.grid(row = 0, column = 0)
+        self.foto.bind("<Enter>", lambda e:  self.cambiarImagenSistema())
 
         self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command= lambda : self.pasarAPrincipal())
         self.inicio.grid(row = 1, column = 0)
@@ -203,11 +216,6 @@ class p4FotosEInicio(tk.Frame):
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=2)
 
-#def cambiarTamano(event, imagen:tk.PhotoImage,display:tk.Canvas ,contenedor:tk.Frame):
-    #imagen = imagen.resize((contenedor.winfo_width(),contenedor.winfo_height()))
-    #display.delete("IMG")
-    #display.create_image(0, 0, image=tk.PhotoImage(imagen), anchor="nw", tags="IMG")
-    
 
 def bienvenida():
     window = tk.Tk()
