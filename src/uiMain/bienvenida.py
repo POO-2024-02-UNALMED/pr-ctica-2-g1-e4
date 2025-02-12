@@ -1,6 +1,22 @@
 import tkinter as tk
 import os
+import random
 
+desarrolladores=[
+    """ANDREA MERINO""",
+    """JUANITA ROSERO:""",
+    """GELSY JACKELINE""",
+    """ANDRES DAVID""",
+    """LUIS ESTEBAN"""
+]
+
+hojasDeVida=[
+    """Personaje: Beatriz pinzón""",
+    """Personaje: Armando""",
+    """Personaje: Mariana valdez""",
+    """Personaje: Nicolas mora""",
+    """Personaje: Hermes pinzon"""
+]
 
 class Aplication(tk.Frame):
     def __init__(self, master=None):
@@ -42,18 +58,34 @@ class infoDesarrolladores(tk.Frame):
         self.config(highlightbackground="black",highlightthickness=2)
         self.create_widgets()
 
+    def cambiarHojaDeVida(self):
+        if (self.desarrollador == 4):
+            self.desarrollador = 0
+        else:
+            self.desarrollador += 1
+        
+        hojaDeVida = hojasDeVida[self.desarrollador]
+        nombre = desarrolladores[self.desarrollador]
+        self.nombreDesarrollador.config(text=nombre)
+        self.hojaDeVida.config(text=hojaDeVida)
+
+        
+
     def create_widgets(self):
 
         self.p5HojaDeVida = tk.Frame(master = self, highlightbackground="black",highlightthickness=2)
-        hojaDeVida = """Oye, te hablo desde la prisión
-En el mundo en que yo vivo Siempre hay cuatro esquinas
-Pero entre esquina y esquina Siempre habrá lo mismo
-Para mi no existe el cielo Ni Luna ni estrellas
-Para mi no alumbra el Sol Pa' mi todo es tinieblas"""
-        self.desarrolladores = tk.Label(master = self.p5HojaDeVida, text=hojaDeVida)
-        self.desarrolladores.grid(row = 1, column = 0, padx=10, pady=10)
-        self.tituloHojaDeVida = tk.Label(master = self.p5HojaDeVida, text="Hoja de vida de Beatriz")
-        self.tituloHojaDeVida.grid(row = 0, column = 0, padx=10, pady=10)
+        self.p5HojaDeVida.bind()
+        self.desarrollador = random.randrange(0,4)
+        hojaDeVida = hojasDeVida[self.desarrollador]
+        self.nombreDesarrollador = tk.Label(master = self.p5HojaDeVida, text=desarrolladores[self.desarrollador])
+        self.nombreDesarrollador.grid(row=0, column=0, padx=10, pady=10)
+        self.hojaDeVida = tk.Label(master = self.p5HojaDeVida, text=hojaDeVida)
+        self.hojaDeVida.grid(row = 1, column = 0, padx=10, pady=10)
+
+        cambiarHoja = lambda e : self.cambiarHojaDeVida()
+        self.p5HojaDeVida.bind("<Button-1>", cambiarHoja)
+        self.nombreDesarrollador.bind("<Button-1>", cambiarHoja)
+        self.hojaDeVida.bind("<Button-1>", cambiarHoja)
 
         self.p5HojaDeVida.grid(row = 0, column = 0, padx=10, pady=10, sticky="nswe")
         self.p5HojaDeVida.rowconfigure(0,weight=2)
