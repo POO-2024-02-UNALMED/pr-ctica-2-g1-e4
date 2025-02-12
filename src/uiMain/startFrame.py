@@ -1,26 +1,25 @@
 import os
 import tkinter as tk
 from tkinter.font import Font
-import winsound
-import pygame
 import sys
 from src.uiMain.main import Main
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
-pygame.mixer.init()
+#pygame.mixer.init()
 
 # Función para reproducir el audio
-def reproducir_audio():
-    ruta_audio = os.path.join("src", "uiMain", "imagenes", "EcomodaALaOrden.mp3")
-    pygame.mixer.music.load(ruta_audio)  # Cambia la ruta del archivo de audio
-    pygame.mixer.music.play()
+#def reproducir_audio():
+    #ruta_audio = os.path.join("src", "uiMain", "imagenes", "EcomodaALaOrden.mp3")
+    #pygame.mixer.music.load(ruta_audio)  # Cambia la ruta del archivo de audio
+    #pygame.mixer.music.play()
 
 ventana = tk.Tk()
 ventana.title("Ecomoda")
 ventana.geometry("800x500")
 # Llamar a la función de audio al abrir la ventana
-reproducir_audio()
+#reproducir_audio()
+
 
 opciones = tk.Frame(ventana, height=25)
 opciones.pack(side= "top", fill="x", padx=15, pady=2)

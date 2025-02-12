@@ -1516,6 +1516,7 @@ class Main:
 
 import src.uiMain.bienvenida as bienvenida
 # Este metodo termina al presionar "seguir a la ventana principal"
-bienvenida.bienvenida()
+if __name__=="__main__":
+    bienvenida.bienvenida()
 
 import src.uiMain.startFrame as startFrame
