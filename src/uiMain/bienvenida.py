@@ -59,6 +59,7 @@ class infoDesarrolladores(tk.Frame):
         self.window = window
         self.config(highlightbackground="black",highlightthickness=2)
         self.create_widgets()
+        self.desarrollador=0
         self.fotosDesarrolladores=[
             [
             tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\1.png"),
@@ -179,33 +180,30 @@ class p4FotosEInicio(tk.Frame):
         super().__init__(master)
         self.master = master
         self.window = window
+        self.imagenSistema=0
+        self.archivoImagenSistema = None
         self.create_widgets()
         self.config(highlightbackground="black",highlightthickness=2, padx=10, pady=10)
-        self.imagenSistema=0
 
     def pasarAPrincipal(self):
         self.window.destroy()
         pasarAVentanaPrincipal()
 
     def cambiarImagenSistema(self):
-        print("Hola")
         if (self.imagenSistema==4):
             self.imagenSistema=0
         else:
             self.imagenSistema+=1
         
         pathImagenSistema= f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\{self.imagenSistema}.png"
-        self.foto.config(image = tk.PhotoImage(master=self, file=pathImagenSistema))
+        self.archivoImagenSistema = tk.PhotoImage(master=self, file=pathImagenSistema).subsample(3,3)
+        self.foto.config(image = self.archivoImagenSistema )
 
 
 
     def create_widgets(self):
-        self.archivoImagenSistema = tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\0.png")
-        img_resized = self.archivoImagenSistema.subsample(2, 2)  
-
-        # Crear el label con la imagen redimensionada
-        self.foto = tk.Label(master=self, image=img_resized)
-        self.foto.image = img_resized  # Mantener la referencia de la imagen
+        self.archivoImagenSistema=  tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\0.png").subsample(3,3)
+        self.foto = tk.Label(master=self, image=self.archivoImagenSistema)
         self.foto.grid(row = 0, column = 0)
         self.foto.bind("<Enter>", lambda e:  self.cambiarImagenSistema())
 
