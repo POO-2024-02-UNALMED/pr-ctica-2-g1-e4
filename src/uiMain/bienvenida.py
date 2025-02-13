@@ -6,7 +6,7 @@ from src.uiMain.startFrame import pasarAVentanaPrincipal
 desarrolladores=[
     """ANDREA MERINO""",
     """JUANITA ROSERO:""",
-    """GELSY JACKELINE""",
+    """GELSY JACKELIN""",
     """ANDRES DAVID""",
     """LUIS ESTEBAN"""
 ]
@@ -29,9 +29,9 @@ class Aplication(tk.Frame):
 
     def create_widgets(self):
         self.titulo = tk.Label(self)
-        self.titulo["font"] = ("Arial", 30)
+        self.titulo["font"] = ("Arial", 30, "bold")
         self.titulo["text"] = "Inicio"
-        self.titulo.grid(row = 0, column = 0,columnspan=2, sticky="w")
+        self.titulo.grid(row = 0, column = 0,columnspan=2, sticky="w", padx=5)
 
         self.infoSistema = infoSistema(window = self.master, master = self)
         self.infoSistema.grid(row = 1, column = 1, sticky="sewn")
