@@ -49,15 +49,12 @@ class frameInicial(tk.Frame):
         label4.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
         label4.config(padx=200)  
 
-        self.entradaDia =tk.Entry(pedirFecha, bg="plum3")
+        self.entradaDia =tk.Entry(pedirFecha, textvariable=tk.StringVar(pedirFecha, value="d/ "), bg="plum3")
         self.entradaDia.place(relx=0.55, rely=0.8, relwidth=0.06, relheight=0.1, anchor="n")
-        self.entradaDia.insert(0,"d/ ")
-        self.entradaMes =tk.Entry(pedirFecha, bg="plum3")
+        self.entradaMes =tk.Entry(pedirFecha,  textvariable=tk.StringVar(pedirFecha, value="m/ "), bg="plum3")
         self.entradaMes.place(relx=0.615, rely=0.8, relwidth=0.06, relheight=0.1, anchor="n")
-        self.entradaMes.insert(0,"m/ ")
-        self.entradaAño =tk.Entry(pedirFecha, bg="plum3")
+        self.entradaAño =tk.Entry(pedirFecha, textvariable=tk.StringVar(pedirFecha, value="a/ "), bg="plum3")
         self.entradaAño.place(relx=0.6849, rely=0.8, relwidth=0.07, relheight=0.1, anchor="n")
-        self.entradaAño.insert(0,"a/ ")
 
 
         boton1=tk.Button(pedirFecha,text="Enviar")
