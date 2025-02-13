@@ -196,22 +196,18 @@ class p4FotosEInicio(tk.Frame):
             self.imagenSistema+=1
         
         pathImagenSistema= f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\{self.imagenSistema}.png"
-        self.archivoImagenSistema = tk.PhotoImage(master=self, file=pathImagenSistema)
+        self.archivoImagenSistema = tk.PhotoImage(master=self, file=pathImagenSistema).subsample(3,3)
         self.foto.config(image = self.archivoImagenSistema )
 
 
 
     def create_widgets(self):
-        self.archivoImagenSistema=  tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\0.png")
-        img_resized = self.archivoImagenSistema.subsample(2, 2)  
-
-        # Crear el label con la imagen redimensionada
-        self.foto = tk.Label(master=self, image=img_resized)
-        self.foto.image = img_resized  # Mantener la referencia de la imagen
+        self.archivoImagenSistema=  tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\0.png").subsample(3,3)
+        self.foto = tk.Label(master=self, image=self.archivoImagenSistema)
         self.foto.grid(row = 0, column = 0)
         self.foto.bind("<Enter>", lambda e:  self.cambiarImagenSistema())
 
-        self.inicio = tk.Button(master = self,text="Seguir a la ventana principal")
+        self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command= lambda : self.pasarAPrincipal())
         self.inicio.grid(row = 1, column = 0)
 
         self.columnconfigure(0,weight=10)
