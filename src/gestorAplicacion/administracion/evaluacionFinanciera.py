@@ -5,7 +5,7 @@
 
 from typing import List
 from src.gestorAplicacion.fecha import Fecha
-from src.gestorAplicacion.sede import Sede;
+from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.banco import Banco
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
@@ -14,12 +14,12 @@ from src.gestorAplicacion.administracion.rol import Rol
 
 class EvaluacionFinanciera:
     def __init__(self, balance: float, presidente: Empleado = None):
-        self.pago_personas = 0  # deudaBanco + deudaProveedores
+        self.pagoPersonas = 0  # deudaBanco + deudaProveedores
         self.balance = balance
         self.proyeccion = False
         self.presidente = presidente
         
-        if presidente and presidente.area_actual == Area.DIRECCION:
+        if presidente and presidente.areaActual == Area.DIRECCION:
             self.presidente = presidente
             presidente.evaluaciones.append(self)
 
@@ -27,36 +27,36 @@ class EvaluacionFinanciera:
         return f"El monto del balance a cargo de: {self.presidente} fue de: ${self.balance} pesos"
 
     @staticmethod
-    def estimadoVentasGastos(fecha_actual: 'Fecha', porcentaje_usuario: float, balance_anterior: 'EvaluacionFinanciera') -> int:
-        monto_ventas_pasado = 0
-        for sede in Sede.lista_sedes:
-            for venta in sede.historial_ventas:
-                if (fecha_actual.comparar_año(fecha_actual.año, venta.fecha_venta.año) and 
-                    fecha_actual.comparar_mes(fecha_actual.año - 1, venta.fecha_venta.año)):
-                    monto_ventas_pasado += venta.subtotal + venta.costo_envio
+    def estimadoVentasGastos(fechaActual: 'Fecha', porcentajeUsuario: float, balanceAnterior: 'EvaluacionFinanciera') -> int:
+        montoVentasPasado = 0
+        for sede in Sede.listaSedes:
+            for venta in sede.historialVentas:
+                if (fechaActual.compararAno(fechaActual.ano, venta.fechaVenta.ano) and 
+                    fechaActual.compararMes(fechaActual.ano - 1, venta.fechaVenta.ano)):
+                    montoVentasPasado += venta.subtotal + venta.costoEnvio
         
         # Predecimos las ventas con un porcentaje de fidelidad 
-        porcentaje_fidelidad_oro = 0.8 if balance_anterior.balance >= 0 else 0.5
-        if porcentaje_usuario == 0.0:
-            porcentaje_fidelidad_oro = 0.9
+        porcentajeFidelidadOro = 0.8 if balanceAnterior.balance >= 0 else 0.5
+        if porcentajeUsuario == 0.0:
+            porcentajeFidelidadOro = 0.9
         
-        porcentaje_fidelidad_plata = porcentaje_fidelidad_oro - 0.2
-        porcentaje_fidelidad_bronce = porcentaje_fidelidad_oro - 0.4
-        porcentaje_fidelidad_null = porcentaje_usuario
+        porcentajeFidelidadPlata = porcentajeFidelidadOro - 0.2
+        porcentajeFidelidadBronce = porcentajeFidelidadOro - 0.4
+        porcentajeFidelidadNull = porcentajeUsuario
         
-        prediccion_ventas = monto_ventas_pasado * (porcentaje_fidelidad_oro + 
-                                                    porcentaje_fidelidad_plata + 
-                                                    porcentaje_fidelidad_bronce + 
-                                                    porcentaje_fidelidad_null)
-        gastos_mensuales = GastoMensual.gastosMensuales(fecha_actual)
-        diferencia_estimada = round((prediccion_ventas - gastos_mensuales * 0.8) + (Banco.total_ahorros() * 0.05))
-        return diferencia_estimada
+        prediccionVentas = montoVentasPasado * (porcentajeFidelidadOro + 
+                                                porcentajeFidelidadPlata + 
+                                                porcentajeFidelidadBronce + 
+                                                porcentajeFidelidadNull)
+        gastosMensuales = GastoMensual.gastosMensuales(fechaActual)
+        diferenciaEstimada = round((prediccionVentas - gastosMensuales * 0.8) + (Banco.totalAhorros() * 0.05))
+        return diferenciaEstimada
 
     def getPagoPersonas(self) -> int:
-        return self.pago_personas
+        return self.pagoPersonas
 
     def setPagoPersonas(self, pago: int) -> None:
-        self.pago_personas = pago
+        self.pagoPersonas = pago
 
     def getBalance(self) -> float:
         return self.balance
@@ -74,13 +74,13 @@ class EvaluacionFinanciera:
         return self.presidente
 
     def setPresidente(self, presidente: Empleado) -> None:
-        if presidente.area_actual == Area.DIRECCION and presidente.rol == Rol.PRESIDENTE:
+        if presidente.areaActual == Area.DIRECCION and presidente.rol == Rol.PRESIDENTE:
             self.presidente = presidente
 
     @staticmethod
     def promedioBalance() -> float:
         promedio = 0
-        for evaluacion in Sede.get_evaluaciones_financieras():
+        for evaluacion in Sede.getEvaluacionesFinancieras():
             promedio += evaluacion.balance
-        promedio /= len(Sede.get_evaluaciones_financieras())
+        promedio /= len(Sede.getEvaluacionesFinancieras())
         return promedio

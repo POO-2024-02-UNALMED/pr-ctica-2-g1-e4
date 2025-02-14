@@ -11,13 +11,13 @@ class Banco:
     def __init__(self, cuenta, nombre, ahorro, interes):
         self.nombreEntidad = nombre
         self.nombreCuenta = cuenta
-        self.deuda=[]
+        self.deuda = []
         self.ahorroBanco = ahorro
         self.interes = interes
         Banco.listaBancos.append(self)
 
-    def actualizarDeuda(self, ndeuda):
-        self.deuda.append(ndeuda)
+    def actualizarDeuda(self, nuevaDeuda):
+        self.deuda.append(nuevaDeuda)
 
     def transaccion(self, monto: int):
         self.ahorroBanco += monto
@@ -33,33 +33,45 @@ class Banco:
     # ------------------- Getters y Setters -------------------
     def getNombreEntidad(self) -> str:
         return self.nombreEntidad
+
     def getNombreCuenta(self) -> str:
         return self.nombreCuenta
+
     def getDeuda(self) -> List:
         return self.deuda
+
     def getAhorroBanco(self) -> int:
         return self.ahorroBanco
+
     def getInteres(self) -> float:
         return self.interes
+
     @staticmethod
     def getListaBancos() -> List['Banco']:
         return Banco.listaBancos
-    def setNombreEntidad(self, nombre_banco: str):
-        self.nombreEntidad = nombre_banco
+
+    def setNombreEntidad(self, nombreBanco: str):
+        self.nombreEntidad = nombreBanco
+
     def setNombreCuenta(self, nombreCuenta: str):
         self.nombreCuenta = nombreCuenta
+
     def setAhorroBanco(self, ahorroBanco: int):
         self.ahorroBanco = ahorroBanco
+
     def setInteres(self, interes: float):
         self.interes = interes
+
     @staticmethod
     def setListaBancos(listaBancos: List['Banco']):
         if listaBancos is None:
             raise ValueError("La lista no puede ser nula")
         Banco.listaBancos = listaBancos
+
     @staticmethod
     def getCuentaPrincipal():
         return Banco.cuentaPrincipal
+
     @staticmethod
     def setCuentaPrincipal(cuentaPrincipal: 'Banco'):
         Banco.cuentaPrincipal = cuentaPrincipal

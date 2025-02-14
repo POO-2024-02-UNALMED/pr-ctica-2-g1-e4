@@ -7,67 +7,67 @@ from src.gestorAplicacion.bodega.pantalon import Pantalon
 from src.gestorAplicacion.bodega.camisa import Camisa
 
 class Deuda:
-    lista_deudas: List['Deuda'] = []
+    listaDeudas: List['Deuda'] = []
 
     def __init__(self, fecha: Fecha, valor: int, entidad: str, tipo: str, cuotas: int):
-        self.FECHA_CREACION = fecha
-        self.valorinicial_deuda = valor
+        self.fechaCreacion = fecha
+        self.valorInicialDeuda = valor
         self.entidad = entidad
-        self.tipo_entidad = tipo
+        self.tipoEntidad = tipo
         self.cuotas = cuotas
         self.interes = 0.0
-        self.estadode_pago = False
-        self.capital_pagado = 0
+        self.estadoDePago = False
+        self.capitalPagado = 0
 
-        Deuda.lista_deudas.append(self)
+        Deuda.listaDeudas.append(self)
 
         if tipo == "Banco":
             for banco in Banco.getListaBancos():
                 if banco.getNombreEntidad() == entidad:
                     self.interes = banco.getInteres()
 
-    def deudaActual(self, año: int) -> int:
-        deuda_acumulada = 0
-        if not self.estadode_pago:
-            años = self.cuotas - año - self.FECHA_CREACION.year
-            deuda_acumulada += round((self.valorinicial_deuda - self.capital_pagado) +
-                                      (self.valorinicial_deuda - self.capital_pagado) * self.interes * años)
-        return deuda_acumulada
+    def deudaActual(self, ano: int) -> int:
+        deudaAcumulada = 0
+        if not self.estadoDePago:
+            anos = self.cuotas - ano - self.fechaCreacion.year
+            deudaAcumulada += round((self.valorInicialDeuda - self.capitalPagado) +
+                                      (self.valorInicialDeuda - self.capitalPagado) * self.interes * anos)
+        return deudaAcumulada
 
-    def deudaMensual(self, año: int) -> int:
-        deuda_actual = self.deudaActual(año)
-        deuda_mensual = round(deuda_actual / (self.cuotas - (año - self.FECHA_CREACION.year)))
-        return deuda_mensual
+    def deudaMensual(self, ano: int) -> int:
+        deudaActual = self.deudaActual(ano)
+        deudaMensual = round(deudaActual / (self.cuotas - (ano - self.fechaCreacion.year)))
+        return deudaMensual
 
     @staticmethod
     def calcularDeudaMensual(fecha, eleccion: int) -> int:
         from src.gestorAplicacion.bodega.proveedor import Proveedor
-        deuda_calculada = 0
+        deudaCalculada = 0
         if eleccion == 1:
             for proveedor in Proveedor.getListaProveedores():
-                deuda_p = proveedor.get_deuda()
-                lista_insumos = Pantalon.get_tipo_insumo()
-                lista_insumos.extend(Camisa.getTipoInsumo())
-                if deuda_p is not None:
-                    if proveedor.get_insumo().get_nombre() in lista_insumos:
-                        deuda_calculada += deuda_p.deuda_mensual(fecha.year)
+                deudaP = proveedor.getDeuda()
+                listaInsumos = Pantalon.getTipoInsumo()
+                listaInsumos.extend(Camisa.getTipoInsumo())
+                if deudaP is not None:
+                    if proveedor.getInsumo().getNombre() in listaInsumos:
+                        deudaCalculada += deudaP.deudaMensual(fecha.year)
         elif eleccion == 2:
-            for banco in Banco.get_lista_bancos():
-                for deuda_b in banco.get_deuda():
-                    deuda_calculada += deuda_b.deuda_mensual(fecha.year)
+            for banco in Banco.getListaBancos():
+                for deudaB in banco.getDeuda():
+                    deudaCalculada += deudaB.deudaMensual(fecha.year)
         elif eleccion == 3:
             for proveedor in Proveedor.getListaProveedores():
-                deuda_p = proveedor.get_deuda()
-                lista_insumos = Pantalon.get_tipo_insumo()
-                lista_insumos.extend(Camisa.getTipoInsumo())
-                if deuda_p is not None:
-                    if proveedor.get_insumo().get_nombre() in lista_insumos:
-                        deuda_calculada += deuda_p.deuda_mensual(fecha.year)
-            for banco in Banco.get_lista_bancos():
-                for deuda_b in banco.get_deuda():
-                    deuda_calculada += deuda_b.deuda_mensual(fecha.year)
+                deudaP = proveedor.getDeuda()
+                listaInsumos = Pantalon.getTipoInsumo()
+                listaInsumos.extend(Camisa.getTipoInsumo())
+                if deudaP is not None:
+                    if proveedor.getInsumo().getNombre() in listaInsumos:
+                        deudaCalculada += deudaP.deudaMensual(fecha.year)
+            for banco in Banco.getListaBancos():
+                for deudaB in banco.getDeuda():
+                    deudaCalculada += deudaB.deudaMensual(fecha.year)
 
-        return deuda_calculada
+        return deudaCalculada
 
     @staticmethod
     def calcularCuotas(monto: int) -> int:
@@ -82,91 +82,106 @@ class Deuda:
         return 0
 
     def __str__(self):
-        return f"La deuda con el {self.tipo_entidad} {self.entidad} inició con un valor de: {self.valorinicial_deuda}\n" + \
+        return f"La deuda con el {self.tipoEntidad} {self.entidad} inició con un valor de: {self.valorInicialDeuda}\n" + \
                f"Con un interés de: {self.interes} y se debía pagar en: {self.cuotas} cuotas\n" + \
-               f"Por ahora se ha pagado {self.capital_pagado}"
+               f"Por ahora se ha pagado {self.capitalPagado}"
+
     @classmethod
     def getListaDeudas(cls):
-        return cls.lista_deudas
-    def getValorinicialDeuda(self):
-        return self.valorinicial_deuda
+        return cls.listaDeudas
+
+    def getValorInicialDeuda(self):
+        return self.valorInicialDeuda
+
     def getInteres(self):
         return self.interes
-    def getEstadodePago(self):
-        return self.estadode_pago
+
+    def getEstadoDePago(self):
+        return self.estadoDePago
+
     def getEntidad(self):
         return self.entidad
+
     def getTipoEntidad(self):
-        return self.tipo_entidad
+        return self.tipoEntidad
+
     def getCapitalPagado(self):
-        return self.capital_pagado
+        return self.capitalPagado
+
     def getFechaCreacion(self):
-        return self.FECHACREACION
+        return self.fechaCreacion
+
     @classmethod
-    def setListaDeudas(cls, lista_deudas):
-        if lista_deudas is None:
+    def setListaDeudas(cls, listaDeudas):
+        if listaDeudas is None:
             raise ValueError("La lista no puede ser nula")
-        cls.lista_deudas = lista_deudas
-    def setValorinicialDeuda(self, valorinicial_deuda):
-        self.valorinicial_deuda = valorinicial_deuda
+        cls.listaDeudas = listaDeudas
+
+    def setValorInicialDeuda(self, valorInicialDeuda):
+        self.valorInicialDeuda = valorInicialDeuda
+
     def setInteres(self, interes):
         self.interes = interes
-    def setEstadodePago(self, estadode_pago):
-        self.estadode_pago = estadode_pago
+
+    def setEstadoDePago(self, estadoDePago):
+        self.estadoDePago = estadoDePago
+
     def setEntidad(self, entidad):
         self.entidad = entidad
-    def setCapitalPagado(self, capital_pagado):
-        self.capital_pagado = capital_pagado
-    def actualizarDeuda(self, fecha, monto_deuda, cuotas):
-        deuda_actual = self.deudaActual(fecha.get_año())
-        self.valorinicial_deuda = monto_deuda + deuda_actual
-        self.capital_pagado = 0
+
+    def setCapitalPagado(self, capitalPagado):
+        self.capitalPagado = capitalPagado
+
+    def actualizarDeuda(self, fecha, montoDeuda, cuotas):
+        deudaActual = self.deudaActual(fecha.getAno())
+        self.valorInicialDeuda = montoDeuda + deudaActual
+        self.capitalPagado = 0
         self.cuotas = cuotas
 
     @staticmethod
     def compararDeudas(fecha):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
-        mayor_banco = None
-        mayor_proveedor = None
-        mayor_precio_b = 0
-        mayor_precio_p = 0
-        deuda_p = None
-        deuda_b = None
+        mayorBanco = None
+        mayorProveedor = None
+        mayorPrecioB = 0
+        mayorPrecioP = 0
+        deudaP = None
+        deudaB = None
 
-        for deuda in Deuda.lista_deudas:
+        for deuda in Deuda.listaDeudas:
             for proveedor in Proveedor.getListaProveedores():
-                if proveedor.get_deuda() is not None:
-                    deudap = proveedor.get_deuda().deuda_actual(fecha.get_año())
-                    if deudap != 0 and not proveedor.get_deuda().estadode_pago and deudap > mayor_precio_p:
-                        mayor_precio_p = deudap
-                        mayor_proveedor = proveedor
-                        deuda_p = proveedor.get_deuda()
+                if proveedor.getDeuda() is not None:
+                    deudaP = proveedor.getDeuda().deudaActual(fecha.getAno())
+                    if deudaP != 0 and not proveedor.getDeuda().estadoDePago and deudaP > mayorPrecioP:
+                        mayorPrecioP = deudaP
+                        mayorProveedor = proveedor
+                        deudaP = proveedor.getDeuda()
 
-            for banco in Banco.get_lista_bancos():
-                for deudaa in banco.get_deuda():
-                    if deudaa is not None:
-                        deudab = deudaa.deuda_actual(fecha.get_año())
-                        if deudab != 0 and not deudaa.estadode_pago and deudab > mayor_precio_b:
-                            mayor_precio_b = deudab
-                            mayor_banco = banco
-                            deuda_b = deudaa
+            for banco in Banco.getListaBancos():
+                for deudaA in banco.getDeuda():
+                    if deudaA is not None:
+                        deudaB = deudaA.deudaActual(fecha.getAno())
+                        if deudaB != 0 and not deudaA.estadoDePago and deudaB > mayorPrecioB:
+                            mayorPrecioB = deudaB
+                            mayorBanco = banco
+                            deudaB = deudaA
 
-        pago_p = deuda_p.pagar_deuda(fecha)
-        deuda_p.capital_pagado += deuda_p.deuda_actual(fecha.get_año()) - pago_p
-        pago_b = deuda_b.pagar_deuda(fecha)
-        deuda_b.capital_pagado += deuda_b.deuda_actual(fecha.get_año()) - pago_b
+        pagoP = deudaP.pagarDeuda(fecha)
+        deudaP.capitalPagado += deudaP.deudaActual(fecha.getAno()) - pagoP
+        pagoB = deudaB.pagarDeuda(fecha)
+        deudaB.capitalPagado += deudaB.deudaActual(fecha.getAno()) - pagoB
 
     def pagarDeuda(self, fecha):
-        pagar = self.deudaActual(fecha.get_año())
-        for banco in Banco.get_lista_bancos():
-            while banco.get_ahorro_banco() >= 3_000_000:
+        pagar = self.deudaActual(fecha.getAno())
+        for banco in Banco.getListaBancos():
+            while banco.getAhorroBanco() >= 3_000_000:
                 if pagar > 0 and pagar - 500_000 >= 0:
-                    banco.set_ahorro_banco(banco.get_ahorro_banco() - 500_000)
+                    banco.setAhorroBanco(banco.getAhorroBanco() - 500_000)
                     pagar -= 500_000
                 elif pagar > 0:
-                    banco.set_ahorro_banco(banco.get_ahorro_banco() - pagar)
+                    banco.setAhorroBanco(banco.getAhorroBanco() - pagar)
                 elif pagar == 0:
-                    self.estadode_pago = True
+                    self.estadoDePago = True
                     break
         return pagar
 

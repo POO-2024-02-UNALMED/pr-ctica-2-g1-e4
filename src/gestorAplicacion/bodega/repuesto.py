@@ -4,54 +4,54 @@ from .insumo import Insumo
 from .proveedor import Proveedor
 
 class Repuesto(Insumo):
-    listado_repuestos = []
+    listadoRepuestos = []
 
-    def __init__(self, nombre: str, proveedor: Proveedor, horas_de_vida_util: int, cantidad=None,sede=None):
+    def __init__(self, nombre: str, proveedor: Proveedor, horasDeVidaUtil: int, cantidad=None, sede=None):
         super().__init__(nombre, proveedor, cantidad, sede)
         self.nombre = nombre
-        self.horas_de_vida_util = horas_de_vida_util
+        self.horasDeVidaUtil = horasDeVidaUtil
         self.proveedor = proveedor
-        self.fechas_compra = []
-        self.precios_compra = []
-        self.horas_de_uso = 0
+        self.fechasCompra = []
+        self.preciosCompra = []
+        self.horasDeUso = 0
         self.estado = True
-        Repuesto.listado_repuestos.append(self)
+        Repuesto.listadoRepuestos.append(self)
 
     def getFechasCompra(self) -> List[Fecha]:
-        return self.fechas_compra
+        return self.fechasCompra
 
-    def getFechasCompra(self, fecha_compra: Fecha):
-        self.fechas_compra.append(fecha_compra)
+    def addFechaCompra(self, fechaCompra: Fecha):
+        self.fechasCompra.append(fechaCompra)
 
     def getPreciosCompra(self) -> List[int]:
-        return self.precios_compra
+        return self.preciosCompra
 
-    def setPreciosCompra(self, precio: int):
-        self.precios_compra.append(precio)
+    def addPrecioCompra(self, precio: int):
+        self.preciosCompra.append(precio)
 
     def getNombre(self) -> str:
         return self.nombre
 
     def getHorasDeVidaUtil(self) -> int:
-        return self.horas_de_vida_util
+        return self.horasDeVidaUtil
 
-    def setHorasDeUso(self, horas: int):
-        self.horas_de_uso += horas
+    def addHorasDeUso(self, horas: int):
+        self.horasDeUso += horas
 
     def getHorasDeUso(self) -> int:
-        return self.horas_de_uso
+        return self.horasDeUso
 
     @staticmethod
     def getListadoRepuestos() -> List['Repuesto']:
-        return Repuesto.listado_repuestos
+        return Repuesto.listadoRepuestos
 
     @staticmethod
-    def reemplazarListadoRepuestos(listado_repuestos: List['Repuesto']):
-        Repuesto.listado_repuestos = listado_repuestos
+    def reemplazarListadoRepuestos(listadoRepuestos: List['Repuesto']):
+        Repuesto.listadoRepuestos = listadoRepuestos
 
     @staticmethod
-    def setListadoRepuestos(repa_retirar: 'Repuesto'):
-        Repuesto.listado_repuestos.remove(repa_retirar)
+    def removeRepuesto(repuesto: 'Repuesto'):
+        Repuesto.listadoRepuestos.remove(repuesto)
 
     def setEstado(self):
         self.estado = False
@@ -60,17 +60,17 @@ class Repuesto(Insumo):
         return self.estado
 
     def copiar(self) -> 'Repuesto':
-        return Repuesto(self.nombre, self.proveedor, self.horas_de_vida_util,)
+        return Repuesto(self.nombre, self.proveedor, self.horasDeVidaUtil)
 
-    def copiar_con_proveedor(self, prov_barato: 'Proveedor') -> 'Repuesto':
-        return Repuesto(self.nombre, self.horas_de_vida_util, prov_barato)
+    def copiarConProveedor(self, provBarato: 'Proveedor') -> 'Repuesto':
+        return Repuesto(self.nombre, provBarato, self.horasDeVidaUtil)
 
     def calcularGastoMensual(self, fecha: Fecha) -> int:
-        gasto_mensual = 0
-        for i in range(len(self.fechas_compra)):
-            if self.fechas_compra[i].year == fecha.year and self.fechas_compra[i].month == fecha.month:
-                gasto_mensual += self.precios_compra[i]
-        return gasto_mensual
+        gastoMensual = 0
+        for i in range(len(self.fechasCompra)):
+            if self.fechasCompra[i].year == fecha.year and self.fechasCompra[i].month == fecha.month:
+                gastoMensual += self.preciosCompra[i]
+        return gastoMensual
 
     def usar(self, horas: int):
-        self.horas_de_uso += horas
+        self.horasDeUso += horas

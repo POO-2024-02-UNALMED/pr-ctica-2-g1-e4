@@ -6,44 +6,44 @@ from src.gestorAplicacion.bodega.insumo import Insumo
 from src.gestorAplicacion.administracion.deuda import Deuda
 
 class Proveedor:
-    lista_proveedores=[]
+    listaProveedores = []
 
     def __init__(self, precio: int = 0, nombre: str = "", insumo: Optional[Insumo] = None):
         self.precio = precio
         self.nombre = nombre
         self.descuento = 0.0
         self.deuda = None
-        self.tipo_insumo = insumo
-        Proveedor.lista_proveedores.append(self)
+        self.tipoInsumo = insumo
+        Proveedor.listaProveedores.append(self)
 
     @staticmethod
     def buscarPorNombreInsumo(nombre: str) -> Optional['Proveedor']:
-        for proveedor in Proveedor.lista_proveedores:
-            if proveedor.tipo_insumo.get_nombre() == nombre:
+        for proveedor in Proveedor.listaProveedores:
+            if proveedor.tipoInsumo.getNombre() == nombre:
                 return proveedor
         return None
 
     @staticmethod
     def costoDeLaCantidad(insumo: Insumo, cantidad: int) -> int:
-        precio_total = 0
-        for proveedor in Proveedor.lista_proveedores:
-            if proveedor.tipo_insumo == insumo:
+        precioTotal = 0
+        for proveedor in Proveedor.listaProveedores:
+            if proveedor.tipoInsumo == insumo:
                 bolsa = insumo  # Assuming Insumo is a Bolsa in this context
-                precio_total = (proveedor.precio - round(proveedor.precio * proveedor.descuento * bolsa.get_capacidad_maxima())) * cantidad
-        return precio_total
+                precioTotal = (proveedor.precio - round(proveedor.precio * proveedor.descuento * bolsa.getCapacidadMaxima())) * cantidad
+        return precioTotal
 
-    def unificarDeudasXProveedor(self, fecha: Fecha, monto_deuda: int):
-        cuotas = Deuda.calcularCuotas(monto_deuda + self.deuda.get_valor_inicial_deuda() - self.deuda.getCapitalPagado())
-        if self.deuda.getEntidad() == self.getNombre() and not self.deuda.get_estado_de_pago():
-            self.deuda.actualizarDeuda(fecha, monto_deuda, cuotas)
+    def unificarDeudasXProveedor(self, fecha: Fecha, montoDeuda: int):
+        cuotas = Deuda.calcularCuotas(montoDeuda + self.deuda.getValorInicialDeuda() - self.deuda.getCapitalPagado())
+        if self.deuda.getEntidad() == self.getNombre() and not self.deuda.getEstadoDePago():
+            self.deuda.actualizarDeuda(fecha, montoDeuda, cuotas)
 
     @classmethod
     def getListaProveedores(cls):
-        return cls.lista_proveedores
+        return cls.listaProveedores
 
     @classmethod
     def setListaProveedores(cls, lista):
-        cls.lista_proveedores = lista
+        cls.listaProveedores = lista
 
     def getDeuda(self) -> Optional[Deuda]:
         return self.deuda
@@ -52,10 +52,10 @@ class Proveedor:
         self.deuda = deuda
 
     def getInsumo(self) -> Optional[Insumo]:
-        return self.tipo_insumo
+        return self.tipoInsumo
 
     def setInsumo(self, insumo: Insumo):
-        self.tipo_insumo = insumo
+        self.tipoInsumo = insumo
 
     def getPrecio(self) -> int:
         return self.precio
@@ -76,4 +76,4 @@ class Proveedor:
         self.descuento = monto
 
     def __str__(self):
-        return f"El proveedor {self.nombre} vende insumos de tipo {self.tipo_insumo.getNombre()} y valen {self.precio}"
+        return f"El proveedor {self.nombre} vende insumos de tipo {self.tipoInsumo.getNombre()} y valen {self.precio}"

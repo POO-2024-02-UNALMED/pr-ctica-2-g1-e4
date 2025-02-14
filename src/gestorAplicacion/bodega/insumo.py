@@ -1,56 +1,56 @@
 from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
 
 class Insumo(GastoMensual):
-    precio_stock_total = 0
+    precioStockTotal = 0
 
-    def __init__(self, nombre, proveedor=None, cantidad=None, horas_de_vida_util=None, sede=None):
+    def __init__(self, nombre, proveedor=None, cantidad=None, horasDeVidaUtil=None, sede=None):
         self.nombre = nombre
         self.proveedor = proveedor
         self.sede = sede
         if cantidad is not None and proveedor is not None and sede is not None:
-            self.precio_compra = proveedor.getPrecio() * round(cantidad)
-            self.precio_x_unidad = round(self.precio_compra / cantidad)
-            self.ultimo_precio = self.precio_x_unidad
-            Insumo.precio_stock_total += self.precio_compra
-            sede.get_lista_insumos_bodega().append(self)
-            sede.get_cantidad_insumos_bodega().append(round(cantidad))
+            self.precioCompra = proveedor.getPrecio() * round(cantidad)
+            self.precioXUnidad = round(self.precioCompra / cantidad)
+            self.ultimoPrecio = self.precioXUnidad
+            Insumo.precioStockTotal += self.precioCompra
+            sede.getListaInsumosBodega().append(self)
+            sede.getCantidadInsumosBodega().append(round(cantidad))
         elif proveedor is not None:
-            self.precio_x_unidad = proveedor.getPrecio()
-        if horas_de_vida_util is not None:
-            self.horas_de_vida_util = horas_de_vida_util
+            self.precioXUnidad = proveedor.getPrecio()
+        if horasDeVidaUtil is not None:
+            self.horasDeVidaUtil = horasDeVidaUtil
 
     @staticmethod
     def gastoMensualClase(fecha):
-        from src.gestorAplicacion.sede import Sede;
-        gasto_insumo = 0
-        gasto_actual = 0
-        gasto_pasado = 0
-        for sede in Sede.get_lista_sedes():
-            for venta in sede.get_historial_ventas():
-                for insumo in venta.get_bolsas():
-                    lista = insumo.gasto_mensual_tipo(fecha, venta.get_fecha_venta(), insumo)
-                    gasto_actual += lista[0]
-                    gasto_pasado += lista[1]
-                    if gasto_actual != 0:
-                        gasto_insumo = gasto_actual
+        from src.gestorAplicacion.sede import Sede
+        gastoInsumo = 0
+        gastoActual = 0
+        gastoPasado = 0
+        for sede in Sede.getListaSedes():
+            for venta in sede.getHistorialVentas():
+                for insumo in venta.getBolsas():
+                    lista = insumo.gastoMensualTipo(fecha, venta.getFechaVenta(), insumo)
+                    gastoActual += lista[0]
+                    gastoPasado += lista[1]
+                    if gastoActual != 0:
+                        gastoInsumo = gastoActual
                     else:
-                        gasto_insumo = gasto_pasado
-        return gasto_insumo
+                        gastoInsumo = gastoPasado
+        return gastoInsumo
 
     def calcularGastoMensual(self):
         valor = 0
-        for i in range(len(self.sede.get_lista_insumos_bodega())):
-            if self.sede.get_lista_insumos_bodega()[i] == self:
-                valor = self.getPrecioIndividual() * self.sede.get_cantidad_insumos_bodega()[i]
+        for i in range(len(self.sede.getListaInsumosBodega())):
+            if self.sede.getListaInsumosBodega()[i] == self:
+                valor = self.getPrecioIndividual() * self.sede.getCantidadInsumosBodega()[i]
         return valor
 
     @staticmethod
     def getPrecioStockTotal():
-        return Insumo.precio_stock_total
+        return Insumo.precioStockTotal
 
     @staticmethod
-    def setPrecioStockTotal(precio_stock_total):
-        Insumo.precio_stock_total = precio_stock_total
+    def setPrecioStockTotal(precioStockTotal):
+        Insumo.precioStockTotal = precioStockTotal
 
     def getNombre(self):
         return self.nombre
@@ -71,19 +71,19 @@ class Insumo(GastoMensual):
         self.sede = sede
 
     def getPrecioCompra(self):
-        return self.precio_compra
+        return self.precioCompra
 
     def setPrecioCompra(self, precio):
-        self.precio_compra = precio
+        self.precioCompra = precio
 
     def getPrecioIndividual(self):
-        return self.precio_x_unidad
+        return self.precioXUnidad
 
     def setUltimoPrecio(self, precio):
-        self.ultimo_precio = precio
+        self.ultimoPrecio = precio
 
     def getUltimoPrecio(self):
-        return self.ultimo_precio
+        return self.ultimoPrecio
 
     def __str__(self):
         return f"Insumo: {self.nombre}"

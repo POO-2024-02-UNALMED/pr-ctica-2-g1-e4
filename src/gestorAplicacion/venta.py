@@ -2,35 +2,37 @@ from src.gestorAplicacion.fecha import Fecha
 import math
 
 class Venta:
-    codigos_regalo = []
-    montos_regalo = []
+    codigosRegalo = []
+    montosRegalo = []
     pesimismo = 0.02
 
-    def __init__(self, sede, fecha, cliente, asesor=None, encargado=None, articulos=None, subtotal=0, monto_pagado=0):
+    def __init__(self, sede, fecha, cliente=None, asesor=None, encargado=None, articulos=None, subtotal=0, montoPagado=0):
         self.sede = sede
-        self.fecha_venta = fecha
+        self.fechaVenta = fecha
         self.cliente = cliente
         self.asesor = asesor
         self.encargado = encargado
-        self.articulos = articulos if articulos else []
+        if articulos is not None:
+            self.articulos = articulos
         self.bolsas = []
-        self.monto_pagado = monto_pagado
+        self.montoPagado = montoPagado
         self.subtotal = subtotal
-        self.costo_envio = 0
+        self.costoEnvio = 0
         self.numero = 0
         if encargado:
             encargado.getVentasEncargadas().append(self)
-        if articulos:
+        if articulos is not None:
             for prenda in articulos:
-                sede.getPrendasInventadas().remove(prenda)
-        sede.actualizar_historial_ventas(self)
-        if monto_pagado:
-            sede.get_cuenta_sede().set_ahorro_banco(sede.get_cuenta_sede().get_ahorro_banco() + monto_pagado)
+                if prenda in sede.getPrendasInventadas():
+                    sede.getPrendasInventadas().remove(prenda)
+        sede.actualizarHistorialVentas(self)
+        if montoPagado:
+            sede.getCuentaSede().setAhorroBanco(sede.getCuentaSede().getAhorroBanco() + montoPagado)
 
     @staticmethod
     def acumuladoVentasAsesoradas(empleado):
         acumulado = 0
-        for venta in empleado.get_sede().get_historial_ventas():
+        for venta in empleado.getSede().getHistorialVentas():
             if venta.asesor == empleado:
                 acumulado += venta.subtotal
         return acumulado
@@ -39,14 +41,14 @@ class Venta:
     def cantidadVentasEncargadasEnMes(empleado, fecha):
         cantidad = 0
         for venta in empleado.getVentasEncargadas():
-            if venta.get_fecha_venta().get_mes() == fecha.get_mes() and venta.get_fecha_venta().get_ano() == fecha.get_ano():
+            if venta.getFechaVenta().getMes() == fecha.getMes() and venta.getFechaVenta().getAno() == fecha.getAno():
                 cantidad += 1
         return cantidad
 
     @staticmethod
     def acumuladoVentasEmpleadoEncargado(empleado):
         acumulado = 0
-        for venta in empleado.get_sede().get_historial_ventas():
+        for venta in empleado.getSede().getHistorialVentas():
             if venta.encargado == empleado:
                 acumulado += venta.subtotal
         return acumulado
@@ -54,47 +56,47 @@ class Venta:
     @staticmethod
     def calcularBalanceVentaProduccion(fecha):
         from src.gestorAplicacion.sede import Sede
-        valor_calculado = 0
+        valorCalculado = 0
         costos = 0
-        for sede in Sede.get_lista_sedes():
-            for venta in sede.get_historial_ventas():
-                if Fecha.comparar_ano(venta.get_fecha_venta().get_ano(), fecha.get_ano()) and Fecha.comparar_mes(venta.get_fecha_venta().get_mes(), fecha.get_mes()):
-                    monto = venta.monto_pagado
-                    descuento = venta.cliente.get_membresia().get_porcentaje_descuento()
-                    valor_calculado += round(monto + (monto * descuento) + venta.costo_envio)
+        for sede in Sede.getListaSedes():
+            for venta in sede.getHistorialVentas():
+                if Fecha.compararAno(venta.getFechaVenta().getAno(), fecha.getAno()) and Fecha.compararMes(venta.getFechaVenta().getMes(), fecha.getMes()):
+                    monto = venta.montoPagado
+                    descuento = venta.cliente.getMembresia().getPorcentajeDescuento()
+                    valorCalculado += round(monto + (monto * descuento) + venta.costoEnvio)
                     for prenda in venta.articulos:
-                        costos += prenda.calcular_costo_insumos()
-        balance_costos_produccion = valor_calculado - costos
-        return balance_costos_produccion
+                        costos += prenda.calcularCostoInsumos()
+        balanceCostosProduccion = valorCalculado - costos
+        return balanceCostosProduccion
 
     @staticmethod
     def blackFriday(fecha):
         from src.gestorAplicacion.sede import Sede
-        ano = fecha.get_ano() if fecha.get_mes() > 11 or (fecha.get_mes() == 11 and fecha.get_dia() >= 24) else fecha.get_ano() - 1
-        dias_black_friday = [Fecha(28, 11, ano), Fecha(29, 11, ano), Fecha(30, 11, ano)]
-        fechas_normales = [Fecha(23, 11, ano), Fecha(24, 11, ano), Fecha(25, 11, ano)]
-        monto_ventas_bf = 0
-        monto_ventas_comunes = 0
-        for sede in Sede.get_lista_sedes():
-            for venta in sede.get_historial_ventas():
+        ano = fecha.getAno() if fecha.getMes() > 11 or (fecha.getMes() == 11 and fecha.getDia() >= 24) else fecha.getAno() - 1
+        diasBlackFriday = [Fecha(28, 11, ano), Fecha(29, 11, ano), Fecha(30, 11, ano)]
+        fechasNormales = [Fecha(23, 11, ano), Fecha(24, 11, ano), Fecha(25, 11, ano)]
+        montoVentasBF = 0
+        montoVentasComunes = 0
+        for sede in Sede.getListaSedes():
+            for venta in sede.getHistorialVentas():
                 for i in range(3):
-                    if dias_black_friday[i].get_ano() == venta.get_fecha_venta().get_ano() and dias_black_friday[i].get_mes() == venta.get_fecha_venta().get_mes() and dias_black_friday[i].get_dia() == venta.get_fecha_venta().get_dia():
-                        monto_ventas_bf += venta.get_monto_pagado()
-                    elif fechas_normales[i].get_ano() == venta.get_fecha_venta().get_ano() and fechas_normales[i].get_mes() == venta.get_fecha_venta().get_mes() and fechas_normales[i].get_dia() == venta.get_fecha_venta().get_dia():
-                        monto_ventas_comunes += venta.get_monto_pagado()
-        diferencia = (monto_ventas_bf - monto_ventas_comunes) / float(monto_ventas_comunes)
+                    if diasBlackFriday[i].getAno() == venta.getFechaVenta().getAno() and diasBlackFriday[i].getMes() == venta.getFechaVenta().getMes() and diasBlackFriday[i].getDia() == venta.getFechaVenta().getDia():
+                        montoVentasBF += venta.getMontoPagado()
+                    elif fechasNormales[i].getAno() == venta.getFechaVenta().getAno() and fechasNormales[i].getMes() == venta.getFechaVenta().getMes() and fechasNormales[i].getDia() == venta.getFechaVenta().getDia():
+                        montoVentasComunes += venta.getMontoPagado()
+        diferencia = (montoVentasBF - montoVentasComunes) / float(montoVentasComunes)
         return round(min(diferencia / 3, 0.31), 3)
 
     @staticmethod
-    def filtrar_por_mes(ventas, fecha:Fecha):
-        ventas_mes = []
+    def filtrarPorMes(ventas, fecha: Fecha):
+        ventasMes = []
         for venta in ventas:
-            if venta.fecha_venta.año == fecha.año and venta.fecha_venta.mes == fecha.mes:
-                ventas_mes.append(venta)
-        return ventas_mes
+            if venta.fechaVenta.ano == fecha.ano and venta.fechaVenta.mes == fecha.mes:
+                ventasMes.append(venta)
+        return ventasMes
 
     @staticmethod
-    def filtrar_por_empleado(ventas, empleado):
+    def filtrarPorEmpleado(ventas, empleado):
         asesoradas = []
         for venta in ventas:
             if venta.asesor == empleado:
@@ -105,28 +107,28 @@ class Venta:
     def cantidadProducto(ventas, prenda):
         cantidad = 0
         for venta in ventas:
-            for articulo in venta.get_articulos():
-                if articulo.get_nombre() == prenda:
+            for articulo in venta.getArticulos():
+                if articulo.getNombre() == prenda:
                     cantidad += 1
         return cantidad
 
     @staticmethod
-    def predecirVentas(fecha_actual, sede, prenda):
-        ventas_mes1 = Venta.cantidadProducto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(3)), prenda)
-        ventas_mes2 = Venta.cantidadProducto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(2)), prenda)
-        pendiente_mes1a2 = ventas_mes2 - ventas_mes1
+    def predecirVentas(fechaActual, sede, prenda):
+        ventasMes1 = Venta.cantidadProducto(Venta.filtrar(sede.getHistorialVentas(), fechaActual.restarMeses(3)), prenda)
+        ventasMes2 = Venta.cantidadProducto(Venta.filtrar(sede.getHistorialVentas(), fechaActual.restarMeses(2)), prenda)
+        pendienteMes1a2 = ventasMes2 - ventasMes1
 
-        ventas_mes3 = Venta.cantidadProducto(Venta.filtrar(sede.get_historial_ventas(), fecha_actual.restar_meses(1)), prenda)
-        pendiente_mes2a3 = ventas_mes3 - ventas_mes2
+        ventasMes3 = Venta.cantidadProducto(Venta.filtrar(sede.getHistorialVentas(), fechaActual.restarMeses(1)), prenda)
+        pendienteMes2a3 = ventasMes3 - ventasMes2
 
-        pendiente_promedio = (pendiente_mes1a2 + pendiente_mes2a3) / 2
-        return math.ceil(ventas_mes3 + pendiente_promedio)
+        pendientePromedio = (pendienteMes1a2 + pendienteMes2a3) / 2
+        return math.ceil(ventasMes3 + pendientePromedio)
 
     @staticmethod
     def acumulado(ventas):
         acumulado = 0
         for venta in ventas:
-            acumulado += venta.monto_pagado
+            acumulado += venta.montoPagado
         return acumulado
 
     def getArticulos(self):
@@ -160,22 +162,22 @@ class Venta:
         self.sede = sede
 
     def getFechaVenta(self):
-        return self.fecha_venta
+        return self.fechaVenta
 
     def setFechaVenta(self, fecha):
-        self.fecha_venta = fecha
+        self.fechaVenta = fecha
 
     def getMontoPagado(self):
-        return self.monto_pagado
+        return self.montoPagado
 
     def setMontoPagado(self, monto):
-        if self.monto_pagado == 0:
-            self.sede.get_cuenta_sede().set_ahorro_banco(self.sede.get_cuenta_sede().get_ahorro_banco() + monto)
-            self.monto_pagado = monto
+        if self.montoPagado == 0:
+            self.sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() + monto)
+            self.montoPagado = monto
         else:
-            self.sede.get_cuenta_sede().set_ahorro_banco(self.sede.get_cuenta_sede().get_ahorro_banco() - self.monto_pagado)
-            self.monto_pagado = monto
-            self.sede.get_cuenta_sede().set_ahorro_banco(self.sede.get_cuenta_sede().get_ahorro_banco() - monto)
+            self.sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() - self.montoPagado)
+            self.montoPagado = monto
+            self.sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() - monto)
 
     def getCliente(self):
         return self.cliente
@@ -190,20 +192,20 @@ class Venta:
         self.numero = numero
 
     def getCostoEnvio(self):
-        return self.costo_envio
+        return self.costoEnvio
 
     def setCostoEnvio(self, monto):
-        self.costo_envio = monto
+        self.costoEnvio = monto
 
-    def getsubtotal(self):
+    def getSubtotal(self):
         return self.subtotal
 
-    def setsubtotal(self, monto):
+    def setSubtotal(self, monto):
         self.subtotal = monto
 
     @staticmethod
-    def setPesimismo(new_pesimism):
-        Venta.pesimismo = new_pesimism
+    def setPesimismo(newPesimismo):
+        Venta.pesimismo = newPesimismo
 
     @staticmethod
     def getPesimismo():
@@ -211,16 +213,16 @@ class Venta:
 
     @staticmethod
     def getCodigosRegalo():
-        return Venta.codigos_regalo
+        return Venta.codigosRegalo
 
     @staticmethod
     def setCodigosRegalo(codigo):
-        Venta.codigos_regalo = codigo
+        Venta.codigosRegalo = codigo
 
     @staticmethod
     def getMontosRegalo():
-        return Venta.montos_regalo
+        return Venta.montosRegalo
 
     @staticmethod
     def setMontosRegalo(montos):
-        Venta.montos_regalo = montos
+        Venta.montosRegalo = montos

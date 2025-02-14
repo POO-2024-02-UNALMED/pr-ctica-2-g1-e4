@@ -4,41 +4,41 @@ from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.venta import Venta
 
 class Area(Enum):
-    DIRECCION = ("Direccion", ["gerente","subgerente","director","subdirector"])
-    OFICINA = ("Oficina", ["computador","registradora"])
+    DIRECCION = ("Direccion", ["gerente", "subgerente", "director", "subdirector"])
+    OFICINA = ("Oficina", ["computador", "registradora"])
     VENTAS = ("Ventas", ["escaner"])
-    CORTE = ("Corte", ["maquina de coser","maquina de corte","plancha industrial"])
+    CORTE = ("Corte", ["maquina de coser", "maquina de corte", "plancha industrial"])
 
-    def __init__(self, nombre, Maquinaria):
+    def __init__(self, nombre, maquinaria):
         self.nombre = nombre
-        self.MaquinariaNecesaria = Maquinaria
-        self.rendimiento_deseado = 0
+        self.maquinariaNecesaria = maquinaria
+        self.rendimientoDeseado = 0
     
     def rendimientoDeseadoActual(sede, fecha):
-        rendimiento_sede = []
+        rendimientoSede = []
         for area in Area:
             if area == Area.DIRECCION:
-                area.rendimiento_deseado = (3 / 5) * 100
+                area.rendimientoDeseado = (3 / 5) * 100
             elif area == Area.OFICINA:
-                cantidad_empleados_oficina = sede.cantidad_por_area(Area.OFICINA)
-                area.rendimiento_deseado = len(Venta.filtrar(sede.getHistorialVentas(), fecha)) / cantidad_empleados_oficina
+                cantidadEmpleadosOficina = sede.cantidadPorArea(Area.OFICINA)
+                area.rendimientoDeseado = len(Venta.filtrar(sede.getHistorialVentas(), fecha)) / cantidadEmpleadosOficina
             elif area == Area.VENTAS:
-                monto_total = 0
+                montoTotal = 0
                 for venta in Venta.filtrar(sede.getHistorialVentas(), fecha):
-                    monto_pagado = venta.get_monto_pagado()
-                    monto_total += monto_pagado
-                cantidad_ventas = len(Venta.filtrar(sede.getHistorialVentas(), fecha))
-                area.rendimiento_deseado = (monto_total / cantidad_ventas) * 0.8
+                    montoPagado = venta.getMontoPagado()
+                    montoTotal += montoPagado
+                cantidadVentas = len(Venta.filtrar(sede.getHistorialVentas(), fecha))
+                area.rendimientoDeseado = (montoTotal / cantidadVentas) * 0.8
             elif area == Area.CORTE:
-                prendas_descartadas = 0
-                prendas_producidas = 0
+                prendasDescartadas = 0
+                prendasProducidas = 0
 
-                for empleado in sede.get_lista_empleados():
-                    prendas_descartadas += empleado.get_prendas_descartadas()
-                    prendas_producidas += empleado.get_prendas_producidas()
+                for empleado in sede.getListaEmpleados():
+                    prendasDescartadas += empleado.getPrendasDescartadas()
+                    prendasProducidas += empleado.getPrendasProducidas()
 
-                area.rendimiento_deseado = (prendas_producidas / (prendas_descartadas + prendas_producidas)) * 90
+                area.rendimientoDeseado = (prendasProducidas / (prendasDescartadas + prendasProducidas)) * 90
 
-            rendimiento_sede.append(area.rendimiento_deseado)
+            rendimientoSede.append(area.rendimientoDeseado)
 
-        return rendimiento_sede
+        return rendimientoSede

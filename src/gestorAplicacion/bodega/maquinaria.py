@@ -1,41 +1,40 @@
 from typing import List
-
 from ..sede import Sede
 
 class Maquinaria:
-    def __init__(self, nombre: str, valor: int, hora_revision: int, repuestos, sede: 'Sede'):
+    def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos, sede: 'Sede'):
         self.nombre = nombre
         self.user = None
-        self.horas_uso = 0
+        self.horasUso = 0
         self.estado = True
         self.asignable = True
         self.mantenimiento = False
         self.sede = sede
         self.valor = valor
-        self.horas_visita_tecnico = 0
-        self.hora_revision = hora_revision
+        self.horasVisitaTecnico = 0
+        self.horaRevision = horaRevision
         self.repuestos = repuestos
-        self.list_proveedores_baratos = []
-        self.ult_fecha_revision = None
+        self.listProveedoresBaratos = []
+        self.ultFechaRevision = None
 
     def copiar(self):
-        nuevos_repuestos = [rep.copiar() for rep in self.repuestos]
-        return Maquinaria(self.nombre, self.valor, self.hora_revision, nuevos_repuestos, self.sede)
+        nuevosRepuestos = [rep.copiar() for rep in self.repuestos]
+        return Maquinaria(self.nombre, self.valor, self.horaRevision, nuevosRepuestos, self.sede)
 
     @staticmethod
     def gastoMensualClase(fecha) -> int:
-        gasto_maquinaria = 0
-        for sede in Sede.get_lista_sedes():
-            for maquinaria in sede.get_lista_maquinas():
+        gastoMaquinaria = 0
+        for sede in Sede.getListaSedes():
+            for maquinaria in sede.getListaMaquinas():
                 for repuesto in maquinaria.repuestos:
-                    gasto_maquinaria += repuesto.calcular_gasto_mensual(fecha)
-        return gasto_maquinaria
+                    gastoMaquinaria += repuesto.calcularGastoMensual(fecha)
+        return gastoMaquinaria
 
     @staticmethod
     def remuneracionDanos(empleado):
         from src.gestorAplicacion.administracion.empleado import Empleado
         remuneracion = 0
-        for maq in empleado.sede.get_lista_maquinas():
+        for maq in empleado.sede.getListaMaquinas():
             if maq.user == empleado and maq.estado:
                 remuneracion += maq.valor
         return remuneracion
@@ -43,7 +42,7 @@ class Maquinaria:
     @staticmethod
     def liberarMaquinariaDe(empleado):
         from src.gestorAplicacion.administracion.empleado import Empleado
-        for maq in empleado.sede.get_lista_maquinas():
+        for maq in empleado.sede.getListaMaquinas():
             if maq.user == empleado:
                 maq.user = None
 
@@ -53,104 +52,104 @@ class Maquinaria:
     def getRepuestos(self):
         return self.repuestos
 
-    def setRepuestos(self, repa_cambiar):
-        self.repuestos.remove(repa_cambiar)
+    def setRepuestos(self, repaCambiar):
+        self.repuestos.remove(repaCambiar)
 
     def getHoraRevision(self) -> int:
-        return self.hora_revision
+        return self.horaRevision
 
     def getHorasUso(self) -> int:
-        return self.horas_uso
+        return self.horasUso
 
     def getSede(self) -> 'Sede':
         return self.sede
 
     def agruparMaquinasDisponibles(self, fecha) -> List['Maquinaria']:
         from .repuesto import Repuesto
-        maq_disponibles = []
-        todos_prov_baratos = []
+        maqDisponibles = []
+        todosProvBaratos = []
         encontrado = False
-        proveedor_barato = None
-        for cada_sede in Sede.get_lista_sedes():
-            for cada_maquina in cada_sede.get_lista_maquinas():
-                if (cada_maquina.get_hora_revision() - cada_maquina.get_horas_uso()) > 0:
-                    cada_maquina.mantenimiento = False
-                    for cada_repuesto in cada_maquina.get_repuestos():
-                        if (cada_repuesto.get_horas_de_vida_util() - cada_repuesto.get_horas_de_uso()) <= 0:
-                            todos_prov_baratos = self.encontrarProveedoresBaratos()
-                            for el_mas_economico in todos_prov_baratos:
-                                if el_mas_economico.getInsumo().get_nombre().lower() == cada_repuesto.get_nombre().lower():
-                                    proveedor_barato = el_mas_economico
+        proveedorBarato = None
+        for cadaSede in Sede.getListaSedes():
+            for cadaMaquina in cadaSede.getListaMaquinas():
+                if (cadaMaquina.getHoraRevision() - cadaMaquina.getHorasUso()) > 0:
+                    cadaMaquina.mantenimiento = False
+                    for cadaRepuesto in cadaMaquina.getRepuestos():
+                        if (cadaRepuesto.getHorasDeVidaUtil() - cadaRepuesto.getHorasDeUso()) <= 0:
+                            todosProvBaratos = self.encontrarProveedoresBaratos()
+                            for elMasEconomico in todosProvBaratos:
+                                if elMasEconomico.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
+                                    proveedorBarato = elMasEconomico
                                     break
-                            for sede_creada in Sede.get_lista_sedes():
-                                if sede_creada.get_cuenta_sede().get_ahorro_banco() >= proveedor_barato.getInsumo().get_precio_individual():
-                                    self.donde_retirar()
-                                    cada_maquina.set_repuestos(cada_repuesto)
-                                    Repuesto.setListadoRepuestos(cada_repuesto)
-                                    cada_maquina.get_repuestos().add(cada_repuesto.copiar(proveedor_barato))
-                                    cada_repuesto.set_precio_compra(proveedor_barato.getPrecio())
-                                    cada_repuesto.set_fechas_compra(fecha)
+                            for sedeCreada in Sede.getListaSedes():
+                                if sedeCreada.getCuentaSede().getAhorroBanco() >= proveedorBarato.getInsumo().getPrecioIndividual():
+                                    self.dondeRetirar()
+                                    cadaMaquina.setRepuestos(cadaRepuesto)
+                                    Repuesto.setListadoRepuestos(cadaRepuesto)
+                                    cadaMaquina.getRepuestos().add(cadaRepuesto.copiar(proveedorBarato))
+                                    cadaRepuesto.setPrecioCompra(proveedorBarato.getPrecio())
+                                    cadaRepuesto.setFechasCompra(fecha)
                                     encontrado = True
                                     break
                             if not encontrado:
-                                cada_repuesto.set_estado()
+                                cadaRepuesto.setEstado()
                 else:
-                    cada_maquina.mantenimiento = True
-                    cada_maquina.ult_fecha_revision = fecha
+                    cadaMaquina.mantenimiento = True
+                    cadaMaquina.ultFechaRevision = fecha
 
                 pista = 0
-                for rep in cada_maquina.get_repuestos():
-                    if rep.is_estado():
+                for rep in cadaMaquina.getRepuestos():
+                    if rep.isEstado():
                         pista += 1
-                if len(cada_maquina.get_repuestos()) == pista:
-                    cada_maquina.estado = True
+                if len(cadaMaquina.getRepuestos()) == pista:
+                    cadaMaquina.estado = True
                 else:
-                    cada_maquina.estado = False
+                    cadaMaquina.estado = False
 
-                if not cada_maquina.mantenimiento and cada_maquina.estado:
-                    maq_disponibles.append(cada_maquina)
+                if not cadaMaquina.mantenimiento and cadaMaquina.estado:
+                    maqDisponibles.append(cadaMaquina)
 
-                cada_maquina.mantenimiento = False
+                cadaMaquina.mantenimiento = False
 
-        return maq_disponibles
+        return maqDisponibles
 
     def encontrarProveedoresBaratos(self):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from .repuesto import Repuesto
-        for cada_repuesto in Repuesto.getListadoRepuestos():
-            proveedor_barato = None
+        for cadaRepuesto in Repuesto.getListadoRepuestos():
+            proveedorBarato = None
             for proveedores in Proveedor.getListaProveedores():
-                if proveedores.get_insumo().get_nombre().lower() == cada_repuesto.getNombre().lower():
-                    if proveedor_barato is None:
-                        proveedor_barato = proveedores
-                    elif proveedores.get_insumo().get_precio_individual() <= proveedor_barato.get_insumo().get_precio_individual():
-                        proveedor_barato = proveedores
-            self.list_proveedores_baratos.append(proveedor_barato)
-        return self.list_proveedores_baratos
+                if proveedores.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
+                    if proveedorBarato is None:
+                        proveedorBarato = proveedores
+                    elif proveedores.getInsumo().getPrecioIndividual() <= proveedorBarato.getInsumo().getPrecioIndividual():
+                        proveedorBarato = proveedores
+            self.listProveedoresBaratos.append(proveedorBarato)
+        return self.listProveedoresBaratos
 
     @staticmethod
     def asignarMaquinaria(emp):
-        maquinaria_por_asignar = list(emp.get_area_actual().get_maquinaria_necesaria())
-        for maq in emp.sede.get_lista_maquinas():
-            if maq.nombre in maquinaria_por_asignar or maq.user is None:
+        maquinariaPorAsignar = list(emp.getAreaActual().getMaquinariaNecesaria())
+        for maq in emp.sede.getListaMaquinas():
+            if maq.nombre in maquinariaPorAsignar or maq.user is None:
                 maq.user = emp
-                maquinaria_por_asignar.remove(maq.nombre)
+                maquinariaPorAsignar.remove(maq.nombre)
                 break
 
     def __str__(self):
-        return f"La {self.nombre} operada por {self.user.nombre} ubicada en la sede {self.sede.nombre} tiene {self.horas_uso} horas de uso"
+        return f"La {self.nombre} operada por {self.user.nombre} ubicada en la sede {self.sede.nombre} tiene {self.horasUso} horas de uso"
 
     @staticmethod
     def seleccionarDeTipo(sede, tipo):
         import random
-        random.shuffle(sede.get_lista_maquinas())
-        for maq in sede.get_lista_maquinas():
+        random.shuffle(sede.getListaMaquinas())
+        for maq in sede.getListaMaquinas():
             if maq.nombre == tipo:
                 return maq
         return None
 
     def usar(self, horas: int):
-        self.horas_uso += horas
+        self.horasUso += horas
         for repuesto in self.repuestos:
             repuesto.usar(horas)
 
@@ -164,4 +163,4 @@ class Maquinaria:
     def dePantalon(self):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         return self.nombre in Pantalon.getMaquinariaNecesaria()
-    
+

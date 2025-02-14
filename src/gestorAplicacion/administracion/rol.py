@@ -10,8 +10,8 @@ class Rol(Enum):
     PLANTA = 1500000
     VENDEDOR = 1000000
 
-    def __init__(self, initial_salary):
-        self.initial_salary = initial_salary
+    def __init__(self, initialSalary):
+        self.initialSalary = initialSalary
 
     def getSalarioInicial(self):
-        return self.initial_salary
+        return self.initialSalary

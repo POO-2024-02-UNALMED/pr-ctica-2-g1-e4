@@ -1,8 +1,8 @@
 class Fecha:
-    def __init__(self, dia=1, mes=1, año=2000):
+    def __init__(self, dia=1, mes=1, ano=2000):
         self.dia = dia
         self.mes = mes
-        self.año = año
+        self.ano = ano
 
     def getDia(self):
         return self.dia
@@ -16,43 +16,42 @@ class Fecha:
     def setMes(self, mes):
         self.mes = mes
 
-    def getAño(self):
-        return self.año
+    def getAno(self):
+        return self.ano
 
-    def setAño(self, año):
-        self.año = año
-
+    def setAno(self, ano):
+        self.ano = ano
 
     def restarMeses(self, meses):
         mes = self.mes - meses
-        año = self.año
+        ano = self.ano
         if mes <= 0:
             mes += 12
-            año -= 1
-        return Fecha(self.dia, mes, año)
+            ano -= 1
+        return Fecha(self.dia, mes, ano)
 
     @staticmethod
     def compararFecha(fecha1, fecha2):
-        return (Fecha.comparar_año(fecha1.año, fecha2.año) and
-                Fecha.comparar_mes(fecha1.mes, fecha2.mes) and
-                Fecha.comparar_dia(fecha1.dia, fecha2.dia))
+        return (Fecha.compararAno(fecha1.ano, fecha2.ano) and
+                Fecha.compararMes(fecha1.mes, fecha2.mes) and
+                Fecha.compararDia(fecha1.dia, fecha2.dia))
 
     def diasHasta(self, hasta):
-        dias = (hasta.año - self.año) * 365
+        dias = (hasta.ano - self.ano) * 365
         dias += (hasta.mes - self.mes) * 30
         dias += hasta.dia - self.dia
         return dias
 
     def diaSiguiente(self):
-        nueva_fecha = Fecha(self.dia, self.mes, self.año)
-        nueva_fecha.dia += 1
-        if nueva_fecha.dia > 31:
-            nueva_fecha.dia = 1
-            nueva_fecha.mes += 1
-            if nueva_fecha.mes > 12:
-                nueva_fecha.mes = 1
-                nueva_fecha.año += 1
-        return nueva_fecha
+        nuevaFecha = Fecha(self.dia, self.mes, self.ano)
+        nuevaFecha.dia += 1
+        if nuevaFecha.dia > 31:
+            nuevaFecha.dia = 1
+            nuevaFecha.mes += 1
+            if nuevaFecha.mes > 12:
+                nuevaFecha.mes = 1
+                nuevaFecha.ano += 1
+        return nuevaFecha
 
     def __str__(self):
-        return f"Día: {self.dia} Mes: {self.mes} Año: {self.año}"
+        return f"Día: {self.dia} Mes: {self.mes} Año: {self.ano}"
