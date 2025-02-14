@@ -13,7 +13,7 @@ def surtir(ventana:tk.Frame):
     tituloF5.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
     ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
-    descripcionF5 = tk.Label(frame1, text="Realiza un proceso de facturación, surte insumos, produce prendas, gestiona a tus empleados y revisa el estado financiero de tu empresa :)", relief="ridge")
+    descripcionF5 = tk.Label(frame1, text="Se registra la producción de prendas y actualiza su inventario: Se toma la cantidad necesaria del stock de materiales para fabricar nuevas prendas y se actualizan los datos, tanto de lo que se descontó de Stock como lo que se agregó a la cantidad de pendas.", relief="ridge")
     descripcionF5.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
 
     frame2 = tk.Frame(framePrincipal, bg="light gray")

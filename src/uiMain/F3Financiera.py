@@ -14,7 +14,7 @@ def deudas(ventana:tk.Frame):
     tituloF3.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
     ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
-    descripcionF3 = tk.Label(frame1, text="Realiza un proceso de facturación, surte insumos, produce prendas, gestiona a tus empleados y revisa el estado financiero de tu empresa :)", relief="ridge")
+    descripcionF3 = tk.Label(frame1, text="Se realiza una evaluación del estado financiero de la empresa haciendo el cálculo de los activos y los pasivos, para indicarle al usuario qué tan bien administrada está, mostrandole los resulatdos y su significado", relief="ridge")
     descripcionF3.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
 
     frame2 = tk.Frame(framePrincipal, bg="light gray")
