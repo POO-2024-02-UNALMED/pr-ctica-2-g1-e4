@@ -62,34 +62,34 @@ class infoDesarrolladores(tk.Frame):
         self.desarrollador=0
         self.fotosDesarrolladores=[
             [
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\1.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\2.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\3.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\4.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\1.jpg"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\2.jpeg"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\3.jpg"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\4.jpg"),
             ],
             [
             tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\1.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\2.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\2.jpeg"),
             tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\3.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\4.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\4.jpeg"),
             ],
             [
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\1.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\1.jpg"),
             tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\2.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\3.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\3.jpg"),
             tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\4.png"),
             ],
             [
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\1.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\2.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\3.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\4.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\1.jpeg"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\2.jpeg"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\3.jpeg"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\4.jpeg"),
             ],
             [
             tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\1.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\2.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\2.jpeg"),
             tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\3.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\4.png"),
+            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\4.jpeg"),
             ]
         ]
 
