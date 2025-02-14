@@ -6,7 +6,8 @@ from .proveedor import Proveedor
 class Repuesto(Insumo):
     listado_repuestos = []
 
-    def __init__(self, nombre: str, horas_de_vida_util: int, proveedor: Proveedor):
+    def __init__(self, nombre: str, proveedor: Proveedor, horas_de_vida_util: int, cantidad=None,sede=None):
+        super().__init__(nombre, proveedor, cantidad, sede)
         self.nombre = nombre
         self.horas_de_vida_util = horas_de_vida_util
         self.proveedor = proveedor
@@ -59,7 +60,7 @@ class Repuesto(Insumo):
         return self.estado
 
     def copiar(self) -> 'Repuesto':
-        return Repuesto(self.nombre, self.horas_de_vida_util, self.proveedor)
+        return Repuesto(self.nombre, self.proveedor, self.horas_de_vida_util,)
 
     def copiar_con_proveedor(self, prov_barato: 'Proveedor') -> 'Repuesto':
         return Repuesto(self.nombre, self.horas_de_vida_util, prov_barato)

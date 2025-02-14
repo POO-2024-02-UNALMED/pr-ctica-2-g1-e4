@@ -21,7 +21,7 @@ class EvaluacionFinanciera:
         
         if presidente and presidente.area_actual == Area.DIRECCION:
             self.presidente = presidente
-            presidente.evaluaciones_financieras.append(self)
+            presidente.evaluaciones.append(self)
 
     def informe(self) -> str:
         return f"El monto del balance a cargo de: {self.presidente} fue de: ${self.balance} pesos"

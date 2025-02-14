@@ -1,5 +1,8 @@
 from src.gestorAplicacion.administracion.banco import Banco
 from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
+from src.gestorAplicacion.administracion.rol import Rol
+from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.persona import Persona
 from ..fecha import Fecha
 from ..sede import Sede
@@ -8,12 +11,23 @@ from .area import Area
 from typing import List
 
 class Empleado(Persona,GastoMensual):
-    def __init__(self, nombre: str , area_actual:Area, traslados:int, areas:List[Area], sede:Sede):
-        self.nombre = nombre
+    def __init__(self, area_actual:Area, fecha: Fecha, sede: Sede, nombre: str, documento:int, rol: Rol, experiencia: int, membresia: Membresia, maquinaria: Maquinaria):
+        super().__init__(nombre,  documento, rol, experiencia, True, membresia)
         self.area_actual = area_actual
-        self.traslados = traslados
-        self.areas = areas
+        self.traslados = None
+        self.areas = None
         self.sede = sede
+        self.maquinaria = maquinaria
+        self.fecha_contratacion = fecha
+        def modificarBonificacion(self, bonificacion):
+            self.bonificacion += bonificacion
+            
+        self.prendas_descartadas=0
+        self.prendas_producidas=0
+        self.pericia=0
+        self.bonificacion = 0
+        self.evaluaciones=[]
+        self.ventas_encargadas=[]
 
 
     def calcularRendimiento(self, fecha: Fecha) -> float:
@@ -100,11 +114,96 @@ class Empleado(Persona,GastoMensual):
             Banco.get_cuenta_principal().transaccion(a_pagar)
         else:
             mensajes.append("Perdonenos pero disculpenos: No se ha podido recibir la remuneración de daños, no hay cuenta principal, sugerimos añadir una.")
-        self.modificar_bonificacion(a_pagar * -1)
+        self.modificarBonificacion(a_pagar * -1)
         Maquinaria.liberarMaquinariaDe(self)
 
         self.traslados += 1
-        self.set_sede(sede_nueva)
+        self.setSede(sede_nueva)
 
         Maquinaria.asignarMaquinaria(self)
         return mensajes
+
+    def __str__(self):
+        return f"{super().__str__()}\nArea: {self.area_actual} - Sede: {self.sede} - Traslados: {self.traslados}"
+
+    def modificarBonificacion(self, bonificacion):
+        self.bonificacion += bonificacion
+
+    def getTraslados(self):
+        return self.traslados
+
+    def setTraslados(self, traslados):
+        self.traslados = traslados
+
+    def getPrendasDescartadas(self):
+        return self.prendas_descartadas
+
+    def setPrendasDescartadas(self, prendas):
+        self.prendas_descartadas = prendas
+
+    def getPrendasProducidas(self):
+        return self.prendas_producidas
+
+    def setPrendasProducidas(self, prendas_producidas):
+        self.prendas_producidas = prendas_producidas
+
+    def getPericia(self):
+        return self.pericia
+
+    def setPericia(self, pericia):
+        self.pericia = pericia
+
+    def getAreaActual(self):
+        return self.area_actual
+
+    def setAreaActual(self, area):
+        self.area_actual = area
+
+    def getFechaContratacion(self):
+        return self.fecha_contratacion
+
+    def setFechaContratacion(self, fecha):
+        self.fecha_contratacion = fecha
+
+    def getSede(self):
+        return self.sede
+
+    def setSede(self, sede):
+        if self.sede is not None:
+            self.sede.quitar_empleado(self)
+        self.sede = sede
+        self.sede.anadir_empleado(self)
+
+    def getMaquinaria(self):
+        return self.maquinaria
+
+    def setMaquinaria(self, maquinaria):
+        self.maquinaria = maquinaria
+
+    def getAreas(self):
+        return self.areas
+
+    def setAreas(self, areas):
+        self.areas = areas
+
+    def getBonificacion(self):
+        return self.bonificacion
+
+    def setRendimientoBonificacion(self, boni):
+        self.bonificacion = boni
+
+    def setSalario(self, salario):
+        self.salario = salario
+
+    def setEvaluacionesFinancieras(self, evaluaciones):
+        self.evaluaciones = evaluaciones
+
+    def getEvaluacionesFinancieras(self):
+        return self.evaluaciones
+
+    def getVentasEncargadas(self):
+        return self.ventas_encargadas
+
+    @staticmethod
+    def get_emp_creados():
+        return Sede.getListaEmpleadosTotal()

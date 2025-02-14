@@ -59,7 +59,7 @@ class Camisa(Prenda):
 
     def realizarPaso(self, modista: Empleado) -> str:
         self.modista = modista
-        probabilidad_de_exito = modista.get_pericia()
+        probabilidad_de_exito = modista.getPericia()
         if self.paso_actual == 2:
             probabilidad_de_exito *= 0.9
         elif self.paso_actual == 3:

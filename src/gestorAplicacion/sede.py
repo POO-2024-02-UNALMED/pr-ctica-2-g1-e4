@@ -407,13 +407,13 @@ class Sede:
 
         # Dividir las máquinas de cada sede por función
         for tod_maq_sede_p in maq_sede_p:
-            if tod_maq_sede_p.es_de_produccion():
+            if tod_maq_sede_p.esDeProduccion():
                 Sede.getListaSedes()[0].maqProduccion.append(tod_maq_sede_p)
             else:
                 Sede.getListaSedes()[0].maqOficina.append(tod_maq_sede_p)
 
         for tod_maq_sede_2 in maq_sede_2:
-            if tod_maq_sede_2.es_de_produccion():
+            if tod_maq_sede_2.esDeProduccion():
                 Sede.getListaSedes()[1].maqProduccion.append(tod_maq_sede_2)
             else:
                 Sede.getListaSedes()[1].maqOficina.append(tod_maq_sede_2)

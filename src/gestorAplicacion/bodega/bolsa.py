@@ -1,8 +1,8 @@
 from src.gestorAplicacion.bodega.insumo import Insumo
 
 class Bolsa(Insumo):
-    def __init__(self, nombre, proveedor, cantidad=0,  sede=None, capacidad_maxima=0):
-        super().__init__(nombre, cantidad, proveedor, sede)
+    def __init__(self, nombre, proveedor, cantidad=None,  sede=None, capacidad_maxima=0):
+        super().__init__(nombre, proveedor, cantidad, sede)
         self.capacidad_maxima = capacidad_maxima
 
     # Calcula el precio de la bolsa, que puede diferir del definido como Insumo.

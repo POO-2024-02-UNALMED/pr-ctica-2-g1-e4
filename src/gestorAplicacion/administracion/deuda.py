@@ -22,9 +22,9 @@ class Deuda:
         Deuda.lista_deudas.append(self)
 
         if tipo == "Banco":
-            for banco in Banco.get_lista_bancos():
-                if banco.get_nombre_entidad() == entidad:
-                    self.interes = banco.get_interes()
+            for banco in Banco.getListaBancos():
+                if banco.getNombreEntidad() == entidad:
+                    self.interes = banco.getInteres()
 
     def deudaActual(self, año: int) -> int:
         deuda_acumulada = 0

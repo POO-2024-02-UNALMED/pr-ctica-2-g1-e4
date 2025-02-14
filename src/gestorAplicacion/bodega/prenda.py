@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
-from src.gestorAplicacion.bodega.camisa import Camisa
 from src.gestorAplicacion.bodega.maquinaria import Maquinaria
-from src.gestorAplicacion.bodega.pantalon import Pantalon
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.venta import Venta
 
@@ -21,7 +19,7 @@ class Prenda(ABC,GastoMensual):
         self.descartada = descartada
         self.terminada = terminada
         self.insumo = insumos
-        self.costo_insumos = sum(insumo.precio_individual for insumo in insumos)
+        self.costo_insumos = sum(insumo.precio_x_unidad for insumo in insumos)
         self.costo_produccion = self.calcularCostoProduccion()
         self.precio = 0
         self.en_stock = []
@@ -49,6 +47,8 @@ class Prenda(ABC,GastoMensual):
 
     @staticmethod
     def producirListaPrendas(plan_produccion, sede, fecha_produccion):
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.uiMain.main import Main
         alcanza_insumos = True
         cantidad_pantalones = plan_produccion[0]
@@ -152,12 +152,12 @@ class Prenda(ABC,GastoMensual):
         return Venta.pesimismo
 
     def calcularCostoInsumos(self):
-        self.costo_insumos = sum(insumo.precio_individual * cantidad for insumo, cantidad in zip(self.insumo, self.cantidad_insumo()))
+        self.costo_insumos = sum(insumo.precio_x_unidad * cantidad for insumo, cantidad in zip(self.insumo, self.cantidad_insumo()))
         return self.costo_insumos
 
     def calcularCostoProduccion(self):
         from src.gestorAplicacion.administracion.rol import Rol
-        sum_salarios = sum(empleado.rol.salario_inicial for empleado in self.sede.lista_empleados if empleado.rol == Rol.MODISTA)
+        sum_salarios = sum(empleado.rol.salario_inicial for empleado in self.sede.listaEmpleado if empleado.rol == Rol.MODISTA)
         self.costo_produccion = round(sum_salarios * 0.01)
         return self.costo_produccion
 

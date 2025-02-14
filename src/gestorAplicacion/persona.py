@@ -13,6 +13,7 @@ class Persona:
         self.experiencia = experiencia
         self.trabaja = trabaja
         self.membresia = membresia
+        self.salario=self.calcularSalario()
         Persona.lista_personas.append(self)
 
     def __str__(self) -> str:
@@ -75,7 +76,7 @@ class Persona:
             if area is not None and sede is not None:
                 emp = Empleado(area, fecha, sede, persona)
                 Maquinaria.asignarMaquinaria(emp)
-                emp.set_salario(int(persona.get_rol().get_salario_inicial() + persona.get_rol().get_salario_inicial() * 0.5 * persona.get_experiencia()))
+                emp.setSalario(int(persona.get_rol().getSalarioInicial() + persona.get_rol().getSalarioInicial() * 0.5 * persona.get_experiencia()))
             else:
                 Main.error_de_reemplazo(persona)
 
@@ -89,7 +90,7 @@ class Persona:
                 f"Membresía: {membresia_string}")
 
     def calcularSalario(self) -> int:
-        return round((self.rol.get_salario_inicial() * 0.05) * self.experiencia) + self.rol.get_salario_inicial()
+        return round((self.rol.getSalarioInicial() * 0.05) * self.experiencia) + self.rol.getSalarioInicial()
 
     @staticmethod
     def valorEsperadoSalario() -> int:

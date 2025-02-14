@@ -19,10 +19,10 @@ class Venta:
         self.costo_envio = 0
         self.numero = 0
         if encargado:
-            encargado.get_ventas_encargadas().append(self)
+            encargado.getVentasEncargadas().append(self)
         if articulos:
             for prenda in articulos:
-                sede.get_prendas_inventadas().remove(prenda)
+                sede.getPrendasInventadas().remove(prenda)
         sede.actualizar_historial_ventas(self)
         if monto_pagado:
             sede.get_cuenta_sede().set_ahorro_banco(sede.get_cuenta_sede().get_ahorro_banco() + monto_pagado)
@@ -38,7 +38,7 @@ class Venta:
     @staticmethod
     def cantidadVentasEncargadasEnMes(empleado, fecha):
         cantidad = 0
-        for venta in empleado.get_ventas_encargadas():
+        for venta in empleado.getVentasEncargadas():
             if venta.get_fecha_venta().get_mes() == fecha.get_mes() and venta.get_fecha_venta().get_ano() == fecha.get_ano():
                 cantidad += 1
         return cantidad

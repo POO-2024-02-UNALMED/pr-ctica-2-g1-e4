@@ -206,41 +206,22 @@ class Main:
     def errorDeReemplazo(persona):
         print(f"No se pudo contratar a {persona.getNombre()}, no sabemos a quien reemplaza.")
 
-    def calcularBalanceAnterior(fecha):
+    def calcularBalanceAnterior(self,empleado,eleccion):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         from src.gestorAplicacion.administracion.deuda import Deuda
         from src.gestorAplicacion.administracion.area import Area
         print("\nObteniendo balance entre Ventas y Deudas para saber si las ventas cubren los gastos de la producción de nuestras prendas...")
-        balance_costos_produccion = Venta.calcularBalanceVentaProduccion(fecha)
-        eleccion = 0
-        while eleccion <= 0 or eleccion > 3:
-            print("\nIngrese las deudas que quiere calcular")
-            print("Ingrese 1 para proveedor, 2 para Banco o 3 para ambos")
-            #eleccion = Main.nextIntSeguro()
-            eleccion=F1Financiera.Pedir()
         
-        deuda_calculada = Deuda.calcularDeudaMensual(fecha, eleccion)
+        balance_costos_produccion = Venta.calcularBalanceVentaProduccion(self.fecha)
+
+        deuda_calculada = Deuda.calcularDeudaMensual(self.fecha, eleccion)
         balance_total = balance_costos_produccion - deuda_calculada
-        empleado = None
-        elegible_empleados = []
-        
-        for empleado_actual in Sede.getListaEmpleadosTotal():
-            if empleado_actual.getAreaActual() == Area.DIRECCION:
-                elegible_empleados.append(empleado_actual)
-        
-        indice_empleado = -1
-        while indice_empleado < 0 or indice_empleado >= len(elegible_empleados):
-            for indice in range (len(elegible_empleados)):
-                print(f"{indice} {elegible_empleados[indice]}")
-            print(f"\nIngrese número de 0 a {len(elegible_empleados) - 1} según el Directivo que escoja para registrar el balance")
-            indice_empleado = Main.nextIntSeguro()
-            empleado = elegible_empleados[indice_empleado]
         
         nuevo_balance = EvaluacionFinanciera(balance_total, empleado)
         return nuevo_balance
 
     # Interaccion 2 Sistema Financiero
-    def calcularEstimado(fecha, balance_anterior):
+    def calcularEstimado(self,balance_anterior):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         print("\nCalculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...")
         porcentaje = -1.0
@@ -248,18 +229,18 @@ class Main:
             print("\nIngrese porcentaje a modificar para fidelidad de los clientes sin membresía, entre 0% y 100%")
             porcentaje = Main.nextIntSeguro() / 100.0
         
-        diferencia_estimado = EvaluacionFinanciera.estimadoVentasGastos(fecha, porcentaje, balance_anterior)
+        diferencia_estimado = EvaluacionFinanciera.estimadoVentasGastos(self.fecha, porcentaje, balance_anterior)
         # Un mes se puede dar por salvado si el 80% de los gastos se pueden ver
         # cubiertos por las ventas predichas
         return diferencia_estimado
 
-    def planRecuperacion(diferencia_estimada, fecha, bancos):
+    def planRecuperacion(self,diferencia_estimada,bancos):
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.administracion.deuda import Deuda
         if diferencia_estimada > 0:
             print("\nEl estimado es positivo, las ventas superan las deudas")
             print("Hay dinero suficiente para hacer el pago de algunas Deudas")
-            Deuda.compararDeudas(fecha)
+            Deuda.compararDeudas(self.fecha)
         else:
             print("\nEl estimado es negativo, la deuda supera las ventas")
             print("No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo")
@@ -278,10 +259,10 @@ class Main:
                 print("Ingrese número de 1 a 18 para las cuotas en que se dividirá la deuda")
                 cuotas = Main.nextIntSeguro()
 
-            deuda_adquirir = Deuda(fecha, diferencia_estimada, nombre_banco, "Banco", cuotas)
+            deuda_adquirir = Deuda(self.fecha, diferencia_estimada, nombre_banco, "Banco", cuotas)
 
         print("\nAnalizando posibilidad de hacer descuentos para subir las ventas...")
-        descuento = Venta.blackFriday(fecha)
+        descuento = Venta.blackFriday(self.fecha)
         bf_string = None
         if descuento <= 0.0:
             bf_string = ("El análisis de ventas realizado sobre el Black Friday arrojó que la audiencia no reacciona tan bien a los descuentos, "
@@ -302,7 +283,7 @@ class Main:
         else:
             nuevo_descuento = descuento
 
-        Prenda.prevenciones(descuento, nuevo_descuento, fecha)
+        Prenda.prevenciones(descuento, nuevo_descuento, self.fecha)
         analisis_futuro = (f"\n{bf_string}, sin embargo su desición fue aplicar un descuento de: "
                         f"{nuevo_descuento * 100}%.")
         return analisis_futuro
@@ -1116,26 +1097,26 @@ class Main:
 
         # CREACION DE TODOS LOS REPUESTOS QUE MANEJAREMOS PARA LA FUNCIONALIDAD
         # PRODUCCION
-        AgujasMC = Repuesto("Agujas de la Maquina de coser", 12, p13)
-        Aceite = Repuesto("Aceite", 60, p16)
+        AgujasMC = Repuesto("Agujas de la Maquina de coser", p13, 12)
+        Aceite = Repuesto("Aceite", p16, 60)
 
-        Cuchillas = Repuesto("Cuchillas", 60, p19)
-        Afiladores = Repuesto("Afiladores", 750, p22)
+        Cuchillas = Repuesto("Cuchillas", p19, 60)
+        Afiladores = Repuesto("Afiladores", p22, 750)
 
-        ResistenciaElectrica = Repuesto("Resistencia Electrica", 1500, p25)
-        MangueraDeVapor = Repuesto("Manguera de Vapor", 750, p27, 1)
+        ResistenciaElectrica = Repuesto("Resistencia Electrica", p25, 1500)
+        MangueraDeVapor = Repuesto("Manguera de Vapor", p27, 750, 1, None)
 
-        AgujasBI = Repuesto("Agujas de la Bordadora Industrial", 25, p29)
+        AgujasBI = Repuesto("Agujas de la Bordadora Industrial", p29, 25)
 
-        BandasDeTransmision = Repuesto("Bandas de Transmision", 2500, p31)
+        BandasDeTransmision = Repuesto("Bandas de Transmision", p31, 2500)
 
-        TintaN = Repuesto("Tinta Negra Impresora", 3000, p33, 1)
+        TintaN = Repuesto("Tinta Negra Impresora", p33, 3000, 1, None)
 
-        Lector = Repuesto("Lector de barras", 3000, p35)
-        PapelQuimico = Repuesto("Papel quimico", 72, p37)
+        Lector = Repuesto("Lector de barras", p35, 3000)
+        PapelQuimico = Repuesto("Papel quimico", p37, 72)
 
-        Cargador = Repuesto("Cargador Computador", 6000, p39)
-        Mouse = Repuesto("Mouse Computador", 9000, p41)
+        Cargador = Repuesto("Cargador Computador", p39, 6000)
+        Mouse = Repuesto("Mouse Computador", p41, 900)
 
         # CREACION DE LAS SEDES QUE MANEJAREMOS, CON SUS RESPECTIVAS MAQUINAS EN CADA
         # UNA DE ELLAS
@@ -1222,7 +1203,7 @@ class Main:
         MaquinaDeCoser = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC, sedeP)
         MaquinaDeCorte = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte, sedeP)
         PlanchaIndustrial = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI, sedeP)
-        BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP, "s")
+        BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP)
         MaquinaDeTermofijado = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado, sedeP)
         MaquinaDeTijereado = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado,sedeP)
         Impresora = Maquinaria("Impresora", 800000, 2000, repuestosImp, sedeP)
@@ -1230,16 +1211,15 @@ class Main:
         Computador = Maquinaria("Computador", 2_000_000, 10000, repuestosImp, sedeP)
 
         # sede2
-        MaquinaDeCoser2 = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC2, sede2, 1)
-        MaquinaDeCorte2 = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte2, sede2, False)
-        PlanchaIndustrial2 = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI2, sede2, 1)
-        BordadoraIndustrial2 = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI2, sede2, 1)
-        MaquinaDeTermofijado2 = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado2, sede2, 1)
-        MaquinaDeTijereado2 = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado2,
-                sede2, 1)
-        Impresora2 = Maquinaria("Impresora", 800000, 2000, repuestosImp2, sede2, 1)
-        Registradora2 = Maquinaria("Caja Registradora", 700000, 17000, repuestosRe2, sede2, 1)
-        Computador2 = Maquinaria("Computador", 2_000_000, 10000, repuestosImp2, sede2, 1)
+        MaquinaDeCoser2 = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC2, sede2)
+        MaquinaDeCorte2 = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte2, sede2)
+        PlanchaIndustrial2 = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI2, sede2)
+        BordadoraIndustrial2 = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI2, sede2)
+        MaquinaDeTermofijado2 = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado2, sede2)
+        MaquinaDeTijereado2 = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado2,sede2)
+        Impresora2 = Maquinaria("Impresora", 800000, 2000, repuestosImp2, sede2)
+        Registradora2 = Maquinaria("Caja Registradora", 700000, 17000, repuestosRe2, sede2)
+        Computador2 = Maquinaria("Computador", 2_000_000, 10000, repuestosImp2, sede2)
 
         bp = Banco("principal", "Banco Montreal",  4_000_000_000, 0.05)
         b1 = Banco("secundaria", "Banco Montreal", 5_000_000, 0.05)
@@ -1262,20 +1242,20 @@ class Main:
         tm.actualizarDeuda(Deuda(Fecha(30, 9, 22), 150_000_000, "Inversiones Terramoda", "Banco", 18))
         tm.actualizarDeuda(Deuda(Fecha(20, 2, 23), 800_000, "Inversiones Terramoda", "Banco", 18))
 
-        i1 = Insumo("Tela", 1 * 20, p5, sedeP)
-        i2 = Insumo("Tela", 1 * 20, p5, sede2)
-        i3 = Insumo("Boton", 4 * 20, p3, sedeP)
-        i4 = Insumo("Boton", 4 * 20, p3, sede2)
-        i5 = Insumo("Cremallera", 1 * 20, p4, sedeP)
-        i6 = Insumo("Cremallera", 1 * 20, p4, sede2)
-        i7 = Insumo("Hilo", 100 * 20, p2, sedeP)
-        i8 = Insumo("Hilo", 100 * 20, p2, sede2)
-        i9 = Bolsa("Bolsa", 1 * 20, p10, sedeP, 8)
-        i10 = Bolsa("Bolsa", 1 * 20, p10, sede2, 8)
-        i11 = Bolsa("Bolsa", 1 * 20, p10, sedeP, 3)
-        i12 = Bolsa("Bolsa", 1 * 20, p10, sede2, 3)
-        i13 = Bolsa("Bolsa", 1 * 20, p10, sedeP, 1)
-        i14 = Bolsa("Bolsa", 1 * 20, p10, sede2, 1)
+        i1 = Insumo("Tela", p5, 1 * 20, sedeP)
+        i2 = Insumo("Tela", p5, 1 * 20,  sede2)
+        i3 = Insumo("Boton", p3, 4 * 20, sedeP)
+        i4 = Insumo("Boton", p3, 4 * 20, sede2)
+        i5 = Insumo("Cremallera", p4, 1 * 20, sedeP)
+        i6 = Insumo("Cremallera", p4, 1 * 20, sede2)
+        i7 = Insumo("Hilo", p2, 100 * 20, sedeP)
+        i8 = Insumo("Hilo", p2, 100 * 20, sede2)
+        i9 = Bolsa("Bolsa", p10, 1 * 20, sedeP, 8)
+        i10 = Bolsa("Bolsa", p10, 1 * 20, sede2, 8)
+        i11 = Bolsa("Bolsa", p10, 1 * 20, sedeP, 3)
+        i12 = Bolsa("Bolsa", p10, 1 * 20, sede2, 3)
+        i13 = Bolsa("Bolsa", p10, 1 * 20, sedeP, 1)
+        i14 = Bolsa("Bolsa", p10, 1 * 20, sede2, 1)
 
         betty = Empleado(Area.DIRECCION, Fecha(1, 1, 23), sedeP, "Beatriz Pinzón", 4269292,
                 Rol.PRESIDENTE, 10, Membresia.NULA, Computador)
@@ -1305,7 +1285,7 @@ class Main:
         Gutierrez = (Empleado(Area.DIRECCION, Fecha(5, 8, 19), sede2, "Saul Gutierrez", 9557933,
                 Rol.EJECUTIVO, 11, Membresia.NULA, Computador2))
         Marcela = (Empleado(Area.DIRECCION, Fecha(30, 11, 20), sede2, "Marcela Valencia", 8519803,
-                Rol.EJECUTIVO, 10, Membresia.ORO, Computador2.copiar(1)))
+                Rol.EJECUTIVO, 10, Membresia.ORO, Computador2.copiar()))
         Gabriela = (Empleado(Area.VENTAS, Fecha(1, 1, 24), sede2, "Gabriela Garza", 5287925,
                 Rol.VENDEDOR, 9, Membresia.PLATA, Registradora2))
         Patricia = (Empleado(Area.OFICINA, Fecha(5, 2, 23), sede2, "Patricia Fernandez", 4595311,
@@ -1313,13 +1293,13 @@ class Main:
         Kenneth = (Empleado(Area.CORTE, Fecha(1, 1, 24), sede2, "Kenneth Johnson", 7494184,
                 Rol.MODISTA, 8, Membresia.ORO, PlanchaIndustrial2))
         Robles = (Empleado(Area.OFICINA, Fecha(12, 10, 24), sede2, "Miguel Robles", 7518004,
-                Rol.VENDEDOR, 7, Membresia.BRONCE, Impresora2.copiar(1)))
+                Rol.VENDEDOR, 7, Membresia.BRONCE, Impresora2.copiar()))
         Alejandra = (Empleado(Area.CORTE, Fecha(1, 2, 24), sede2, "Alejandra Zingg", 6840296,
                 Rol.MODISTA, 2, Membresia.BRONCE, BordadoraIndustrial2))
         Cecilia = (Empleado(Area.CORTE, Fecha(1, 2, 23), sede2, "Cecilia Bolocco", 7443886,
                 Rol.MODISTA, 10, Membresia.PLATA, MaquinaDeCoser2))
         Freddy = (Empleado(Area.VENTAS, Fecha(31, 1, 22), sede2, "Freddy Contreras", 6740561,
-                Rol.PLANTA, 5, Membresia.NULA, Registradora2.copiar(1)))
+                Rol.PLANTA, 5, Membresia.NULA, Registradora2.copiar()))
         Adriana = (Empleado(Area.CORTE, Fecha(18, 6, 25), sede2, "Adriana arboleda", 5927947,
                 Rol.MODISTA, 20, Membresia.ORO, MaquinaDeCorte2))
         Karina = (Empleado(Area.CORTE, Fecha(9, 3, 25), sede2, "Karina Larson", 5229381, Rol.MODISTA,
@@ -1327,7 +1307,7 @@ class Main:
         Jenny = (Empleado(Area.CORTE, Fecha(1, 8, 24), sede2, "Jenny Garcia", 4264643, Rol.MODISTA, 1,
                 Membresia.ORO, MaquinaDeTijereado2))
         ol = Empleado(Area.DIRECCION, Fecha(1, 2, 20), sede2, "Gustavo Olarte", 7470922, Rol.EJECUTIVO,
-                3, Membresia.NULA, Computador2.copiar(1))
+                3, Membresia.NULA, Computador2.copiar())
         ol.setTraslados(3)
         a = []
         a.append(Area.VENTAS)
@@ -1493,4 +1473,5 @@ class Main:
 import src.uiMain.bienvenida as bienvenida
 # Este metodo termina al presionar "seguir a la ventana principal"
 if __name__=="__main__":
+    Main.crearSedesMaquinasRepuestos()
     bienvenida.bienvenida()

@@ -20,6 +20,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 class startFrame(tk.Tk):
     def __init__(self):
+        numbre = ""
         super().__init__()
         self.title("Ecomoda")
         self.geometry("800x500")
@@ -37,7 +38,7 @@ class startFrame(tk.Tk):
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
         self.procesosMenu.add_command(label="Despedir y reemplazar empleados")
         self.procesosMenu.add_command(label="Pedir insumos")
-        self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.cambiarVentana(deudas(self)))
+        self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.eliminarF3())
         self.procesosMenu.add_command(label="Facturacion")
         self.procesosMenu.add_command(label="Producir prendas")
     
@@ -49,8 +50,11 @@ class startFrame(tk.Tk):
         self.areaPrincipal = frameInicial(self)
         self.areaPrincipal.pack(fill="both", expand=True, padx=7, pady=7)
 
-    def cambiarVentana(self,reemplazo:tk.Frame):
+    def eliminarF3(self):
         self.areaPrincipal.destroy()
+        self.cambiarFrame(deudas(self))
+        
+    def cambiarFrame(self, reemplazo:tk.Frame):
         self.areaPrincipal = reemplazo
         reemplazo.pack(fill="both", expand=True, padx=7, pady=7)
 

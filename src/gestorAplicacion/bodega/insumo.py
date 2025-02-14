@@ -3,19 +3,19 @@ from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
 class Insumo(GastoMensual):
     precio_stock_total = 0
 
-    def __init__(self, nombre, cantidad=None, proveedor=None, sede=None, horas_de_vida_util=None):
+    def __init__(self, nombre, proveedor=None, cantidad=None, horas_de_vida_util=None, sede=None):
         self.nombre = nombre
         self.proveedor = proveedor
         self.sede = sede
-        if cantidad is not None and proveedor is not None:
-            self.precio_compra = proveedor.get_precio() * round(cantidad)
+        if cantidad is not None and proveedor is not None and sede is not None:
+            self.precio_compra = proveedor.getPrecio() * round(cantidad)
             self.precio_x_unidad = round(self.precio_compra / cantidad)
             self.ultimo_precio = self.precio_x_unidad
             Insumo.precio_stock_total += self.precio_compra
             sede.get_lista_insumos_bodega().append(self)
             sede.get_cantidad_insumos_bodega().append(round(cantidad))
         elif proveedor is not None:
-            self.precio_x_unidad = proveedor.get_precio()
+            self.precio_x_unidad = proveedor.getPrecio()
         if horas_de_vida_util is not None:
             self.horas_de_vida_util = horas_de_vida_util
 

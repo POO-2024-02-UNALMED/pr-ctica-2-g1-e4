@@ -1,14 +1,9 @@
 from typing import List
 
-from src.gestorAplicacion.administracion.empleado import Empleado
-from src.gestorAplicacion.bodega.camisa import Camisa
-from src.gestorAplicacion.bodega.pantalon import Pantalon
-from src.gestorAplicacion.bodega.proveedor import Proveedor
-from .repuesto import Repuesto
 from ..sede import Sede
 
 class Maquinaria:
-    def __init__(self, nombre: str, valor: int, hora_revision: int, repuestos: List[Repuesto], sede: 'Sede'):
+    def __init__(self, nombre: str, valor: int, hora_revision: int, repuestos, sede: 'Sede'):
         self.nombre = nombre
         self.user = None
         self.horas_uso = 0
@@ -28,7 +23,7 @@ class Maquinaria:
         return Maquinaria(self.nombre, self.valor, self.hora_revision, nuevos_repuestos, self.sede)
 
     @staticmethod
-    def gastoMensualClase(fecha: datetime) -> int:
+    def gastoMensualClase(fecha) -> int:
         gasto_maquinaria = 0
         for sede in Sede.get_lista_sedes():
             for maquinaria in sede.get_lista_maquinas():
@@ -37,7 +32,8 @@ class Maquinaria:
         return gasto_maquinaria
 
     @staticmethod
-    def remuneracionDanos(empleado: 'Empleado') -> int:
+    def remuneracionDanos(empleado):
+        from src.gestorAplicacion.administracion.empleado import Empleado
         remuneracion = 0
         for maq in empleado.sede.get_lista_maquinas():
             if maq.user == empleado and maq.estado:
@@ -45,7 +41,8 @@ class Maquinaria:
         return remuneracion
 
     @staticmethod
-    def liberarMaquinariaDe(empleado: 'Empleado'):
+    def liberarMaquinariaDe(empleado):
+        from src.gestorAplicacion.administracion.empleado import Empleado
         for maq in empleado.sede.get_lista_maquinas():
             if maq.user == empleado:
                 maq.user = None
@@ -53,10 +50,10 @@ class Maquinaria:
     def getNombre(self) -> str:
         return self.nombre
 
-    def getRepuestos(self) -> List['Repuesto']:
+    def getRepuestos(self):
         return self.repuestos
 
-    def setRepuestos(self, repa_cambiar: 'Repuesto'):
+    def setRepuestos(self, repa_cambiar):
         self.repuestos.remove(repa_cambiar)
 
     def getHoraRevision(self) -> int:
@@ -68,7 +65,8 @@ class Maquinaria:
     def getSede(self) -> 'Sede':
         return self.sede
 
-    def agruparMaquinasDisponibles(self, fecha: datetime) -> List['Maquinaria']:
+    def agruparMaquinasDisponibles(self, fecha) -> List['Maquinaria']:
+        from .repuesto import Repuesto
         maq_disponibles = []
         todos_prov_baratos = []
         encontrado = False
@@ -116,7 +114,9 @@ class Maquinaria:
 
         return maq_disponibles
 
-    def encontrarProveedoresBaratos(self) -> List['Proveedor']:
+    def encontrarProveedoresBaratos(self):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        from .repuesto import Repuesto
         for cada_repuesto in Repuesto.getListadoRepuestos():
             proveedor_barato = None
             for proveedores in Proveedor.getListaProveedores():
@@ -155,4 +155,13 @@ class Maquinaria:
             repuesto.usar(horas)
 
     def esDeProduccion(self):
-        return self.nombre in Camisa.getMaquinariaNecesaria() or self.nombre in Pantalon.getMaquinariaNecesaria()
+        return self.deCamisa() or self.dePantalon()
+    
+    def deCamisa(self):
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        return self.nombre in Camisa.getMaquinariaNecesaria()
+    
+    def dePantalon(self):
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        return self.nombre in Pantalon.getMaquinariaNecesaria()
+    
