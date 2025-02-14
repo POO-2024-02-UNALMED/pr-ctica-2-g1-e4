@@ -202,7 +202,7 @@ class p4FotosEInicio(tk.Frame):
         self.foto.config(image = self.archivoImagenSistema )
 
 
-ww
+
     def create_widgets(self):
         self.foto = tk.Label(master=self, highlightthickness=0, background="#000000") 
         self.foto.grid(row = 0, column = 0)
