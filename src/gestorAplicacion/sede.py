@@ -171,7 +171,7 @@ class Sede:
         return self.cuentaSede
 
     def anadirEmpleado(self, emp):
-        self.listaEmpleado.add(emp)
+        self.listaEmpleado.append(emp)
 
     def quitarEmpleado(self, emp):
         self.listaEmpleado.remove(emp)

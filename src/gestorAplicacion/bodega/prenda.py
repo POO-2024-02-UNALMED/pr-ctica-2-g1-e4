@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
+from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
+from src.gestorAplicacion.bodega.insumo import Insumo
 from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.venta import Venta
 
@@ -9,7 +12,7 @@ class Prenda(ABC, GastoMensual):
     cantidadUltimaProduccion = 0
     cantidadTelaUltimaProduccion = 0
 
-    def __init__(self, fecha, sede, nombre, modista, descartada, terminada, insumos):
+    def __init__(self, fecha: Fecha, sede: Sede, nombre: str, modista:Empleado, descartada: bool, terminada: bool, insumos: Insumo):
         self.fechaFabricacion = fecha
         self.sede = sede
         sede.prendasInventadas.append(self)
@@ -151,12 +154,12 @@ class Prenda(ABC, GastoMensual):
         return Venta.pesimismo
 
     def calcularCostoInsumos(self):
-        self.costoInsumos = sum(insumo.precioXUnidad * cantidad for insumo, cantidad in zip(self.insumo, self.cantidadInsumo))
+        self.costoInsumos = sum(insumo.getprecioXUnidad() * cantidad for insumo, cantidad in zip(self.insumo, self.cantidadInsumo))
         return self.costoInsumos
 
     def calcularCostoProduccion(self):
         from src.gestorAplicacion.administracion.rol import Rol
-        sumSalarios = sum(empleado.rol.salarioInicial for empleado in self.sede.listaEmpleado if empleado.rol == Rol.MODISTA)
+        sumSalarios = sum(empleado.rol.getSalarioInicial() for empleado in self.sede.getListaEmpleados() if empleado.rol == Rol.MODISTA)
         self.costoProduccion = round(sumSalarios * 0.01)
         return self.costoProduccion
 

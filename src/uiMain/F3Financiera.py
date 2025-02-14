@@ -17,7 +17,11 @@ def deudas(ventana:tk.Frame):
                 elecionDeuda = 2
             elif OProveedor.cget().lowercase() == "si" and OBanco.cget().lowercase()=="si":
                 elecionDeuda = 3
-            Main.calcularBalanceAnterior(Empleado,eleccionDeuda)
+        from src.gestorAplicacion.sede import Sede
+        for empleado_actual in Sede.getListaEmpleadosTotal():
+            if empleado_actual.getNombre() == Empleado.getNombre():
+                empleado = empleado_actual
+            Main.calcularBalanceAnterior(empleado,eleccionDeuda)
         else:
             #Excepcion
             OProveedor.delete(0,"end")

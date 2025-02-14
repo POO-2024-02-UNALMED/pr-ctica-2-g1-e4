@@ -25,6 +25,8 @@ class Empleado(Persona, GastoMensual):
         self.bonificacion = 0
         self.evaluaciones = []
         self.ventasEncargadas = []
+        sede.anadirEmpleado(self)
+        sede.getListaEmpleadosTotal().append(self)
 
     def calcularRendimiento(self, fecha: Fecha) -> float:
         rendimiento = 0
