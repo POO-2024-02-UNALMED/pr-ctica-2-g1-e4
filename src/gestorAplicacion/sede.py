@@ -93,7 +93,7 @@ class Sede:
         return resultado
 
     def actualizarHistorialVentas(self,venta):
-        self.historialVentas.add(venta)
+        self.historialVentas.append(venta)
         pass
     
     def getRendimientoDeseado(self,area,fecha):

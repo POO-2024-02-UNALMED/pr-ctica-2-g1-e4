@@ -24,7 +24,7 @@ class Prenda(ABC,GastoMensual):
         self.precio = 0
         self.en_stock = []
         self.ultimo_paso = []
-
+        sede.getPrendasInventadas().append(self)
         if descartada:
             modista.prendas_descartadas += 1
         elif terminada:

@@ -23,9 +23,9 @@ class Venta:
         if articulos:
             for prenda in articulos:
                 sede.getPrendasInventadas().remove(prenda)
-        sede.actualizar_historial_ventas(self)
+        sede.actualizarHistorialVentas(self)
         if monto_pagado:
-            sede.get_cuenta_sede().set_ahorro_banco(sede.get_cuenta_sede().get_ahorro_banco() + monto_pagado)
+            sede.getCuentaSede().set_ahorro_banco(sede.getCuentaSede().get_ahorro_banco() + monto_pagado)
 
     @staticmethod
     def acumuladoVentasAsesoradas(empleado):
