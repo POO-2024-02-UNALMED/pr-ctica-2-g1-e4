@@ -22,13 +22,22 @@ def surtir():
     frame2.pack(anchor="s",  expand=True, fill="both")
 
     for sede in Sede.getlistaSedes():
-        pesimismo = tk.Label(frame2, text=f"Para la "{sede.getNombre()} "\nTenemos un porcentaje de pesimismo: " {str(round(Venta.getPesimismo() * 100))} "%")
+        pesimismo = tk.Label(frame2, text=f"Para la {sede.getNombre()} \nTenemos un porcentaje de pesimismo:  {str(round(Venta.getPesimismo() * 100))} %")
         pesimismo.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
         criterio = "Seleccione una de las siguientes opciones:"; 
         field = fieldFrame(ventana, criterio)
         field.pack(pady=10, padx=10)
         pesimismo = tk.Label(frame2, text="1. Estoy de acuerdo con el porcentaje de pesimismo \n2. Deseo cambiar el porcentaje de pesimismo")
     
+        if entry.get() == 2:
+            criterio = "Ingrese el nuevo porcentaje de pesimismo % "
+            field = fieldFrame(ventana, criterio)
+            field.pack(pady=10, padx=10)
+            newPesimismo = (entry.get())/100
+            Venta.setPesimismo(newPesimismo)
+        elif entry.get() != 1:  
+            #excepción
+            pass
 
     ventana.mainloop()
 

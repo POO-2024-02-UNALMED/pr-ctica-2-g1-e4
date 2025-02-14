@@ -327,6 +327,8 @@ class Main:
         analisisFuturo = (f"\n{bfString}, sin embargo su desición fue aplicar un descuento de: "
                         f"{nuevoDescuento * 100}%.")
         return analisisFuturo
+
+    #Interacción 1 Insumos
     def planificarProduccion(fecha):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
@@ -385,6 +387,7 @@ class Main:
 
         return retorno
 
+    #Interacción 2 Insumos
     def coordinarBodegas(retorno):
         listaA = []
         
@@ -442,6 +445,7 @@ class Main:
 
         return listaA
 
+    #Interacción 3 Insumos
     def comprarInsumos(fecha, listaA):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
