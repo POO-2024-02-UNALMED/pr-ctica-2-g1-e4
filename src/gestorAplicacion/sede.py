@@ -93,7 +93,7 @@ class Sede:
         resultado = Resultado(retorno, index, sedeATransferir, precio)
         return resultado
 
-    def actualizarHistorialVentas(self, venta):
+    def actualizarHistorialVentas(self,venta):
         self.historialVentas.append(venta)
         pass
 
