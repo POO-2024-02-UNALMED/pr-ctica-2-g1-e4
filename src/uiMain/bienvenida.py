@@ -110,7 +110,7 @@ class infoDesarrolladores(tk.Frame):
 
     def create_widgets(self):
 
-        self.p5HojaDeVida = tk.Frame(master = self, highlightbackground="black",highlightthickness=2)
+        self.p5HojaDeVida = tk.Frame(master = self, highlightbackground="black",highlightthickness=1)
         self.p5HojaDeVida.bind()
         self.desarrollador = random.randrange(0,4)
         hojaDeVida = hojasDeVida[self.desarrollador]
@@ -129,7 +129,7 @@ class infoDesarrolladores(tk.Frame):
         self.p5HojaDeVida.rowconfigure(1,weight=10)
         self.p5HojaDeVida.columnconfigure(0,weight=10)
 
-        self.contenedorAbajoP6 = tk.Frame(master = self, highlightbackground="black",highlightthickness=2)
+        self.contenedorAbajoP6 = tk.Frame(master = self, highlightbackground="black",highlightthickness=1)
         self.bettyYElOtro = tk.PhotoImage(master = self.window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\bettyYElOtro.png")
         self.labelsImagenesDesarrollador=[]
         self.labelsImagenesDesarrollador.append(tk.Label(master = self.contenedorAbajoP6, image=self.bettyYElOtro))
@@ -154,11 +154,8 @@ class infoSistema(tk.Frame):
 
     def create_widgets(self):
         # P3 en el enunciado de la practica
-        self.frameArriba = tk.Frame(master = self, highlightbackground="black",highlightthickness=2)
-        mensaje = """Bienvenido a ecomoda, donde aplicamos teoría y practica:
-teoría es cuando sabemos todo pero nada funciona, y la practica es cuando
-todo funciona pero no se sabe porqué. En ecomoda, juntamos la teoría y la practica: Nada
-funciona, y no sabemos porqué."""
+        self.frameArriba = tk.Frame(master = self, highlightbackground="black",highlightthickness=1)
+        mensaje = """"""
 
         self.saludo = tk.Label(self.frameArriba, text=mensaje, justify="center")
         self.frameArriba.bind('<Configure>', lambda e: self.saludo.config(wraplength=self.frameArriba.winfo_width()*0.9))
@@ -183,34 +180,39 @@ class p4FotosEInicio(tk.Frame):
         self.imagenSistema=0
         self.archivoImagenSistema = None
         self.create_widgets()
-        self.config(highlightbackground="black",highlightthickness=2, padx=10, pady=10)
+        self.config(highlightbackground="black", highlightthickness=1)
 
     def pasarAPrincipal(self):
         self.window.destroy()
         pasarAVentanaPrincipal()
 
-    def cambiarImagenSistema(self):
-        if (self.imagenSistema==4):
-            self.imagenSistema=0
-        else:
-            self.imagenSistema+=1
+    def actualizarImagenSistema(self,cambiarDesarrollador:bool):
+        if cambiarDesarrollador:
+            if (self.imagenSistema==4):
+                self.imagenSistema=0
+            else:
+                self.imagenSistema+=1
         
         pathImagenSistema= f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\{self.imagenSistema}.png"
-        self.archivoImagenSistema = tk.PhotoImage(master=self, file=pathImagenSistema).subsample(3,3)
+        if self.winfo_width()<self.winfo_height():
+            minsize = self.winfo_width()
+        else:
+            minsize = self.winfo_height()
+        self.archivoImagenSistema = tk.PhotoImage(master=self, file=pathImagenSistema).subsample(int(1800/minsize),int(1800/minsize))
         self.foto.config(image = self.archivoImagenSistema )
 
 
 
     def create_widgets(self):
-        self.archivoImagenSistema=  tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\0.png").subsample(3,3)
-        self.foto = tk.Label(master=self, image=self.archivoImagenSistema)
+        self.foto = tk.Label(master=self, highlightthickness=0, background="#000000") 
         self.foto.grid(row = 0, column = 0)
-        self.foto.bind("<Enter>", lambda e:  self.cambiarImagenSistema())
+        self.foto.bind("<Enter>", lambda e:  self.actualizarImagenSistema(True))
+        self.bind("<Configure>", lambda e: self.actualizarImagenSistema(False))
 
         self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command= lambda : self.pasarAPrincipal())
         self.inicio.grid(row = 1, column = 0)
 
-        self.columnconfigure(0,weight=10)
+        self.columnconfigure(0,weight=3)
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=2)
 
