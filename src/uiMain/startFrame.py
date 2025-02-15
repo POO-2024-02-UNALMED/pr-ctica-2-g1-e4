@@ -4,6 +4,7 @@ import os
 import tkinter as tk
 from tkinter.font import Font
 import sys
+
 from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
 from src.uiMain.F3Financiera import deudas
@@ -32,7 +33,7 @@ class startFrame(tk.Tk):
 
         self.archivoMenu = tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Archivo", menu=self.archivoMenu)
-
+        self.archivoMenu.add_command(label="Salir", command = lambda : self.pasarABienvenida())
 
         self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
@@ -57,6 +58,11 @@ class startFrame(tk.Tk):
     def cambiarFrame(self, reemplazo:tk.Frame):
         self.areaPrincipal = reemplazo
         reemplazo.pack(fill="both", expand=True, padx=7, pady=7)
+
+    def pasarABienvenida(self):
+        from src.uiMain.bienvenida.bienvenida import Aplication
+        self.destroy()
+        Aplication.pasarAVentanaBienvenida()
 
 def pasarAVentanaPrincipal():
     ventana = startFrame()
