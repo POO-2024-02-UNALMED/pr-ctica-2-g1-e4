@@ -6,7 +6,7 @@ from tkinter import ttk as ttk
 from src.uiMain.fieldFrame import FieldFrame
 
 
-def deudas(ventana:tk.Frame):
+def deudas(ventana:tk.Frame)->tk.Frame:
     
     def Siguiente(event):
         eleccionDeuda=0
@@ -90,5 +90,5 @@ def deudas(ventana:tk.Frame):
     entradaCombo = tk.Entry(label7)
     entradaCombo.grid(row=0,column=1,padx=10,pady=10,sticky="w")
     boton1 = tk.Button(frame2, text="Aceptar", command=Siguiente)
-    
+    return framePrincipal
 
