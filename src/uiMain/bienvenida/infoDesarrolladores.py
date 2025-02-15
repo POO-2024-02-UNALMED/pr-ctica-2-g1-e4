@@ -5,11 +5,11 @@ from tkinter import ttk
 from PIL import Image, ImageTk, ImageOps
 
 desarrolladores=[
-    """ANDREA MERINO""",
-    """JUANITA ROSERO:""",
-    """GELSY JACKELIN""",
-    """ANDRES DAVID""",
-    """LUIS ESTEBAN"""
+    """Andrea Merino""",
+    """Juanita Rosero""",
+    """Gelsy Jackelin Lozano""",
+    """Andres David Calderón""",
+    """Luis Esteban Rincón"""
 ]
 
 carpetaDesarrolladores=[
@@ -21,19 +21,43 @@ carpetaDesarrolladores=[
 ]
 
 hojasDeVida=[
-    """Personaje: Beatriz pinzón""",
-    """Personaje: Armando""",
-    """Personaje: Mariana valdez""",
     """
-    Tengo 18 años, nací en Tuluá - Valle del Cauca. Soy estudiante de ingeniería de sistemas, apasionado por la tecnología y la programación.
-    En el pasado he desarrollado videojuegos, apps web y progresivas.
-    2 Años como freelancer en fiverr.
-    Personaje: Nicolas mora""",
+    Representado Por: Beatriz pinzón
+    Edad: 17 años
+    Ciudad Natal: Medellin
+    Programa: Ingeniería de Sistemas
+    Gustos: Apasionada por la programación y el arte.
+        """,
     """
-    Tengo 19 años. Nací en Cúcuta - N/S. Soy estudiante de ingeniería de sistemas, apasionado por el conocimiento, los números y el deporte.
-    Me gusta estudiar de forma autónoma inglés, matemáticas y algunos lenguajes de programación.
-    Como también, procuro trabajar en mis tiempos libres y vacaciones para ayudar a costear mi vida de foráneo.
-    Personaje: Hermes pinzon"""
+    Representado Por: Armando Mendoza
+    Edad: 18 años
+    Ciudad Natal: Pasto
+    Programa: Ingeniería de Sistemas
+    Gustos: Apasionada    
+    """,
+    """
+    Representado Por: Mariana valdez
+    Edad: 18 años
+    Ciudad Natal: Quibdó
+    Programa: Ingeniería de Sistemas
+    Gustos: Leer, nadar, escribir y dibujar
+    """,
+    """
+    Representado Por: Nicolas mora
+    Edad: 18 años
+    Ciudad Natal: Tuluá
+    Programa: Ingeniería de Sistemas
+    Gustos: Apasionado por la tecnología y la programación.
+    """,
+    #Logros: En el pasado he desarrollado videojuegos, apps web y progresivas. 2 Años como freelancer en fiverr.
+    """
+    Representado Por: Mario Calderón
+    Edad: 19 años
+    Ciudad Natal: Cúcuta
+    Programa: Ingeniería de Sistemas
+    Gustos: Apasionado por el conocimiento, los números y el deporte.
+    """
+    #Logros: Me gusta estudiar de forma autónoma inglés, matemáticas y algunos lenguajes de programación. Como también, procuro trabajar en mis tiempos libres y vacaciones para ayudar a costear mi vida de foráneo.
 ]
 
 class infoDesarrolladores(tk.Frame):
@@ -89,7 +113,7 @@ class infoDesarrolladores(tk.Frame):
         rows=[0,0,1,1]
         columns=[0,1,0,1]
         for i in range(4):
-            self.labelsImagenesDesarrollador.append(tk.Canvas(master = self.contenedorAbajoP6, highlightthickness=0, width=self.winfo_width()/3, height=self.winfo_height()/4))
+            self.labelsImagenesDesarrollador.append(tk.Canvas(master = self.contenedorAbajoP6, highlightthickness=0, width=self.winfo_width()/4, height=self.winfo_height()/4))
             self.labelsImagenesDesarrollador[i].grid(row=rows[i], column=columns[i], sticky="nswe")
 
         self.bind("<Configure>", lambda e: self.actualizarImagenes())
@@ -108,12 +132,26 @@ class infoDesarrolladores(tk.Frame):
 
     
     def actualizarImagenes(self):
+        # Get container width and height for images
+        container_width = self.contenedorAbajoP6.winfo_width()
+        container_height = self.contenedorAbajoP6.winfo_height()
+
+
         for i in range(4):
-            label:tk.Canvas = self.labelsImagenesDesarrollador[i]
-            imagenOriginal=Image.open(f"{os.getcwd()}\\src\\uiMain\\imagenes\\{carpetaDesarrolladores[self.desarrollador]}\\{i+1}.png")
-            multiplicador=1
-            tamaños=(round(self.contenedorAbajoP6.winfo_width()/2*multiplicador),round(self.contenedorAbajoP6.winfo_height()/2*multiplicador))
-            if tamaños[0]>0:
-                self.imagenesDesarrollador[i]=ImageTk.PhotoImage(ImageOps.contain(imagenOriginal, tamaños))
-                label.delete("imagen")
-                label.create_image(label.winfo_width()//2, label.winfo_height()//2, anchor="center", image=self.imagenesDesarrollador[i], tags="imagen")
+            label: tk.Canvas = self.labelsImagenesDesarrollador[i]
+            imagenOriginal = Image.open(f"{os.getcwd()}\\src\\uiMain\\imagenes\\{carpetaDesarrolladores[self.desarrollador]}\\{i+1}.png")
+            
+            # Adjust the scaling factor
+            multiplicador = 1  
+            new_width = round(container_width / 2 * multiplicador)  
+            new_height = round(container_height / 2 * multiplicador)
+
+            # Ensure the new size is valid (avoid division by zero or negative size)
+            if new_width <= 0 or new_height <= 0:
+                continue
+            
+            # Resize the image while maintaining aspect ratio
+            image_resized = ImageOps.contain(imagenOriginal, (new_width, new_height))
+            self.imagenesDesarrollador[i] = ImageTk.PhotoImage(image_resized)
+            label.delete("imagen") 
+            label.create_image(label.winfo_width() // 2, label.winfo_height() // 2, anchor="center", image=self.imagenesDesarrollador[i], tags="imagen")
