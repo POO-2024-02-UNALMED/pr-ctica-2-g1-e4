@@ -28,8 +28,16 @@ hojasDeVida=[
     """Personaje: Beatriz pinzón""",
     """Personaje: Armando""",
     """Personaje: Mariana valdez""",
-    """Personaje: Nicolas mora""",
-    """Personaje: Hermes pinzon"""
+    """
+    Tengo 18 años, nací en Tuluá - Valle del Cauca. Soy estudiante de ingeniería de sistemas, apasionado por la tecnología y la programación.
+    En el pasado he desarrollado videojuegos, apps web y progresivas.
+    2 Años como freelancer en fiverr.
+    Personaje: Nicolas mora""",
+    """
+    Tengo 19 años. Nací en Cúcuta - N/S. Soy estudiante de ingeniería de sistemas, apasionado por el conocimiento, los números y el deporte.
+    Me gusta estudiar de forma autónoma inglés, matemáticas y algunos lenguajes de programación.
+    Como también, procuro trabajar en mis tiempos libres y vacaciones para ayudar a costear mi vida de foráneo.
+    Personaje: Hermes pinzon"""
 ]
 class Aplication(tk.Frame):
     def __init__(self, master=None):
@@ -103,17 +111,19 @@ class infoDesarrolladores(tk.Frame):
         self.desarrollador = random.randrange(0,4)
         hojaDeVida = hojasDeVida[self.desarrollador]
         self.nombreDesarrollador = tk.Label(master = self.p5HojaDeVida, text=desarrolladores[self.desarrollador])
-        self.nombreDesarrollador.grid(row=0, column=0, padx=10, pady=10)
-        self.hojaDeVida = tk.Label(master = self.p5HojaDeVida, text=hojaDeVida)
-        self.hojaDeVida.grid(row = 1, column = 0, padx=10, pady=10)
+        self.hojaDeVida = ttk.Label(master = self.p5HojaDeVida, text=hojaDeVida, wraplength=320,width=30)
 
+        self.hojaDeVida.grid(row = 1, column = 0, sticky="nswe")
+        self.nombreDesarrollador.grid(row=0, column=0, padx=10, pady=10)
+
+        # ponemos listeners
         cambiarHoja = lambda e : self.cambiarHojaDeVida()
         self.p5HojaDeVida.bind("<Button-1>", cambiarHoja)
         self.nombreDesarrollador.bind("<Button-1>", cambiarHoja)
         self.hojaDeVida.bind("<Button-1>", cambiarHoja)
 
         self.p5HojaDeVida.grid(row = 0, column = 0, padx=10, pady=10, sticky="nswe")
-        self.p5HojaDeVida.rowconfigure(0,weight=2)
+        self.p5HojaDeVida.rowconfigure(0,weight=1)
         self.p5HojaDeVida.rowconfigure(1,weight=10)
         self.p5HojaDeVida.columnconfigure(0,weight=10)
 
@@ -135,7 +145,7 @@ class infoDesarrolladores(tk.Frame):
         self.contenedorAbajoP6.columnconfigure(1,weight=3)
 
         self.rowconfigure(0,weight=10)
-        self.rowconfigure(1,weight=15)
+        self.rowconfigure(1,weight=20)
 
         self.columnconfigure(0,weight=10)
 
