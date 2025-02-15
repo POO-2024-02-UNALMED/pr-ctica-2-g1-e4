@@ -53,3 +53,7 @@ class Aplication(tk.Frame):
         window.geometry("800x600")
         app = Aplication(window)
         window.mainloop()
+
+    def pasarAVentanaBienvenida():
+        window = Aplication.bienvenida()
+        window.mainloop()
