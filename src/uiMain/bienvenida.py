@@ -1,7 +1,12 @@
 import tkinter as tk
+from tkinter import ttk
 import os
 import random
 from src.uiMain.startFrame import pasarAVentanaPrincipal
+import math
+from PIL import Image, ImageTk, ImageOps
+# Si vscode o python marcan esta linea como error, presionar windows+R, escribir cmd, click en ok, en la ventana negra escribir
+# pip install pillow y dar enter. Al terminar el proceso volver a ejecutar el programa
 
 desarrolladores=[
     """ANDREA MERINO""",
@@ -11,6 +16,14 @@ desarrolladores=[
     """LUIS ESTEBAN"""
 ]
 
+carpetaDesarrolladores=[
+    "andrea",
+    "juanita",
+    "jackelin",
+    "andres",
+    "luis"
+]
+
 hojasDeVida=[
     """Personaje: Beatriz pinzón""",
     """Personaje: Armando""",
@@ -18,13 +31,13 @@ hojasDeVida=[
     """Personaje: Nicolas mora""",
     """Personaje: Hermes pinzon"""
 ]
-
 class Aplication(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
         self.pack(expand=1,fill="both")
         self.create_widgets()
+        self.infoDesarrolladores.actualizarImagenes()
 
 
     def create_widgets(self):
@@ -50,6 +63,12 @@ class Aplication(tk.Frame):
         self.rowconfigure(1,weight=9)
         self.rowconfigure(2,weight=1)
 
+def imagenDeTamaño(path:str, masterForImage:tk.Widget):
+    archivo = tk.PhotoImage(master = masterForImage, file = path)
+    tamañoOriginal = archivo.width()*archivo.height()
+    divisor = math.floor(tamañoOriginal/(masterForImage.winfo_width()*masterForImage.winfo_height()))*2
+    archivo = archivo.subsample(divisor)
+    return archivo
         
 
 class infoDesarrolladores(tk.Frame):
@@ -58,40 +77,9 @@ class infoDesarrolladores(tk.Frame):
         self.master = master
         self.window = window
         self.config(highlightbackground="black",highlightthickness=2)
-        self.create_widgets()
         self.desarrollador=0
-        self.fotosDesarrolladores=[
-            [
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\1.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\2.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\3.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andrea\\4.png"),
-            ],
-            [
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\1.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\2.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\3.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\luis\\4.png"),
-            ],
-            [
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\1.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\2.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\3.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\jackelin\\4.png"),
-            ],
-            [
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\1.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\2.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\3.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\juanita\\4.png"),
-            ],
-            [
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\1.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\2.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\3.png"),
-            tk.PhotoImage(master=self, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\andres\\4.png"),
-            ]
-        ]
+        self.imagenesDesarrollador=[None,None,None,None]
+        self.create_widgets()
 
     def cambiarHojaDeVida(self):
         if (self.desarrollador == 4):
@@ -103,7 +91,7 @@ class infoDesarrolladores(tk.Frame):
         nombre = desarrolladores[self.desarrollador]
         self.nombreDesarrollador.config(text=nombre)
         self.hojaDeVida.config(text=hojaDeVida)
-        fotosDesarrollador = self.fotosDesarrolladores[self.desarrollador]
+        self.actualizarImagenes()
 
 
         
@@ -130,19 +118,35 @@ class infoDesarrolladores(tk.Frame):
         self.p5HojaDeVida.columnconfigure(0,weight=10)
 
         self.contenedorAbajoP6 = tk.Frame(master = self, highlightbackground="black",highlightthickness=1)
-        self.bettyYElOtro = tk.PhotoImage(master = self.window, file = f"{os.getcwd()}\\src\\uiMain\\imagenes\\bettyYElOtro.png")
         self.labelsImagenesDesarrollador=[]
-        self.labelsImagenesDesarrollador.append(tk.Label(master = self.contenedorAbajoP6, image=self.bettyYElOtro))
-        self.labelsImagenesDesarrollador[0].grid(row = 0, column = 0, padx=10, pady=10)
+        rows=[0,0,1,1]
+        columns=[0,1,0,1]
+        for i in range(4):
+            self.labelsImagenesDesarrollador.append(tk.Canvas(master = self.contenedorAbajoP6, highlightthickness=0, width=self.winfo_width()/3, height=self.winfo_height()/4))
+            self.labelsImagenesDesarrollador[i].grid(row=rows[i], column=columns[i], sticky="nswe")
+
+        self.bind("<Configure>", lambda e: self.actualizarImagenes())
 
         self.contenedorAbajoP6.grid(row = 1, column = 0, padx=10, pady=10, sticky="nswe")
-        self.contenedorAbajoP6.rowconfigure(0,weight=10)
-        self.contenedorAbajoP6.columnconfigure(0,weight=10)
+        self.contenedorAbajoP6.rowconfigure(0,weight=3)
+        self.contenedorAbajoP6.rowconfigure(1,weight=3)
+        self.contenedorAbajoP6.columnconfigure(0,weight=3)
+        self.contenedorAbajoP6.columnconfigure(1,weight=3)
 
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=15)
 
         self.columnconfigure(0,weight=10)
+
+    
+    def actualizarImagenes(self):
+        for i in range(4):
+            label:tk.Canvas = self.labelsImagenesDesarrollador[i]
+            imagenOriginal=Image.open(f"{os.getcwd()}\\src\\uiMain\\imagenes\\{carpetaDesarrolladores[self.desarrollador]}\\{i+1}.png")
+            multiplicador=1
+            self.imagenesDesarrollador[i]=ImageTk.PhotoImage(ImageOps.contain(imagenOriginal,(round(label.winfo_width()*multiplicador),round(label.winfo_height()*multiplicador))))
+            label.delete("imagen")
+            label.create_image(label.winfo_width()//2, label.winfo_height()//2, anchor="center", image=self.imagenesDesarrollador[i], tags="imagen")
 
 class infoSistema(tk.Frame):
     def __init__(self, window, master=None):
@@ -198,7 +202,13 @@ class p4FotosEInicio(tk.Frame):
             minsize = self.winfo_width()
         else:
             minsize = self.winfo_height()
-        self.archivoImagenSistema = tk.PhotoImage(master=self, file=pathImagenSistema).subsample(int(1800/minsize),int(1800/minsize))
+
+        tamañoMeta=minsize
+        self.archivoImagenSistema = tk.PhotoImage(master=self, file=pathImagenSistema)
+        anchoOriginal = self.archivoImagenSistema.width()
+        divisor = math.floor(anchoOriginal/tamañoMeta)*2
+        self.archivoImagenSistema = self.archivoImagenSistema.subsample(divisor,divisor)
+
         self.foto.config(image = self.archivoImagenSistema )
 
 
