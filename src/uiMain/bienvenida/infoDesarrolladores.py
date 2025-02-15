@@ -26,14 +26,14 @@ hojasDeVida=[
     Edad: 17 años
     Ciudad Natal: Medellin
     Programa: Ingeniería de Sistemas
-    Gustos: Apasionada por la programación y el arte.
+    Gustos: La programación y el arte.
         """,
     """
     Representado Por: Armando Mendoza
     Edad: 18 años
     Ciudad Natal: Pasto
     Programa: Ingeniería de Sistemas
-    Gustos: Apasionada    
+    Gustos: Bailar y los desafíos.   
     """,
     """
     Representado Por: Mariana valdez
@@ -47,7 +47,7 @@ hojasDeVida=[
     Edad: 18 años
     Ciudad Natal: Tuluá
     Programa: Ingeniería de Sistemas
-    Gustos: Apasionado por la tecnología y la programación.
+    Gustos:La tecnología y la programación.
     """,
     #Logros: En el pasado he desarrollado videojuegos, apps web y progresivas. 2 Años como freelancer en fiverr.
     """
@@ -55,7 +55,7 @@ hojasDeVida=[
     Edad: 19 años
     Ciudad Natal: Cúcuta
     Programa: Ingeniería de Sistemas
-    Gustos: Apasionado por el conocimiento, los números y el deporte.
+    Gustos: El conocimiento y el deporte.
     """
     #Logros: Me gusta estudiar de forma autónoma inglés, matemáticas y algunos lenguajes de programación. Como también, procuro trabajar en mis tiempos libres y vacaciones para ayudar a costear mi vida de foráneo.
 ]

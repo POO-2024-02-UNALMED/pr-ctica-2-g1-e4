@@ -2,8 +2,11 @@ import os
 import tkinter as tk
 from tkinter.font import Font
 
-def surtir():
-    ventana= tk.Tk()
+from src.gestorAplicacion.sede import Sede
+from src.gestorAplicacion.venta import Venta
+from src.uiMain import fieldFrame
+
+def surtir(ventana:tk.Frame):
     ventana.geometry("800x500")
     framePrincipal =  tk.Frame(ventana, bg="blue")
     framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
@@ -21,24 +24,23 @@ def surtir():
     frame2 = tk.Frame(framePrincipal, bg="light gray")
     frame2.pack(anchor="s",  expand=True, fill="both")
 
-    for sede in Sede.getlistaSedes():
+    for sede in Sede.getListaSedes():
         pesimismo = tk.Label(frame2, text=f"Para la {sede.getNombre()} \nTenemos un porcentaje de pesimismo:  {str(round(Venta.getPesimismo() * 100))} %")
-        pesimismo.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
+        pesimismo.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="n")
         criterio = "Seleccione una de las siguientes opciones:"; 
         field = fieldFrame(ventana, criterio)
         field.pack(pady=10, padx=10)
         pesimismo = tk.Label(frame2, text="1. Estoy de acuerdo con el porcentaje de pesimismo \n2. Deseo cambiar el porcentaje de pesimismo")
     
-        if entry.get() == 2:
+        if fieldFrame.getValue() == 2:
             criterio = "Ingrese el nuevo porcentaje de pesimismo % "
             field = fieldFrame(ventana, criterio)
             field.pack(pady=10, padx=10)
-            newPesimismo = (entry.get())/100
+            newPesimismo = (fieldFrame.getValue())/100
             Venta.setPesimismo(newPesimismo)
-        elif entry.get() != 1:  
+        elif fieldFrame.getValue() != 1:  
             #excepción
             pass
 
     ventana.mainloop()
 
-surtir()

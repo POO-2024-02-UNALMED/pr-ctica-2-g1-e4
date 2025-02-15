@@ -4,6 +4,8 @@ import os
 import tkinter as tk
 from tkinter.font import Font
 import sys
+from src.uiMain.F2Insumos import surtir
+from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
 from src.uiMain.F3Financiera import deudas
@@ -37,9 +39,9 @@ class startFrame(tk.Tk):
         self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
         self.procesosMenu.add_command(label="Despedir y reemplazar empleados")
-        self.procesosMenu.add_command(label="Pedir insumos")
+        self.procesosMenu.add_command(label="Pedir insumos", command = lambda : self.eliminarF2())
         self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.eliminarF3())
-        self.procesosMenu.add_command(label="Facturacion")
+        self.procesosMenu.add_command(label="Facturacion", command = lambda : self.eliminarF4())
         self.procesosMenu.add_command(label="Producir prendas")
     
 
@@ -49,7 +51,15 @@ class startFrame(tk.Tk):
 
         self.areaPrincipal = frameInicial(self)
         self.areaPrincipal.pack(fill="both", expand=True, padx=7, pady=7)
-
+        
+    def eliminarF2(self):
+        self.areaPrincipal.destroy()
+        self.cambiarFrame(surtir(self))
+        
+    def eliminarF4(self):
+        self.areaPrincipal.destroy()
+        self.cambiarFrame(Facturar(self))
+        
     def eliminarF3(self):
         self.areaPrincipal.destroy()
         self.cambiarFrame(deudas(self))
