@@ -1,5 +1,5 @@
 # Dibuja la ventana y la parte externa, y la parte interna la saca de las clases F.
-# O en el caso respectivo, no dibuja una funcionalidad, sino principalInicial.
+# O en el caso respectivo, no dibuja una funcionalidad, sino frameInicial.
 import os
 import tkinter as tk
 from tkinter.font import Font
@@ -9,6 +9,7 @@ from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
 from src.uiMain.F3Financiera import deudas
+from src.uiMain.F1Humana import contratar_despedir
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -38,7 +39,7 @@ class startFrame(tk.Tk):
 
         self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
-        self.procesosMenu.add_command(label="Despedir y reemplazar empleados")
+        self.procesosMenu.add_command(label="Despedir y reemplazar empleados", command = lambda :self.iniciarGestionHumana())
         self.procesosMenu.add_command(label="Pedir insumos", command = lambda : self.eliminarF2())
         self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.eliminarF3())
         self.procesosMenu.add_command(label="Facturacion", command = lambda : self.eliminarF4())
@@ -52,6 +53,10 @@ class startFrame(tk.Tk):
         self.areaPrincipal = frameInicial(self)
         self.areaPrincipal.pack(fill="both", expand=True, padx=7, pady=7)
         
+    def iniciarGestionHumana(self):
+        self.areaPrincipal.destroy()
+        self.cambiarFrame(contratar_despedir(self))
+    
     def eliminarF2(self):
         self.areaPrincipal.destroy()
         self.cambiarFrame(surtir(self))

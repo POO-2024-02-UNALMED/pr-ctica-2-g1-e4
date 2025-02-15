@@ -6,7 +6,6 @@ from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.persona import Persona
 from ..fecha import Fecha
 from ..sede import Sede
-from ..venta import Venta
 from .area import Area
 from typing import List
 
@@ -29,6 +28,7 @@ class Empleado(Persona, GastoMensual):
         sede.getListaEmpleadosTotal().append(self)
 
     def calcularRendimiento(self, fecha: Fecha) -> float:
+        from ..venta import Venta
         rendimiento = 0
         match self.areaActual:
             case Area.CORTE:
@@ -37,7 +37,7 @@ class Empleado(Persona, GastoMensual):
                 else:
                     rendimiento = (self.prendasProducidas / self.prendasDescartadas) * 100
             case Area.VENTAS:
-                ventasAsesoradas = Venta.filtrarPorMes(Venta.filtrarPorEmpleado(self.sede.historialVentas, self), fecha)
+                ventasAsesoradas = Venta.filtrarPorMes(Venta.filtrar(self.sede.historialVentas, self), fecha)
                 if ventasAsesoradas:
                     rendimiento = Venta.acumulado(ventasAsesoradas) / len(ventasAsesoradas)
                 else:

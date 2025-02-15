@@ -122,7 +122,7 @@ class Sede:
     def setListaMaquinas(self, maquinaria):
         self.listaMaquina = maquinaria
 
-    def getHistorialVentas(self):
+    def getHistorialVentas(self)->List:
         return self.historialVentas
 
     def setHistorialVentas(self, venta):

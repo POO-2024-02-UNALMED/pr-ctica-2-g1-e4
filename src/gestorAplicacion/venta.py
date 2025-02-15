@@ -1,5 +1,8 @@
 from src.gestorAplicacion.fecha import Fecha
 import math
+from multimethod import multimethod
+from typing import List
+# Puede que visual marque esto. Usa pip install multimethod en la terminal para arreglarlo.
 
 class Venta:
     codigosRegalo = []
@@ -88,15 +91,19 @@ class Venta:
         return round(min(diferencia / 3, 0.31), 3)
 
     @staticmethod
-    def filtrarPorMes(ventas, fecha: Fecha):
+    @multimethod
+    def filtrar(ventas:List, fecha:Fecha):
         ventasMes = []
         for venta in ventas:
             if venta.fechaVenta.ano == fecha.ano and venta.fechaVenta.mes == fecha.mes:
                 ventasMes.append(venta)
         return ventasMes
 
+    from src.gestorAplicacion.administracion.empleado import Empleado
+
+    @multimethod
     @staticmethod
-    def filtrarPorEmpleado(ventas, empleado):
+    def filtrar(ventas:List, empleado:Empleado):
         asesoradas = []
         for venta in ventas:
             if venta.asesor == empleado:

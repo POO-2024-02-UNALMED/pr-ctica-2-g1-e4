@@ -1,7 +1,7 @@
 from enum import Enum
 
 from src.gestorAplicacion.sede import Sede
-from src.gestorAplicacion.venta import Venta
+from src.gestorAplicacion.fecha import Fecha
 
 class Area(Enum):
     DIRECCION = ("Direccion", ["gerente", "subgerente", "director", "subdirector"])
@@ -14,7 +14,8 @@ class Area(Enum):
         self.maquinariaNecesaria = maquinaria
         self.rendimientoDeseado = 0
     
-    def rendimientoDeseadoActual(sede, fecha):
+    def rendimientoDeseadoActual(sede:Sede, fecha:Fecha):
+        from src.gestorAplicacion.venta import Venta
         rendimientoSede = []
         for area in Area:
             if area == Area.DIRECCION:
