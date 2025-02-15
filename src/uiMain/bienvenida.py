@@ -126,6 +126,7 @@ class infoDesarrolladores(tk.Frame):
             self.labelsImagenesDesarrollador[i].grid(row=rows[i], column=columns[i], sticky="nswe")
 
         self.bind("<Configure>", lambda e: self.actualizarImagenes())
+        self.window.bind("<Map>", lambda e: self.actualizarImagenes())
 
         self.contenedorAbajoP6.grid(row = 1, column = 0, padx=10, pady=10, sticky="nswe")
         self.contenedorAbajoP6.rowconfigure(0,weight=3)
@@ -144,9 +145,11 @@ class infoDesarrolladores(tk.Frame):
             label:tk.Canvas = self.labelsImagenesDesarrollador[i]
             imagenOriginal=Image.open(f"{os.getcwd()}\\src\\uiMain\\imagenes\\{carpetaDesarrolladores[self.desarrollador]}\\{i+1}.png")
             multiplicador=1
-            self.imagenesDesarrollador[i]=ImageTk.PhotoImage(ImageOps.contain(imagenOriginal,(round(label.winfo_width()*multiplicador),round(label.winfo_height()*multiplicador))))
-            label.delete("imagen")
-            label.create_image(label.winfo_width()//2, label.winfo_height()//2, anchor="center", image=self.imagenesDesarrollador[i], tags="imagen")
+            tamaños=(round(self.contenedorAbajoP6.winfo_width()/2*multiplicador),round(self.contenedorAbajoP6.winfo_height()/2*multiplicador))
+            if tamaños[0]>0:
+                self.imagenesDesarrollador[i]=ImageTk.PhotoImage(ImageOps.contain(imagenOriginal, tamaños))
+                label.delete("imagen")
+                label.create_image(label.winfo_width()//2, label.winfo_height()//2, anchor="center", image=self.imagenesDesarrollador[i], tags="imagen")
 
 class infoSistema(tk.Frame):
     def __init__(self, window, master=None):
@@ -155,6 +158,7 @@ class infoSistema(tk.Frame):
         self.window = window
         self.create_widgets()
         self.config(highlightbackground="black",highlightthickness=2)
+        self.parteAbajo.actualizarImagenSistema(False)
 
     def create_widgets(self):
         # P3 en el enunciado de la practica
@@ -183,6 +187,8 @@ class p4FotosEInicio(tk.Frame):
         self.window = window
         self.imagenSistema=0
         self.archivoImagenSistema = None
+        self.archivoImagenSistemaOriginal= None # Para la mayoría de recursos de tkinter, como imagenes,
+        # hay que manejarse con referencias, si no se hace, python las elimina y no se muestran
         self.create_widgets()
         self.config(highlightbackground="black", highlightthickness=1)
 
@@ -190,33 +196,28 @@ class p4FotosEInicio(tk.Frame):
         self.window.destroy()
         pasarAVentanaPrincipal()
 
-    def actualizarImagenSistema(self,cambiarDesarrollador:bool):
-        if cambiarDesarrollador:
+    def actualizarImagenSistema(self,cambiarImagen:bool):
+        if cambiarImagen:
             if (self.imagenSistema==4):
                 self.imagenSistema=0
             else:
                 self.imagenSistema+=1
         
         pathImagenSistema= f"{os.getcwd()}\\src\\uiMain\\imagenes\\sistema\\{self.imagenSistema}.png"
-        if self.winfo_width()<self.winfo_height():
-            minsize = self.winfo_width()
-        else:
-            minsize = self.winfo_height()
+        
+        self.archivoImagenSistemaOriginal = Image.open(pathImagenSistema)
+        self.archivoImagenSistema = ImageTk.PhotoImage(ImageOps.contain(self.archivoImagenSistemaOriginal, (self.winfo_width(),self.winfo_height())))
+        self.foto.delete("imagen")
+        self.foto.create_image(self.winfo_width()//2, self.winfo_height()//2, anchor="center", image=self.archivoImagenSistema, tags="imagen")
 
-        tamañoMeta=minsize
-        self.archivoImagenSistema = tk.PhotoImage(master=self, file=pathImagenSistema)
-        anchoOriginal = self.archivoImagenSistema.width()
-        divisor = math.floor(anchoOriginal/tamañoMeta)*2
-        self.archivoImagenSistema = self.archivoImagenSistema.subsample(divisor,divisor)
-
-        self.foto.config(image = self.archivoImagenSistema )
 
 
 
     def create_widgets(self):
-        self.foto = tk.Label(master=self, highlightthickness=0, background="#000000") 
-        self.foto.grid(row = 0, column = 0)
+        self.foto = tk.Canvas(master = self, highlightthickness=0,width=self.winfo_width())
+        self.foto.grid(row = 0, column = 0,sticky="nswe")
         self.foto.bind("<Enter>", lambda e:  self.actualizarImagenSistema(True))
+        self.window.bind("<Map>", lambda e: self.actualizarImagenSistema(False))
         self.bind("<Configure>", lambda e: self.actualizarImagenSistema(False))
 
         self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command= lambda : self.pasarAPrincipal())
