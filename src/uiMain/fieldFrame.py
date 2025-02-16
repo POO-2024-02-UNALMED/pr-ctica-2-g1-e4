@@ -1,4 +1,4 @@
-from tkinter import Frame, Label, Entry
+from tkinter import Frame, Label, Entry, Tk
 
 
 class FieldFrame(Frame):
@@ -10,21 +10,28 @@ class FieldFrame(Frame):
         self.citerios= criterios
         self.crecer=crecer
         self.tamañoFuente=tamañoFuente
-        self.createWidgets(tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry)
-        
+        self.createWidgets(tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry)  
 
     def createWidgets(self,tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry):
         Label(self, text=tituloCriterios, font=(
-            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=0, pady=5)
-        Label(self, text=tituloValores,  font=(
-            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=3,  pady=5)
+            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=1, pady=5)
 
+        Label(self, text=tituloValores,  font=(
+            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=2, pady=5)
+        self.columnconfigure(0,weight=3)
+        self.columnconfigure(1,weight=1)
+        self.columnconfigure(2,weight=1)
+        self.columnconfigure(3,weight=3)
 
         for i, criterio in enumerate(criterios, start=1):
             Label(self, text=criterio, font=("Arial", self.tamañoFuente, "bold")).grid(
-                row=i, column=0, padx=50, pady=5, sticky="w")
+                row=i, column=1, pady=5, sticky="n")
             entry = Entry(self, width=ancho_entry, bg="plum3")
-            entry.grid(row=i, column=3, padx=60, pady=5, sticky="w")
+            entry.grid(row=i, column=2, pady=5)
+            self.columnconfigure(0,weight=3)
+            self.columnconfigure(1,weight=1)
+            self.columnconfigure(2,weight=1)
+            self.columnconfigure(3,weight=3)
 
             if valores is not None:
 
@@ -58,7 +65,8 @@ class FieldFrame(Frame):
             if c == criterio:
                 entry = self.valores[i]
                 break
-        return entry.get()
+        print(entry.getText())
+        return entry.getText()
     
     def configurarCallBack(self, criterio, evento, funcion):
         entry = None
@@ -72,3 +80,4 @@ class FieldFrame(Frame):
         for i, c in enumerate(self.valoresPorDefecto):
             self.valores[i].delete(0, "end")
             self.valores[i].insert(0, c)
+            

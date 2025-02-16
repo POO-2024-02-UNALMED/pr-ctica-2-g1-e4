@@ -15,14 +15,14 @@ def Facturar(ventana:tk.Frame):
     tituloF4.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
     ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
-    descripcionF4 = tk.Label(frame1, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge",  font=("Arial",10))
+    descripcionF4 = tk.Label(frame1, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial",10), wraplength=600)
     descripcionF4.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
 
-    frame2 = tk.Frame(framePrincipal, bg="pink")
+    frame2 = tk.Frame(framePrincipal)
     frame2.pack(anchor="s",  expand=True, fill="both")
     
-    criterios = ["Proveedor", "Banco"]
-    valores = ["Si/No", "Si/No"]
+    criterios = ["Sede", "Banco"]
+    valores = ["SedeP", "Si/No"]
     habilitado = [True, True]
     # Creamos el FieldFrame con los botones
     field_frame = FieldFrame(frame2, "Título Criterios", criterios, "Título Valores", valores, habilitado)
