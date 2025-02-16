@@ -103,7 +103,7 @@ class Venta:
 
     @multimethod
     @staticmethod
-    def filtrar(ventas:List, empleado:Empleado):
+    def filtrar(empleado:Empleado,ventas:List):
         asesoradas = []
         for venta in ventas:
             if venta.asesor == empleado:

@@ -23,6 +23,7 @@ def contratar_despedir(ventana:tk.Frame):
     infoMalos = Empleado.listaInicialDespedirEmpleado(main.Main.fecha)
     posiblesDespedidos = infoMalos[0]
     mensajes = infoMalos[1]
+    print(infoMalos)
     for i in range(len(posiblesDespedidos)):
         empleadosMalosString += posiblesDespedidos[i].getNombre() + ": " + mensajes
 

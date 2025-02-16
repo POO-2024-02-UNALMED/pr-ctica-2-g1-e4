@@ -92,3 +92,5 @@ def deudas(ventana:tk.Frame)->tk.Frame:
     boton1 = tk.Button(frame2, text="Aceptar", command=Siguiente)
     return framePrincipal
 
+    
+

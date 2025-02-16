@@ -37,7 +37,7 @@ class Empleado(Persona, GastoMensual):
                 else:
                     rendimiento = (self.prendasProducidas / self.prendasDescartadas) * 100
             case Area.VENTAS:
-                ventasAsesoradas = Venta.filtrarPorMes(Venta.filtrar(self.sede.historialVentas, self), fecha)
+                ventasAsesoradas = Venta.filtrar(Venta.filtrar(self,self.sede.historialVentas), fecha)
                 if ventasAsesoradas:
                     rendimiento = Venta.acumulado(ventasAsesoradas) / len(ventasAsesoradas)
                 else:
