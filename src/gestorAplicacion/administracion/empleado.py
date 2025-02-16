@@ -25,7 +25,7 @@ class Empleado(Persona, GastoMensual):
         self.evaluaciones = []
         self.ventasEncargadas = []
         sede.anadirEmpleado(self)
-        sede.getListaEmpleadosTotal().append(self)
+        Sede.getListaEmpleadosTotal().append(self)
 
     def calcularRendimiento(self, fecha: Fecha) -> float:
         from ..venta import Venta
@@ -60,8 +60,11 @@ class Empleado(Persona, GastoMensual):
     @classmethod
     def listaInicialDespedirEmpleado(cls, fecha: Fecha) -> List[List]:
         listaADespedir = []
-        mensajes = []
-        retorno = [listaADespedir, mensajes]
+        empleadosInsuficientes = []
+        rendimientoInsufuciencias= []
+        acciones = []
+        mensajes = [] # Heredado de la versión de java, usada para reportar a la funcion que la llama de errores o del proceso en general.
+        retorno = [listaADespedir, mensajes, empleadosInsuficientes, rendimientoInsufuciencias, acciones]
         listaATransferir = [[] for _ in Sede.getListaSedes()]
 
         for sede in Sede.getListaSedes():
@@ -74,6 +77,8 @@ class Empleado(Persona, GastoMensual):
                     seVaADespedir = True
                     listaADespedir.append(emp)
                     mensajes.append(f"El empleado {emp.nombre} tiene un rendimiento insuficiente, con un rendimiento de {rendimiento:.2f} y un rendimiento deseado de {rendimientoDeseado:.2f}")
+                    empleadosInsuficientes.append(emp)
+                    rendimientoInsufuciencias.append(rendimiento)
 
                 if seVaADespedir and sede.cantidadPorArea(emp.areaActual) == 1:
                     for idxSede, sedeDestino in enumerate(Sede.getListaSedes()):
@@ -82,6 +87,7 @@ class Empleado(Persona, GastoMensual):
                             listaADespedir.remove(emp)
                             listaATransferir[idxSede].append(emp)
                             seVaADespedir = False
+                            acciones.append("transferencia-sede")
 
                 if seVaADespedir and emp.areaActual != Area.CORTE and emp.traslados < 2 and sede.cantidadPorArea(emp.areaActual) != 1:
                     puedeCambiarArea = True
@@ -94,6 +100,10 @@ class Empleado(Persona, GastoMensual):
                         emp.traslados += 1
                         seVaADespedir = False
                         listaADespedir.remove(emp)
+                        acciones.append("traslado-area")
+                
+                if seVaADespedir:
+                    acciones.append("sugerencia-despido")
 
         for idxSede, sede in enumerate(Sede.getListaSedes()):
             for emp in listaATransferir[idxSede]:
@@ -117,6 +127,17 @@ class Empleado(Persona, GastoMensual):
 
         Maquinaria.asignarMaquinaria(self)
         return mensajes
+    
+    @classmethod
+    def despedirEmpleados(cls, empleados:List, conTransaccciones:bool, fecha:Fecha):
+        for empleado in empleados:
+            empleado.sede.quitarEmpleado(empleado)
+            Sede.getListaEmpleadosTotal().remove(empleado)
+            if conTransaccciones:
+                aPagar:int = Maquinaria.remuneracionDanos(empleado)
+                cesantias:int = empleado.salario*(empleado.fechaContratacion.getAno()-fecha.getAno())/360
+                Banco.getCuentaPrincipal().transaccion(aPagar-cesantias)
+            Maquinaria.liberarMaquinariaDe(empleado)
 
     def __str__(self):
         return f"{super().__str__()}\nArea: {self.areaActual} - Sede: {self.sede} - Traslados: {self.traslados}"
