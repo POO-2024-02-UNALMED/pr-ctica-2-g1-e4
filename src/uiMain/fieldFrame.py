@@ -3,11 +3,13 @@ from tkinter import Frame, Label, Entry
 
 class FieldFrame(Frame):
 
-    def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores=None, habilitado=None, ancho_entry=20):
+    def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores=None, habilitado=None, ancho_entry=20, crecer=False):
         super().__init__(frame)
         self.valores = []
         self.citerios= []
+        self.crecer=crecer
         self.createWidgets(tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry)
+        
 
     def createWidgets(self,tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry):
         Label(self, text=tituloCriterios, font=(
@@ -31,6 +33,10 @@ class FieldFrame(Frame):
 
 
             self.valores.append(entry)
+        
+        if self.crecer:
+            self.columnconfigure(0, weight=1)
+            self.columnconfigure(3, weight=1)
 
     def habilitarEntry(self, criterio, habilitar):
         entry = None

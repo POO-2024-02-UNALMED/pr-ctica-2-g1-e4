@@ -9,7 +9,7 @@ from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
 from src.uiMain.F3Financiera import deudas
-from src.uiMain.F1Humana import contratar_despedir
+from src.uiMain.F1Humana import F1Humana
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -55,7 +55,7 @@ class startFrame(tk.Tk):
         
     def iniciarGestionHumana(self):
         self.areaPrincipal.destroy()
-        self.cambiarFrame(contratar_despedir(self))
+        self.cambiarFrame(F1Humana(self))
     
     def eliminarF2(self):
         self.areaPrincipal.destroy()
