@@ -2,6 +2,7 @@ import tkinter as tk
 import os
 from src.uiMain.main import Main
 from src.gestorAplicacion.fecha import Fecha
+from src.uiMain.exceptionC1 import ExceptionC1
 
 class frameInicial(tk.Frame):
     def __init__(self,master):
@@ -96,10 +97,19 @@ class frameInicial(tk.Frame):
         año = numero
         if dia <= 0 or dia > 31:
             self.borrar()
+            error = ExceptionC1("El día ingresado no es válido.")
+            error.fechaNoValidada()
+            self.after(100, self.Ok) 
         elif mes <= 0 or mes > 12:
             self.borrar()
+            error = ExceptionC1("El mes ingresado no es válido.")
+            error.fechaNoValidada()
+            self.after(100, self.Ok) 
         elif año <= 0:
             self.borrar()
+            error = ExceptionC1("El año ingresado no es válido.")
+            error.fechaNoValidada()
+            self.after(100, self.Ok) 
         else:
             fecha = Fecha(dia, mes, año)
             Main.fecha=fecha
