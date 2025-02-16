@@ -1,6 +1,5 @@
 from tkinter import Tk
 from tkinter import messagebox
-from src.gestorAplicacion.fecha import Fecha
 
 class ExceptionC1(ErrorAplicacion):
     def __init__(self, mensaje):
@@ -9,4 +8,5 @@ class ExceptionC1(ErrorAplicacion):
     def fechaNoValidada(self):
        messagebox.showwarning("Alerta", f"{self}")
        raise self
+
     
