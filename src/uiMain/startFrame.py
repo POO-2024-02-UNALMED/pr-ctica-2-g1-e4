@@ -74,9 +74,13 @@ class startFrame(tk.Tk):
         reemplazo.pack(fill="both", expand=True, padx=7, pady=7)
 
     def pasarABienvenida(self):
-        from src.uiMain.bienvenida.bienvenida import Aplication
-        self.destroy()
-        Aplication.pasarAVentanaBienvenida()
+        if isinstance(self.areaPrincipal, frameInicial):
+            from src.uiMain.bienvenida.bienvenida import Aplication
+            self.destroy()
+            Aplication.pasarAVentanaBienvenida()
+        else:
+            self.areaPrincipal.destroy()
+            self.cambiarFrame(frameInicial(self))
 
 def pasarAVentanaPrincipal():
     ventana = startFrame()
