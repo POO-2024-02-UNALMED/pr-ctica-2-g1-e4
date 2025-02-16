@@ -1,5 +1,6 @@
 from tkinter import Tk
 from tkinter import messagebox
+from src.uiMain.errorAplicacion import ErrorAplicacion
 class ExceptionC1(ErrorAplicacion):
     def __init__(self, mensaje):
         super().__init__(mensaje)
