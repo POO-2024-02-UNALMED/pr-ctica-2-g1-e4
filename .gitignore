@@ -6,3 +6,4 @@ __pycache__/
 
 # Ignore .venv directory created by VSCode
 .venv/
+.vscode/launch.json

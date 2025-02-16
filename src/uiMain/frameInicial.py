@@ -2,10 +2,12 @@ import tkinter as tk
 import os
 from src.uiMain.main import Main
 from src.gestorAplicacion.fecha import Fecha
+from src.uiMain.exceptionC1 import ExceptionC1
 
 class frameInicial(tk.Frame):
     def __init__(self,master):
         super().__init__(master)
+        self.fechaValida = False
         self.create_widgets()
 
     def create_widgets(self):
@@ -69,9 +71,17 @@ class frameInicial(tk.Frame):
         FDia = self.entradaDia.get() # Obtener el texto de la entrada para el día
         FMes = self.entradaMes.get() # Obtener el texto de la entrada para el mes
         FAño = self.entradaAño.get() # Obtener el texto de la entrada para el año
+        if not FDia or not FMes or not FAño:
+                error = ExceptionC1("Debes ingresar una fecha antes de continuar.")
+                error.contenidoVacio()
+                self.borrar()
+                self.after(100, self.Ok)
+                return 
+        self.ingresarFecha(FDia,FMes,FAño)
         if isinstance(self.ingresarFecha(FDia,FMes,FAño),Fecha):
             self.confirmacion.config(text="Fecha ingresada correctamente, estamos en "+Main.fecha.strCorto())
         pass
+
 
     def borrar(self):
         self.entradaDia.delete(0, tk.END)
@@ -98,11 +108,21 @@ class frameInicial(tk.Frame):
         año = numero
         if dia <= 0 or dia > 31:
             self.borrar()
+            error = ExceptionC1("El día ingresado no es válido.")
+            error.fechaNoValidada()
+            self.after(100, self.Ok) 
         elif mes <= 0 or mes > 12:
             self.borrar()
+            error = ExceptionC1("El mes ingresado no es válido.")
+            error.fechaNoValidada()
+            self.after(100, self.Ok) 
         elif año <= 0:
             self.borrar()
+            error = ExceptionC1("El año ingresado no es válido.")
+            error.fechaNoValidada()
+            self.after(100, self.Ok) 
         else:
             fecha = Fecha(dia, mes, año)
             Main.fecha=fecha
+            self.fechaValida = True
         return fecha
