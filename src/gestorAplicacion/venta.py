@@ -90,9 +90,8 @@ class Venta:
         diferencia = (montoVentasBF - montoVentasComunes) / float(montoVentasComunes)
         return round(min(diferencia / 3, 0.31), 3)
 
-    @staticmethod
     @multimethod
-    def filtrar(ventas:List, fecha:Fecha):
+    def filtrar(cls,ventas:List, fecha:Fecha):
         ventasMes = []
         for venta in ventas:
             if venta.fechaVenta.ano == fecha.ano and venta.fechaVenta.mes == fecha.mes:
@@ -102,13 +101,14 @@ class Venta:
     from src.gestorAplicacion.administracion.empleado import Empleado
 
     @multimethod
-    @staticmethod
-    def filtrar(empleado:Empleado,ventas:List):
+    def filtrar(cls,ventas:List, empleado:Empleado):
         asesoradas = []
         for venta in ventas:
             if venta.asesor == empleado:
                 asesoradas.append(venta)
         return asesoradas
+
+    filtrar =classmethod(filtrar)
 
     @staticmethod
     def cantidadProducto(ventas, prenda):
