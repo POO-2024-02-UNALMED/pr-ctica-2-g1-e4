@@ -9,7 +9,7 @@ class Venta:
     montosRegalo = []
     pesimismo = 0.02
 
-    def __init__(self, sede, fecha, cliente=None, asesor=None, encargado=None, articulos=None, subtotal=0, montoPagado=0):
+    def __init__(self, sede, fecha:Fecha, cliente=None, asesor=None, encargado=None, articulos=None, subtotal=0, montoPagado=0):
         self.sede = sede
         self.fechaVenta = fecha
         self.cliente = cliente
@@ -31,6 +31,7 @@ class Venta:
         sede.actualizarHistorialVentas(self)
         if montoPagado:
             sede.getCuentaSede().setAhorroBanco(sede.getCuentaSede().getAhorroBanco() + montoPagado)
+        sede.actualizarHistorialVentas(self)
 
     @staticmethod
     def acumuladoVentasAsesoradas(empleado):

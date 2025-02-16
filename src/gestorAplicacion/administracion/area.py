@@ -4,15 +4,16 @@ from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.fecha import Fecha
 
 class Area(Enum):
-    DIRECCION = ("Direccion", ["gerente", "subgerente", "director", "subdirector"])
-    OFICINA = ("Oficina", ["computador", "registradora"])
-    VENTAS = ("Ventas", ["escaner"])
-    CORTE = ("Corte", ["maquina de coser", "maquina de corte", "plancha industrial"])
+    DIRECCION = ("Direccion", ["gerente", "subgerente", "director", "subdirector"],3)
+    OFICINA = ("Oficina", ["computador", "registradora"],2)
+    VENTAS = ("Ventas", ["escaner"],1)
+    CORTE = ("Corte", ["maquina de coser", "maquina de corte", "plancha industrial"],0)
 
-    def __init__(self, nombre, maquinaria):
+    def __init__(self, nombre, maquinaria, jerarquia):
         self.nombre = nombre
         self.maquinariaNecesaria = maquinaria
         self.rendimientoDeseado = 0
+        self.jerarquia = jerarquia
     
     def rendimientoDeseadoActual(sede:Sede, fecha:Fecha):
         from src.gestorAplicacion.venta import Venta
@@ -43,3 +44,9 @@ class Area(Enum):
             rendimientoSede.append(area.rendimientoDeseado)
 
         return rendimientoSede
+    
+    @classmethod
+    def obtenerPorJerarquia(cls, jerarquia):
+        for area in Area:
+            if area.jerarquia == jerarquia:
+                return area
