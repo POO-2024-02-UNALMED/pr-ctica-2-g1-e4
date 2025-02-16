@@ -14,7 +14,7 @@ from typing import List
 
 class Main:
     fecha:Fecha=None
-    
+    proveedorBdelmain=None
 
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
@@ -519,7 +519,8 @@ class Main:
                 print("Por favor ingrese un número entero")
 # Hola 
 
-    def dondeRetirar():
+    @classmethod
+    def dondeRetirar(cls):
         print("\n*Seleccione la sede desde donde comprara el Repuesto:\n")
         if Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco() >= Main.proveedorBdelmain.getPrecio():
             print(f"1. {Sede.getListaSedes()[0].getNombre()} tiene disponible: {Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()}")
@@ -547,11 +548,13 @@ class Main:
             else:
                 print("Opcion incorrecta, marque 1 o 2 segun desee")
 
+    @staticmethod
     def recibeProveedorB(proveedorB):
         Main.proveedorBdelmain = proveedorB
 
-    def recibeProveedorB():
-        return Main.proveedorBdelmain
+    @classmethod
+    def retornaProveedorB(cls):
+        return cls.proveedorBdelmain
 
     def vender():
         from ..gestorAplicacion.administracion.empleado import Empleado
@@ -965,21 +968,24 @@ class Main:
         }
         print(mensajes.get(senall, ""))
 
-    def printsInt1(signal, rep):
+    @classmethod
+    def printsInt1(cls, signal, rep, maq, sede):
         if signal == 1:
-            print(f"*{rep.getNombre()} se debe cambiar.\n")
+            return f"{rep.getNombre()} se debe cambiar.\nMaquina afectada: {maq.getNombre()}  -  Sede afectada: {sede.getNombre()}"
         elif signal == 2:
-            print(f"*El proveedor mas barato se llama '{Main.proveedorBdelmain.getNombre()}', y lo vende a: {Main.proveedorBdelmain.getPrecio()}\n")
+            print(f"*El proveedor mas barato se llama '{cls.proveedorBdelmain.getNombre()}', y lo vende a: {cls.proveedorBdelmain.getPrecio()}\n")
 
-    def printsInt11(rep, maq, sede, senal):
+    @classmethod
+    def printsInt11(cls, rep, maq, sede, senal):
         if senal == 1:
             print(f"Repuesto: '{rep.getNombre()}' añadido correctamente a la {maq.getNombre()}, de la: {sede.getNombre()}")
         elif senal == 2:
             print("Ninguna de las sedes cuenta con dinero suficiente, considere pedir un prestamo.")
         elif senal == 3:
             print(f"\n--> Por ende, la {maq.getNombre()} de la {maq.getSede().getNombre()}, se encuentra inhabilitada.")
-
-    def printsInt111(maq, senal):
+    
+    @classmethod
+    def printsInt111(cls, maq, senal):
         if senal == 4:
             print(f"\n--> La {maq.getNombre()} de la {maq.getSede().getNombre()} requiere mantenimiento.\n")
 
@@ -1104,9 +1110,9 @@ class Main:
         p32.setInsumo(Insumo("Bandas de transmision", p32))
 
         # PROVEEDORES QUE VENDEN TINTA NEGRA PARA IMPRESORA:
-        p33 = Proveedor(44000, "Tinta por aqui")
+        p33 = Proveedor(50000, "Tinta por aqui")
         p33.setInsumo(Insumo("Tinta Negra Impresora", p33))
-        p34 = Proveedor(50000, "El tintoso")
+        p34 = Proveedor(44000, "El tintoso")
         p34.setInsumo(Insumo("Tinta Negra Impresora", p34))
 
         # PROVEEDORES QUE VENDEN LECTORES DE BARRAS:
@@ -1148,7 +1154,7 @@ class Main:
 
         BandasDeTransmision = Repuesto("Bandas de Transmision", p31, 2500)
 
-        TintaN = Repuesto("Tinta Negra Impresora", p33, 3000, 1, None)
+        TintaN = Repuesto("Tinta Negra Impresora", p33, 3000, 1, None, 3100)
 
         Lector = Repuesto("Lector de barras", p35, 3000)
         PapelQuimico = Repuesto("Papel quimico", p37, 72)
@@ -1246,7 +1252,7 @@ class Main:
         MaquinaDeTijereado = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado,sedeP)
         Impresora = Maquinaria("Impresora", 800000, 2000, repuestosImp, sedeP)
         Registradora = Maquinaria("Caja Registradora", 700000, 17000, repuestosRe, sedeP)
-        Computador = Maquinaria("Computador", 2_000_000, 10000, repuestosImp, sedeP)
+        Computador = Maquinaria("Computador", 2_000_000, 10000, repuestosComp, sedeP)
 
         # sede2
         MaquinaDeCoser2 = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC2, sede2)
@@ -1257,7 +1263,7 @@ class Main:
         MaquinaDeTijereado2 = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado2,sede2)
         Impresora2 = Maquinaria("Impresora", 800000, 2000, repuestosImp2, sede2)
         Registradora2 = Maquinaria("Caja Registradora", 700000, 17000, repuestosRe2, sede2)
-        Computador2 = Maquinaria("Computador", 2_000_000, 10000, repuestosImp2, sede2)
+        Computador2 = Maquinaria("Computador", 2_000_000, 10000, repuestosComp2, sede2)
 
         bp = Banco("principal", "Banco Montreal",  4_000_000_000, 0.05)
         b1 = Banco("secundaria", "Banco Montreal", 5_000_000, 0.05)

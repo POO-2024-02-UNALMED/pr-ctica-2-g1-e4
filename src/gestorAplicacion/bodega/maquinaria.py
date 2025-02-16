@@ -1,8 +1,10 @@
 from typing import List
 from ..sede import Sede
 
+
 class Maquinaria:
     def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos, sede: 'Sede'):
+        
         self.nombre = nombre
         self.user = None
         self.horasUso = 0
@@ -14,7 +16,9 @@ class Maquinaria:
         self.horasVisitaTecnico = 0
         self.horaRevision = horaRevision
         self.repuestos = repuestos
-        self.listProveedoresBaratos = []
+        sede.getListaMaquinas().append(self)
+        self.asignarRepAsedes(sede, repuestos)
+
         self.ultFechaRevision = None
 
     def copiar(self):
@@ -29,6 +33,10 @@ class Maquinaria:
                 for repuesto in maquinaria.repuestos:
                     gastoMaquinaria += repuesto.calcularGastoMensual(fecha)
         return gastoMaquinaria
+    
+    def asignarRepAsedes(self, sede, listaRepuestos):
+        for rep in listaRepuestos:
+            rep.setSede(sede)
 
     @staticmethod
     def remuneracionDanos(empleado):
@@ -64,8 +72,17 @@ class Maquinaria:
     def getSede(self) -> 'Sede':
         return self.sede
 
-    def agruparMaquinasDisponibles(self, fecha) -> List['Maquinaria']:
+    
+    
+    @classmethod
+    def agruparMaquinasDisponibles(cls, fecha) -> List['Maquinaria']:
         from .repuesto import Repuesto
+        from src.uiMain.main import Main
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        from src.gestorAplicacion.bodega.insumo import Insumo
+        from src.uiMain.F5Produccion import receptor, recibeProveedorB
+        print("ENTRÉ")
+        
         maqDisponibles = []
         todosProvBaratos = []
         encontrado = False
@@ -76,19 +93,25 @@ class Maquinaria:
                     cadaMaquina.mantenimiento = False
                     for cadaRepuesto in cadaMaquina.getRepuestos():
                         if (cadaRepuesto.getHorasDeVidaUtil() - cadaRepuesto.getHorasDeUso()) <= 0:
-                            todosProvBaratos = self.encontrarProveedoresBaratos()
+                            receptor(Main.printsInt1(1, cadaRepuesto, cadaMaquina, cadaSede))
+                            todosProvBaratos = cls.encontrarProveedoresBaratos()
+                            print(len(todosProvBaratos))
                             for elMasEconomico in todosProvBaratos:
                                 if elMasEconomico.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
+                                    print("adentro")
                                     proveedorBarato = elMasEconomico
+                                    recibeProveedorB(proveedorBarato)
+                                    print(proveedorBarato.getNombre())
+                                    Main.recibeProveedorB(proveedorBarato)
                                     break
                             for sedeCreada in Sede.getListaSedes():
-                                if sedeCreada.getCuentaSede().getAhorroBanco() >= proveedorBarato.getInsumo().getPrecioIndividual():
-                                    self.dondeRetirar()
+                                if sedeCreada.getCuentaSede().getAhorroBanco() >= proveedorBarato.getPrecio():
+                                    #Main.dondeRetirar()
                                     cadaMaquina.setRepuestos(cadaRepuesto)
-                                    Repuesto.setListadoRepuestos(cadaRepuesto)
-                                    cadaMaquina.getRepuestos().add(cadaRepuesto.copiar(proveedorBarato))
+                                    Repuesto.removeRepuesto(cadaRepuesto)
+                                    cadaMaquina.getRepuestos().append(cadaRepuesto.copiarConProveedor(proveedorBarato))
                                     cadaRepuesto.setPrecioCompra(proveedorBarato.getPrecio())
-                                    cadaRepuesto.setFechasCompra(fecha)
+                                    cadaRepuesto.addFechaCompra(fecha)
                                     encontrado = True
                                     break
                             if not encontrado:
@@ -113,9 +136,12 @@ class Maquinaria:
 
         return maqDisponibles
 
-    def encontrarProveedoresBaratos(self):
+    @classmethod
+    def encontrarProveedoresBaratos(cls):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from .repuesto import Repuesto
+        listProveedoresBaratos = []
+        
         for cadaRepuesto in Repuesto.getListadoRepuestos():
             proveedorBarato = None
             for proveedores in Proveedor.getListaProveedores():
@@ -124,8 +150,11 @@ class Maquinaria:
                         proveedorBarato = proveedores
                     elif proveedores.getInsumo().getPrecioIndividual() <= proveedorBarato.getInsumo().getPrecioIndividual():
                         proveedorBarato = proveedores
-            self.listProveedoresBaratos.append(proveedorBarato)
-        return self.listProveedoresBaratos
+            
+            if proveedorBarato not in listProveedoresBaratos:
+                listProveedoresBaratos.append(proveedorBarato)
+
+        return listProveedoresBaratos
 
     @staticmethod
     def asignarMaquinaria(emp):

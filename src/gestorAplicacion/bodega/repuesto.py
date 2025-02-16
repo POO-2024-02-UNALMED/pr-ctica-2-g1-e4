@@ -6,16 +6,17 @@ from .proveedor import Proveedor
 class Repuesto(Insumo):
     listadoRepuestos = []
 
-    def __init__(self, nombre: str, proveedor: Proveedor, horasDeVidaUtil: int, cantidad=None, sede=None):
+    def __init__(self, nombre: str, proveedor: Proveedor, horasDeVidaUtil: int, cantidad=None, sede=None, horasDeUso=0):
         super().__init__(nombre, proveedor, cantidad, sede)
         self.nombre = nombre
         self.horasDeVidaUtil = horasDeVidaUtil
         self.proveedor = proveedor
         self.fechasCompra = []
         self.preciosCompra = []
-        self.horasDeUso = 0
+        self.horasDeUso = horasDeUso
         self.estado = True
         Repuesto.listadoRepuestos.append(self)
+        
 
     def getFechasCompra(self) -> List[Fecha]:
         return self.fechasCompra

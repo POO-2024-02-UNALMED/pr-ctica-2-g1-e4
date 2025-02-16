@@ -10,6 +10,7 @@ from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
 from src.uiMain.F3Financiera import deudas
 from src.uiMain.F1Humana import F1Humana
+from src.uiMain.F5Produccion import producir
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -43,7 +44,7 @@ class startFrame(tk.Tk):
         self.procesosMenu.add_command(label="Pedir insumos", command = lambda : self.eliminarF2())
         self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.eliminarF3())
         self.procesosMenu.add_command(label="Facturacion", command = lambda : self.eliminarF4())
-        self.procesosMenu.add_command(label="Producir prendas")
+        self.procesosMenu.add_command(label="Producir prendas", command= lambda : self.iniciarProduccion())
     
 
         self.ayudaMenu = tk.Menu(self.barraMenus, tearoff=0)
@@ -68,6 +69,10 @@ class startFrame(tk.Tk):
     def eliminarF3(self):
         self.areaPrincipal.destroy()
         self.cambiarFrame(deudas(self))
+
+    def iniciarProduccion(self):
+        self.areaPrincipal.destroy()
+        self.cambiarFrame(producir(self))
         
     def cambiarFrame(self, reemplazo:tk.Frame):
         self.areaPrincipal = reemplazo
