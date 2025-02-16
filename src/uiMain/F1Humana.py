@@ -102,7 +102,7 @@ terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
 
         self.datosDespedido=FieldFrame(self.frame1, "Dato del empleado" ,["sede","nombre"],"valor", ["",""],[True,False],ancho_entry=25, tamañoFuente=10)
         self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosAñadirSede)
-        self.datosDespedido.grid(row=1, column=0)
+        self.datosDespedido.grid(row=1, column=0, columnspan=2)
 
         posiblesSedes="Posibles sedes:\n"
 
@@ -110,7 +110,7 @@ terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
             posiblesSedes+=sede.getNombre()+"\n"
         
         self.pistas=tk.Label(self.frame1, text=posiblesSedes, font=("Arial", 10))
-        self.pistas.grid(row=1, column=1)
+        self.pistas.grid(row=1, column=3)
         self.aceptar=tk.Button(self.frame1, text="Aceptar", font=("Arial", 12, "bold"), command=self.enviarEmpleadoNuevo)
         self.botonBorrarSeleccion=tk.Button(self.frame1, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
 
@@ -121,7 +121,8 @@ terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
         self.frame1.rowconfigure(0, weight=1)
         self.frame1.rowconfigure(1, weight=10)
         self.frame1.columnconfigure(0, weight=2)
-        self.frame1.columnconfigure(1, weight=1)
+        self.frame1.columnconfigure(1, weight=2)
+        self.frame1.columnconfigure(3, weight=4)
     
     def actualizarDatosAñadirSede(self, evento):
         if Sede.sedeExiste(self.datosDespedido.getValue("sede")):
