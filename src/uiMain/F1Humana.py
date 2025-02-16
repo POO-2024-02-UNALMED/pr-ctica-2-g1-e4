@@ -132,7 +132,6 @@ terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
             tk.messageBox.showwarning("La sede no existe", "Intente otra vez.")
 
     def actualizarDatosAñadirEmpleado(self, evento):
-        self.pantallaEleccionDespedir(True)
         if self.sede.getEmpleado(self.datosDespedido.getValue("nombre")) is None:
             tk.messageBox.showwarning("El empleado no trabaja aquí", "Intente otra vez.")
 
