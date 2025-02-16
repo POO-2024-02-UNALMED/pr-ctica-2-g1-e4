@@ -13,7 +13,9 @@ from src.gestorAplicacion.sede import Sede
 from typing import List
 
 class Main:
-    fecha=None 
+    fecha:Fecha=None
+    
+
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
@@ -1506,8 +1508,8 @@ class Main:
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia , 300, sede2)
         pass 
 
-import src.uiMain.bienvenida as bienvenida
-# Este metodo termina al presionar "seguir a la ventana principal"
+
 if __name__=="__main__":
+    from src.uiMain.bienvenida.bienvenida import Aplication
     Main.crearSedesMaquinasRepuestos()
-    bienvenida.bienvenida()
+    Aplication.bienvenida()

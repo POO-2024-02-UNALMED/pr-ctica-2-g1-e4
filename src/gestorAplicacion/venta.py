@@ -1,12 +1,15 @@
 from src.gestorAplicacion.fecha import Fecha
 import math
+from multimethod import multimethod
+from typing import List
+# Puede que visual marque esto. Usa pip install multimethod en la terminal para arreglarlo.
 
 class Venta:
     codigosRegalo = []
     montosRegalo = []
     pesimismo = 0.02
 
-    def __init__(self, sede, fecha, cliente=None, asesor=None, encargado=None, articulos=None, subtotal=0, montoPagado=0):
+    def __init__(self, sede, fecha:Fecha, cliente=None, asesor=None, encargado=None, articulos=None, subtotal=0, montoPagado=0):
         self.sede = sede
         self.fechaVenta = fecha
         self.cliente = cliente
@@ -28,6 +31,7 @@ class Venta:
         sede.actualizarHistorialVentas(self)
         if montoPagado:
             sede.getCuentaSede().setAhorroBanco(sede.getCuentaSede().getAhorroBanco() + montoPagado)
+        sede.actualizarHistorialVentas(self)
 
     @staticmethod
     def acumuladoVentasAsesoradas(empleado):
@@ -87,21 +91,25 @@ class Venta:
         diferencia = (montoVentasBF - montoVentasComunes) / float(montoVentasComunes)
         return round(min(diferencia / 3, 0.31), 3)
 
-    @staticmethod
-    def filtrarPorMes(ventas, fecha: Fecha):
+    @multimethod
+    def filtrar(cls,ventas:List, fecha:Fecha):
         ventasMes = []
         for venta in ventas:
             if venta.fechaVenta.ano == fecha.ano and venta.fechaVenta.mes == fecha.mes:
                 ventasMes.append(venta)
         return ventasMes
 
-    @staticmethod
-    def filtrarPorEmpleado(ventas, empleado):
+    from src.gestorAplicacion.administracion.empleado import Empleado
+
+    @multimethod
+    def filtrar(cls,ventas:List, empleado:Empleado):
         asesoradas = []
         for venta in ventas:
             if venta.asesor == empleado:
                 asesoradas.append(venta)
         return asesoradas
+
+    filtrar =classmethod(filtrar)
 
     @staticmethod
     def cantidadProducto(ventas, prenda):

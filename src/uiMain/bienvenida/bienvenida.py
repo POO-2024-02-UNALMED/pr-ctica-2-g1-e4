@@ -32,29 +32,27 @@ class Aplication(tk.Frame):
         self.infoDesarrolladores.grid(row = 1, column = 3,sticky="sewn")
 
         self.columnconfigure(0,weight=1)
-        self.columnconfigure(1,weight=10)
+        self.columnconfigure(1,weight=15)
         self.columnconfigure(2,weight=1)
-        self.columnconfigure(3,weight=10)
+        self.columnconfigure(3,weight=5)
         self.columnconfigure(4,weight=1)
 
         self.rowconfigure(0,weight=1)
         self.rowconfigure(1,weight=9)
         self.rowconfigure(2,weight=1)
 
-def imagenDeTamaño(path:str, masterForImage:tk.Widget):
-    archivo = tk.PhotoImage(master = masterForImage, file = path)
-    tamañoOriginal = archivo.width()*archivo.height()
-    divisor = math.floor(tamañoOriginal/(masterForImage.winfo_width()*masterForImage.winfo_height()))*2
-    archivo = archivo.subsample(divisor)
-    return archivo
-        
+    def imagenDeTamaño(path:str, masterForImage:tk.Widget):
+        archivo = tk.PhotoImage(master = masterForImage, file = path)
+        tamañoOriginal = archivo.width()*archivo.height()
+        divisor = math.floor(tamañoOriginal/(masterForImage.winfo_width()*masterForImage.winfo_height()))*2
+        archivo = archivo.subsample(divisor)
+        return archivo
+            
+    def bienvenida():
+        window = tk.Tk()
+        window.geometry("800x600")
+        app = Aplication(window)
+        window.mainloop()
 
-
-
-
-
-def bienvenida():
-    window = tk.Tk()
-    window.geometry("800x600")
-    app = Aplication(window)
-    window.mainloop()
+def pasarAVentanaBienvenida():
+    window = Aplication.bienvenida()

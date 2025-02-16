@@ -3,8 +3,10 @@ import tkinter as tk
 from tkinter.font import Font
 from tkinter import ttk as ttk
 
+from src.uiMain.fieldFrame import FieldFrame
 
-def deudas(ventana:tk.Frame):
+
+def deudas(ventana:tk.Frame)->tk.Frame:
     
     def Siguiente(event):
         eleccionDeuda=0
@@ -37,6 +39,7 @@ def deudas(ventana:tk.Frame):
     def Directivos():
         from src.gestorAplicacion.administracion.area import Area
         from src.gestorAplicacion.sede import Sede
+        
         elegible_empleados = []
         for empleado_actual in Sede.getListaEmpleadosTotal():
             if empleado_actual.getAreaActual() == Area.DIRECCION:
@@ -79,11 +82,15 @@ def deudas(ventana:tk.Frame):
     label7.place(relx=0.5, rely=0.8, relwidth=1, relheight=0.2, anchor="s")
     label7.config(padx=200)
     Lista=Directivos()
+    criterios = ["Proveedores", "Bancos"]
+    FieldFrame(frame2, "Criterios", criterios, "Valores", None, None)
     combo = ttk.Combobox(master=label7,values=Lista)
     combo.bind("<<ComboboxSelected>>",changed)
     combo.grid(row=0,column=0,padx=10,pady=10,sticky="w")
     entradaCombo = tk.Entry(label7)
     entradaCombo.grid(row=0,column=1,padx=10,pady=10,sticky="w")
     boton1 = tk.Button(frame2, text="Aceptar", command=Siguiente)
+    return framePrincipal
+
     
 

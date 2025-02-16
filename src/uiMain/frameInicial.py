@@ -57,7 +57,8 @@ class frameInicial(tk.Frame):
         self.entradaMes.place(relx=0.615, rely=0.8, relwidth=0.06, relheight=0.1, anchor="n")
         self.entradaAño =tk.Entry(pedirFecha, textvariable=tk.StringVar(pedirFecha, value="a/ "), bg="plum3")
         self.entradaAño.place(relx=0.6849, rely=0.8, relwidth=0.07, relheight=0.1, anchor="n")
-
+        self.confirmacion = tk.Label(pedirFecha, text="",  anchor="w")
+        self.confirmacion.place(relx=0.5, rely=0.9, relwidth=1, relheight=0.1, anchor="n")
 
         boton1=tk.Button(pedirFecha,text="Enviar")
         boton1.place(relx=0.820, rely=0.8, relwidth=0.1, relheight=0.1, anchor="n")
@@ -71,11 +72,8 @@ class frameInicial(tk.Frame):
         FMes = self.entradaMes.get() # Obtener el texto de la entrada para el mes
         FAño = self.entradaAño.get() # Obtener el texto de la entrada para el año
         self.ingresarFecha(FDia,FMes,FAño)
-        self.fechaValida = ExceptionC1.contenidoVacio(FDia, FMes, FAño, self.fechaValida)#Verifica si la fecha está correcta o si tiene algún campo vacío
-        #Si alguna de esas 2 opciones se cumple, lanza una excepción de tipo error y provocará que fechaValida sea == False
-        #El objetivo es que si fechaValida == False, ninguna de las funcionalidades pueda ser usada, y cuando se presione ok
-        #En la ventana emergente del error, el usuario tenga que llenar el campo de fecha de nuevo
-        #if self.fechaValida == False:
+        if isinstance(self.ingresarFecha(FDia,FMes,FAño),Fecha):
+            self.confirmacion.config(text="Fecha ingresada correctamente, estamos en "+Main.fecha.strCorto())
         pass
 
 

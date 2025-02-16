@@ -55,3 +55,6 @@ class Fecha:
 
     def __str__(self):
         return f"Día: {self.dia} Mes: {self.mes} Año: {self.ano}"
+    
+    def strCorto(self):
+        return f"{self.dia}/{self.mes}/{self.ano}"

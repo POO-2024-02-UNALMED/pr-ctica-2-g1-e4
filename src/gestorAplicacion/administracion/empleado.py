@@ -6,7 +6,6 @@ from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.persona import Persona
 from ..fecha import Fecha
 from ..sede import Sede
-from ..venta import Venta
 from .area import Area
 from typing import List
 
@@ -14,8 +13,8 @@ class Empleado(Persona, GastoMensual):
     def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia, maquinaria: Maquinaria):
         super().__init__(nombre, documento, rol, experiencia, True, membresia)
         self.areaActual = areaActual
-        self.traslados = None
-        self.areas = None
+        self.traslados = 0
+        self.areas = [] # Areas por las que ha pasado
         self.sede = sede
         self.maquinaria = maquinaria
         self.fechaContratacion = fecha
@@ -29,6 +28,7 @@ class Empleado(Persona, GastoMensual):
         sede.getListaEmpleadosTotal().append(self)
 
     def calcularRendimiento(self, fecha: Fecha) -> float:
+        from ..venta import Venta
         rendimiento = 0
         match self.areaActual:
             case Area.CORTE:
@@ -37,15 +37,15 @@ class Empleado(Persona, GastoMensual):
                 else:
                     rendimiento = (self.prendasProducidas / self.prendasDescartadas) * 100
             case Area.VENTAS:
-                ventasAsesoradas = Venta.filtrarPorMes(Venta.filtrarPorEmpleado(self.sede.historialVentas, self), fecha)
+                ventasAsesoradas = Venta.filtrar(Venta.filtrar(self.sede.historialVentas,self), fecha)
                 if ventasAsesoradas:
                     rendimiento = Venta.acumulado(ventasAsesoradas) / len(ventasAsesoradas)
                 else:
                     rendimiento = 0
             case Area.OFICINA:
-                acumuladoVentasSede = sum(venta.valor for venta in self.sede.historialVentas if venta.fecha <= fecha)
-                promedioVentasSede = acumuladoVentasSede / self.sede.cantidadPorArea('Oficina')
-                ventasEncargadas = sum(venta.valor for venta in self.ventasEncargadas if venta.fecha <= fecha)
+                acumuladoVentasSede = len(Venta.filtrar(self.sede.historialVentas, fecha))
+                promedioVentasSede = acumuladoVentasSede / self.sede.cantidadPorArea(Area.OFICINA)
+                ventasEncargadas = Venta.cantidadVentasEncargadasEnMes(self, fecha)
                 rendimiento = (ventasEncargadas / promedioVentasSede) * 100
             case Area.DIRECCION:
                 balancesPositivos = sum(1.0 for evaluacion in self.evaluaciones if evaluacion.balance > 0)
@@ -89,8 +89,8 @@ class Empleado(Persona, GastoMensual):
                         if areaPasada > emp.areaActual:
                             puedeCambiarArea = False
                             break
-                    if puedeCambiarArea and emp.areaActual:
-                        emp.areaActual = emp.areas[emp.areas.index(emp.areaActual) - 1]
+                    if puedeCambiarArea and emp.areaActual.jerarquia>0:
+                        emp.areaActual = Area.obtenerPorJerarquia(emp.areaActual.jerarquia - 1)
                         emp.traslados += 1
                         seVaADespedir = False
                         listaADespedir.remove(emp)
