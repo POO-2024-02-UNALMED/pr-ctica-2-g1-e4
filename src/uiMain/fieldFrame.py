@@ -3,21 +3,25 @@ from tkinter import Frame, Label, Entry
 
 class FieldFrame(Frame):
 
-    def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores, habilitado, ancho_entry=20):
+    def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores=None, habilitado=None, ancho_entry=20, crecer=False, tamañoFuente=12):
         super().__init__(frame)
-        self.valores = []
-        self.citerios= []
+        self.valores = [] # No guarda la lista de valores pasada, sino los Entries creados
+        self.valoresPorDefecto = valores
+        self.citerios= criterios
+        self.crecer=crecer
+        self.tamañoFuente=tamañoFuente
         self.createWidgets(tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry)
+        
 
     def createWidgets(self,tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry):
         Label(self, text=tituloCriterios, font=(
-            "Arial", 12, "bold")).grid(row=0, column=0, pady=5)
+            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=0, pady=5)
         Label(self, text=tituloValores,  font=(
-            "Arial", 12, "bold")).grid(row=0, column=3,  pady=5)
+            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=3,  pady=5)
 
 
         for i, criterio in enumerate(criterios, start=1):
-            Label(self, text=criterio, font=("Arial", 12, "bold")).grid(
+            Label(self, text=criterio, font=("Arial", self.tamañoFuente, "bold")).grid(
                 row=i, column=0, padx=50, pady=5, sticky="w")
             entry = Entry(self, width=ancho_entry, bg="plum3")
             entry.grid(row=i, column=3, padx=60, pady=5, sticky="w")
@@ -31,11 +35,15 @@ class FieldFrame(Frame):
 
 
             self.valores.append(entry)
+        
+        if self.crecer:
+            self.columnconfigure(0, weight=1)
+            self.columnconfigure(3, weight=1)
 
     def habilitarEntry(self, criterio, habilitar):
         entry = None
         for i, c in enumerate(self.citerios):
-            if c .text == criterio:
+            if c == criterio:
                 entry = self.valores[i]
                 break
 
@@ -47,7 +55,20 @@ class FieldFrame(Frame):
     def getValue(self, criterio):
         entry = None
         for i, c in enumerate(self.citerios):
-            if c .text == criterio:
+            if c == criterio:
                 entry = self.valores[i]
                 break
         return entry.get()
+    
+    def configurarCallBack(self, criterio, evento, funcion):
+        entry = None
+        for i, c in enumerate(self.citerios):
+            if c == criterio:
+                entry = self.valores[i]
+                break
+        return entry.bind(evento, funcion)
+
+    def borrar(self):
+        for i, c in enumerate(self.valoresPorDefecto):
+            self.valores[i].delete(0, "end")
+            self.valores[i].insert(0, c)

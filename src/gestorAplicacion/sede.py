@@ -575,3 +575,15 @@ class Sede:
 
         return aProducirFinal
 
+    @classmethod
+    def sedeExiste(cls,nombre):
+        for sede in cls.listaSedes:
+            if sede.getNombre() == nombre:
+                return True
+        return False
+    
+    def getEmpleado(self, nombre):
+        for empleado in self.listaEmpleado:
+            if empleado.getNombre() == nombre:
+                return empleado
+        return None
