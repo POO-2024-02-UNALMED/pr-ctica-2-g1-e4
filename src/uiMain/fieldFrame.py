@@ -3,7 +3,7 @@ from tkinter import Frame, Label, Entry
 
 class FieldFrame(Frame):
 
-    def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores, habilitado, ancho_entry=20):
+    def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores=None, habilitado=None, ancho_entry=20):
         super().__init__(frame)
         self.valores = []
         self.citerios= []
