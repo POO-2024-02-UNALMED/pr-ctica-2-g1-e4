@@ -4,12 +4,14 @@ from tkinter.font import Font
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.uiMain import main
 from src.uiMain.fieldFrame import FieldFrame
+from src.gestorAplicacion.sede import Sede
 
 class F1Humana(tk.Frame):
 
     def __init__(self,master):
         super().__init__(master)
         self.posiblesDespedidos=[]
+        self.sede=None
         self.createWidgets()
         
 
@@ -39,6 +41,14 @@ También se puede despedir a un empleado ya existente en el equipo de trabajo"""
         self.posiblesDespedidos = infoMalos[0]
         self.procesoListaInicial = infoMalos[1]
 
+        self.pantallaEleccionDespedir()
+
+    def pantallaEleccionDespedir(self, limpiarFrame=False):
+        if limpiarFrame:
+            self.frame1.destroy()
+            self.frame1 = tk.Frame(self.framePrincipal)
+            self.frame1.grid(row=1, column=0, sticky="nswe")
+
         empleadosMalosString=""
         
         empleadosMalosString += """Estos empleados tienen un rendimiento menor al esperado, y no puedieron ser transferidos ni cambiados de cargo.\n"""
@@ -59,6 +69,7 @@ También se puede despedir a un empleado ya existente en el equipo de trabajo"""
         self.opcionAñadir=tk.Button(self.frame1, text="Añadir empleado a la lista de despedibles", font=("Arial", 12, "bold"), command=self.pantallaAñadirDespedido)
         self.opcionAñadir.grid(row=4, column=0)
 
+
         self.frame1.rowconfigure(0, weight=1)
         self.frame1.rowconfigure(1, weight=5)
         self.frame1.rowconfigure(2, weight=10)
@@ -68,5 +79,63 @@ También se puede despedir a un empleado ya existente en el equipo de trabajo"""
         self.framePrincipal.columnconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(0, weight=1)
     
+
     def pantallaAñadirDespedido(self):
-        pass
+        self.frame1.destroy()
+
+        self.frame1 = tk.Frame(self.framePrincipal, height=150)
+        self.frame1.grid(row=1, column=0, sticky="nswe", columnspan=2)
+
+        self.descripcionAñadirDespedido = tk.Label(self.frame1, text="""Inserte los datos de el empleado a añadir a la lista, el panel de la derecha le ayudará, presione Enter al
+terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
+        self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=2)
+
+        self.datosDespedido=FieldFrame(self.frame1, "Dato del empleado" ,["sede","nombre"],"valor", ["",""],[True,False],ancho_entry=25, tamañoFuente=10)
+        self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosAñadirSede)
+        self.datosDespedido.grid(row=1, column=0)
+
+        posiblesSedes="Posibles sedes:\n"
+
+        for sede in Sede.getListaSedes():
+            posiblesSedes+=sede.getNombre()+"\n"
+        
+        self.pistas=tk.Label(self.frame1, text=posiblesSedes, font=("Arial", 10))
+        self.pistas.grid(row=1, column=1)
+        self.aceptar=tk.Button(self.frame1, text="Aceptar", font=("Arial", 12, "bold"), command=self.enviarEmpleadoNuevo)
+        self.borrar=tk.Button(self.frame1, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
+
+        self.aceptar.grid(row=2, column=0)
+        self.borrar.grid(row=2, column=1)
+        
+
+        self.frame1.rowconfigure(0, weight=1)
+        self.frame1.rowconfigure(1, weight=10)
+        self.frame1.columnconfigure(0, weight=2)
+        self.frame1.columnconfigure(1, weight=1)
+    
+    def actualizarDatosAñadirSede(self, evento):
+        if Sede.sedeExiste(self.datosDespedido.getValue("sede")):
+            self.datosDespedido.habilitarEntry("nombre", True)
+            self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosAñadirEmpleado)
+            empleadosPosibles="Empleados posibles"
+            for sede in Sede.getListaSedes():
+                if sede.getNombre()==self.datosDespedido.getValue("sede"):
+                    self.sede=sede
+                    break
+            for empleado in sede.getListaEmpleados():
+                empleadosPosibles+="\n"+empleado.getNombre()
+            self.pistas.config(text=empleadosPosibles)
+
+        else:
+            self.datosDespedido.habilitarEntry("sede", True)
+            self.datosDespedido.habilitarEntry("nombre", False)
+            tk.messageBox.showwarning("La sede no existe", "Intente otra vez.")
+
+    def actualizarDatosAñadirEmpleado(self, evento):
+        self.pantallaEleccionDespedir(True)
+        if self.sede.getEmpleado(self.datosDespedido.getValue("nombre")) is None:
+            tk.messageBox.showwarning("El empleado no trabaja aquí", "Intente otra vez.")
+
+    def enviarEmpleadoNuevo(self):
+        self.posiblesDespedidos.append(self.sede.getEmpleado(self.datosDespedido.getValue("nombre")))
+        self.pantallaEleccionDespedir(True)

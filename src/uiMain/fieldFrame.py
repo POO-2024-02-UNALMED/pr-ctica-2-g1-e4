@@ -5,8 +5,9 @@ class FieldFrame(Frame):
 
     def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores=None, habilitado=None, ancho_entry=20, crecer=False, tamañoFuente=12):
         super().__init__(frame)
-        self.valores = []
-        self.citerios= []
+        self.valores = [] # No guarda la lista de valores pasada, sino los Entries creados
+        self.valoresPorDefecto = valores
+        self.citerios= criterios
         self.crecer=crecer
         self.tamañoFuente=tamañoFuente
         self.createWidgets(tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry)
@@ -42,7 +43,7 @@ class FieldFrame(Frame):
     def habilitarEntry(self, criterio, habilitar):
         entry = None
         for i, c in enumerate(self.citerios):
-            if c .text == criterio:
+            if c == criterio:
                 entry = self.valores[i]
                 break
 
@@ -54,7 +55,20 @@ class FieldFrame(Frame):
     def getValue(self, criterio):
         entry = None
         for i, c in enumerate(self.citerios):
-            if c .text == criterio:
+            if c == criterio:
                 entry = self.valores[i]
                 break
         return entry.get()
+    
+    def configurarCallBack(self, criterio, evento, funcion):
+        entry = None
+        for i, c in enumerate(self.citerios):
+            if c == criterio:
+                entry = self.valores[i]
+                break
+        return entry.bind(evento, funcion)
+
+    def borrar(self):
+        for i, c in enumerate(self.valoresPorDefecto):
+            self.valores[i].delete(0, "end")
+            self.valores[i].insert(0, c)
