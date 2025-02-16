@@ -3,23 +3,24 @@ from tkinter import Frame, Label, Entry
 
 class FieldFrame(Frame):
 
-    def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores=None, habilitado=None, ancho_entry=20, crecer=False):
+    def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores=None, habilitado=None, ancho_entry=20, crecer=False, tamañoFuente=12):
         super().__init__(frame)
         self.valores = []
         self.citerios= []
         self.crecer=crecer
+        self.tamañoFuente=tamañoFuente
         self.createWidgets(tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry)
         
 
     def createWidgets(self,tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry):
         Label(self, text=tituloCriterios, font=(
-            "Arial", 12, "bold")).grid(row=0, column=0, pady=5)
+            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=0, pady=5)
         Label(self, text=tituloValores,  font=(
-            "Arial", 12, "bold")).grid(row=0, column=3,  pady=5)
+            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=3,  pady=5)
 
 
         for i, criterio in enumerate(criterios, start=1):
-            Label(self, text=criterio, font=("Arial", 12, "bold")).grid(
+            Label(self, text=criterio, font=("Arial", self.tamañoFuente, "bold")).grid(
                 row=i, column=0, padx=50, pady=5, sticky="w")
             entry = Entry(self, width=ancho_entry, bg="plum3")
             entry.grid(row=i, column=3, padx=60, pady=5, sticky="w")
