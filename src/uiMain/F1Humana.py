@@ -88,7 +88,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             row += 1
         
         self.botonSeguirPreInteraccion=tk.Button(self.frame1, text="Siguiente", font=("Arial", 12, "bold"), command=lambda : self.pantallaEleccionDespedir(True))
-        self.botonSeguirPreInteraccion.grid(row=row, column=1, columnspan=2)
+        self.botonSeguirPreInteraccion.grid(row=row, column=0, columnspan=5)
 
         self.frame1.rowconfigure(0, weight=1)
         self.frame1.rowconfigure(1, weight=10)
@@ -102,6 +102,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         
         self.framePrincipal.columnconfigure(0, weight=1)
 
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=10)
+
     
 
 
@@ -110,7 +113,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         if limpiarFrame:
             self.frame1.destroy()
             self.frame1 = tk.Frame(self.framePrincipal)
-            self.frame1.grid(row=0, column=0, sticky="nswe",columnspan=4)
+            self.frame1.grid(row=1, column=0, sticky="nswe",columnspan=4)
 
         empleadosMalosString=""
         
