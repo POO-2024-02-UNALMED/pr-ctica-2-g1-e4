@@ -8,14 +8,11 @@ class ExceptionC1(ErrorAplicacion):
        messagebox.showwarning("Alerta", f"{self}")
        raise self
     
-    def contenidoVacio(self, dia, mes, año, fechaValida):
-        if fechaValida == True:
-            if not dia.strip() or not mes.strip() or not año.strip():
-                messagebox.showwarning("Alerta", "Debes ingresar una fecha correcta antes de continuar.")
-                raise ExceptionC1("No se ingresó una fecha válida.")
-            fechaValida = False
+    def contenidoVacio(self):
+        messagebox.showerror("Error", f"{self}")
+        raise self
 
-        return fechaValida     
+
 
 
     
