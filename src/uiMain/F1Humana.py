@@ -13,6 +13,7 @@ class F1Humana(tk.Frame):
         self.posiblesDespedidos=[]
         self.sede=None
         self.createWidgets()
+        self.empleadosADespedir=[] # Se llena al dar aceptar en la pantalla de seleccion.
         
 
     def createWidgets(self):
@@ -70,9 +71,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             textoAccion = ""
             match self.acciones[i]:
                 case "transferencia-sede":
-                    textoAccion = "Transferido"
+                    textoAccion = "Transferido a otra sede"
                 case "traslado-area":
-                    textoAccion = "Traslado"
+                    textoAccion = "Trasladado a otra area"
                 case "sugerencia-despido":
                     textoAccion = "¿Despedir?"
 
@@ -156,16 +157,17 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(1, weight=10)
     
     def despedir(self):
-        empleadosADespedir=[]
+        self.empleadosADespedir=[]
         for empleado in self.posiblesDespedidos:
             if self.seleccionador.getValue(empleado.getNombre()).lower()=="si":
-                empleadosADespedir.append(empleado)
+                self.empleadosADespedir.append(empleado)
         if main.Main.fecha is not None:
-            Empleado.despedirEmpleados(empleadosADespedir, False, main.Main.fecha)
+            Empleado.despedirEmpleados(self.empleadosADespedir, False, main.Main.fecha)
+            self.reemplazarPorCambioSede()
         else:
             print("Muerte a los bugs! El usuario pasó sin fecha valida")
-    
 
+    # Parte de la interacción 1
     def pantallaAñadirDespedido(self):
         self.frame1.destroy()
 
@@ -229,3 +231,12 @@ terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
         if self.sede is not None and self.sede.getEmpleado(self.datosDespedido.getValue("nombre")) is not None:
             self.posiblesDespedidos.append(self.sede.getEmpleado(self.datosDespedido.getValue("nombre")))
         self.pantallaEleccionDespedir(True)
+
+    def reemplazarPorCambioSede(self):
+        self.frame1.destroy()
+        self.frame1 = tk.Frame(self.framePrincipal)
+        self.frame1.grid(row=1, column=0, sticky="nswe")
+
+        self.descripcionCambioSede = tk.Label(self.frame1, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados""", relief="ridge", font=("Arial", 10))
+
+        datosTransferencia= Sede.obtenerNecesidadTransferenciaEmpleados(self.empleadosADespedir)

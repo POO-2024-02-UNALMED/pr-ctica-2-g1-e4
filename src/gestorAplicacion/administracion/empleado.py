@@ -25,7 +25,7 @@ class Empleado(Persona, GastoMensual):
         self.evaluaciones = []
         self.ventasEncargadas = []
         sede.anadirEmpleado(self)
-        sede.getListaEmpleadosTotal().append(self)
+        Sede.getListaEmpleadosTotal().append(self)
 
     def calcularRendimiento(self, fecha: Fecha) -> float:
         from ..venta import Venta
