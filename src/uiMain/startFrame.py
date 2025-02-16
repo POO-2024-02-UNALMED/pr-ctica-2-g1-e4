@@ -9,7 +9,7 @@ from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
 from src.uiMain.F3Financiera import deudas
-from src.uiMain.F1Humana import F1Humana
+from src.uiMain.F1Humana import contratar_despedir
 from src.uiMain.F5Produccion import producir
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
