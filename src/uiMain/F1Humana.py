@@ -62,7 +62,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.tituloAccion.grid(row=2, column=4)
         self.widgetsTablaInsuficientes=[]
         row=3
-        for i, empleado in enumerate(self.posiblesDespedidos):
+        for i, empleado in enumerate(self.empleadosInsuficientes):
             nombre = tk.Label(self.frame1, text=empleado.getNombre(), font=("Arial", 10))
             area = tk.Label(self.frame1, text=empleado.getAreaActual().name, font=("Arial", 10))
             rendimiento = tk.Label(self.frame1, text=f"{int(self.rendimientoInsufuciencias[i])}", font=("Arial", 10))
@@ -101,9 +101,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.frame1.rowconfigure(i, weight=1)
         
         self.framePrincipal.columnconfigure(0, weight=1)
-
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=10)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=10)
 
     
 
