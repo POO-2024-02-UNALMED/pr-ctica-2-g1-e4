@@ -54,6 +54,5 @@ class Aplication(tk.Frame):
         app = Aplication(window)
         window.mainloop()
 
-    def pasarAVentanaBienvenida():
-        window = Aplication.bienvenida()
-        window.mainloop()
+def pasarAVentanaBienvenida():
+    window = Aplication.bienvenida()

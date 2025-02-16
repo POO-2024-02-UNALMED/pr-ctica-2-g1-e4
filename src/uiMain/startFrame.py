@@ -75,9 +75,9 @@ class startFrame(tk.Tk):
 
     def pasarABienvenida(self):
         if isinstance(self.areaPrincipal, frameInicial):
-            from src.uiMain.bienvenida.bienvenida import Aplication
+            import src.uiMain.bienvenida.bienvenida as bienvenida
             self.destroy()
-            Aplication.pasarAVentanaBienvenida()
+            bienvenida.pasarAVentanaBienvenida()
         else:
             self.areaPrincipal.destroy()
             self.cambiarFrame(frameInicial(self))
