@@ -7,6 +7,7 @@ from src.uiMain.exceptionC1 import ExceptionC1
 class frameInicial(tk.Frame):
     def __init__(self,master):
         super().__init__(master)
+        self.fechaValida = False
         self.create_widgets()
 
     def create_widgets(self):
@@ -70,7 +71,13 @@ class frameInicial(tk.Frame):
         FMes = self.entradaMes.get() # Obtener el texto de la entrada para el mes
         FAño = self.entradaAño.get() # Obtener el texto de la entrada para el año
         self.ingresarFecha(FDia,FMes,FAño)
+        self.fechaValida = ExceptionC1.contenidoVacio(FDia, FMes, FAño, self.fechaValida)#Verifica si la fecha está correcta o si tiene algún campo vacío
+        #Si alguna de esas 2 opciones se cumple, lanza una excepción de tipo error y provocará que fechaValida sea == False
+        #El objetivo es que si fechaValida == False, ninguna de las funcionalidades pueda ser usada, y cuando se presione ok
+        #En la ventana emergente del error, el usuario tenga que llenar el campo de fecha de nuevo
+        #if self.fechaValida == False:
         pass
+
 
     def borrar(self):
         self.entradaDia.delete(0, tk.END)
@@ -113,4 +120,5 @@ class frameInicial(tk.Frame):
         else:
             fecha = Fecha(dia, mes, año)
             Main.fecha=fecha
+            self.fechaValida = True
         return fecha
