@@ -33,7 +33,7 @@ class F1Humana(tk.Frame):
         self.descripcionF1 = tk.Label(self.frame1, text="""Este área analiza la lista de todos los empleados y permite modificarla:
 Se puede contratar a un nuevo empleado, establecer su salario y el rol o las funciones que cumple en la empresa.
 También se puede despedir a un empleado ya existente en el equipo de trabajo""", relief="ridge", font=("Arial", 10))
-        self.descripcionF1.grid(row=1, column=0, sticky="nswe")
+        self.descripcionF1.grid(row=1, column=0, sticky="nswe",columnspan=4)
 
 
         infoMalos = Empleado.listaInicialDespedirEmpleado(main.Main.fecha)
@@ -47,7 +47,7 @@ También se puede despedir a un empleado ya existente en el equipo de trabajo"""
         if limpiarFrame:
             self.frame1.destroy()
             self.frame1 = tk.Frame(self.framePrincipal)
-            self.frame1.grid(row=1, column=0, sticky="nswe")
+            self.frame1.grid(row=1, column=0, sticky="nswe",columnspan=4)
 
         empleadosMalosString=""
         
@@ -57,24 +57,34 @@ También se puede despedir a un empleado ya existente en el equipo de trabajo"""
     lista de despedibles"""
 
         self.labelPreConsulta=tk.Label(self.frame1, text=empleadosMalosString, relief="ridge", font=("Arial", 10))
-        self.labelPreConsulta.grid(row=2, column=0, sticky="nswe")
+        self.labelPreConsulta.grid(row=2, column=0, sticky="nswe",columnspan=4)
 
         nombres=[]
         for empleado in self.posiblesDespedidos:
             nombres.append(empleado.getNombre())
 
         self.seleccionador=FieldFrame(self.frame1, "Nombre del empleado a despedir", nombres, "¿Despedir?", ancho_entry=5, tamañoFuente=10)
-        self.seleccionador.grid(row=3, column=0)
+        self.seleccionador.grid(row=3, column=1,columnspan=2)
 
         self.opcionAñadir=tk.Button(self.frame1, text="Añadir empleado a la lista de despedibles", font=("Arial", 12, "bold"), command=self.pantallaAñadirDespedido)
-        self.opcionAñadir.grid(row=4, column=0)
+        self.opcionAñadir.grid(row=4, column=1,columnspan=2)
+        
+        self.aceptarDespedidos=tk.Button(self.frame1, text="Aceptar", font=("Arial", 12, "bold"))
+        self.resetDespedidos=tk.Button(self.frame1, text="Borrar", font=("Arial", 12, "bold"), command=self.seleccionador.borrar)
+
+        self.aceptarDespedidos.grid(row=5, column=1)
+        self.resetDespedidos.grid(row=5, column=2)
+
 
 
         self.frame1.rowconfigure(0, weight=1)
         self.frame1.rowconfigure(1, weight=5)
         self.frame1.rowconfigure(2, weight=10)
         self.frame1.rowconfigure(3, weight=10)
-        self.frame1.columnconfigure(0, weight=1)
+        self.frame1.columnconfigure(0, weight=10)
+        self.frame1.columnconfigure(1, weight=6)
+        self.frame1.columnconfigure(2, weight=6)
+        self.frame1.columnconfigure(3, weight=10)
         
         self.framePrincipal.columnconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(0, weight=1)
@@ -102,10 +112,10 @@ terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
         self.pistas=tk.Label(self.frame1, text=posiblesSedes, font=("Arial", 10))
         self.pistas.grid(row=1, column=1)
         self.aceptar=tk.Button(self.frame1, text="Aceptar", font=("Arial", 12, "bold"), command=self.enviarEmpleadoNuevo)
-        self.borrar=tk.Button(self.frame1, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
+        self.botonBorrarSeleccion=tk.Button(self.frame1, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
 
         self.aceptar.grid(row=2, column=0)
-        self.borrar.grid(row=2, column=1)
+        self.botonBorrarSeleccion.grid(row=2, column=1)
         
 
         self.frame1.rowconfigure(0, weight=1)
