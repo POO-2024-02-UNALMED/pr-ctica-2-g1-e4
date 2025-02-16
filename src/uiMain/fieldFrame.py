@@ -69,6 +69,10 @@ class FieldFrame(Frame):
         return entry.bind(evento, funcion)
 
     def borrar(self):
-        for i, c in enumerate(self.valoresPorDefecto):
-            self.valores[i].delete(0, "end")
-            self.valores[i].insert(0, c)
+        if self.valoresPorDefecto is not None:
+            for i, c in enumerate(self.valoresPorDefecto):
+                self.valores[i].delete(0, "end")
+                self.valores[i].insert(0, c)
+        else:
+            for i in self.valores:
+                i.delete(0, "end")

@@ -23,7 +23,10 @@ class Area(Enum):
                 area.rendimientoDeseado = (3 / 5) * 100
             elif area == Area.OFICINA:
                 cantidadEmpleadosOficina = sede.cantidadPorArea(Area.OFICINA)
-                area.rendimientoDeseado = len(Venta.filtrar(sede.getHistorialVentas(), fecha)) / cantidadEmpleadosOficina
+                if cantidadEmpleadosOficina!=0:
+                    area.rendimientoDeseado = len(Venta.filtrar(sede.getHistorialVentas(), fecha)) / cantidadEmpleadosOficina
+                else:
+                    area.rendimientoDeseado = 0
             elif area == Area.VENTAS:
                 montoTotal = 0
                 for venta in Venta.filtrar(sede.getHistorialVentas(), fecha):
