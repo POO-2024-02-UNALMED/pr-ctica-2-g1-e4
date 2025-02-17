@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from tkinter.font import Font
 from tkinter import ttk
+import threading
 
 def producir(ventana:tk.Frame):
     global indicaRepMalo
@@ -35,26 +36,60 @@ def producir(ventana:tk.Frame):
 def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):
     from src.gestorAplicacion.bodega.maquinaria import Maquinaria
     buscarProveedor(ventana, descrip1, botonContinuar)
-    Maquinaria.agruparMaquinasDisponibles(10)
+    #Maquinaria.agruparMaquinasDisponibles(10)
+
+    threading.Thread(target=Maquinaria.agruparMaquinasDisponibles, args=(10,), daemon=True).start()
     
+senal= 0
 def receptor(texto):
-    if indicaRepMalo:
-        indicaRepMalo.config(text=texto, font=("Arial", 16, "bold"))
+    global senal
+    senal = senal + 1
+    if senal == 1:
+        if indicaRepMalo:
+            indicaRepMalo.config(text=texto, font=("Arial", 16, "bold"))
+    else:
+        if indicaRepMalo:
+            indicaRepMalo.config(text=texto, font=("Arial", 16, "bold"))
+            indicaRepMalo.place(relx=0.5, rely=0.2, anchor="center")        
 
 indicaRepMalo = None
 frameDeTrabajo = None
 proveedorB = None
+botonProveedorB = None
 
+senal2 = 0
 def buscarProveedor(ventana:tk.Frame, descrip1: tk.Label, botonContinuar:tk.Button):
-    botonProveedorB = tk.Button(ventana, text="Consultar Proveedor Barato", wraplength=250, justify="center", font=("Arial", 10, "bold"), command=lambda : (limpieza(ventana, descrip1, botonContinuar, botonProveedorB), mostrarProveedorB()))
-    botonProveedorB.place(relx=0.5, rely=0.5, anchor="center")
+    global botonProveedorB
+    global proveedorB
+    global senal2
+    senal2 = senal2 + 1
+    print("desdebp")
+    if senal2 == 1:
+        botonProveedorB = tk.Button(ventana, text="Consultar", wraplength=250, justify="center", font=("Arial", 12, "bold"), command=lambda : (limpieza(ventana, descrip1, botonContinuar, botonProveedorB), mostrarProveedorB()))
+        botonProveedorB.place(relx=0.5, rely=0.5, anchor="center")
+    else:
+        botonProveedorB = tk.Button(ventana, text="Consultar", wraplength=250, justify="center", font=("Arial", 12, "bold"), command=lambda : (limpieza(ventana, descrip1, botonContinuar, botonProveedorB), mostrarProveedorB()))
+        botonProveedorB.place(relx=0.5, rely=0.5, anchor="center")
+        ventana.bind("<space>", lambda event: eliminarBoton(event, botonProveedorB))
 
+        
+def eliminarBoton(event, boton):
+    boton.destroy()
+
+senal3 = 0
 def limpieza(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button, botonProveedorB=tk.Button):
     global indicaRepMalo
-    descrip1.destroy()
-    botonContinuar.destroy()
-    botonProveedorB.destroy()
-    indicaRepMalo.place(relx=0.5, rely=0.2, anchor="center")
+    global senal3
+    senal3 = senal3 + 1
+    if senal3 == 1:
+        descrip1.destroy()
+        botonContinuar.destroy()
+        botonProveedorB.place_forget()
+
+        indicaRepMalo.place(relx=0.5, rely=0.2, anchor="center")
+    else: 
+        botonProveedorB.place_forget()
+
 
 def recibeProveedorB(proveedorBa):
     global proveedorB
@@ -64,10 +99,16 @@ def mostrarProveedorB():
     global frameDeTrabajo
     global proveedorB
 
-    nombre = tk.Label(frameDeTrabajo, text="PROVEEDOR BARATO:", bg="light gray", font=("Arial", 12, "bold italic"))
-    nombre.place(relx=0.3, rely=0.37)
+    if proveedorB is None:
+        indicaRepMalo.destroy()
+        return
+    
     nombreP = tk.Label(frameDeTrabajo, text=proveedorB.getNombre(), font=("Arial", 12, "italic"))
     nombreP.place(relx=0.6, rely=0.37)
+
+    nombre = tk.Label(frameDeTrabajo, text="PROVEEDOR BARATO:", bg="light gray", font=("Arial", 12, "bold italic"))
+    nombre.place(relx=0.3, rely=0.37)
+
     precio = tk.Label(frameDeTrabajo, text="PRECIO:", bg="light gray", font=("Arial", 12, "bold italic"))
     precio.place(relx=0.35, rely=0.45)
     precioP = tk.Label(frameDeTrabajo, text=str(proveedorB.getPrecio()), font=("Arial", 12, "italic"))
@@ -109,8 +150,9 @@ def evento(event, nombre, nombreP, precio, precioP):
 def eventoDeCompra(event, nombre, nombreP, precio, precioP, separador, seleccionar, contSedes, contSedeP, sedePdinero, sedePflecha, contSedes2, sede2dinero, sede2flecha, botonDeSede):
     from src.gestorAplicacion.sede import Sede
     global indicaRepMalo
+    global proveedorB
     textoDeBoton = botonDeSede.cget("text")
-    indicaRepMalo.destroy()
+    indicaRepMalo.place_forget()
     nombre.destroy()
     nombreP.destroy()
     precio.destroy()
@@ -134,9 +176,38 @@ def eventoDeCompra(event, nombre, nombreP, precio, precioP, separador, seleccion
         labelSaldo = tk.Label(frameDeTrabajo, text= f"Saldo Disponible: {Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()} pesos", font=("Arial", 14, "italic"))
         labelSaldo.place(relx=0.5, rely=0.4, anchor="center")
 
+        seguirAnalisis = tk.Button(frameDeTrabajo, text="Continuar Análisis", font=("Arial", 12, "bold"))
+        seguirAnalisis.place(relx=0.5, rely=0.6, anchor="center")
+        seguirAnalisis.bind("<Button-1>", lambda event: eventoContinuador(event, labelDeCompraP, labelSaldo))
+
     else:
         labelDeCompraP = tk.Label(frameDeTrabajo, text=f"El repuesto {proveedorB.getInsumo().getNombre()} se compró exitosamente desde la Sede 2", wraplength=500, font=("Arial", 14, "bold"))
         labelDeCompraP.place(relx=0.5, rely=0.2, anchor="center")
         Sede.getListaSedes()[1].getCuentaSede().setAhorroBanco( (Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco() - proveedorB.getPrecio()) )
         labelSaldo = tk.Label(frameDeTrabajo, text= f"Saldo Disponible: {Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()} pesos", font=("Arial", 14, "italic"))
         labelSaldo.place(relx=0.5, rely=0.4, anchor="center")
+
+        seguirAnalisis = tk.Button(frameDeTrabajo, text="Continuar Análisis", font=("Arial", 12, "bold"))
+        seguirAnalisis.place(relx=0.5, rely=0.6, anchor="center")
+        seguirAnalisis.bind("<Button-1>", lambda event: eventoContinuador(event, labelDeCompraP, labelSaldo))
+        
+    
+def eventoContinuador(event, labelDeCompra, labelSaldo):
+    from src.uiMain.main import Main
+    global proveedorB
+    global botonProveedorB
+
+    labelDeCompra.destroy()
+    labelSaldo.destroy()
+    event.widget.destroy()
+    Main.evento_ui.set()
+    print(proveedorB)
+    buscarProveedor(frameDeTrabajo, 1, 1)
+    
+        
+    
+    
+    
+
+    
+    

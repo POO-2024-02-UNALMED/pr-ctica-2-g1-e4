@@ -72,6 +72,7 @@ class Maquinaria:
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.bodega.insumo import Insumo
         from src.uiMain.F5Produccion import receptor, recibeProveedorB
+        
         print("ENTRÉ")
         
         maqDisponibles = []
@@ -95,6 +96,13 @@ class Maquinaria:
                                     print(proveedorBarato.getNombre())
                                     Main.recibeProveedorB(proveedorBarato)
                                     break
+
+                            Main.evento_ui.clear()  
+                            print("Esperando confirmación del usuario en la UI...")
+                            Main.evento_ui.wait()
+                            receptor("No hay mas repuestos por cambiar,\npresiona el boton de abajo para ver el resumen de la revisión...")
+                            print("Usuario confirmó la compra. Continuando...")
+
                             for sedeCreada in Sede.getListaSedes():
                                 if sedeCreada.getCuentaSede().getAhorroBanco() >= proveedorBarato.getPrecio():
                                     #Main.dondeRetirar()
@@ -106,7 +114,12 @@ class Maquinaria:
                                     encontrado = True
                                     break
                             if not encontrado:
+                                #llamar metodo en F5Produccion para mostrar algun label que diga que no 
+                                #se pudo comprar el repuesto porque no hay plata en ninguna sede,
+                                #este label iría en donde se elige de cual sede descontar la plata 
                                 cadaRepuesto.setEstado()
+
+                        recibeProveedorB(None)    
                 else:
                     cadaMaquina.mantenimiento = True
                     cadaMaquina.ultFechaRevision = fecha
@@ -121,6 +134,7 @@ class Maquinaria:
                 if not cadaMaquina.mantenimiento and cadaMaquina.estado:
                     maqDisponibles.append(cadaMaquina)
                 cadaMaquina.mantenimiento = False
+        
         return maqDisponibles
 
     @classmethod

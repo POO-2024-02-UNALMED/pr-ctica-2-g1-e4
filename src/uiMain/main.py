@@ -14,10 +14,13 @@ from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from typing import List
 from src.gestorAplicacion.administracion.empleado import Empleado
+import threading
 
 class Main:
     fecha:Fecha=None
     proveedorBdelmain=None
+    evento_ui = threading.Event()
+
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
@@ -981,7 +984,8 @@ class Main:
         # CREACION DE TODOS LOS REPUESTOS QUE MANEJAREMOS PARA LA FUNCIONALIDAD
         # PRODUCCION
         AgujasMC = Repuesto("Agujas de la Maquina de coser", p13, 12)
-        Aceite = Repuesto("Aceite", p16, 60)
+        Aceite = Repuesto("Aceite", p16, 60, 1, None, 70)
+
         Cuchillas = Repuesto("Cuchillas", p19, 60)
         Afiladores = Repuesto("Afiladores", p22, 750)
         ResistenciaElectrica = Repuesto("Resistencia Electrica", p25, 1500)
@@ -992,7 +996,8 @@ class Main:
         Lector = Repuesto("Lector de barras", p35, 3000)
         PapelQuimico = Repuesto("Papel quimico", p37, 72)
         Cargador = Repuesto("Cargador Computador", p39, 6000)
-        Mouse = Repuesto("Mouse Computador", p41, 900)
+        Mouse = Repuesto("Mouse Computador", p41, 900, 1, None, 1000)
+
         # CREACION DE LAS SEDES QUE MANEJAREMOS, CON SUS RESPECTIVAS MAQUINAS EN CADA
         # UNA DE ELLAS
         sedeP = Sede("Sede Principal")
