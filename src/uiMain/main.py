@@ -13,7 +13,6 @@ from src.uiMain.F2Insumos import F2Insumos
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from typing import List
-from src.gestorAplicacion.administracion.empleado import Empleado
 import threading
 
 class Main:
