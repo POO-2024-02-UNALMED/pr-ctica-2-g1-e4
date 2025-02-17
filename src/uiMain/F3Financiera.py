@@ -27,17 +27,14 @@ class F3Financiera(tk.Frame):
                     elecionDeuda = 2
                 elif resultadosP.lower() == "si" and resultadosB.lower()=="si":
                     elecionDeuda = 3
-            print("Entry abilitado")
-            from src.gestorAplicacion.sede import Sede
-            empleado=None
-            for empleado_actual in Sede.getListaEmpleadosTotal():
-                seleccion=combo.get()
-                if empleado_actual.getNombre() == seleccion:
-                    empleado = empleado_actual
+                from src.gestorAplicacion.sede import Sede
+                empleado=None
+                for empleado_actual in Sede.getListaEmpleadosTotal():
+                    seleccion=combo.get()
+                    if empleado_actual.getNombre() == seleccion:
+                        empleado = empleado_actual
                 Main.calcularBalanceAnterior(empleado,eleccionDeuda)
             else: #Excepcion
-                resultadosP[0].delete(0,"end")
-                resultadosB[1].delete(0,"end")
                 combo.delete(0,"end")
 
         def Directivos():

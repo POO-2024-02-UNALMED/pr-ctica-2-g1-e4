@@ -7,7 +7,7 @@ from typing import List
 # Puede que visual marque esto. Usa pip install multimethod en la terminal para arreglarlo.
 
 class Venta:
-    codigosRegalo = [], montosRegalo = []
+    codigosRegalo = []; montosRegalo = []
     pesimismo = 0.02
 
     def __init__(self, sede, fecha:Fecha, cliente=None, asesor=None, encargado=None, articulos=None, subtotal=0, montoPagado=0):

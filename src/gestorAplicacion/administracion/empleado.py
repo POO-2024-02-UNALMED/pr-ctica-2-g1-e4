@@ -22,7 +22,7 @@ class Empleado(Persona, GastoMensual):
         self.prendasProducidas = 0
         self.pericia = 0
         self.bonificacion = 0
-        self.evaluaciones = [], self.ventasEncargadas = []
+        self.evaluaciones = []; self.ventasEncargadas = []
         sede.anadirEmpleado(self)
         Sede.getListaEmpleadosTotal().append(self)
 
@@ -58,7 +58,7 @@ class Empleado(Persona, GastoMensual):
     # Parte de la interacción 1 de gestion humana
     @classmethod
     def listaInicialDespedirEmpleado(cls, fecha: Fecha) -> List[List]:
-        listaADespedir = [],empleadosInsuficientes = [],rendimientoInsufuciencias= [],acciones = []
+        listaADespedir = [];empleadosInsuficientes = [];rendimientoInsufuciencias= [];acciones = []
         mensajes = [] # Heredado de la versión de java, usada para reportar a la funcion que la llama de errores o del proceso en general.
         retorno = [listaADespedir, mensajes, empleadosInsuficientes, rendimientoInsufuciencias, acciones]
         listaATransferir = [[] for _ in Sede.getListaSedes()]

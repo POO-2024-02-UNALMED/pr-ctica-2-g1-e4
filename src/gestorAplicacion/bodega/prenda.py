@@ -145,7 +145,7 @@ class Prenda(ABC, GastoMensual):
         return Venta.pesimismo
 
     def calcularCostoInsumos(self):
-        self.costoInsumos = sum(insumo.getprecioXUnidad() * cantidad for insumo, cantidad in zip(self.insumo, self.cantidadInsumo))
+        self.costoInsumos = sum(Insumo.getPrecioIndividual(insumo) * cantidad for insumo, cantidad in zip(self.insumo, self.getCantidadInsumo()))
         return self.costoInsumos
 
     def calcularCostoProduccion(self):

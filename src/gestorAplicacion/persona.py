@@ -38,7 +38,7 @@ class Persona:
         Persona.listaPersonas = lista  # Used when deserializing
     @staticmethod
     def entrevistar(aReemplazar):
-        rolesAReemplazar = [], cantidad = []
+        rolesAReemplazar = []; cantidad = []
         for empleado in aReemplazar:
             if empleado.getRol() not in rolesAReemplazar:
                 rolesAReemplazar.append(empleado.getRol())

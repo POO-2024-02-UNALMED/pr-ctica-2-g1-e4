@@ -5,12 +5,12 @@ from .fecha import Fecha
 from typing import List
 
 class Sede:
-    prendasInventadasTotal = [], listaEmpleadosTotal = [], listaSedes = [], evaluacionesFinancieras = []
+    prendasInventadasTotal = []; listaEmpleadosTotal = []; listaSedes = []; evaluacionesFinancieras = []
 
     def __init__(self, nombre="Sede"):
-        self.listaEmpleado = [], self.listaMaquina = [], self.historialVentas = [], self.prendasInventadas = []
-        self.listaInsumosBodega = [], self.cantidadInsumosBodega = [], self.produccionAproximada = []
-        self.prendasProduccion = [],self.maqProduccion = [], self.maqOficina = []
+        self.listaEmpleado = []; self.listaMaquina = []; self.historialVentas = []; self.prendasInventadas = []
+        self.listaInsumosBodega = []; self.cantidadInsumosBodega = []; self.produccionAproximada = []
+        self.prendasProduccion = [];self.maqProduccion = []; self.maqOficina = []
         self.nombre = nombre
         self.cuentaSede = None
         Sede.setListaSedes(self)
@@ -153,13 +153,13 @@ class Sede:
         return self.prodAproximada
     
     def obtenerNecesidadTransferenciaEmpleados(despedidos):  # Despedidos es A en el doc.
-        rolesARevisar = [], sedeOrigen = []
+        rolesARevisar = []; sedeOrigen = []
         for empleado in despedidos:
             if empleado.getRol() not in rolesARevisar:
                 rolesARevisar.append(empleado.getRol())
                 sedeOrigen.append(empleado.getSede())
 
-        transferirDe = [], rolesATransferir = []
+        transferirDe = []; rolesATransferir = []
         for idxRol in range(len(rolesARevisar)):
             rol = rolesARevisar[idxRol]
             # Revisar sedes donadoras
@@ -319,9 +319,9 @@ class Sede:
     def planProduccion(self, maqDisponible: List, fecha: 'Fecha', scanner: 'int') -> List[List[List[int]]]:
         from .bodega.maquinaria import Maquinaria
         from src.uiMain import Main
-        aProducirFinal = [], aProducir = [], listaEspera = [], listaDeCeros = [0, 0]
+        aProducirFinal = []; aProducir = []; listaEspera = []; listaDeCeros = [0, 0]
         listaEsperaVacia = [listaDeCeros.copy(), listaDeCeros.copy()]
-        maqSedeP = [], maqSede2 = []
+        maqSedeP = []; maqSede2 = []
         senal = 0
 
         # Dividir las máquinas disponibles por sedes

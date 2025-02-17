@@ -165,7 +165,7 @@ class Main:
     def errorDeReemplazo(persona):
         print(f"No se pudo contratar a {Persona.getNombre(persona)}, no sabemos a quien reemplaza.")    
         
-    def calcularBalanceAnterior(self, empleado, eleccion):
+    def calcularBalanceAnterior(empleado, eleccion):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         from src.gestorAplicacion.administracion.deuda import Deuda
         from src.gestorAplicacion.administracion.area import Area
@@ -175,25 +175,25 @@ class Main:
         nuevoBalance = EvaluacionFinanciera(balanceTotal, empleado)
         return nuevoBalance
     # Interaccion 2 
-    def calcularEstimado(self, balanceAnterior):
+    def calcularEstimado(balanceAnterior):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         print("\nCalculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...")
         porcentaje = -1.0
         while porcentaje < 0.0 or porcentaje > 1:
             print("\nIngrese porcentaje a modificar para fidelidad de los clientes sin membresía, entre 0% y 100%")
             porcentaje = Main.nextIntSeguro() / 100.0
-        diferenciaEstimado = EvaluacionFinanciera.estimadoVentasGastos(self.fecha, porcentaje, balanceAnterior)
+        diferenciaEstimado = EvaluacionFinanciera.estimadoVentasGastos(Main.fecha, porcentaje, balanceAnterior)
         # Un mes se puede dar por salvado si el 80% de los gastos se pueden ver
         # cubiertos por las ventas predichas
         return diferenciaEstimado
     # Interacción 3
-    def planRecuperacion(self, diferenciaEstimada, bancos):
+    def planRecuperacion(diferenciaEstimada, bancos):
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.administracion.deuda import Deuda
         if diferenciaEstimada > 0:
             print("\nEl estimado es positivo, las ventas superan las deudas")
             print("Hay dinero suficiente para hacer el pago de algunas Deudas")
-            Deuda.compararDeudas(self.fecha)
+            Deuda.compararDeudas(Main.fecha)
         else:
             print("\nEl estimado es negativo, la deuda supera las ventas")
             print("No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo")
@@ -210,9 +210,9 @@ class Main:
             while cuotas <= 0 or cuotas > 18:
                 print("Ingrese número de 1 a 18 para las cuotas en que se dividirá la deuda")
                 cuotas = Main.nextIntSeguro()
-            deudaAdquirir = Deuda(self.fecha, diferenciaEstimada, nombreBanco, "Banco", cuotas)
+            deudaAdquirir = Deuda(Main.fecha, diferenciaEstimada, nombreBanco, "Banco", cuotas)
         print("\nAnalizando posibilidad de hacer descuentos para subir las ventas...")
-        descuento = Venta.blackFriday(self.fecha)
+        descuento = Venta.blackFriday(Main.fecha)
         bfString = None
         if descuento <= 0.0:
             bfString = ("El análisis de ventas realizado sobre el Black Friday arrojó que la audiencia no reacciona tan bien a los descuentos, ""propusimos no hacer descuentos")
@@ -229,7 +229,7 @@ class Main:
                 nuevoDescuento = Main.nextIntSeguro() / 100.0
         else:
             nuevoDescuento = descuento
-        Prenda.prevenciones(descuento, nuevoDescuento, self.fecha)
+        Prenda.prevenciones(descuento, nuevoDescuento, Main.fecha)
         analisisFuturo = (f"\n{bfString}, sin embargo su desición fue aplicar un descuento de: "
                         f"{nuevoDescuento * 100}%.")
         return analisisFuturo
@@ -998,7 +998,7 @@ class Main:
         sede2 = Sede("Sede 2")
         # AGRUPACION DE LOS REPUESTOS EN LISTAS PARA ENVIARLOS A LAS MAQUINAS
         # CORRESPONDIENTES
-        repuestosMC = [], repuestosMCorte = [], repuestosPI = [], repuestosBI = [], repuestosMTermofijado = [], repuestosMTijereado = [], repuestosImp = [], repuestosRe = [],repuestosComp = [], repuestosMC2 = [], repuestosMCorte2 = [], repuestosPI2 = [], repuestosBI2 = [], repuestosMTermofijado2 = [], repuestosMTijereado2 = [], repuestosImp2 = [], repuestosRe2 = [], repuestosComp2 = []
+        repuestosMC = []; repuestosMCorte = []; repuestosPI = []; repuestosBI = []; repuestosMTermofijado = []; repuestosMTijereado = []; repuestosImp = []; repuestosRe = []; repuestosComp = []; repuestosMC2 = []; repuestosMCorte2 = []; repuestosPI2 = []; repuestosBI2 = []; repuestosMTermofijado2 = []; repuestosMTijereado2 = []; repuestosImp2 = []; repuestosRe2 = []; repuestosComp2 = []
         repuestosImp.append(TintaN)
         repuestosRe.append(PapelQuimico)
         repuestosRe.append(Lector)
@@ -1147,7 +1147,7 @@ class Main:
         c11 = Persona("Julia Solano", 28943158, Rol.SECRETARIA, 10, False, Membresia.BRONCE)
         c12 = Persona("Maria Beatriz Valencia", 6472799, Rol.ASISTENTE, 2, False, Membresia.BRONCE)
         c13 = Persona("Antonio Sanchéz", 8922998, Rol.VENDEDOR, 12, False, Membresia.NULA)
-        tiposp = [], cantidadesp = [],tiposc = [], cantidadesc = []
+        tiposp = []; cantidadesp = [];tiposc = []; cantidadesc = []
         tiposp.append("Tela")
         tiposp.append("Boton")
         tiposp.append("Cremallera")
