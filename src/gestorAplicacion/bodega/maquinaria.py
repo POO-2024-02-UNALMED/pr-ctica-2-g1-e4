@@ -119,7 +119,7 @@ class Maquinaria:
                                 #este label iría en donde se elige de cual sede descontar la plata 
                                 cadaRepuesto.setEstado()
 
-                        recibeProveedorB(None)    
+                           
                 else:
                     cadaMaquina.mantenimiento = True
                     cadaMaquina.ultFechaRevision = fecha
@@ -134,7 +134,7 @@ class Maquinaria:
                 if not cadaMaquina.mantenimiento and cadaMaquina.estado:
                     maqDisponibles.append(cadaMaquina)
                 cadaMaquina.mantenimiento = False
-        
+        recibeProveedorB(None) 
         return maqDisponibles
 
     @classmethod
