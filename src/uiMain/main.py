@@ -4,6 +4,7 @@ from src.gestorAplicacion.administracion.banco import Banco
 from src.gestorAplicacion.administracion.rol import Rol
 from src.gestorAplicacion.bodega.bolsa import Bolsa
 from src.gestorAplicacion.bodega.insumo import Insumo
+from src.gestorAplicacion.bodega.proveedor import Proveedor
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
@@ -85,7 +86,7 @@ class Main:
         for rolidx in range(len(roles_a_transferir)):
             rol = roles_a_transferir[rolidx]
             sede = transferir_de[rolidx]
-            print(f"Se necesita transferir {rol} de {sede.getNombre()}, estos son los candidatos: Ingresa su nombre completo para hacerlo.")
+            print(f"Se necesita transferir {rol} de {sede.getNombre()}, estos son los candidatos: Ingresa su getNombre completo para hacerlo.")
             for emp in sede.getlistaEmpleados():
                 if emp.getRol() == rol:
                     descripcion = f"Nombre: {emp.getNombre()}, Documento: {emp.getDocumento()}"
@@ -99,9 +100,9 @@ class Main:
             # Obtenemos la cantidad de empleados a seleccionar
             cantidad = sum(1 for emp in despedidos if emp.getRol() == rol)
             for _ in range(cantidad):
-                nombre = input().strip()
+                getNombre = input().strip()
                 for emp in sede.getlistaEmpleados():
-                    if emp.getNombre()==nombre:
+                    if emp.getNombre()==getNombre:
                         a_transferir.append(emp)
         Sede.reemplazarPorCambioSede(despedidos, a_transferir)
         return a_contratar
@@ -119,7 +120,7 @@ class Main:
         for rolIdx in range(len(rolesATransferir)):
             rol = rolesATransferir[rolIdx]
             sede = transferirDe[rolIdx]
-            print(f"Se necesita transferir {rol} de {Sede.getNombre(sede)}, estos son los candidatos: Ingresa su nombre completo para hacerlo.")
+            print(f"Se necesita transferir {rol} de {Sede.getNombre(sede)}, estos son los candidatos: Ingresa su getNombre completo para hacerlo.")
             for emp in Sede.getListaEmpleados(sede):
                 if Empleado.getRol(emp) == rol:
                     descripcion = f"Nombre: {Empleado.getNombre(emp)}, Documento: {Empleado.getDocumento(emp)}"
@@ -133,9 +134,9 @@ class Main:
             # Obtenemos la cantidad de empleados a seleccionar
             cantidad = sum(1 for emp in despedidos if Empleado.getRol(emp) == rol)
             for _ in range(cantidad):
-                nombre = input().strip()
+                getNombre = input().strip()
                 for emp in Sede.getListaEmpleados(sede):
-                    if Empleado.getNombre(emp) == nombre:
+                    if Empleado.getNombre(emp) == getNombre:
                         aTransferir.append(emp)
         Sede.reemplazarPorCambioSede(despedidos, aTransferir)
         return aContratar
@@ -153,11 +154,11 @@ class Main:
             for persona in aptos:
                 if Persona.getRol(persona) == rol:
                     print(f"Nombre: {Persona.getNombre(persona)}, Documento: {Persona.getDocumento(persona)}, con {Persona.getExperiencia(persona)} años de experiencia.")
-            print("Ingresa el nombre de los que quieres contratar.")
+            print("Ingresa el getNombre de los que quieres contratar.")
             for cantidadContratada in range(cantidadNecesaria):
-                nombre = input().strip()
+                getNombre = input().strip()
                 for persona in aptos:
-                    if Persona.getNombre(persona) == nombre:
+                    if Persona.getNombre(persona) == getNombre:
                         aContratar.append(persona)
                         print(f"Seleccionaste a {Persona.getNombre(persona)} con {Persona.calcularSalario(persona) - Persona.valorEsperadoSalario(persona)} de diferencia salarial sobre el promedio")
         Persona.contratar(aContratar, aReemplazar, fecha)
@@ -291,7 +292,7 @@ class Main:
                     cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
                     productoEnOtraSede = Sede.verificarProductoOtraSede(i)
                     if productoEnOtraSede.getEncontrado():
-                        print(f"\nTenemos el insumo {i.nombre} en nuestra {productoEnOtraSede.sede}.")
+                        print(f"\nTenemos el insumo {i.getNombre} en nuestra {productoEnOtraSede.sede}.")
                         print(f"El insumo tiene un costo de {productoEnOtraSede.precio}")
                         print("\nSeleccione una de las siguientes opciones:")
                         print(f"1. Deseo transferir el insumo desde la {productoEnOtraSede.sede}")
@@ -303,11 +304,11 @@ class Main:
                             if restante != 0:
                                 insumosAPedir.append(i)
                                 cantidadAPedir.append(restante)
-                                if i.nombre == "Tela":
+                                if i.getNombre == "Tela":
                                     print(f"\nTenemos una cantidad de {restante} cm de tela restantes a pedir")
-                                elif i.nombre == "Boton":
+                                elif i.getNombre == "Boton":
                                     print(f"\nTenemos una cantidad de {restante} botones restantes a pedir")
-                                elif i.nombre == "Cremallera":
+                                elif i.getNombre == "Cremallera":
                                     print(f"\nTenemos una cantidad de {restante} cremalleras restantes a pedir")
                                 else:
                                     print(f"\nTenemos una cantidad de {restante} cm de hilo restantes a pedir")
@@ -348,7 +349,7 @@ class Main:
                             mejorPrecio = precio
                             mejorProveedor = x
                             Insumo.setProveedor(insumos[idxInsumo],x)
-                    print(f"\nTenemos el insumo {insumos[idxInsumo].nombre} con nuestro proveedor {Proveedor.getNombre((Insumo.getProveedor(insumos[idxInsumo])))}.")
+                    print(f"\nTenemos el insumo {Insumo.getNombre(insumos[idxInsumo])} con nuestro proveedor {Proveedor.getNombre((Insumo.getProveedor(insumos[idxInsumo])))}.")
                     if Insumo.getPrecioIndividual(insumos[idxInsumo]) < Insumo.getUltimoPrecio(insumos[idxInsumo]):
                         print("\nDado que el costo de la venta por unidad es menor al ultimo precio por el que compramos el insumo")
                         print(f"\nDesea pedir mas de la cantidad necesaria para la producción? \nCantidad: {cantidad[idxInsumo]}")
@@ -369,9 +370,9 @@ class Main:
                             montoDeuda += Insumo.getPrecioIndividual(insumos[idxInsumo]) * cantidad[idxInsumo]
                         if montoDeuda > 0:
                             if Proveedor.getDeuda(proveedor) is None:
-                                deuda = Deuda(fecha, montoDeuda, proveedor.nombre, "Proveedor", Deuda.calcularCuotas(montoDeuda))
+                                deuda = Deuda(fecha, montoDeuda, proveedor.getNombre, "Proveedor", Deuda.calcularCuotas(montoDeuda))
                             elif not Deuda.getEstadoDePago(Proveedor.getDeuda(proveedor)):
-                                proveedor.unificarDeudasXProveedor(fecha, montoDeuda)
+                                Proveedor.unificarDeudasXProveedor(proveedor,fecha, montoDeuda)
                                 deuda = Proveedor.getDeuda(proveedor)
                             deudas.append(deuda)
 
@@ -389,25 +390,25 @@ class Main:
     def dondeRetirar(cls):
         print("\n*Seleccione la sede desde donde comprara el Repuesto:\n")
         if Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0])) >= Main.proveedorBdelmain.getPrecio():
-            print(f"1. {Sede.getListaSedes()[0].getNombre()} tiene disponible: {Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()}")
+            print(f"1. {Sede.getNombre(Sede.getListaSedes()[0])} tiene disponible: {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0]))}")
         if Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1])) >= Main.proveedorBdelmain.getPrecio():
-            print(f"2. {Sede.getListaSedes()[1].getNombre()} tiene disponible: {Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()}")
+            print(f"2. {Sede.getNombre(Sede.getListaSedes()[1])} tiene disponible: {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]))}")
 
         opcion = 0
         while opcion != 1 and opcion != 2:
             opcion = int(input())
             if opcion == 1:
-                nuevoDineroSede = Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco() - Main.proveedorBdelmain.getInsumo().getPrecioIndividual()
-                Sede.getListaSedes()[0].getCuentaSede().setAhorroBanco(nuevoDineroSede)
-                print(f"El repuesto se compro exitosamente desde la {Sede.getListaSedes()[0].getNombre()}, saldo disponible:")
-                print(f"{Sede.getListaSedes()[0].getNombre()} = {Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()}")
-                print(f"{Sede.getListaSedes()[1].getNombre()} = {Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()}")
+                nuevoDineroSede = Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1])) - Insumo.getPrecioIndividual(Proveedor.getInsumo(Main.proveedorBdelmain))
+                Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0]),nuevoDineroSede)
+                print(f"El repuesto se compro exitosamente desde la {Sede.getNombre(Sede.getListaSedes()[0])}, saldo disponible:")
+                print(f"{Sede.getNombre(Sede.getListaSedes()[0])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0]))}")
+                print(f"{Sede.getNombre(Sede.getListaSedes()[1])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]))}")
             elif opcion == 2:
-                nuevoDineroSede = Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco() - Main.proveedorBdelmain.getInsumo().getPrecioIndividual()
+                nuevoDineroSede = Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1])) - Insumo.getPrecioIndividual(Proveedor.getInsumo(Main.proveedorBdelmain))
                 Sede.getListaSedes()[1].getCuentaSede().setAhorroBanco(nuevoDineroSede)
-                print(f"El repuesto se compro exitosamente desde la sede {Sede.getListaSedes()[1].getNombre()}, saldo disponible:")
-                print(f"{Sede.getListaSedes()[0].getNombre()} = {Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()}")
-                print(f"{Sede.getListaSedes()[1].getNombre()} = {Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()}")
+                print(f"El repuesto se compro exitosamente desde la sede {Sede.getNombre(Sede.getListaSedes()[1])}, saldo disponible:")
+                print(f"{Sede.getNombre(Sede.getListaSedes()[0])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0]))}")
+                print(f"{Sede.getNombre(Sede.getListaSedes()[1])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]))}")
             else:
                 print("Opcion incorrecta, marque 1 o 2 segun desee")
 
@@ -452,7 +453,7 @@ class Main:
         vendedor = sede.getListaEmpleados()[vendedorSeleccionado]
         costosEnvio = 0
         while True:
-            print("\nSeleccione el nombre del producto que venderá:")
+            print("\nSeleccione el getNombre del producto que venderá:")
             print(f"0. Camisa - Precio {Camisa.precioVenta()}")
             print(f"1. Pantalon - Precio {Pantalon.precioVenta()}")
             productoSeleccionado = input()
@@ -1286,9 +1287,9 @@ class Main:
         return posiblesSedes
     
     @classmethod    
-    def sedePorNombre(cls,nombre:str)->Sede:
+    def sedePorNombre(cls,getNombre:str)->Sede:
         for sede in Sede.getListaSedes():
-            if sede.getNombre()==nombre:
+            if sede.getNombre()==getNombre:
                 return sede
 
 if __name__=="__main__":

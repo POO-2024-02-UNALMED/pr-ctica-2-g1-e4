@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter.font import Font
 from tkinter import ttk as ttk
 
+from src.gestorAplicacion.administracion.empleado import Empleado
 from src.uiMain.fieldFrame import FieldFrame
 
 class F3Financiera(tk.Frame):
@@ -20,7 +21,7 @@ class F3Financiera(tk.Frame):
             resultadosB=FieldFrame.getValue(field_frame,"Banco")
             if resultadosP.lower()!="si/no" and resultadosB.lower()!="si/no" and combo.get()!="":
                 from src.uiMain.main import Main
-                Empleado=combo.get()
+                cosa=combo.get()
                 if resultadosP.lower() == "si" and resultadosB.lower()=="no":
                     elecionDeuda = 1
                 elif resultadosP.lower() == "no" and resultadosB.lower()=="si":
@@ -31,9 +32,10 @@ class F3Financiera(tk.Frame):
                 empleado=None
                 for empleado_actual in Sede.getListaEmpleadosTotal():
                     seleccion=combo.get()
-                    if empleado_actual.getNombre() == seleccion:
+                    if Empleado.getNombre(empleado_actual) == seleccion:
                         empleado = empleado_actual
-                Main.calcularBalanceAnterior(empleado,eleccionDeuda)
+                a=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
+                print(a)
             else: #Excepcion
                 combo.delete(0,"end")
 
