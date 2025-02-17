@@ -7,7 +7,6 @@ from src.gestorAplicacion.administracion.deuda import Deuda
 
 class Proveedor:
     listaProveedores = []
-
     def __init__(self, precio: int = 0, nombre: str = "", insumo: Optional[Insumo] = None):
         self.precio = precio
         self.nombre = nombre
@@ -63,6 +62,5 @@ class Proveedor:
         return self.descuento
     def setDescuento(self, monto: float):
         self.descuento = monto
-
     def __str__(self):
         return f"El proveedor {self.nombre} vende insumos de tipo {self.tipoInsumo.getNombre()} y valen {self.precio}"

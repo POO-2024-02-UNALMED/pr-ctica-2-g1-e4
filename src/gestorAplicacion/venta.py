@@ -128,10 +128,8 @@ class Venta:
         ventasMes1 = Venta.cantidadProducto(Venta.filtrar(Sede.getHistorialVentas(sede), fechaActual.restarMeses(3)), prenda)
         ventasMes2 = Venta.cantidadProducto(Venta.filtrar(Sede.getHistorialVentas(sede), fechaActual.restarMeses(2)), prenda)
         pendienteMes1a2 = ventasMes2 - ventasMes1
-
         ventasMes3 = Venta.cantidadProducto(Venta.filtrar(Sede.getHistorialVentas(sede), fechaActual.restarMeses(1)), prenda)
         pendienteMes2a3 = ventasMes3 - ventasMes2
-
         pendientePromedio = (pendienteMes1a2 + pendienteMes2a3) / 2
         return math.ceil(ventasMes3 + pendientePromedio)
     

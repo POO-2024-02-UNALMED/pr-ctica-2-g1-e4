@@ -307,10 +307,8 @@ class Sede:
 
         prodCalculadaSedeP.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Pantalon"))
         prodCalculadaSedeP.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Camisa"))
-
         prodCalculadaSede2.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[1], "Pantalon"))
         prodCalculadaSede2.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[1], "Camisa"))
-
         prodSedesCalculada.append(prodCalculadaSedeP)
         prodSedesCalculada.append(prodCalculadaSede2)
 
@@ -364,7 +362,6 @@ class Sede:
         aProducirFinal = []
         aProducir = []
         listaEspera = []
-
         listaDeCeros = [0, 0]
         listaEsperaVacia = [listaDeCeros.copy(), listaDeCeros.copy()]
         maqSedeP = []
@@ -549,7 +546,6 @@ class Sede:
             if sede.getNombre() == nombre:
                 return True
         return False
-    
     def getEmpleado(self, nombre):
         for empleado in self.listaEmpleado:
             if empleado.getNombre() == nombre:

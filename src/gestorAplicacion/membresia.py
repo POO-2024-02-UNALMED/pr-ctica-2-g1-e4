@@ -5,9 +5,7 @@ class Membresia(Enum):
     PLATA=0.15
     BRONCE=0.5
     NULA=0.0
-    
     def __init__(self, descuento):
         self.porcentajeDescuento = descuento
-	
     def getPorcentajeDescuento(self):
         return self.porcentajeDescuento

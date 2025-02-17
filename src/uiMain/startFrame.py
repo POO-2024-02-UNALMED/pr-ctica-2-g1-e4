@@ -174,7 +174,6 @@ class startFrame(tk.Tk):
             self.confirmacion.config(text="Fecha ingresada correctamente, estamos en "+Main.fecha.strCorto())
         pass
 
-
     def borrar(self):
         self.entradaDia.delete(0, tk.END)
         self.entradaMes.delete(0, tk.END)
@@ -218,9 +217,6 @@ class startFrame(tk.Tk):
             Main.fecha=fecha
             self.fechaValida = True
         return fecha
-
-
-
     
 #-----------------Gestión Humana-----------------
     def crearGestionHumana(self):
@@ -231,7 +227,6 @@ class startFrame(tk.Tk):
         self.empleadosADespedir=[] # Se llena al dar aceptar en la pantalla de seleccion.
         return self.gestionHumana
         
-
     def inicialGestionHumana(self):
         self.framePrincipal =  tk.Frame(self.gestionHumana, bg="blue")
         self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
@@ -264,7 +259,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.empleadosInsuficientes = infoMalos[2]
         self.rendimientoInsufuciencias = infoMalos[3]
         self.acciones=infoMalos[4]
-
 
         self.tituloNombre=tk.Label(self.frame1, text="Nombre", font=("Arial", 10))
         self.tituloArea=tk.Label(self.frame1, text="Area", font=("Arial", 10))
@@ -321,10 +315,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
 
-    
-
-
-
     def pantallaEleccionDespedir(self, limpiarFrame=False):
         if limpiarFrame:
             self.frame1.destroy()
@@ -365,7 +355,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame1.columnconfigure(1, weight=6)
         self.frame1.columnconfigure(2, weight=6)
         self.frame1.columnconfigure(3, weight=10)
-        
         self.framePrincipal.columnconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
@@ -401,13 +390,11 @@ terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
         
-
         self.frame1.rowconfigure(0, weight=1)
         self.frame1.rowconfigure(1, weight=10)
         self.frame1.columnconfigure(0, weight=2)
         self.frame1.columnconfigure(1, weight=2)
         self.frame1.columnconfigure(3, weight=4)
-
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
     
@@ -439,7 +426,6 @@ terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
         self.frame1.destroy()
         self.frame1 = tk.Frame(self.framePrincipal)
         self.frame1.grid(row=1, column=0, sticky="nswe")
-
         self.descripcionCambioSede = tk.Label(self.frame1, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados""", relief="ridge", font=("Arial", 10))
 
 def pasarAVentanaPrincipal():

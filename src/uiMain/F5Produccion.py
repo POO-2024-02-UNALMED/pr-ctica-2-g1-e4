@@ -32,9 +32,7 @@ def producir(ventana:tk.Frame):
     indicaRepMalo = tk.Label(frame2, text="", bg="light gray")
     indicaRepMalo.place(relx=0.5, rely=0.35, anchor="center")
     
-
     
-
 def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):
     from src.gestorAplicacion.bodega.maquinaria import Maquinaria
     buscarProveedor(ventana, descrip1, botonContinuar)
@@ -116,8 +114,6 @@ def evento(event, nombre, nombreP, precio, precioP):
 
     sede2flecha = tk.Label(contSedes2, text="------------>", bg="light gray", font=("Arial", 12, "bold"))
     sede2flecha.pack(side="right", pady=5)
-
-    
 
     sedePboton = tk.Button(contSedeP, text="Sede Principal", font=("Arial", 12, "italic"))
     sedePboton.pack(side="right", padx=10, pady=5)

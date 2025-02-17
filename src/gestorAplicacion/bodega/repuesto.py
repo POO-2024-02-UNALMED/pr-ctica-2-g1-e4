@@ -5,7 +5,6 @@ from .proveedor import Proveedor
 
 class Repuesto(Insumo):
     listadoRepuestos = []
-
     def __init__(self, nombre: str, proveedor: Proveedor, horasDeVidaUtil: int, cantidad=None, sede=None, horasDeUso=0):
         super().__init__(nombre, proveedor, cantidad, sede)
         self.nombre = nombre

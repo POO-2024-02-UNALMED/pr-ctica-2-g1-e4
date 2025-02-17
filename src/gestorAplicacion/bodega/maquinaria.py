@@ -1,7 +1,6 @@
 from typing import List
 from ..sede import Sede
 
-
 class Maquinaria:
     def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos, sede: 'Sede'):
         
@@ -18,7 +17,6 @@ class Maquinaria:
         self.repuestos = repuestos
         sede.getListaMaquinas().append(self)
         self.asignarRepAsedes(sede, repuestos)
-
         self.ultFechaRevision = None
 
     def copiar(self):
@@ -66,8 +64,6 @@ class Maquinaria:
         return self.horasUso
     def getSede(self) -> 'Sede':
         return self.sede
-
-    
     
     @classmethod
     def agruparMaquinasDisponibles(cls, fecha) -> List['Maquinaria']:
@@ -187,4 +183,3 @@ class Maquinaria:
     def dePantalon(self):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         return self.nombre in Pantalon.getMaquinariaNecesaria()
-

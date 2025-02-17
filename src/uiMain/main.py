@@ -17,7 +17,6 @@ from src.gestorAplicacion.administracion.empleado import Empleado
 class Main:
     fecha:Fecha=None
     proveedorBdelmain=None
-
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
@@ -73,14 +72,10 @@ class Main:
             else:
                 print("Esa opción no es valida.")
 
-
-    
     def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
         from src.gestorAplicacion.bodega.prenda import Prenda
         print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
         print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
-
-   
 
     def reorganizarEmpleados(despedidos):
         print(f"Todavía nos quedan {len(despedidos)} empleados por reemplazar, revisamos la posibilidad de transferir empleados.")
@@ -90,7 +85,6 @@ class Main:
         roles_a_transferir = necesidades[0]
         transferir_de = necesidades[1]
         a_contratar = necesidades[2]
-
         # Lista de empleados a transferir de sede, seleccionados por el usuario.
         a_transferir = []
 
@@ -1009,7 +1003,6 @@ class Main:
         p17.setInsumo(Insumo("Aceite", p17))
         p18 = Proveedor(20000, "El barato del Aceite")
         p18.setInsumo(Insumo("Aceite", p18))
-
         # PROVEEDORES QUE VENDEN CUCHILLAS
         p19 = Proveedor(32000, "El de las Cuchillas")
         p19.setInsumo(Insumo("Cuchillas", p19))
@@ -1017,7 +1010,6 @@ class Main:
         p20.setInsumo(Insumo("Cuchillas", p20))
         p21 = Proveedor(37000, "El carero de las cuchillas")
         p21.setInsumo(Insumo("Cuchillas", p21))
-
         # PROVEEDORES QUE VENDEN AFILADORES
         p22 = Proveedor(72000, "El afilador")
         p22.setInsumo(Insumo("Afiladores", p22))
@@ -1025,89 +1017,70 @@ class Main:
         p23.setInsumo(Insumo("Afiladores", p23))
         p24 = Proveedor(80000, "Afilamos caro")
         p24.setInsumo(Insumo("Afiladores", p24))
-
         # PROVEEDORES QUE VENDEN RESISTENCIAS ELECTRICAS:
         p25 = Proveedor(160000, "Resistencias y mas")
         p25.setInsumo(Insumo("Resistencia electrica", p25))
         p26 = Proveedor(140000, "Electricos")
         p26.setInsumo(Insumo("Resistencia electrica", p26))
-
         # PROVEEDORES QUE VENDEN MANGUERAS DE VAPOR:
         p27 = Proveedor(120000, "Mangueras y mas")
         p27.setInsumo(Insumo("Manguera de vapor", p27))
         p28 = Proveedor(140000, "Mangueras Don Diego")
         p28.setInsumo(Insumo("Manguera de vapor", p28))
-
         # PROVEEDORES QUE VENDEN AGUJAS DE LA BORDADORA INDUSTRIAL:
         p29 = Proveedor(55000, "El Agujero")
         p29.setInsumo(Insumo("Agujas de la Bordadora industrial", p29))
         p30 = Proveedor(45000, "La bodega del Agujero")
         p30.setInsumo(Insumo("Agujas de la Bordadora industrial", p30))
-
         # PROVEEDORES QUE VENDEN BANDAS DE TRANSMISION:
         p31 = Proveedor(200000, "El de las Bandas")
         p31.setInsumo(Insumo("Bandas de transmision", p31))
         p32 = Proveedor(250000, "El carero de las Bandas")
         p32.setInsumo(Insumo("Bandas de transmision", p32))
-
         # PROVEEDORES QUE VENDEN TINTA NEGRA PARA IMPRESORA:
         p33 = Proveedor(50000, "Tinta por aqui")
         p33.setInsumo(Insumo("Tinta Negra Impresora", p33))
         p34 = Proveedor(44000, "El tintoso")
         p34.setInsumo(Insumo("Tinta Negra Impresora", p34))
-
         # PROVEEDORES QUE VENDEN LECTORES DE BARRAS:
         p35 = Proveedor(120000, "Mega tecnologies")
         p35.setInsumo(Insumo("Lector de barras", p35))
         p36 = Proveedor(160000, "HP")
         p36.setInsumo(Insumo("Lector de barras", p36))
-
         # PROVEEDORES QUE VENDEN PAPEL QUIMICO:
         p37 = Proveedor(40000, "Panamericana")
         p37.setInsumo(Insumo("Papel quimico", p37))
         p38 = Proveedor(50000, "SSKaisen")
         p38.setInsumo(Insumo("Papel quimico", p38))
-
         # PROVEEDORES QUE VENDEN CARGADORES PARA PORTATILES:
         p39 = Proveedor(150000, "Homecenter")
         p39.setInsumo(Insumo("Cargador Computador", p39))
         p40 = Proveedor(180000, "Todo en cargadores")
         p40.setInsumo(Insumo("Cargador Computador", p40))
-
         # PROVEEDORES QUE VENDER MOUSE PARA PORTATILES:
         p41 = Proveedor(20000, "Mecado Libre")
         p41.setInsumo(Insumo("Mouse Computador", p41))
         p42 = Proveedor(30000, "Asus")
         p42.setInsumo(Insumo("Mouse Computador", p42))
-
         # CREACION DE TODOS LOS REPUESTOS QUE MANEJAREMOS PARA LA FUNCIONALIDAD
         # PRODUCCION
         AgujasMC = Repuesto("Agujas de la Maquina de coser", p13, 12)
         Aceite = Repuesto("Aceite", p16, 60)
-
         Cuchillas = Repuesto("Cuchillas", p19, 60)
         Afiladores = Repuesto("Afiladores", p22, 750)
-
         ResistenciaElectrica = Repuesto("Resistencia Electrica", p25, 1500)
         MangueraDeVapor = Repuesto("Manguera de Vapor", p27, 750, 1, None)
-
         AgujasBI = Repuesto("Agujas de la Bordadora Industrial", p29, 25)
-
         BandasDeTransmision = Repuesto("Bandas de Transmision", p31, 2500)
-
         TintaN = Repuesto("Tinta Negra Impresora", p33, 3000, 1, None, 3100)
-
         Lector = Repuesto("Lector de barras", p35, 3000)
         PapelQuimico = Repuesto("Papel quimico", p37, 72)
-
         Cargador = Repuesto("Cargador Computador", p39, 6000)
         Mouse = Repuesto("Mouse Computador", p41, 900)
-
         # CREACION DE LAS SEDES QUE MANEJAREMOS, CON SUS RESPECTIVAS MAQUINAS EN CADA
         # UNA DE ELLAS
         sedeP = Sede("Sede Principal")
         sede2 = Sede("Sede 2")
-
         # AGRUPACION DE LOS REPUESTOS EN LISTAS PARA ENVIARLOS A LAS MAQUINAS
         # CORRESPONDIENTES
         repuestosMC = []
@@ -1119,7 +1092,6 @@ class Main:
         repuestosImp = []
         repuestosRe = []
         repuestosComp = []
-
         repuestosMC2 = []
         repuestosMCorte2 = []
         repuestosPI2 = []
@@ -1129,57 +1101,39 @@ class Main:
         repuestosImp2 = []
         repuestosRe2 = []
         repuestosComp2 = []
-
         repuestosImp.append(TintaN)
-
         repuestosRe.append(PapelQuimico)
         repuestosRe.append(Lector)
-
         repuestosComp.append(Mouse)
         repuestosComp.append(Cargador)
-
         repuestosMC.append(AgujasMC)
         repuestosMC.append(Aceite)
-
         repuestosMCorte.append(Cuchillas)
         repuestosMCorte.append(Afiladores)
-
         repuestosPI.append(ResistenciaElectrica)
         repuestosPI.append(MangueraDeVapor)
-
         repuestosBI.append(AgujasBI)
         repuestosBI.append(Aceite.copiar())
-
         repuestosMTermofijado.append(BandasDeTransmision)
         repuestosMTermofijado.append(ResistenciaElectrica.copiar())
-
         repuestosMTijereado.append(Cuchillas.copiar())
         repuestosMTijereado.append(Aceite.copiar())
-
         # respuestos para las maquinas de la sede2
         repuestosImp2.append(TintaN.copiar())
-
         repuestosRe2.append(PapelQuimico.copiar())
         repuestosRe2.append(Lector.copiar())
-
         repuestosComp2.append(Mouse.copiar())
         repuestosComp2.append(Cargador.copiar())
-
         repuestosMC2.append(AgujasMC.copiar())
         repuestosMC2.append(Aceite.copiar())
-
         repuestosMCorte2.append(Cuchillas.copiar())
         repuestosMCorte2.append(Afiladores.copiar())
-
         repuestosPI2.append(ResistenciaElectrica.copiar())
         repuestosPI2.append(MangueraDeVapor.copiar())
-
         repuestosBI2.append(AgujasBI.copiar())
         repuestosBI2.append(Aceite.copiar())
-
         repuestosMTermofijado2.append(BandasDeTransmision.copiar())
         repuestosMTermofijado2.append(ResistenciaElectrica.copiar())
-
         repuestosMTijereado2.append(Cuchillas.copiar())
         repuestosMTijereado2.append(Aceite.copiar())
 
@@ -1266,7 +1220,6 @@ class Main:
                 15, Membresia.BRONCE, BordadoraIndustrial))
         Wilson = (Empleado(Area.VENTAS, Fecha(4, 4, 22), sedeP, "Wilson Sastoque", 9634927, Rol.PLANTA,
                 5, Membresia.NULA, Registradora.copiar()))
-
         Gutierrez = (Empleado(Area.DIRECCION, Fecha(5, 8, 19), sede2, "Saul Gutierrez", 9557933,
                 Rol.EJECUTIVO, 11, Membresia.NULA, Computador2))
         Marcela = (Empleado(Area.DIRECCION, Fecha(30, 11, 20), sede2, "Marcela Valencia", 8519803,
@@ -1308,7 +1261,6 @@ class Main:
         EvaluacionFinanciera(500_000, Armando)
         EvaluacionFinanciera(-10_000, Armando)
         EvaluacionFinanciera(100_000, Armando)
-
         c1 = Persona("Claudia Elena Vásquez", 5162307, Rol.MODISTA, 2, False, Membresia.BRONCE)
         c2 = Persona("Michel Doniel", 9458074, Rol.ASISTENTE, 4, False, Membresia.BRONCE)
         c3 = Persona("Claudia Bosch", 5975399, Rol.MODISTA, 4, False, Membresia.ORO)
@@ -1344,7 +1296,6 @@ class Main:
         cantidadesc.append(90)
         Camisa.setCantidadInsumo(cantidadesc)
         Camisa.setTipoInsumo(tiposc)
-
         tiposca = []
         tiposca.append(i1)
         tiposca.append(i3)
@@ -1363,7 +1314,6 @@ class Main:
         tipospb.append(i4)
         tipospb.append(i6)
         tipospb.append(i8)
-
         r1 = Pantalon(Fecha(1, 1, 23), Hugo, False, True, sedeP,tipospa)
         r2 = Pantalon(Fecha(1, 1, 23), Inez, False, True, sedeP,tipospa)
         r3 = Pantalon(Fecha(1, 1, 23), Sandra, False, True, sedeP,tipospa)
@@ -1388,9 +1338,7 @@ class Main:
         r22 = Camisa(Fecha(1, 1, 23), Cecilia, False, True, sede2,tiposcb)
         r23 = Camisa(Fecha(1, 1, 23), Alejandra, False, True, sede2,tiposcb)
         r24 = Camisa(Fecha(1, 1, 23), Kenneth, False, True, sede2,tiposcb)
-
         Karina.setPericia(0.1)
-
         ps1 = []
         ps1.append(r13)
         v1 = Venta(sede2, Fecha(28, 11, 24), c8, Gabriela, Patricia, ps1, 200000, 250000)
@@ -1398,7 +1346,6 @@ class Main:
         b1.setAhorroBanco(b1.getAhorroBanco() + 250000)
         com1 = round(250000 * 0.05)
         Gabriela.setRendimientoBonificacion(com1)
-
         ps2 = []
         ps2.append(r16)
         v2 = Venta(sede2, Fecha(29, 11, 24), c13, Freddy, Patricia, ps2, 300000, 350000)
@@ -1406,7 +1353,6 @@ class Main:
         b2.setAhorroBanco(b2.getAhorroBanco() + 350000)
         com2 = round(350000 * 0.05)
         Freddy.setRendimientoBonificacion(com2)
-
         ps3 = []
         ps3.append(r15)
         v3 = Venta(sede2, Fecha(29, 1, 25), c13, Freddy, Patricia, ps3, 300000, 350_000)
@@ -1414,7 +1360,6 @@ class Main:
         b3.setAhorroBanco(b2.getAhorroBanco() + 350000)
         com3 = round(350_000 * 0.05)
         Freddy.setRendimientoBonificacion(com3)
-
         ps4 = []
         ps4.append(r1)
         ps4.append(r2)
@@ -1423,7 +1368,6 @@ class Main:
         b1.setAhorroBanco(b1.getAhorroBanco() + 350000)
         com4 = round(350000 * 0.05)
         Aura.setRendimientoBonificacion(com3)
-
         ps5 = []
         ps5.append(r7)
         v5 = Venta(sedeP, Fecha(30, 1, 25), c6, Aura, Cata, ps5, 300000, 350_000)
@@ -1431,7 +1375,6 @@ class Main:
         b1.setAhorroBanco(b1.getAhorroBanco() + 350000)
         com5 = round(350000 * 0.05)
         Aura.setRendimientoBonificacion(com3)
-
         ps6 = []
         ps6.append(r15)
         ps6.append(r16)
@@ -1440,10 +1383,8 @@ class Main:
         b3.setAhorroBanco(b3.getAhorroBanco() + 600000)
         com6 = round(600_000 * 0.05)
         Wilson.setRendimientoBonificacion(com6)
-
         maxProductos = 5
         minProductos = 1
-        
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(10,11,24), Aura, Cata, 300, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(10,11,24), Aura, Mario, 300, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Cata, 600, sedeP)
