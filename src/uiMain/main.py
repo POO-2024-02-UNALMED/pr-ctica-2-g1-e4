@@ -4,6 +4,7 @@ from src.gestorAplicacion.administracion.banco import Banco
 from src.gestorAplicacion.administracion.rol import Rol
 from src.gestorAplicacion.bodega.bolsa import Bolsa
 from src.gestorAplicacion.bodega.insumo import Insumo
+from src.gestorAplicacion.bodega.prenda import Prenda
 from src.gestorAplicacion.bodega.proveedor import Proveedor
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
@@ -177,16 +178,16 @@ class Main:
         deudaCalculada = Deuda.calcularDeudaMensual(Main.fecha, eleccion)
         balanceTotal = balanceCostosProduccion - deudaCalculada
         nuevoBalance = EvaluacionFinanciera(balanceTotal, empleado)
+        Main.nuevoBalance=nuevoBalance
         return nuevoBalance
     # Interaccion 2 
-    def calcularEstimado(balanceAnterior):
+    def calcularEstimado(porcentaje):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         print("\nCalculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...")
-        porcentaje = -1.0
         while porcentaje < 0.0 or porcentaje > 1:
             print("\nIngrese porcentaje a modificar para fidelidad de los clientes sin membresía, entre 0% y 100%")
             porcentaje = Main.nextIntSeguro() / 100.0
-        diferenciaEstimado = EvaluacionFinanciera.estimadoVentasGastos(Main.fecha, porcentaje, balanceAnterior)
+        diferenciaEstimado = EvaluacionFinanciera.estimadoVentasGastos(Main.fecha, porcentaje, Main.nuevoBalance)
         # Un mes se puede dar por salvado si el 80% de los gastos se pueden ver
         # cubiertos por las ventas predichas
         return diferenciaEstimado
@@ -307,7 +308,7 @@ class Main:
                             if restante != 0:
                                 insumosAPedir.append(i)
                                 cantidadAPedir.append(restante)
-                                if i.getNombre == "Tela":
+                                if Empleado.getNombre(i)== "Tela":
                                     print(f"\nTenemos una cantidad de {restante} cm de tela restantes a pedir")
                                 elif i.getNombre == "Boton":
                                     print(f"\nTenemos una cantidad de {restante} botones restantes a pedir")
@@ -392,9 +393,9 @@ class Main:
     @classmethod
     def dondeRetirar(cls):
         print("\n*Seleccione la sede desde donde comprara el Repuesto:\n")
-        if Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0])) >= Main.proveedorBdelmain.getPrecio():
+        if Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0])) >= Proveedor.getPrecio(Main.proveedorBdelmain):
             print(f"1. {Sede.getNombre(Sede.getListaSedes()[0])} tiene disponible: {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0]))}")
-        if Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1])) >= Main.proveedorBdelmain.getPrecio():
+        if Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1])) >= Proveedor.getPrecio(Main.proveedorBdelmain):
             print(f"2. {Sede.getNombre(Sede.getListaSedes()[1])} tiene disponible: {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]))}")
 
         opcion = 0
@@ -408,7 +409,7 @@ class Main:
                 print(f"{Sede.getNombre(Sede.getListaSedes()[1])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]))}")
             elif opcion == 2:
                 nuevoDineroSede = Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1])) - Insumo.getPrecioIndividual(Proveedor.getInsumo(Main.proveedorBdelmain))
-                Sede.getListaSedes()[1].getCuentaSede().setAhorroBanco(nuevoDineroSede)
+                Banco.setAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]),nuevoDineroSede)
                 print(f"El repuesto se compro exitosamente desde la sede {Sede.getNombre(Sede.getListaSedes()[1])}, saldo disponible:")
                 print(f"{Sede.getNombre(Sede.getListaSedes()[0])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0]))}")
                 print(f"{Sede.getNombre(Sede.getListaSedes()[1])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]))}")
@@ -439,36 +440,36 @@ class Main:
         cliente = noEmpleados[clienteSeleccionado]
         print("\nSeleccione el número de la sede en la que se encuentra el cliente:")
         for i, sede in enumerate(Sede.getListaSedes()):
-            print(f"{i}. {sede.getNombre()}")
+            print(f"{i}. {Sede.getNombre(sede)}")
         sedeSeleccionada = Main.nextIntSeguro()
         sede = Sede.getListaSedes()[sedeSeleccionada]
         print("\nSeleccione el número del empleado que se hará cargo del registro de la venta:")
         for i, empleado in enumerate(sede.getListaEmpleados()):
-            if empleado.getAreaActual() == Area.OFICINA:
-                print(f"{i}. {empleado.getNombre()}")
+            if Empleado.getAreaActual(empleado) == Area.OFICINA:
+                print(f"{i}. {Empleado.getNombre(empleado)}")
         encargadoSeleccionado = Main.nextIntSeguro()
-        encargado = sede.getListaEmpleados()[encargadoSeleccionado]
+        encargado = Sede.getListaEmpleados(sede)[encargadoSeleccionado]
         print("\nSeleccione el número del empleado que se hará cargo de asesorar la venta:")
-        for i, empleado in enumerate(sede.getListaEmpleados()):
+        for i, empleado in enumerate(Sede.getListaEmpleados(sede)):
             if empleado.getAreaActual() == Area.VENTAS:
-                print(f"{i}. {empleado.getNombre()}")
+                print(f"{i}. {Empleado.getNombre(empleado)}")
         vendedorSeleccionado = Main.nextIntSeguro()
-        vendedor = sede.getListaEmpleados()[vendedorSeleccionado]
+        vendedor = Sede.getListaEmpleados(sede)[vendedorSeleccionado]
         costosEnvio = 0
         while True:
             print("\nSeleccione el getNombre del producto que venderá:")
             print(f"0. Camisa - Precio {Camisa.precioVenta()}")
             print(f"1. Pantalon - Precio {Pantalon.precioVenta()}")
             productoSeleccionado = input()
-            prendaSeleccionada = next((prenda for prenda in Sede.getPrendasInventadasTotal() if prenda.getNombre() == productoSeleccionado), None)
+            prendaSeleccionada = next((prenda for prenda in Sede.getPrendasInventadasTotal() if Prenda.getNombre(prenda) == productoSeleccionado), None)
             if prendaSeleccionada is None:
                 print("Producto no encontrado. Intente nuevamente.")
                 continue
-            nombrePrendaSeleccionada = prendaSeleccionada.getNombre()
+            nombrePrendaSeleccionada = Prenda.getNombre(prendaSeleccionada)
             print("Ingrese la cantidad de unidades que se desea del producto elegido:")
             cantidadPrenda = Main.nextIntSeguro()
             cantidadProductos.append(cantidadPrenda)
-            cantidadDisponible = sum(1 for prenda in Sede.getPrendasInventadasTotal() if prenda.getNombre() == prendaSeleccionada.getNombre())
+            cantidadDisponible = sum(1 for prenda in Sede.getPrendasInventadasTotal() if Prenda.getNombre(prenda) == Prenda.getNombre(prendaSeleccionada))
             Main.manejarFaltantes(sede, cantidadPrenda, cantidadDisponible, nombrePrendaSeleccionada, costosEnvio)
             if 0 < cantidadPrenda < len(Sede.getPrendasInventadasTotal()):
                 eliminadas = 0
@@ -477,7 +478,7 @@ class Main:
                         break
                     if Sede.getPrendasInventadasTotal()[i] == prendaSeleccionada:
                         eliminada = Sede.getPrendasInventadasTotal().pop(i)
-                        sede.getPrendasInventadas().remove(eliminada)
+                        Sede.getPrendasInventadas(sede).remove(eliminada)
                         eliminadas += 1
                         i -= 1
             print("\n¿Deseas agregar otro producto a la venta?: (si/no)")
@@ -508,12 +509,12 @@ class Main:
         venta.setCostoEnvio(costosEnvio)
         sumaPreciosPrendas += costosEnvio
         monto = sumaPreciosPrendas + IVA + costosEnvio
-        montoPagar = int(monto - (monto * cliente.getMembresia().getPorcentajeDescuento()))
+        montoPagar = int(monto - (monto * Membresia.getPorcentajeDescuento(Persona.getMembresia(cliente))))
         venta.setMontoPagado(montoPagar)
         venta.setSubtotal(sumaPreciosPrendas)
         print(f"Subtotal: {sumaPreciosPrendas}")
         comision = int(montoPagar * 0.05)
-        vendedor.setRendimientoBonificacion(comision)
+        Empleado.setRendimientoBonificacion(vendedor,comision)
         
         return venta 
 
@@ -531,13 +532,13 @@ class Main:
 
     def realizarVenta(venta):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
-        productosSeleccionados = venta.getArticulos()
-        sede = venta.getSede()
-        banco = sede.getCuentaSede()
+        productosSeleccionados = Venta.getArticulos(venta)
+        sede = Venta.getSede(venta)
+        banco = Sede.getCuentaSede(sede)
         totalPrendas = len(productosSeleccionados)
 
-        insumosBodega = sede.getListaInsumosBodega()
-        cantidadInsumosBodega = sede.getCantidadInsumosBodega()
+        insumosBodega = Sede.getListaInsumosBodega(sede)
+        cantidadInsumosBodega = Sede.getCantidadInsumosBodega(sede)
 
         bolsasSeleccionadas = []
         capacidadTotal = 0
@@ -549,7 +550,7 @@ class Main:
                 bolsa = insumosBodega[i]
                 if isinstance(bolsa, Bolsa):
                     capacidad = bolsa.getCapacidadMaxima()
-                    cantidad = sede.getCantidadInsumosBodega()[i]
+                    cantidad = Sede.getCantidadInsumosBodega(sede)[i]
                     if capacidad == 1 and cantidad > 0:
                         bp = True
                     if capacidad == 3 and cantidad > 0:
@@ -581,8 +582,8 @@ class Main:
             bolsaEncontrada = False
             cantidadDisponible = 0
             capacidadTotal += capacidadBolsa
-            for i in range(len(sede.getListaInsumosBodega())):
-                insumo = sede.getListaInsumosBodega()[i]
+            for i in range(len(Sede.getListaInsumosBodega(sede))):
+                insumo = Sede.getListaInsumosBodega(sede)[i]
                 if isinstance(insumo, Bolsa) and insumo.getCapacidadMaxima() == capacidadBolsa:
                     cantidadDisponible += cantidadInsumosBodega[i]
                     if cantidadDisponible > 0:
@@ -595,12 +596,12 @@ class Main:
                     break
 
             for revisarSede in Sede.getListaSedes():
-                listaInsumos = revisarSede.getListaInsumosBodega()
-                cantidadInsumos = revisarSede.getCantidadInsumosBodega()
+                listaInsumos = Sede.getListaInsumosBodega(revisarSede)
+                cantidadInsumos = Sede.getCantidadInsumosBodega(revisarSede)
                 for i in range(len(listaInsumos)):
                     insumo = listaInsumos[i]
                     if isinstance(insumo, Bolsa) and cantidadInsumos[i] < 10:
-                        print(f"La sede {revisarSede.getNombre()} tiene menos de 10 bolsas en stock (Cantidad: {cantidadInsumos[i]}).")
+                        print(f"La sede {Sede.getNombre(revisarSede)} tiene menos de 10 bolsas en stock (Cantidad: {cantidadInsumos[i]}).")
                         print("Comprando al proveedor...")
                         for e in range(len(listaInsumos)):
                             insumo = listaInsumos[e]    
@@ -608,16 +609,16 @@ class Main:
                                 print(f"¿Cuántas bolsas de {insumo.getNombre()} desea comprar?")
                                 cantidadComprar = Main.nextIntSeguro()
                                 costoCompra = Proveedor.costoDeLaCantidad(insumo, cantidadComprar)
-                                banco.setAhorroBanco(banco.getAhorroBanco() - costoCompra)
+                                banco.setAhorroBanco(Banco.getAhorroBanco(banco) - costoCompra)
                                 cantidadInsumosBodega[e] += cantidadComprar
                                 insumo.setPrecioCompra(costoCompra)
                                 insumo.setPrecioCompra(costoCompra)
                                 print(f"Se compraron {cantidadComprar} {nombreBolsa} por un costo total de {costoCompra}")
                                 break
 
-        venta.setBolsas(bolsasSeleccionadas)
-        totalVenta = venta.getMontoPagado() + len(bolsasSeleccionadas) * 2000
-        venta.setMontoPagado(totalVenta)
+        Venta.setBolsas(venta,bolsasSeleccionadas)
+        totalVenta = Venta.getMontoPagado(venta) + len(bolsasSeleccionadas) * 2000
+        Venta.setMontoPagado(venta,totalVenta)
 
         print(f"\nVenta realizada. Total de la venta con bolsas: {totalVenta}")
         return venta
@@ -631,10 +632,10 @@ class Main:
             prendasTransferidas = 0
             for otraSede in Sede.getListaSedes():
                 if otraSede != sede:
-                    for prenda in otraSede.getPrendasInventadas():
-                        if prenda.getNombre() == tipoPrenda and prendasTransferidas < faltantes:
-                            otraSede.getPrendasInventadas().remove(prenda)
-                            sede.getPrendasInventadas().append(prenda)
+                    for prenda in Sede.getPrendasInventadas(otraSede):
+                        if Prenda.getNombre(prenda) == tipoPrenda and prendasTransferidas < faltantes:
+                            Sede.getPrendasInventadas(otraSede).remove(prenda)
+                            Sede.getPrendasInventadas(sede).append(prenda)
                             prendasTransferidas += 1
 
                     if prendasTransferidas == faltantes:
@@ -646,8 +647,8 @@ class Main:
     def tarjetaRegalo(venta):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
-        sede = venta.getSede()
-        banco = sede.getCuentaSede()
+        sede = Venta.getSede(venta)
+        banco = Sede.getCuentaSede(sede)
 
         print("\n¿Desea usar una tarjeta de regalo? (si/no)")
         respuesta = input().lower()
@@ -661,13 +662,13 @@ class Main:
                     print("Código válido. Procesando tarjeta de regalo...")
                     indice = Venta.getCodigosRegalo().index(codigoIngresado)
                     montoTarjeta = Venta.getMontosRegalo()[indice]
-                    montoVenta = venta.getMontoPagado()
+                    montoVenta = Venta.getMontoPagado(venta)
 
                     if montoTarjeta >= montoVenta:
                         print("El monto de la tarjeta cubre la totalidad de la venta.")
                         saldoRestante = montoTarjeta - montoVenta
                         Venta.getMontosRegalo()[indice] = saldoRestante
-                        venta.setMontoPagado(0)
+                        Venta.setMontoPagado(venta,0)
 
                         print("Venta pagada con tarjeta de regalo.")
                         print("Saldo restante en la tarjeta de regalo: $" + str(saldoRestante))
@@ -702,7 +703,7 @@ class Main:
             codigoGenerado = Main.generarCodigoAleatorio()
             Venta.getCodigosRegalo().append(codigoGenerado)
             Venta.getMontosRegalo().append(montoTarjeta)
-            banco.setAhorroBanco(banco.getAhorroBanco() + montoTarjeta)
+            banco.setAhorroBanco(Banco.getAhorroBanco(banco) + montoTarjeta)
 
             print("Tarjeta de regalo generada exitosamente.")
             print("Código: " + codigoGenerado)

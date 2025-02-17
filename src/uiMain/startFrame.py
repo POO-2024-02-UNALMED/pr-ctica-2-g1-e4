@@ -4,6 +4,7 @@ import os
 import tkinter as tk
 from tkinter.font import Font
 import sys
+from src.gestorAplicacion.administracion.empleado import Empleado
 from src.uiMain.F2Insumos import F2Insumos
 from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.exceptionC1 import ExceptionC1
@@ -267,10 +268,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.widgetsTablaInsuficientes=[]
         row=3
         for i, empleado in enumerate(self.empleadosInsuficientes):
-            nombre = tk.Label(self.frame1, text=empleado.getNombre(), font=("Arial", 10))
-            area = tk.Label(self.frame1, text=empleado.getAreaActual().name, font=("Arial", 10))
+            nombre = tk.Label(self.frame1, text=Empleado.getNombre(empleado), font=("Arial", 10))
+            area = tk.Label(self.frame1, text=Empleado.getNombre(Empleado.getAreaActual(empleado)), font=("Arial", 10))
             rendimiento = tk.Label(self.frame1, text=f"{int(self.rendimientoInsufuciencias[i])}", font=("Arial", 10))
-            rendimientoDeseado = tk.Label(self.frame1, text=f"{int(empleado.sede.getRendimientoDeseado(empleado.getAreaActual(), Main.fecha))}", font=("Arial", 10))
+            rendimientoDeseado = tk.Label(self.frame1, text=f"{int(Sede.getRendimientoDeseado(Empleado.getSede(empleado),Empleado.getAreaActual(empleado), Main.fecha))}", font=("Arial", 10))
             textoAccion = ""
             match self.acciones[i]:
                 case "transferencia-sede":
@@ -325,7 +326,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         nombres=[]
         for empleado in self.posiblesDespedidos:
-            nombres.append(empleado.getNombre())
+            nombres.append(Empleado.getNombre(empleado))
 
         self.seleccionador=FieldFrame(self.frame1, "Nombre del empleado a despedir", nombres, "¿Despedir?", ancho_entry=5, tamañoFuente=10)
         self.seleccionador.grid(row=2, column=1,columnspan=2)
@@ -351,7 +352,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def despedir(self):
         self.empleadosADespedir=[]
         for empleado in self.posiblesDespedidos:
-            if self.seleccionador.getValue(empleado.getNombre()).lower()=="si":
+            if self.seleccionador.getValue(Empleado.getNombre(empleado)).lower()=="si":
                 self.empleadosADespedir.append(empleado)
         Main.despedirEmpleados(self.empleadosADespedir)
         self.reemplazarPorCambioSede()

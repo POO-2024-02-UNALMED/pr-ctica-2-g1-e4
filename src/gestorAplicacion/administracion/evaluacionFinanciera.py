@@ -10,6 +10,7 @@ from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
 from src.gestorAplicacion.administracion.area import Area
 from src.gestorAplicacion.administracion.rol import Rol
+from src.gestorAplicacion.venta import Venta
 
 class EvaluacionFinanciera:
     def __init__(self, balance: float, presidente: Empleado = None):
@@ -25,13 +26,13 @@ class EvaluacionFinanciera:
         return f"El monto del balance a cargo de: {self.presidente} fue de: ${self.balance} pesos"
 
     @staticmethod
-    def estimadoVentasGastos(fechaActual: 'Fecha', porcentajeUsuario: float, balanceAnterior: 'EvaluacionFinanciera') -> int:
+    def estimadoVentasGastos(fechaActual: Fecha, porcentajeUsuario: float, balanceAnterior: 'EvaluacionFinanciera') -> int:
         montoVentasPasado = 0
         for sede in Sede.listaSedes:
             for venta in sede.historialVentas:
-                if (fechaActual.compararAno(fechaActual.ano, venta.fechaVenta.ano) and 
-                    fechaActual.compararMes(fechaActual.ano - 1, venta.fechaVenta.ano)):
-                    montoVentasPasado += venta.subtotal + venta.costoEnvio
+                if (Fecha.compararAno(fechaActual.ano, Fecha.getAno(Venta.getFechaVenta(venta))) and 
+                    Fecha.compararMes(fechaActual.mes - 1, Fecha.getMes(Venta.getFechaVenta(venta)))):
+                    montoVentasPasado += Venta.getSubtotal(venta)+ Venta.getCostoEnvio(venta)
         # Predecimos las ventas con un porcentaje de fidelidad 
         porcentajeFidelidadOro = 0.8 if balanceAnterior.balance >= 0 else 0.5
         if porcentajeUsuario == 0.0:
