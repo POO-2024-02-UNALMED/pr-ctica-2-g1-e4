@@ -4,13 +4,14 @@ import os
 import tkinter as tk
 from tkinter.font import Font
 import sys
-from src.uiMain.F2Insumos import surtir
+from src.uiMain.F2Insumos import F2Insumos
 from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
 from src.uiMain.F3Financiera import deudas
 from src.uiMain.F1Humana import F1Humana
 from src.uiMain.F5Produccion import producir
+from tkinter import messagebox
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -49,10 +50,13 @@ class startFrame(tk.Tk):
 
         self.ayudaMenu = tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Ayuda", menu=self.ayudaMenu)
-        self.ayudaMenu.add_command(label="Acerca de")
+        self.ayudaMenu.add_command(label="Acerca de", command= lambda : self.acercaDe())
 
         self.areaPrincipal = frameInicial(self)
         self.areaPrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+
+    def acercaDe(self):
+        messagebox.showinfo("Acerca de", "Andres David Calderón Jiménez \nGelsy Jackelin Lozano Blanquiceth \nAndrea Merino Mesa \nLuis Rincon \nJuanita Valentina Rosero")
         
     def iniciarGestionHumana(self):
         self.areaPrincipal.destroy()
@@ -60,7 +64,7 @@ class startFrame(tk.Tk):
     
     def eliminarF2(self):
         self.areaPrincipal.destroy()
-        self.cambiarFrame(surtir(self))
+        self.cambiarFrame(F2Insumos(self))
         
     def eliminarF4(self):
         self.areaPrincipal.destroy()

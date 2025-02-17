@@ -7,7 +7,7 @@ from src.gestorAplicacion.bodega.insumo import Insumo
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
-from src.uiMain import F3Financiera
+from src.uiMain.F2Insumos import F2Insumos
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from typing import List
@@ -248,6 +248,11 @@ class Main:
     def errorDeReemplazo(persona):
         print(f"No se pudo contratar a {persona.getNombre()}, no sabemos a quien reemplaza.")    
 
+
+
+#---------------------------------------Sistema Financiero--------------------------------------------------------------------------------------
+
+    #Interacción 1 
     def calcularBalanceAnterior(self, empleado, eleccion):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         from src.gestorAplicacion.administracion.deuda import Deuda
@@ -262,7 +267,7 @@ class Main:
         nuevoBalance = EvaluacionFinanciera(balanceTotal, empleado)
         return nuevoBalance
 
-    # Interaccion 2 Sistema Financiero
+    # Interaccion 2 
     def calcularEstimado(self, balanceAnterior):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         print("\nCalculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...")
@@ -276,6 +281,7 @@ class Main:
         # cubiertos por las ventas predichas
         return diferenciaEstimado
 
+    # Interacción 3
     def planRecuperacion(self, diferenciaEstimada, bancos):
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.administracion.deuda import Deuda
@@ -330,11 +336,14 @@ class Main:
                         f"{nuevoDescuento * 100}%.")
         return analisisFuturo
 
-    #Interacción 1 Insumos
-    def planificarProduccion(fecha):
+#-----------------------------------------Insumos------------------------------------------------------------------------------------
+   
+    # Interacción 1 
+    def planificarProduccion(fecha, frame):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         retorno = []
+        frame = frame
 
         for sede in Sede.getListaSedes():
             print("\nPara la " + sede.getNombre())
@@ -355,12 +364,15 @@ class Main:
             cantidadAPedir = []
             pantalonesPredichos = False
             camisasPredichas = False
+            prediccionC = None
 
             for prenda in sede.getPrendasInventadas():
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionP)))
+
+                    F2Insumos.prediccion(frame, sede, prenda, prediccionP)
 
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
@@ -372,6 +384,8 @@ class Main:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionC = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionC)))
+
+                    F2Insumos.prediccion(frame, sede, prenda, prediccionC)
 
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
@@ -389,7 +403,7 @@ class Main:
 
         return retorno
 
-    #Interacción 2 Insumos
+    # Interacción 2 
     def coordinarBodegas(retorno):
         listaA = []
         
@@ -447,7 +461,7 @@ class Main:
 
         return listaA
 
-    #Interacción 3 Insumos
+    # Interacción 3
     def comprarInsumos(fecha, listaA):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
