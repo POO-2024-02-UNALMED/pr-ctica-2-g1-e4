@@ -12,6 +12,7 @@ from src.uiMain.F3Financiera import F3Financiera
 from src.uiMain.F5Produccion import producir
 from src.uiMain.fieldFrame import FieldFrame
 from src.gestorAplicacion.fecha import Fecha
+from src.gestorAplicacion.sede import Sede
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -117,7 +118,7 @@ class startFrame(tk.Tk):
             anchor="n",  # Asegura que el texto esté alineado arriba
             justify="center",  # Centra el texto horizontalmente
         )
-        self.instruccionesFrameInicial.place(relx=0.5, rely=0, relwidth=1, relheight=0.7, anchor="n")
+        self.instruccionesFrameInicial.grid(row=0, column=0, sticky="nswe")
         self.logoEcomoda = tk.PhotoImage(master=self.instruccionesFrameInicial, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\logoEcomoda.png")
 
         # Redimensionar la imagen usando subsample()
@@ -127,7 +128,11 @@ class startFrame(tk.Tk):
         # Crear el label con la imagen redimensionada
         self.labelFotoEcomoda = tk.Label(master=self.instruccionesFrameInicial, image=logo_resized, bg="light gray")
         self.labelFotoEcomoda.image = logo_resized  # Mantener la referencia de la imagen
-        self.labelFotoEcomoda.place(relx=0.5, rely=0.24, anchor="n")
+        self.labelFotoEcomoda.grid(row=1, column=0, sticky="nswe")
+
+        self.instruccionesFrameInicial.columnconfigure(0, weight=1)
+        self.instruccionesFrameInicial.rowconfigure(0, weight=1)
+        self.instruccionesFrameInicial.rowconfigure(1, weight=1)
 
         self.tituloFecha = tk.Label(self.contenedorFecha, text="Para iniciar ingresa la fecha de hoy ", relief="ridge", anchor="w")
         self.tituloFecha.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
@@ -145,6 +150,11 @@ class startFrame(tk.Tk):
         self.enviarFecha=tk.Button(self.contenedorFecha,text="Enviar")
         self.enviarFecha.place(relx=0.820, rely=0.8, relwidth=0.1, relheight=0.1, anchor="n")
         self.enviarFecha.bind("<Button-1>", self.Ok)
+        
+        self.frameInicial.rowconfigure(0, weight=1)
+        self.frameInicial.rowconfigure(1, weight=3)
+        self.frameInicial.rowconfigure(2, weight=3)
+
 
 
         # Función que se ejecutará al presionar el botón
@@ -410,6 +420,13 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame1 = tk.Frame(self.framePrincipal)
         self.frame1.grid(row=1, column=0, sticky="nswe")
         self.descripcionCambioSede = tk.Label(self.frame1, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados""", relief="ridge", font=("Arial", 10))
+        self.descripcionCambioSede.grid(row=0, column=0, sticky="nswe", columnspan=4)
+        nececidades=Sede.obtenerNecesidadTransferenciaEmpleados(self.empleadosADespedir)
+        rolesATransferir=nececidades[0]
+        transferirDe=nececidades[1]
+        aContratar=nececidades[2]
+
+
 
 def pasarAVentanaPrincipal():
     ventana = startFrame()
