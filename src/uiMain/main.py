@@ -1298,7 +1298,13 @@ class Main:
             if sede.getNombre()==getNombre:
                 return sede
 
-if __name__=="__main__":
-    from src.uiMain.bienvenida.bienvenida import Aplication
-    Main.crearSedesMaquinasRepuestos()
-    Aplication.bienvenida()
+if __name__ == "__main__":
+    print("Para usar la interfaz grafica, 1. Para usar la consola, 2")
+    opcion = input()
+    match opcion:
+        case "1":
+            from src.uiMain.bienvenida.bienvenida import Aplication
+            Main.crearSedesMaquinasRepuestos()
+            Aplication.bienvenida()
+        case "2":
+            Main.main()
