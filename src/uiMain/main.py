@@ -703,19 +703,19 @@ class Main:
             codigoGenerado = Main.generarCodigoAleatorio()
             Venta.getCodigosRegalo().append(codigoGenerado)
             Venta.getMontosRegalo().append(montoTarjeta)
-            banco.setAhorroBanco(Banco.getAhorroBanco(banco) + montoTarjeta)
+            Banco.setAhorroBanco(banco,Banco.getAhorroBanco(banco) + montoTarjeta)
 
             print("Tarjeta de regalo generada exitosamente.")
             print("Código: " + codigoGenerado)
             print("Monto: $" + str(montoTarjeta))
 
-        ingreso = venta.getMontoPagado()
+        ingreso = Venta.getMontoPagado(venta)
         print("Ingreso calculado: $" + str(ingreso))
-        banco.setAhorroBanco(banco.getAhorroBanco() + ingreso)
+        Banco.setAhorroBanco(banco, Banco.getAhorroBanco(banco) + ingreso)
 
-        print("Monto total en la cuenta de la sede: $" + str(banco.getAhorroBanco()))
+        print("Monto total en la cuenta de la sede: $" + str(Banco.getAhorroBanco(banco)))
         bancoRecibir = Banco.getCuentaPrincipal()
-        bancoTransferir = sede.getCuentaSede()
+        bancoTransferir = Sede.getCuentaSede(sede)
         if bancoTransferir != bancoRecibir:
             print("\n¿Desea transferir fondos a la cuenta principal? (si/no)")
             transferirFondos = input().lower()
@@ -723,10 +723,10 @@ class Main:
                 print("¿Qué porcentaje desea transferir? (20% o 60%)")
                 porcentaje = Main.nextIntSeguro()
                 if porcentaje == 20 or porcentaje == 60:
-                    montoTransferencia = (bancoTransferir.getAhorroBanco() * porcentaje / 100) - 50000
+                    montoTransferencia = (Banco.getAhorroBanco(bancoTransferir) * porcentaje / 100) - 50000
                     if montoTransferencia > 0:
                         if bancoRecibir.getNombreCuenta() == "principal":
-                            bancoRecibir.setAhorroBanco(bancoTransferir.getAhorroBanco() - (montoTransferencia + 50000))
+                            bancoRecibir.setAhorroBanco(Banco.getAhorroBanco(bancoTransferir) - (montoTransferencia + 50000))
                             bancoRecibir.setAhorroBanco(bancoRecibir.getAhorroBanco() + montoTransferencia)
                             print("Transferencia exitosa.")
                             print("Monto transferido: $" + str(montoTransferencia))
@@ -736,11 +736,11 @@ class Main:
                 else:
                     print("Porcentaje no válido. No se realizará la transferencia.")
         if bancoTransferir is not None:
-            print("Estado final de la cuenta de la sede: $" + str(bancoTransferir.getAhorroBanco()))
+            print("Estado final de la cuenta de la sede: $" + str(Banco.getAhorroBanco(bancoTransferir)))
         if bancoRecibir is not None:
             print("Estado final de la cuenta principal: $" + str(bancoRecibir.getAhorroBanco()))
-            productosSeleccionados = venta.getArticulos()
-            montoPagar = venta.getMontoPagado()
+            productosSeleccionados = Venta.getArticulos(venta)
+            montoPagar = Venta.getMontoPagado(venta)
             tasaIva = 0.19
             valorBase = int(montoPagar / (1 + tasaIva))
             iva = montoPagar - valorBase
@@ -770,12 +770,12 @@ class Main:
                     pantalonEncontrado = True
 
             print("Valor total a pagar: $" + str(montoPagar))
-            print("Subtotal prendas: $" + str(venta.getSubtotal()))
+            print("Subtotal prendas: $" + str(Venta.getSubtotal(venta)))
             print("IVA: $" + str(iva))
-            print("Venta registrada por: " + venta.getEncargado())
-            print("Asesor de la compra: " + venta.getAsesor())
+            print("Venta registrada por: " + Venta.getEncargado(venta))
+            print("Asesor de la compra: " + Venta.getAsesor(venta))
 
-            return "El monto total a pagar por parte del cliente es " + str(montoPagar) + " y el estado final de la cuenta de la sede es $" + str(bancoTransferir.getAhorroBanco())
+            return "El monto total a pagar por parte del cliente es " + str(montoPagar) + " y el estado final de la cuenta de la sede es $" + str(Banco.getAhorroBanco(bancoTransferir))
     
     def generarCodigoAleatorio():
         caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
