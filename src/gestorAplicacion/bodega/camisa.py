@@ -8,8 +8,7 @@ from src.gestorAplicacion.bodega.insumo import Insumo
 
 class Camisa(Prenda):
     serialVersionUid = 1
-    cantidadInsumo = []
-    tipoInsumo = []
+    cantidadInsumo = [], tipoInsumo = []
     pasoActual = 1
 
     maquinariaNecesaria = ["Maquina de Corte", "Bordadora Industrial", "Maquina de Coser Industrial", "Maquina de Termofijado", "Plancha Industrial"]

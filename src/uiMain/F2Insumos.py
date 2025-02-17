@@ -17,8 +17,7 @@ class F2Insumos(tk.Frame):
     def pesimismo(self):
         from src.uiMain.main import Main
         from src.uiMain import fieldFrame, main
-        criterios = []
-        valores = []
+        criterios = [], valores = []
         framePrincipal =  tk.Frame(self, bg="blue")
         framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
         frame1 = tk.Frame(framePrincipal, height=150)

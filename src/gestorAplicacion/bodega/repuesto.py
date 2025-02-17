@@ -10,8 +10,7 @@ class Repuesto(Insumo):
         self.nombre = nombre
         self.horasDeVidaUtil = horasDeVidaUtil
         self.proveedor = proveedor
-        self.fechasCompra = []
-        self.preciosCompra = []
+        self.fechasCompra = [], self.preciosCompra = []
         self.horasDeUso = horasDeUso
         self.estado = True
         Repuesto.listadoRepuestos.append(self)
