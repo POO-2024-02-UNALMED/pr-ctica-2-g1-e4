@@ -2,6 +2,8 @@ from src.gestorAplicacion.fecha import Fecha
 import math
 from multimethod import multimethod
 from typing import List
+ 
+
 # Puede que visual marque esto. Usa pip install multimethod en la terminal para arreglarlo.
 
 class Venta:
@@ -122,11 +124,12 @@ class Venta:
 
     @staticmethod
     def predecirVentas(fechaActual, sede, prenda):
-        ventasMes1 = Venta.cantidadProducto(Venta.filtrar(sede.getHistorialVentas(), fechaActual.restarMeses(3)), prenda)
-        ventasMes2 = Venta.cantidadProducto(Venta.filtrar(sede.getHistorialVentas(), fechaActual.restarMeses(2)), prenda)
+        from src.gestorAplicacion.sede import Sede
+        ventasMes1 = Venta.cantidadProducto(Venta.filtrar(Sede.getHistorialVentas(sede), fechaActual.restarMeses(3)), prenda)
+        ventasMes2 = Venta.cantidadProducto(Venta.filtrar(Sede.getHistorialVentas(sede), fechaActual.restarMeses(2)), prenda)
         pendienteMes1a2 = ventasMes2 - ventasMes1
 
-        ventasMes3 = Venta.cantidadProducto(Venta.filtrar(sede.getHistorialVentas(), fechaActual.restarMeses(1)), prenda)
+        ventasMes3 = Venta.cantidadProducto(Venta.filtrar(Sede.getHistorialVentas(sede), fechaActual.restarMeses(1)), prenda)
         pendienteMes2a3 = ventasMes3 - ventasMes2
 
         pendientePromedio = (pendienteMes1a2 + pendienteMes2a3) / 2
@@ -136,7 +139,7 @@ class Venta:
     def acumulado(ventas):
         acumulado = 0
         for venta in ventas:
-            acumulado += venta.montoPagado
+            acumulado += Venta.getMontoPagado(venta)
         return acumulado
 
     def getArticulos(self):
@@ -180,7 +183,7 @@ class Venta:
 
     def setMontoPagado(self, monto):
         if self.montoPagado == 0:
-            self.sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() + monto)
+            self.Sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() + monto)
             self.montoPagado = monto
         else:
             self.sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() - self.montoPagado)

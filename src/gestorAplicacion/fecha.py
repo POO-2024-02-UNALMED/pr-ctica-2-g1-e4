@@ -30,6 +30,21 @@ class Fecha:
             ano -= 1
         return Fecha(self.dia, mes, ano)
 
+    def compararAno(año1, año2):
+        if (año1==año2):
+            return True
+        return False
+
+    def compararMes(mes1, mes2):
+        if (mes1==mes2):
+            return True
+        return False
+    
+    def compararDia(dia1, dia2):
+        if (dia1==dia2):
+            return True
+        return False
+
     @staticmethod
     def compararFecha(fecha1, fecha2):
         return (Fecha.compararAno(fecha1.ano, fecha2.ano) and
