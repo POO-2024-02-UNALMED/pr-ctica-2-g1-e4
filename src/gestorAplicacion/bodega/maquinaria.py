@@ -156,7 +156,7 @@ class Maquinaria:
 
     @staticmethod
     def asignarMaquinaria(emp):
-        maquinariaPorAsignar = list(emp.getAreaActual().maquinariaNecesaria())
+        maquinariaPorAsignar = emp.getAreaActual().getMaquinariaNecesaria()
         for maq in emp.sede.getListaMaquinas():
             if maq.nombre in maquinariaPorAsignar or maq.user is None:
                 maq.user = emp

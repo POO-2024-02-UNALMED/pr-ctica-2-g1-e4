@@ -202,7 +202,7 @@ class Main:
             print(f"Se necesita transferir {rol} de {Sede.getNombre(sede)}, estos son los candidatos: Ingresa su getNombre completo para hacerlo.")
             for emp in Sede.getListaEmpleados(sede):
                 if Empleado.getRol(emp) == rol:
-                    descripcion = f"Nombre: {Empleado.getNombre(emp)}, Documento: {Empleado.getDocumento(emp)}"
+                    descripcion = f"Nombre: {emp.getNombre()}, Documento: {Empleado.getDocumento(emp)}"
                     if Empleado.getRol(emp) == Rol.VENDEDOR:
                         descripcion += f", Ventas asesoradas: {Venta.acumuladoVentasAsesoradas(emp)}"
                     elif Empleado.getRol(emp) == Rol.MODISTA:
@@ -212,11 +212,17 @@ class Main:
                     print(descripcion)
             # Obtenemos la cantidad de empleados a seleccionar
             cantidad = sum(1 for emp in despedidos if Empleado.getRol(emp) == rol)
-            for _ in range(cantidad):
+            reemplazados=0
+            while reemplazados<cantidad:
                 getNombre = input().strip()
+                encontrado=False
                 for emp in Sede.getListaEmpleados(sede):
-                    if Empleado.getNombre(emp) == getNombre:
+                    if Empleado.getNombre(emp) == getNombre or (getNombre.isdigit() and Empleado.getDocumento(emp) == int(getNombre)):
                         aTransferir.append(emp)
+                        reemplazados+=1
+                        encontrado=True
+                if not encontrado:
+                    print("No se encontro el empleado, intente de nuevo")
         Sede.reemplazarPorCambioSede(despedidos, aTransferir)
         return aContratar
     
@@ -239,7 +245,8 @@ class Main:
                 for persona in aptos:
                     if Persona.getNombre(persona) == getNombre:
                         aContratar.append(persona)
-                        print(f"Seleccionaste a {Persona.getNombre(persona)} con {Persona.calcularSalario(persona) - Persona.valorEsperadoSalario()} de diferencia salarial sobre el promedio")
+                        print(f"Seleccionaste a {persona.getNombre()} con {Persona.calcularSalario(persona) - Persona.valorEsperadoSalario()} de diferencia salarial sobre el promedio")
+                    
         Persona.contratar(aContratar, aReemplazar, fecha)
         
     def errorDeReemplazo(persona):
