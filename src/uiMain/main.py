@@ -25,9 +25,11 @@ class Main:
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
-        #fecha = Main.ingresarFecha()
+        Main.fecha = Main.ingresarFechaConsola()
         print("Ecomoda a la orden, presiona enter para continuar")
-        input()
+        respuesta=input()
+        if respuesta!="moscorrofio":
+            Main.crearSedesMaquinasRepuestos()
         while True:
             print("\n¿Que operación desea realizar?")
             print("1. Despedir/Transferir/Contratar empleados")
@@ -39,7 +41,9 @@ class Main:
             
             opcion = Main.nextIntSeguro()
             if opcion == 1:
-                pass
+                despedidos = Main.despedirEmpleadosConsola(Main.fecha)
+                a_contratar = Main.reorganizarEmpleados(despedidos)
+                Main.contratarEmpleadosConsola(a_contratar,Main.fecha)
             elif opcion == 2:
                 retorno = Main.planificarProduccion()
                 lista_a = Main.coordinarBodegas(retorno)
@@ -72,12 +76,83 @@ class Main:
             #elif opcion == 6: #Serializador.serializar() #sys.exit(0)
             else:
                 print("Esa opción no es valida.")
-
+    
+    @classmethod
+    def ingresarFechaConsola(cls):
+        dia = -1
+        mes = -1
+        while dia <= 0 or dia > 31:
+            dia = int(input("Ingrese día: "))
+            while mes <= 0 or mes > 12:
+                mes = int(input("Ingrese mes: "))
+        año = int(input("Ingrese año: "))
+        fecha = Fecha(dia, mes, año)
+        return fecha
+    
     def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
         from src.gestorAplicacion.bodega.prenda import Prenda
         print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
         print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
-        
+    
+    #----------------------------gestion humana-----------------------------------
+
+    def despedirEmpleadosConsola(fecha):
+        from ..gestorAplicacion.administracion.empleado import Empleado
+        print("Obteniendo lista sugerida de empleados")
+        info_despidos= Empleado.listaInicialDespedirEmpleado(fecha)
+        a_despedir = info_despidos[0]
+        mensajes = info_despidos[1]
+
+        for mensaje in mensajes:
+            print(mensaje)
+
+        print("\nEsta es una lista de empleados que no estan rindiendo correctamente, ¿que deseas hacer?")
+
+        diferenciaSalarios = Persona.diferenciaSalarios()
+        if diferenciaSalarios > 0:
+            print(f"Tus empleados estan {diferenciaSalarios:,} sobre el promedio de salarios")
+        elif diferenciaSalarios < 0:
+            print(f"Tus empleados estan {diferenciaSalarios:,} bajo el promedio de salarios")
+        else:
+            print("Tus empleados estan en el promedio de salarios")
+
+        for emp in a_despedir:
+            print(f"Nombre: {emp.getNombre()}, Área: {emp.getAreaActual()}, Documento: {emp.getDocumento()}")
+
+        opcion = 2
+        while opcion == 2:
+            print("1. Elegir a los despedidos")
+            print("2. Añadir a alguien más")
+            opcion = Main.nextIntSeguro()
+            if opcion == 2:
+                print("¿De que sede quieres añadir al empleado?")
+                for i , sede in Sede.getlistaSedes():
+                    print(f"{i}. {sede.getNombre()}")
+                sede = Main.nextIntSeguro()
+                print("¿Que empleado quieres despedir? Pon su nombre completo o documento, esto lo añadirá a la lista de despedibles.")
+                for emp in Sede.getlistaSedes().get(sede).getlistaEmpleados():
+                    print(f"{emp.getNombre()} {emp.getAreaActual()} {emp.getDocumento()}")
+                nombre = input().strip()
+                for emp in Sede.getlistaSedes().get(sede).getlistaEmpleados():
+                    if emp.getNombre() == nombre or (nombre.isdigit() and emp.getDocumento() == int(nombre)):
+                        a_despedir.append(emp)
+
+        seleccion = []
+        print("¿Que empleados quieres despedir? Pon su nombre completo, documento o FIN para terminar.")
+        for emp in a_despedir:
+            print(f"{emp.getNombre()} {emp.getAreaActual()} {emp.getDocumento()}")
+        nombre = input().strip()
+        while nombre.lower() != "fin":
+            for emp in a_despedir:
+                if emp.getNombre() == nombre or (nombre.isdigit() and emp.getDocumento() == int(nombre)):
+                    seleccion.append(emp)
+            nombre = input().strip()
+
+        print("Despidiendo empleados...")
+        Empleado.despedirEmpleados(seleccion, True, fecha)
+        print("Listo!")
+        return seleccion
+
     def reorganizarEmpleados(despedidos):
         print(f"Todavía nos quedan {len(despedidos)} empleados por reemplazar, revisamos la posibilidad de transferir empleados.")
         necesidades = Sede.obtenerNecesidadTransferenciaEmpleados(despedidos)
@@ -145,7 +220,7 @@ class Main:
         Sede.reemplazarPorCambioSede(despedidos, aTransferir)
         return aContratar
     
-    def contratarEmpleados(aReemplazar, fecha):
+    def contratarEmpleadosConsola(aReemplazar, fecha):
         elecciones = Persona.entrevistar(aReemplazar)
         aptos = elecciones[0]
         rolesAReemplazar = elecciones[1]
@@ -164,7 +239,7 @@ class Main:
                 for persona in aptos:
                     if Persona.getNombre(persona) == getNombre:
                         aContratar.append(persona)
-                        print(f"Seleccionaste a {Persona.getNombre(persona)} con {Persona.calcularSalario(persona) - Persona.valorEsperadoSalario(persona)} de diferencia salarial sobre el promedio")
+                        print(f"Seleccionaste a {Persona.getNombre(persona)} con {Persona.calcularSalario(persona) - Persona.valorEsperadoSalario()} de diferencia salarial sobre el promedio")
         Persona.contratar(aContratar, aReemplazar, fecha)
         
     def errorDeReemplazo(persona):
@@ -869,7 +944,8 @@ class Main:
             asesor.setRendimientoBonificacion(int(precio * 0.05))
             venta.setCostoEnvio(costoEnvio)
 
-    def crearSedesMaquinasRepuestos():
+    @classmethod
+    def crearSedesMaquinasRepuestos(cls):
         from ..gestorAplicacion.administracion.empleado import Empleado
         from src.gestorAplicacion.bodega.repuesto import Repuesto
         from src.gestorAplicacion.bodega.proveedor import Proveedor

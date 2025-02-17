@@ -10,7 +10,7 @@ from .area import Area
 from typing import List
 
 class Empleado(Persona, GastoMensual):
-    def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia, maquinaria: Maquinaria):
+    def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia=Membresia.NULA, maquinaria: Maquinaria=[]):
         super().__init__(nombre, documento, rol, experiencia, True, membresia)
         self.areaActual = areaActual
         self.traslados = 0
