@@ -93,8 +93,7 @@ class startFrame(tk.Tk):
     def crearFrameInicial(self)->tk.Frame:
         self.frameInicial=tk.Frame(self, bg="red")
         self.createWidgetsFrameInicial()
-        self.frameInicial.columnconfigure(0, weight=1)
-        self.frameInicial.rowconfigure(2, weight=5)
+        self.frameInicial.pack(fill="both", expand=True, padx=7, pady=7)
         return self.frameInicial
 
     def createWidgetsFrameInicial(self):
@@ -102,23 +101,23 @@ class startFrame(tk.Tk):
         #lbl_font = Font(family="Roboto Cn", size=17) 
 
         self.tituloFrameInicial = tk.Label(self.frameInicial, text="Sistema Operativo de Ecomoda", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-        self.tituloFrameInicial.grid(row=0,column=0, sticky="nswe")
+        self.tituloFrameInicial.place(relx=0.5, rely=0, relwidth=1, relheight=0.15, anchor="n")
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
         self.descripcionFrameInicial = tk.Label(self.frameInicial, text="Realiza un proceso de facturación, surte insumos, produce prendas, gestiona a tus empleados y revisa el estado financiero de tu empresa :)", relief="ridge")
-        self.descripcionFrameInicial.grid(row=1,column=0,sticky="nswe")
+        self.descripcionFrameInicial.place(relx=0.5, rely=0.15, relwidth=1, relheight=0.1, anchor="n")
 
         self.contenedorFecha = tk.Frame(self.frameInicial, bg="light gray")
-        self.contenedorFecha.grid(row=2,column=0,sticky="nswe")
+        self.contenedorFecha.place(relx=0.5, rely=0.25, relwidth=1, relheight=0.8, anchor="n")
 
         self.instruccionesFrameInicial = tk.Label(
             self.contenedorFecha, 
-            text="\nPuedes hacerlo a través de la opción: Procesos y Consultas >>", 
+            text="\nPuedes hacerlo a través de la opción: <<Procesos y Consultas >>", 
             relief="ridge", 
             anchor="n",  # Asegura que el texto esté alineado arriba
             justify="center",  # Centra el texto horizontalmente
         )
-        self.instruccionesFrameInicial.grid(row=0, column=0, sticky="nswe")
+        self.instruccionesFrameInicial.place(relx=0.5, rely=0, relwidth=1, relheight=0.8, anchor="n")
         self.logoEcomoda = tk.PhotoImage(master=self.instruccionesFrameInicial, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\logoEcomoda.png")
 
         # Redimensionar la imagen usando subsample()
@@ -126,13 +125,9 @@ class startFrame(tk.Tk):
         logo_resized = self.logoEcomoda.subsample(2, 2)  
 
         # Crear el label con la imagen redimensionada
-        self.labelFotoEcomoda = tk.Label(master=self.instruccionesFrameInicial, image=logo_resized, bg="light gray")
+        self.labelFotoEcomoda = tk.Label(master=self.instruccionesFrameInicial, image=logo_resized)
         self.labelFotoEcomoda.image = logo_resized  # Mantener la referencia de la imagen
-        self.labelFotoEcomoda.grid(row=1, column=0, sticky="nswe")
-
-        self.instruccionesFrameInicial.columnconfigure(0, weight=1)
-        self.instruccionesFrameInicial.rowconfigure(0, weight=1)
-        self.instruccionesFrameInicial.rowconfigure(1, weight=1)
+        self.labelFotoEcomoda.place(relx=0.5, rely=0.1, relwidth=0.5, relheight=0.8, anchor="n")
 
         self.tituloFecha = tk.Label(self.contenedorFecha, text="Para iniciar ingresa la fecha de hoy ", relief="ridge", anchor="w")
         self.tituloFecha.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
