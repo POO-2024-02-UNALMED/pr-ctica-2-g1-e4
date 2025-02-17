@@ -57,6 +57,7 @@ class startFrame(tk.Tk):
     #-----------------Listeners para el menú superior-----------------
     def abrirGestionHumana(self):
         self.areaPrincipal.destroy()
+        self.pagina="gestionHumana"
         self.cambiarFrame(self.crearGestionHumana())
     
     def eliminarF2(self):
@@ -100,6 +101,8 @@ class startFrame(tk.Tk):
     def crearFrameInicial(self)->tk.Frame:
         self.frameInicial=tk.Frame(self, bg="red")
         self.createWidgetsFrameInicial()
+        self.frameInicial.columnconfigure(0, weight=1)
+        self.frameInicial.rowconfigure(2, weight=5)
         return self.frameInicial
 
     def createWidgetsFrameInicial(self):
@@ -107,14 +110,14 @@ class startFrame(tk.Tk):
         #lbl_font = Font(family="Roboto Cn", size=17) 
 
         self.tituloFrameInicial = tk.Label(self.frameInicial, text="Sistema Operativo de Ecomoda", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-        self.tituloFrameInicial.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+        self.tituloFrameInicial.grid(row=0,column=0, sticky="nswe")
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
         self.descripcionFrameInicial = tk.Label(self.frameInicial, text="Realiza un proceso de facturación, surte insumos, produce prendas, gestiona a tus empleados y revisa el estado financiero de tu empresa :)", relief="ridge")
-        self.descripcionFrameInicial.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
+        self.descripcionFrameInicial.grid(row=1,column=0,sticky="nswe")
 
         self.contenedorFecha = tk.Frame(self.frameInicial, bg="light gray")
-        self.contenedorFecha.pack(fill="both", expand=True, anchor="s")
+        self.contenedorFecha.grid(row=2,column=0,sticky="nswe")
 
         self.instruccionesFrameInicial = tk.Label(
             self.contenedorFecha, 
