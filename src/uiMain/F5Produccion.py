@@ -35,6 +35,13 @@ def producir(ventana:tk.Frame):
     
 def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):
     from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+    global proveedoresQueLlegan
+    global preciosProvQueLlegan
+    global totalGastado
+
+    proveedoresQueLlegan = []
+    preciosProvQueLlegan = []
+    totalGastado = 0
     buscarProveedor(ventana, descrip1, botonContinuar)
     #Maquinaria.agruparMaquinasDisponibles(10)
 
@@ -91,9 +98,27 @@ def limpieza(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button, boto
         botonProveedorB.place_forget()
 
 
+proveedoresQueLlegan = []
+preciosProvQueLlegan = []
+totalGastado = 0
 def recibeProveedorB(proveedorBa):
+    from src.gestorAplicacion.bodega.proveedor import Proveedor
     global proveedorB
+    global proveedoresQueLlegan
+    global preciosProvQueLlegan
+    global totalGastado
     proveedorB = proveedorBa
+
+    if proveedorBa is not None:
+        proveedoresQueLlegan.append(proveedorBa.getInsumo().getNombre())
+        preciosProvQueLlegan.append(proveedorBa.getPrecio())
+        totalGastado += proveedorBa.getPrecio()
+    #elif proveedorBa is None:
+    #    proveedoresQueLlegan = []
+    #    preciosProvQueLlegan = []
+    #    totalGastado = 0
+
+
 
 def mostrarProveedorB():
     global frameDeTrabajo
@@ -101,6 +126,7 @@ def mostrarProveedorB():
 
     if proveedorB is None:
         indicaRepMalo.destroy()
+        resultadosRev()
         return
     
     nombreP = tk.Label(frameDeTrabajo, text=proveedorB.getNombre(), font=("Arial", 12, "italic"))
@@ -203,7 +229,25 @@ def eventoContinuador(event, labelDeCompra, labelSaldo):
     Main.evento_ui.set()
     print(proveedorB)
     buscarProveedor(frameDeTrabajo, 1, 1)
+
+def resultadosRev():
+    from src.uiMain.fieldFrame import FieldFrame
+    global proveedoresQueLlegan
+    global preciosProvQueLlegan
+    global totalGastado
     
+    criterios = proveedoresQueLlegan
+    valores = preciosProvQueLlegan
+    habilitado = [False for _ in range(len(proveedoresQueLlegan))]
+
+    cont = tk.Frame(frameDeTrabajo, bg="blue")
+    cont.pack(pady=20)
+    
+    field_frame = FieldFrame(cont, "Los repuestos comprados fueron:", criterios, "", valores, habilitado)
+    field_frame.pack(padx=10, pady=10)
+
+    labelTotalGastado = tk.Label(cont, text=f"Total gastado: {totalGastado} pesos", font=("Arial", 12, "italic"))
+    labelTotalGastado.pack(pady=10)
         
     
     
