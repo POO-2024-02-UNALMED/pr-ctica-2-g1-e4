@@ -67,7 +67,6 @@ class Empleado(Persona, GastoMensual):
             for emp in sede.getListaEmpleados():
                 rendimiento = emp.calcularRendimiento(fecha)
                 seVaADespedir = False
-
                 rendimientoDeseado = emp.sede.getRendimientoDeseado(emp.areaActual, fecha)
                 if rendimiento < rendimientoDeseado:
                     seVaADespedir = True
@@ -75,7 +74,6 @@ class Empleado(Persona, GastoMensual):
                     mensajes.append(f"El empleado {emp.nombre} tiene un rendimiento insuficiente, con un rendimiento de {rendimiento:.2f} y un rendimiento deseado de {rendimientoDeseado:.2f}")
                     empleadosInsuficientes.append(emp)
                     rendimientoInsufuciencias.append(rendimiento)
-
                 if seVaADespedir and sede.cantidadPorArea(emp.areaActual) == 1:
                     for idxSede, sedeDestino in enumerate(Sede.getListaSedes()):
                         if sedeDestino.getRendimientoDeseado(emp.areaActual, fecha) <= rendimiento + 20 and seVaADespedir:
@@ -84,7 +82,6 @@ class Empleado(Persona, GastoMensual):
                             listaATransferir[idxSede].append(emp)
                             seVaADespedir = False
                             acciones.append("transferencia-sede")
-
                 if seVaADespedir and emp.areaActual != Area.CORTE and emp.traslados < 2 and sede.cantidadPorArea(emp.areaActual) != 1:
                     puedeCambiarArea = True
                     for areaPasada in emp.areas:
@@ -97,10 +94,8 @@ class Empleado(Persona, GastoMensual):
                         seVaADespedir = False
                         listaADespedir.remove(emp)
                         acciones.append("traslado-area")
-                
                 if seVaADespedir:
                     acciones.append("sugerencia-despido")
-
         for idxSede, sede in enumerate(Sede.getListaSedes()):
             for emp in listaATransferir[idxSede]:
                 mensajes += emp.trasladarEmpleado(sede)
@@ -117,10 +112,8 @@ class Empleado(Persona, GastoMensual):
             mensajes.append("Perdonenos pero disculpenos: No se ha podido recibir la remuneración de daños, no hay cuenta principal, sugerimos añadir una.")
         self.modificarBonificacion(aPagar * -1)
         Maquinaria.liberarMaquinariaDe(self)
-
         self.traslados += 1
         self.setSede(sedeNueva)
-
         Maquinaria.asignarMaquinaria(self)
         return mensajes
     

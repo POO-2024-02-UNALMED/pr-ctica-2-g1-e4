@@ -37,15 +37,11 @@ class Area(Enum):
             elif area == Area.CORTE:
                 prendasDescartadas = 0
                 prendasProducidas = 0
-
                 for empleado in sede.getListaEmpleados():
                     prendasDescartadas += empleado.getPrendasDescartadas()
                     prendasProducidas += empleado.getPrendasProducidas()
-
                 area.rendimientoDeseado = (prendasProducidas / (prendasDescartadas + prendasProducidas)) * 90
-
             rendimientoSede.append(area.rendimientoDeseado)
-
         return rendimientoSede
     
     @classmethod

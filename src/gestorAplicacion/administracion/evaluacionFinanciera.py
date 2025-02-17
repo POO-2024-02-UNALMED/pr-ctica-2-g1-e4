@@ -18,7 +18,6 @@ class EvaluacionFinanciera:
         self.balance = balance
         self.proyeccion = False
         self.presidente = presidente
-        
         if presidente and presidente.areaActual == Area.DIRECCION:
             self.presidente = presidente
             presidente.evaluaciones.append(self)
@@ -39,15 +38,10 @@ class EvaluacionFinanciera:
         porcentajeFidelidadOro = 0.8 if balanceAnterior.balance >= 0 else 0.5
         if porcentajeUsuario == 0.0:
             porcentajeFidelidadOro = 0.9
-        
         porcentajeFidelidadPlata = porcentajeFidelidadOro - 0.2
         porcentajeFidelidadBronce = porcentajeFidelidadOro - 0.4
         porcentajeFidelidadNull = porcentajeUsuario
-        
-        prediccionVentas = montoVentasPasado * (porcentajeFidelidadOro + 
-                                                porcentajeFidelidadPlata + 
-                                                porcentajeFidelidadBronce + 
-                                                porcentajeFidelidadNull)
+        prediccionVentas = montoVentasPasado * (porcentajeFidelidadOro + porcentajeFidelidadPlata + porcentajeFidelidadBronce + porcentajeFidelidadNull)
         gastosMensuales = GastoMensual.gastosMensuales(fechaActual)
         diferenciaEstimada = round((prediccionVentas - gastosMensuales * 0.8) + (Banco.totalAhorros() * 0.05))
         return diferenciaEstimada

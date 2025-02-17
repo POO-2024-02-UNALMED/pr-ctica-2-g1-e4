@@ -18,18 +18,14 @@ class Banco:
 
     def actualizarDeuda(self, nuevaDeuda):
         self.deuda.append(nuevaDeuda)
-
     def transaccion(self, monto: int):
         self.ahorroBanco += monto
-
     def __str__(self):
         return f"La Cuenta: {self.nombreCuenta} en: {self.nombreEntidad} tiene un Ahorro de: {self.ahorroBanco:,} y para pedir un préstamo el Banco tiene un interés de: {self.interes * 100}%"
-
     @classmethod
     def totalAhorros(cls):
         total = sum(b.getAhorroBanco() for b in cls.listaBancos)
         return total
-
     # ------------------- Getters y Setters -------------------
     def getNombreEntidad(self) -> str:
         return self.nombreEntidad

@@ -36,9 +36,6 @@ class Persona:
     @staticmethod
     def setListaPersonas(lista):
         Persona.listaPersonas = lista  # Used when deserializing
-
-    # Interaction 3 of Human Management
-    # Returns the list of suitable candidates, the list of roles, and how many of each role.
     @staticmethod
     def entrevistar(aReemplazar):
         rolesAReemplazar = []
@@ -49,13 +46,10 @@ class Persona:
                 cantidad.append(0)
             rolIdx = rolesAReemplazar.index(empleado.getRol())
             cantidad[rolIdx] += 1
-
         aptos = []
-
         for persona in Persona.listaPersonas:
             if not persona.trabaja and persona.getRol() in rolesAReemplazar:
                 aptos.append(persona)
-
         return [aptos, rolesAReemplazar, cantidad]
 
     # Interaction 3 of Human Management
@@ -84,11 +78,7 @@ class Persona:
         rolString = str(self.rol) if self.rol is not None else "Sin rol"
         trabajaString = "Trabaja" if self.trabaja else "No trabaja"
         membresiaString = str(self.membresia) if self.membresia is not None else "Sin membresía"
-
-        return (f"Nombre: {self.nombre}, Documento: {self.documento}, Rol: {rolString}, "
-                f"Experiencia: {self.experiencia}, Trabaja: {trabajaString}, "
-                f"Membresía: {membresiaString}")
-
+        return (f"Nombre: {self.nombre}, Documento: {self.documento}, Rol: {rolString}, "f"Experiencia: {self.experiencia}, Trabaja: {trabajaString}, "f"Membresía: {membresiaString}")
     def calcularSalario(self) -> int:
         return round((self.rol.getSalarioInicial() * 0.05) * self.experiencia) + self.rol.getSalarioInicial()
 

@@ -110,7 +110,6 @@ class Maquinaria:
                 else:
                     cadaMaquina.mantenimiento = True
                     cadaMaquina.ultFechaRevision = fecha
-
                 pista = 0
                 for rep in cadaMaquina.getRepuestos():
                     if rep.isEstado():
@@ -119,12 +118,9 @@ class Maquinaria:
                     cadaMaquina.estado = True
                 else:
                     cadaMaquina.estado = False
-
                 if not cadaMaquina.mantenimiento and cadaMaquina.estado:
                     maqDisponibles.append(cadaMaquina)
-
                 cadaMaquina.mantenimiento = False
-
         return maqDisponibles
 
     @classmethod
@@ -132,7 +128,6 @@ class Maquinaria:
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from .repuesto import Repuesto
         listProveedoresBaratos = []
-        
         for cadaRepuesto in Repuesto.getListadoRepuestos():
             proveedorBarato = None
             for proveedores in Proveedor.getListaProveedores():
@@ -141,10 +136,8 @@ class Maquinaria:
                         proveedorBarato = proveedores
                     elif proveedores.getInsumo().getPrecioIndividual() <= proveedorBarato.getInsumo().getPrecioIndividual():
                         proveedorBarato = proveedores
-            
             if proveedorBarato not in listProveedoresBaratos:
                 listProveedoresBaratos.append(proveedorBarato)
-
         return listProveedoresBaratos
 
     @staticmethod

@@ -15,7 +15,6 @@ class Repuesto(Insumo):
         self.estado = True
         Repuesto.listadoRepuestos.append(self)
         
-
     def getFechasCompra(self) -> List[Fecha]:
         return self.fechasCompra
     def addFechaCompra(self, fechaCompra: Fecha):
