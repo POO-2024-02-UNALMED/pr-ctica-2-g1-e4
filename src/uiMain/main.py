@@ -8,7 +8,7 @@ from gestorAplicacion.fecha import Fecha
 from gestorAplicacion.membresia import Membresia
 from gestorAplicacion.venta import Venta
 from src.gestorAplicacion.administracion.empleado import Empleado
-from uiMain import F3Financiera
+from uiMain.F2Insumos import F2Insumos
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from typing import List
@@ -249,7 +249,7 @@ class Main:
     def errorDeReemplazo(persona):
         print(f"No se pudo contratar a {Persona.getNombre(persona)}, no sabemos a quien reemplaza.")    
 
-    def calcularBalanceAnterior(empleado, eleccion):
+    def calcularBalanceAnterior(self, empleado, eleccion):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         from src.gestorAplicacion.administracion.deuda import Deuda
         from src.gestorAplicacion.administracion.area import Area
@@ -262,7 +262,7 @@ class Main:
         nuevoBalance = EvaluacionFinanciera(balanceTotal, empleado)
         return nuevoBalance
 
-    # Interaccion 2 Sistema Financiero
+    # Interaccion 2 
     def calcularEstimado(self, balanceAnterior):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         print("\nCalculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...")
@@ -276,6 +276,7 @@ class Main:
         # cubiertos por las ventas predichas
         return diferenciaEstimado
 
+    # Interacción 3
     def planRecuperacion(self, diferenciaEstimada, bancos):
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.administracion.deuda import Deuda
@@ -330,11 +331,14 @@ class Main:
                         f"{nuevoDescuento * 100}%.")
         return analisisFuturo
 
-    #Interacción 1 Insumos
-    def planificarProduccion(fecha):
+#-----------------------------------------Insumos------------------------------------------------------------------------------------
+   
+    # Interacción 1 
+    def planificarProduccion(fecha, frame):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         retorno = []
+        frame = frame
 
         for sede in Sede.getListaSedes():
 
@@ -343,12 +347,15 @@ class Main:
             cantidadAPedir = []
             pantalonesPredichos = False
             camisasPredichas = False
+            prediccionC = None
 
             for prenda in Sede.getPrendasInventadas(sede):
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionP)))
+
+                    F2Insumos.prediccion(frame, sede, prenda, prediccionP)
 
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
@@ -360,6 +367,8 @@ class Main:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionC = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionC)))
+
+                    F2Insumos.prediccion(frame, sede, prenda, prediccionC)
 
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
@@ -377,7 +386,7 @@ class Main:
 
         return retorno
 
-    #Interacción 2 Insumos
+    # Interacción 2 
     def coordinarBodegas(retorno):
         listaA = []
         
@@ -435,7 +444,7 @@ class Main:
 
         return listaA
 
-    #Interacción 3 Insumos
+    # Interacción 3
     def comprarInsumos(fecha, listaA):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
