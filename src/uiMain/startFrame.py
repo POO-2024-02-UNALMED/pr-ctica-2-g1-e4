@@ -127,7 +127,7 @@ class startFrame(tk.Tk):
         # Crear el label con la imagen redimensionada
         self.labelFotoEcomoda = tk.Label(master=self.instruccionesFrameInicial, image=logo_resized)
         self.labelFotoEcomoda.image = logo_resized  # Mantener la referencia de la imagen
-        self.labelFotoEcomoda.place(relx=0.5, rely=0.1, relwidth=0.5, relheight=0.8, anchor="n")
+        self.labelFotoEcomoda.place(relx=0.5, rely=0.1, relwidth=0.5, relheight=0.6, anchor="n")
 
         self.tituloFecha = tk.Label(self.contenedorFecha, text="Para iniciar ingresa la fecha de hoy ", relief="ridge", anchor="w")
         self.tituloFecha.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
@@ -140,7 +140,7 @@ class startFrame(tk.Tk):
         self.entradaAño =tk.Entry(self.contenedorFecha, textvariable=tk.StringVar(self.contenedorFecha, value="a/ "), bg="plum3")
         self.entradaAño.place(relx=0.6849, rely=0.8, relwidth=0.07, relheight=0.1, anchor="n")
         self.confirmacion = tk.Label(self.contenedorFecha, text="",  anchor="w")
-        self.confirmacion.place(relx=0.5, rely=0.9, relwidth=1, relheight=0.1, anchor="n")
+        self.confirmacion.place(relx=0.5, rely=0.9, relwidth=1, relheight=0.05, anchor="n")
 
         self.enviarFecha=tk.Button(self.contenedorFecha,text="Enviar")
         self.enviarFecha.place(relx=0.820, rely=0.8, relwidth=0.1, relheight=0.1, anchor="n")
