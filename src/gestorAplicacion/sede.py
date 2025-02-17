@@ -24,7 +24,6 @@ class Sede:
                 index = x
                 retorno = True
                 break
-
         resultado = Resultado(retorno, index)
         return resultado
 
@@ -155,32 +154,26 @@ class Sede:
     
     def obtenerNecesidadTransferenciaEmpleados(despedidos):  # Despedidos es A en el doc.
         rolesARevisar = [], sedeOrigen = []
-
         for empleado in despedidos:
             if empleado.getRol() not in rolesARevisar:
                 rolesARevisar.append(empleado.getRol())
                 sedeOrigen.append(empleado.getSede())
 
         transferirDe = [], rolesATransferir = []
-
         for idxRol in range(len(rolesARevisar)):
             rol = rolesARevisar[idxRol]
-
             # Revisar sedes donadoras
             for sede in Sede.listaSedes:
                 if sede == sedeOrigen[idxRol]:
                     continue  # Evitar donacion de la misma sede de origen.
-
                 if rol == Rol.MODISTA:
                     if sede.cantidadPorRol(rol) != 0:
                         produccionTotal = sum(sede.getProduccionAproximada())
                         produccionPorModista = produccionTotal / sede.cantidadPorRol(rol)
-
                         if produccionPorModista < 30:
                             transferirDe.append(sede)
                             rolesATransferir.append(rol)
                             break  # Salir de la revisión de sedes donadoras
-
                 elif rol == Rol.SECRETARIA:
                     ejecutivos = sede.cantidadPorRol(Rol.EJECUTIVO)
                     secretarias = sede.cantidadPorRol(Rol.SECRETARIA)
@@ -189,16 +182,13 @@ class Sede:
                         transferirDe[idxRol] = sede
                         rolesATransferir.append(rol)
                         break  # Salir de la revisión de sedes donadoras
-
         retorno = []
         retorno.append(rolesATransferir)
         retorno.append(transferirDe)
-
         aReemplazar = despedidos.copy()
         for empleado in despedidos:
             if empleado.getRol() in rolesATransferir:
                 aReemplazar.remove(empleado)
-
         retorno.append(aReemplazar)
         return retorno
 

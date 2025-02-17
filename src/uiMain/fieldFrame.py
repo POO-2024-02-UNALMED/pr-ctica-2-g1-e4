@@ -13,11 +13,8 @@ class FieldFrame(Frame):
         self.createWidgets(tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry)  
 
     def createWidgets(self,tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry):
-        Label(self, text=tituloCriterios, font=(
-            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=1, pady=5)
-
-        Label(self, text=tituloValores,  font=(
-            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=2, pady=5)
+        Label(self, text=tituloCriterios, font=( "Arial", self.tamañoFuente, "bold")).grid(row=0, column=1, pady=5)
+        Label(self, text=tituloValores,  font=( "Arial", self.tamañoFuente, "bold")).grid(row=0, column=2, pady=5)
         self.columnconfigure(0,weight=3)
         self.columnconfigure(1,weight=1)
         self.columnconfigure(2,weight=1)
@@ -34,12 +31,10 @@ class FieldFrame(Frame):
             self.columnconfigure(3,weight=3)
 
             if valores is not None:
-
                 entry.insert(0, valores[i - 1])
 
             if habilitado is not None and not habilitado[i - 1]:
                 entry.config(state='readonly')
-
 
             self.valores.append(entry)
         
@@ -53,12 +48,10 @@ class FieldFrame(Frame):
             if c == criterio:
                 entry = self.valores[i]
                 break
-
         if habilitar:
             return entry.config(state="normal")
         else:
             return entry.config(state="readonly")
-
 
     def getValue(self, criterio):
         entry = None

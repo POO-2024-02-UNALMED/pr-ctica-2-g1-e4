@@ -1,7 +1,6 @@
 # Equipo 4 grupo 1
 # Clase Evaluacionfinanciera
-# Representa una evaluacion financiera generada durante la funcionalidad
-# de desglose economico
+# Representa una evaluacion financiera generada durante la funcionalidad de desglose economico
 
 from typing import List
 from src.gestorAplicacion.fecha import Fecha
@@ -33,7 +32,6 @@ class EvaluacionFinanciera:
                 if (fechaActual.compararAno(fechaActual.ano, venta.fechaVenta.ano) and 
                     fechaActual.compararMes(fechaActual.ano - 1, venta.fechaVenta.ano)):
                     montoVentasPasado += venta.subtotal + venta.costoEnvio
-        
         # Predecimos las ventas con un porcentaje de fidelidad 
         porcentajeFidelidadOro = 0.8 if balanceAnterior.balance >= 0 else 0.5
         if porcentajeUsuario == 0.0:

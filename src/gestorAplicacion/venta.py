@@ -99,7 +99,6 @@ class Venta:
             if venta.fechaVenta.ano == fecha.ano and venta.fechaVenta.mes == fecha.mes:
                 ventasMes.append(venta)
         return ventasMes
-
     from src.gestorAplicacion.administracion.empleado import Empleado
 
     @multimethod
@@ -109,7 +108,6 @@ class Venta:
             if venta.asesor == empleado:
                 asesoradas.append(venta)
         return asesoradas
-
     filtrar =classmethod(filtrar)
 
     @staticmethod
@@ -138,7 +136,6 @@ class Venta:
         for venta in ventas:
             acumulado += Venta.getMontoPagado(venta)
         return acumulado
-    
     def getArticulos(self):
         return self.articulos
     def setArticulos(self, articulos):

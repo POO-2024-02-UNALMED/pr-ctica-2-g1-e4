@@ -64,9 +64,7 @@ class Main:
                     print(Prenda.getCantidadUltimaProduccion()+" Prendas creadas con éxito")
                 else:
                     print("No se pudo producir todo, los insumos no alcanzaron, producimos "+Prenda.getCantidadUltimaProduccion()+" prendas")
-            #elif opcion == 6:
-                #Serializador.serializar()
-                #sys.exit(0)
+            #elif opcion == 6: #Serializador.serializar() #sys.exit(0)
             else:
                 print("Esa opción no es valida.")
 
@@ -217,12 +215,10 @@ class Main:
         descuento = Venta.blackFriday(self.fecha)
         bfString = None
         if descuento <= 0.0:
-            bfString = ("El análisis de ventas realizado sobre el Black Friday arrojó que la audiencia no reacciona tan bien a los descuentos, "
-                        "propusimos no hacer descuentos")
+            bfString = ("El análisis de ventas realizado sobre el Black Friday arrojó que la audiencia no reacciona tan bien a los descuentos, ""propusimos no hacer descuentos")
             print("\nSegún las Ventas anteriores, aplicar descuentos no funcionará")
         else:
-            bfString = ("El análisis de ventas realizado sobre el Black Friday arrojó que la audiencia reacciona bien a los descuentos, "
-                        f"propusimos un descuento del {descuento * 100}%")
+            bfString = ("El análisis de ventas realizado sobre el Black Friday arrojó que la audiencia reacciona bien a los descuentos, "f"propusimos un descuento del {descuento * 100}%")
             print("\nSegún las Ventas anteriores, aplicar descuentos si funcionará")
         print(f"¿Desea Cambiar el siguiente descuento: {descuento * 100}? marque 1 para Si, 2 para no ")
         num = Main.nextIntSeguro()
@@ -247,9 +243,7 @@ class Main:
         retorno = []
         frame = frame
         for sede in Sede.getListaSedes():
-            listaXSede = []
-            insumoXSede = []
-            cantidadAPedir = []
+            listaXSede = [], insumoXSede = [], cantidadAPedir = []
             pantalonesPredichos = False
             camisasPredichas = False
             prediccionC = None
@@ -287,12 +281,7 @@ class Main:
     def coordinarBodegas(retorno):
         listaA = []
         for sede in retorno:
-            insumosAPedir = []
-            cantidadAPedir = []
-            listaSede = []
-            listaXSede = sede
-            listaInsumos = listaXSede[0]
-            listaCantidades = listaXSede[1]
+            insumosAPedir = [], cantidadAPedir = [], listaSede = [], listaXSede = sede, listaInsumos = listaXSede[0], listaCantidades = listaXSede[1]
             for s in Sede.getListaSedes():
                 for i in listaInsumos:
                     productoEnBodega = Sede.verificarProductoBodega(i, s)

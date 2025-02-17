@@ -35,8 +35,7 @@ class F3Financiera(tk.Frame):
                 if empleado_actual.getNombre() == seleccion:
                     empleado = empleado_actual
                 Main.calcularBalanceAnterior(empleado,eleccionDeuda)
-            else:
-                #Excepcion
+            else: #Excepcion
                 resultadosP[0].delete(0,"end")
                 resultadosB[1].delete(0,"end")
                 combo.delete(0,"end")
@@ -79,5 +78,4 @@ class F3Financiera(tk.Frame):
         combo.place(relx=0.5, rely=0.8, relwidth=0.5, relheight=0.2, anchor="s")
         boton1 = tk.Button(frame3, text="Aceptar", command = lambda: Siguiente())
         boton1.place(relx=0.5, rely=0.8, relwidth=0.2, relheight=0.2, anchor="s")
-        
         return framePrincipal

@@ -6,6 +6,7 @@ from tkinter.font import Font
 import sys
 from src.uiMain.F2Insumos import F2Insumos
 from src.uiMain.F4Facturaccion import Facturar
+from src.uiMain.exceptionC1 import ExceptionC1
 from src.uiMain.main import Main
 from src.uiMain.F3Financiera import F3Financiera
 from src.uiMain.F5Produccion import producir
@@ -14,13 +15,7 @@ from src.gestorAplicacion.fecha import Fecha
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
-#pygame.mixer.init()
-
-# Función para reproducir el audio
-#def reproducir_audio():
-    #ruta_audio = os.path.join("src", "uiMain", "imagenes", "EcomodaALaOrden.mp3")
-    #pygame.mixer.music.load(ruta_audio)  # Cambia la ruta del archivo de audio
-    #pygame.mixer.music.play()
+#pygame.mixer.init() # Función para reproducir el audio #def reproducir_audio(): #ruta_audio = os.path.join("src", "uiMain", "imagenes", "EcomodaALaOrden.mp3") #pygame.mixer.music.load(ruta_audio)  # Cambia la ruta del archivo de audio #pygame.mixer.music.play()
 
 class startFrame(tk.Tk):
     def __init__(self):
@@ -29,16 +24,13 @@ class startFrame(tk.Tk):
         super().__init__()
         self.title("Ecomoda")
         self.geometry("800x500")
-        # Llamar a la función de audio al abrir la ventana
-        #reproducir_audio()
+        # Llamar a la función de audio al abrir la ventana #reproducir_audio()
 
         self.barraMenus = tk.Menu(self)
         self.config(menu=self.barraMenus)
-
         self.archivoMenu = tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Archivo", menu=self.archivoMenu)
         self.archivoMenu.add_command(label="Salir", command = lambda : self.pasarABienvenida())
-
         self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
         self.procesosMenu.add_command(label="Despedir y reemplazar empleados", command = lambda :self.abrirGestionHumana())
@@ -46,7 +38,6 @@ class startFrame(tk.Tk):
         self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.eliminarF3())
         self.procesosMenu.add_command(label="Facturacion", command = lambda : self.eliminarF4())
         self.procesosMenu.add_command(label="Producir prendas", command= lambda : self.iniciarProduccion())
-    
 
         self.ayudaMenu = tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Ayuda", menu=self.ayudaMenu)
@@ -127,7 +118,6 @@ class startFrame(tk.Tk):
             justify="center",  # Centra el texto horizontalmente
         )
         self.instruccionesFrameInicial.place(relx=0.5, rely=0, relwidth=1, relheight=0.7, anchor="n")
-
         self.logoEcomoda = tk.PhotoImage(master=self.instruccionesFrameInicial, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\logoEcomoda.png")
 
         # Redimensionar la imagen usando subsample()
@@ -237,9 +227,7 @@ class startFrame(tk.Tk):
         self.frame1 = tk.Frame(self.framePrincipal, height=150)
         self.frame1.grid(row=1, column=0, sticky="nswe")
 
-
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-
         self.descripcionF1 = tk.Label(self.frame1, wraplength=700 ,text="""Este área analiza la lista de todos los empleados y permite modificarla:
 Se puede contratar a un nuevo empleado, establecer su salario y el rol o las funciones que cumple en la empresa.
 También se puede despedir a un empleado ya existente en el equipo de trabajo.
@@ -325,8 +313,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         
         empleadosMalosString += """Estos empleados tienen un rendimiento menor al esperado, y no puedieron ser transferidos ni cambiados de cargo.\n"""
 
-        empleadosMalosString += """Puede elegir despedir a estos empleados si lo desea, insertando SI en el campo de texto, o puede añadir mas empleados a la
-    lista de despedibles"""
+        empleadosMalosString += """Puede elegir despedir a estos empleados si lo desea, insertando SI en el campo de texto, o puede añadir mas empleados a la lista de despedibles"""
 
         self.labelPreConsulta=tk.Label(self.frame1, text=empleadosMalosString, relief="ridge", font=("Arial", 10))
         self.labelPreConsulta.grid(row=1, column=0, sticky="nswe",columnspan=4)
@@ -337,13 +324,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.seleccionador=FieldFrame(self.frame1, "Nombre del empleado a despedir", nombres, "¿Despedir?", ancho_entry=5, tamañoFuente=10)
         self.seleccionador.grid(row=2, column=1,columnspan=2)
-
         self.opcionAñadir=tk.Button(self.frame1, text="Añadir empleado a la lista de despedibles", font=("Arial", 12, "bold"), command=self.pantallaAñadirDespedido)
         self.opcionAñadir.grid(row=3, column=1,columnspan=2)
-        
         self.aceptarDespedidos=tk.Button(self.frame1, text="Aceptar", font=("Arial", 12, "bold"), command=self.despedir)
         self.resetDespedidos=tk.Button(self.frame1, text="Borrar", font=("Arial", 12, "bold"), command=self.seleccionador.borrar)
-
         self.aceptarDespedidos.grid(row=4, column=1)
         self.resetDespedidos.grid(row=4, column=2)
 
@@ -374,8 +358,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame1 = tk.Frame(self.framePrincipal, height=150)
         self.frame1.grid(row=1, column=0, sticky="nswe")
 
-        self.descripcionAñadirDespedido = tk.Label(self.frame1, text="""Inserte los datos de el empleado a añadir a la lista, el panel de la derecha le ayudará, presione Enter al
-terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
+        self.descripcionAñadirDespedido = tk.Label(self.frame1, text="""Inserte los datos de el empleado a añadir a la lista, el panel de la derecha le ayudará, presione Enter al terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
         self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=4)
 
         self.datosDespedido=FieldFrame(self.frame1, "Dato del empleado" ,["sede","nombre"],"valor", ["",""],[True,False],ancho_entry=25, tamañoFuente=10)
@@ -431,4 +414,3 @@ terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
 def pasarAVentanaPrincipal():
     ventana = startFrame()
     ventana.mainloop()
-
