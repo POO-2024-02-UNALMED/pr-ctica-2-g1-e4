@@ -96,113 +96,81 @@ class Sede:
     def actualizarHistorialVentas(self,venta):
         self.historialVentas.append(venta)
         pass
-
     def getRendimientoDeseado(self, area, fecha):
         from .administracion.area import Area
         Area.rendimientoDeseadoActual(self, fecha)
         return area.rendimientoDeseado
-
     @classmethod
     def setListaSedes(cls, sede):
         cls.listaSedes.append(sede)
-
     @staticmethod
     def getListaSedes():
         return Sede.listaSedes
-
     def getListaEmpleados(self):
         return self.listaEmpleado
-
     def setListaEmpleados(self, emp):
         self.listaEmpleado = emp
-
     def getListaMaquinas(self):
         return self.listaMaquina
-
     def setListaMaquinas(self, maquinaria):
         self.listaMaquina = maquinaria
-
     def getHistorialVentas(self)->List:
         return self.historialVentas
-
     def setHistorialVentas(self, venta):
         self.historialVentas = venta
-
     def getPrendasInventadas(self):
         return self.prendasInventadas
-
     def setPrendasInventadas(self, prenda):
         self.prendasInventadas = prenda
-
     def getListaInsumosBodega(self):
         return self.listaInsumosBodega
-
     def setListaInsumosBodega(self, insumos):
         self.listaInsumosBodega = insumos
-
     def getCantidadInsumosBodega(self):
         return self.cantidadInsumosBodega
-
     def setCantidadInsumosBodega(self, cantidadIns):
         self.cantidadInsumosBodega = cantidadIns
-
     def getProduccionAproximada(self):
         return self.produccionAproximada
-
     def setProduccionAproximada(self, produccion):
         self.produccionAproximada = produccion
-
     def getPrendasProduccion(self):
         return self.prendasProduccion
-
     def setPrendasProduccion(self, prendasProduccion):
         self.prendasProduccion = prendasProduccion
-
     def getNombre(self):
         return self.nombre
-
     def setNombre(self, nombre):
         self.nombre = nombre
-
     def setCuentaSede(self, cuenta):
         self.cuentaSede = cuenta
-
     def getCuentaSede(self):
         return self.cuentaSede
-
     def anadirEmpleado(self, emp):
         self.listaEmpleado.append(emp)
-
     def quitarEmpleado(self, emp):
         self.listaEmpleado.remove(emp)
-
     @classmethod
     def setEvaluacionesFinancieras(cls, evaluaciones):
         cls.evaluacionesFinancieras = evaluaciones
-
     @classmethod
     def getEvaluacionesFinancieras(cls):
         return cls.evaluacionesFinancieras
-
     @classmethod
     def getListaEmpleadosTotal(cls):
         return cls.listaEmpleadosTotal
-
     @classmethod
     def setListaEmpleadosTotal(cls, empleados):
         cls.listaEmpleadosTotal = empleados  # Para serializacion
-
     @classmethod
     def getPrendasInventadasTotal(cls):
         return cls.prendasInventadasTotal
-
     @classmethod
     def setPrendasInventadasTotal(cls, prendas):
         cls.prendasInventadasTotal = prendas  # Para serializacion
-
     def getProdAproximada(self):
         return self.prodAproximada
-
+    
     def obtenerNecesidadTransferenciaEmpleados(despedidos):  # Despedidos es A en el doc.
         rolesARevisar = []
         sedeOrigen = []

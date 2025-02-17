@@ -56,19 +56,14 @@ class Maquinaria:
 
     def getNombre(self) -> str:
         return self.nombre
-
     def getRepuestos(self):
         return self.repuestos
-
     def setRepuestos(self, repaCambiar):
         self.repuestos.remove(repaCambiar)
-
     def getHoraRevision(self) -> int:
         return self.horaRevision
-
     def getHorasUso(self) -> int:
         return self.horasUso
-
     def getSede(self) -> 'Sede':
         return self.sede
 

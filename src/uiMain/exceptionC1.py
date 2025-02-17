@@ -12,8 +12,3 @@ class ExceptionC1(ErrorAplicacion):
     def contenidoVacio(self):
         messagebox.showerror("Error", f"{self}")
         raise self
-
-
-
-
-    

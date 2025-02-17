@@ -6,22 +6,17 @@ class Fecha:
 
     def getDia(self):
         return self.dia
-
     def setDia(self, dia):
         self.dia = dia
-
     def getMes(self):
         return self.mes
-
     def setMes(self, mes):
         self.mes = mes
-
     def getAno(self):
         return self.ano
-
     def setAno(self, ano):
         self.ano = ano
-
+        
     def restarMeses(self, meses):
         mes = self.mes - meses
         ano = self.ano

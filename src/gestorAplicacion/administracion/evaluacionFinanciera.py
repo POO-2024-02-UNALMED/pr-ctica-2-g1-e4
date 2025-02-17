@@ -54,25 +54,18 @@ class EvaluacionFinanciera:
 
     def getPagoPersonas(self) -> int:
         return self.pagoPersonas
-
     def setPagoPersonas(self, pago: int) -> None:
         self.pagoPersonas = pago
-
     def getBalance(self) -> float:
         return self.balance
-
     def setBalance(self, balance: float) -> None:
         self.balance = balance
-
     def getProyeccion(self) -> bool:
         return self.proyeccion
-
     def setProyeccion(self, proyeccion: bool) -> None:
         self.proyeccion = proyeccion
-
     def getPresidente(self) -> Empleado:
         return self.presidente
-
     def setPresidente(self, presidente: Empleado) -> None:
         if presidente.areaActual == Area.DIRECCION and presidente.rol == Rol.PRESIDENTE:
             self.presidente = presidente

@@ -2,15 +2,11 @@ import math
 import os
 import tkinter as tk
 from tkinter.font import Font
-
 from src.gestorAplicacion.bodega import prenda
 from src.gestorAplicacion.bodega.camisa import Camisa
 from src.gestorAplicacion.bodega.pantalon import Pantalon
 from src.gestorAplicacion.sede import Sede
-
 from src.gestorAplicacion.venta import Venta
-
-
 
 class F2Insumos(tk.Frame):
 
@@ -77,8 +73,3 @@ class F2Insumos(tk.Frame):
     def prediccion(frame2, sede, prenda, prediccion):
         prediccion = tk.Label(frame2,text="\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccion)) + " en la "+ str(sede))
         prediccion.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
-
-        
-        
-        
-

@@ -89,6 +89,3 @@ class F3Financiera(tk.Frame):
         boton1.place(relx=0.5, rely=0.8, relwidth=0.2, relheight=0.2, anchor="s")
         
         return framePrincipal
-
-        
-

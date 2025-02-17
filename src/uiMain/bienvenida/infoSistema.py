@@ -26,9 +26,7 @@ para administrar tu tienda y fabrica de ropa."""
 
         self.parteAbajo = ImagenSistemaYSalida(self.window ,master = self)
         self.parteAbajo.grid(row = 1, column = 0, padx=10, pady=10, sticky="nswe")
-
-
+        
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=10)
         self.columnconfigure(0,weight=10)
-

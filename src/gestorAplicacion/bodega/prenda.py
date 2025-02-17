@@ -124,7 +124,6 @@ class Prenda(ABC, GastoMensual):
     @abstractmethod
     def siguientePaso(self):
         pass
-
     @abstractmethod
     def realizarPaso(self, modista):
         pass
@@ -171,30 +170,22 @@ class Prenda(ABC, GastoMensual):
 
     def __str__(self):
         return f"La prenda de tipo {self.nombre}"
-
     def getPrendasDescartadas(self):
         return self.descartada
-
     def getNombre(self):
         return self.nombre
-
     def getInsumo(self):
         return self.insumo
-
     @classmethod
     def getCantidadInsumo(cls):
         return cls.cantidadInsumo
-
     def getCostoInsumos(self):
         return self.costoInsumos
-
     def getPrecio(self):
         return self.precio
-
     @classmethod
     def getCantidadUltimaProduccion(cls):
         return cls.cantidadUltimaProduccion
-
     @classmethod
     def getCantidadTelaUltimaProduccion(cls):
         return cls.cantidadTelaUltimaProduccion

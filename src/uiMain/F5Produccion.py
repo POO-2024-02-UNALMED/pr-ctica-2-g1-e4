@@ -166,10 +166,3 @@ def eventoDeCompra(event, nombre, nombreP, precio, precioP, separador, seleccion
 
         labelSaldo = tk.Label(frameDeTrabajo, text= f"Saldo Disponible: {Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()} pesos", font=("Arial", 14, "italic"))
         labelSaldo.place(relx=0.5, rely=0.4, anchor="center")
-    
-    
-    
-    
-
-    
-    

@@ -134,53 +134,40 @@ class Venta:
 
         pendientePromedio = (pendienteMes1a2 + pendienteMes2a3) / 2
         return math.ceil(ventasMes3 + pendientePromedio)
-
+    
     @staticmethod
     def acumulado(ventas):
         acumulado = 0
         for venta in ventas:
             acumulado += Venta.getMontoPagado(venta)
         return acumulado
-
+    
     def getArticulos(self):
         return self.articulos
-
     def setArticulos(self, articulos):
         self.articulos = articulos
-
     def getBolsas(self):
         return self.bolsas
-
     def setBolsas(self, bolsas):
         self.bolsas = bolsas
-
     def getEncargado(self):
         return self.encargado
-
     def setEncargado(self, emp):
         self.encargado = emp
-
     def getAsesor(self):
         return self.asesor
-
     def setAsesor(self, emp):
         self.asesor = emp
-
     def getSede(self):
         return self.sede
-
     def setSede(self, sede):
         self.sede = sede
-
     def getFechaVenta(self):
         return self.fechaVenta
-
     def setFechaVenta(self, fecha):
         self.fechaVenta = fecha
-
     def getMontoPagado(self):
         return self.montoPagado
-
     def setMontoPagado(self, monto):
         if self.montoPagado == 0:
             self.Sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() + monto)
@@ -189,51 +176,37 @@ class Venta:
             self.sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() - self.montoPagado)
             self.montoPagado = monto
             self.sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() - monto)
-
     def getCliente(self):
         return self.cliente
-
     def setCliente(self, persona):
         self.cliente = persona
-
     def getNumero(self):
         return self.numero
-
     def setNumero(self, numero):
         self.numero = numero
-
     def getCostoEnvio(self):
         return self.costoEnvio
-
     def setCostoEnvio(self, monto):
         self.costoEnvio = monto
-
     def getSubtotal(self):
         return self.subtotal
-
     def setSubtotal(self, monto):
         self.subtotal = monto
-
     @staticmethod
     def setPesimismo(newPesimismo):
         Venta.pesimismo = newPesimismo
-
     @staticmethod
     def getPesimismo():
         return Venta.pesimismo
-
     @staticmethod
     def getCodigosRegalo():
         return Venta.codigosRegalo
-
     @staticmethod
     def setCodigosRegalo(codigo):
         Venta.codigosRegalo = codigo
-
     @staticmethod
     def getMontosRegalo():
         return Venta.montosRegalo
-
     @staticmethod
     def setMontosRegalo(montos):
         Venta.montosRegalo = montos

@@ -47,43 +47,30 @@ class Insumo(GastoMensual):
     @staticmethod
     def getPrecioStockTotal():
         return Insumo.precioStockTotal
-
     @staticmethod
     def setPrecioStockTotal(precioStockTotal):
         Insumo.precioStockTotal = precioStockTotal
-
     def getNombre(self):
         return self.nombre
-
     def setNombre(self, nombre):
         self.nombre = nombre
-
     def getProveedor(self):
         return self.proveedor
-
     def setProveedor(self, proveedor):
         self.proveedor = proveedor
-
     def getSede(self):
         return self.sede
-
     def setSede(self, sede):
         self.sede = sede
-
     def getPrecioCompra(self):
         return self.precioCompra
-
     def setPrecioCompra(self, precio):
         self.precioCompra = precio
-
     def getPrecioIndividual(self):
         return self.precioXUnidad
-
     def setUltimoPrecio(self, precio):
         self.ultimoPrecio = precio
-
     def getUltimoPrecio(self):
         return self.ultimoPrecio
-
     def __str__(self):
         return f"Insumo: {self.nombre}"

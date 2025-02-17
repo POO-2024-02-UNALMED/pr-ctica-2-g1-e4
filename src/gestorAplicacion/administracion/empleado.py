@@ -141,85 +141,59 @@ class Empleado(Persona, GastoMensual):
 
     def __str__(self):
         return f"{super().__str__()}\nArea: {self.areaActual} - Sede: {self.sede} - Traslados: {self.traslados}"
-
     def modificarBonificacion(self, bonificacion):
         self.bonificacion += bonificacion
-
     def getTraslados(self):
         return self.traslados
-
     def setTraslados(self, traslados):
         self.traslados = traslados
-
     def getPrendasDescartadas(self):
         return self.prendasDescartadas
-
     def setPrendasDescartadas(self, prendas):
         self.prendasDescartadas = prendas
-
     def getPrendasProducidas(self):
         return self.prendasProducidas
-
     def setPrendasProducidas(self, prendasProducidas):
         self.prendasProducidas = prendasProducidas
-
     def getPericia(self):
         return self.pericia
-
     def setPericia(self, pericia):
         self.pericia = pericia
-
     def getAreaActual(self):
         return self.areaActual
-
     def setAreaActual(self, area):
         self.areaActual = area
-
     def getFechaContratacion(self):
         return self.fechaContratacion
-
     def setFechaContratacion(self, fecha):
         self.fechaContratacion = fecha
-
     def getSede(self):
         return self.sede
-
     def setSede(self, sede):
         if self.sede is not None:
             self.sede.quitarEmpleado(self)
         self.sede = sede
         self.sede.anadirEmpleado(self)
-
     def getMaquinaria(self):
         return self.maquinaria
-
     def setMaquinaria(self, maquinaria):
         self.maquinaria = maquinaria
-
     def getAreas(self):
         return self.areas
-
     def setAreas(self, areas):
         self.areas = areas
-
     def getBonificacion(self):
         return self.bonificacion
-
     def setRendimientoBonificacion(self, boni):
         self.bonificacion = boni
-
     def setSalario(self, salario):
         self.salario = salario
-
     def setEvaluacionesFinancieras(self, evaluaciones):
         self.evaluaciones = evaluaciones
-
     def getEvaluacionesFinancieras(self):
         return self.evaluaciones
-
     def getVentasEncargadas(self):
         return self.ventasEncargadas
-
     @staticmethod
     def getEmpCreados():
         return Sede.getListaEmpleadosTotal()

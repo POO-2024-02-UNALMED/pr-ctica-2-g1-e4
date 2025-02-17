@@ -11,7 +11,6 @@ desarrolladores=[
     """Andres David Calderón""",
     """Luis Esteban Rincón"""
 ]
-
 carpetaDesarrolladores=[
     "andrea",
     "juanita",
@@ -19,7 +18,6 @@ carpetaDesarrolladores=[
     "andres",
     "luis"
 ]
-
 hojasDeVida=[
     """
     Representado Por: Beatriz pinzón
@@ -59,7 +57,6 @@ hojasDeVida=[
     """
     #Logros: Me gusta estudiar de forma autónoma inglés, matemáticas y algunos lenguajes de programación. Como también, procuro trabajar en mis tiempos libres y vacaciones para ayudar a costear mi vida de foráneo.
 ]
-
 class infoDesarrolladores(tk.Frame):
     def __init__(self,window, master=None):
         super().__init__(master)
@@ -81,9 +78,6 @@ class infoDesarrolladores(tk.Frame):
         self.nombreDesarrollador.config(text=nombre)
         self.hojaDeVida.config(text=hojaDeVida)
         self.actualizarImagenes()
-
-
-        
 
     def create_widgets(self):
 
@@ -124,18 +118,14 @@ class infoDesarrolladores(tk.Frame):
         self.contenedorAbajoP6.rowconfigure(1,weight=3)
         self.contenedorAbajoP6.columnconfigure(0,weight=3)
         self.contenedorAbajoP6.columnconfigure(1,weight=3)
-
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=20)
-
         self.columnconfigure(0,weight=10)
-
     
     def actualizarImagenes(self):
         # Get container width and height for images
         container_width = self.contenedorAbajoP6.winfo_width()
         container_height = self.contenedorAbajoP6.winfo_height()
-
 
         for i in range(4):
             label: tk.Canvas = self.labelsImagenesDesarrollador[i]
