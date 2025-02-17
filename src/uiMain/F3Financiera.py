@@ -4,6 +4,7 @@ from tkinter.font import Font
 from tkinter import ttk as ttk
 
 from src.gestorAplicacion.administracion.empleado import Empleado
+from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
 from src.uiMain.fieldFrame import FieldFrame
 
 class F3Financiera(tk.Frame):
@@ -35,7 +36,7 @@ class F3Financiera(tk.Frame):
                     if Empleado.getNombre(empleado_actual) == seleccion:
                         empleado = empleado_actual
                 a=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
-                print(a)
+                confirmacion.config(text=EvaluacionFinanciera.informe(a))
             else: #Excepcion
                 combo.delete(0,"end")
 
@@ -76,5 +77,7 @@ class F3Financiera(tk.Frame):
         combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
         combo.place(relx=0.5, rely=0.8, relwidth=0.5, relheight=0.2, anchor="s")
         boton1 = tk.Button(frame3, text="Aceptar", command = lambda: Siguiente())
-        boton1.place(relx=0.5, rely=0.8, relwidth=0.2, relheight=0.2, anchor="s")
+        boton1.place(relx=0.5, rely=0.7, relwidth=0.2, relheight=0.1, anchor="s")
+        confirmacion = tk.Label(frame3, text="",  anchor="w")
+        confirmacion.place(relx=0.5, rely=0.9, relwidth=1, relheight=0.2, anchor="n")
         return framePrincipal
