@@ -11,6 +11,7 @@ from src.uiMain import F3Financiera
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from typing import List
+from src.gestorAplicacion.administracion.empleado import Empleado
 
 class Main:
     fecha:Fecha=None
@@ -33,7 +34,6 @@ class Main:
             
             opcion = Main.nextIntSeguro()
             if opcion == 1:
-                despedidos = Main.despedirEmpleados(Main.fecha)
                 a_contratar = Main.reorganizarEmpleados(despedidos)
                 Main.contratarEmpleados(a_contratar)
             elif opcion == 2:
@@ -80,62 +80,7 @@ class Main:
         print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
         print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
 
-    def despedirEmpleados(fecha):
-        from ..gestorAplicacion.administracion.empleado import Empleado
-        print("Obteniendo lista sugerida de empleados")
-        info_despidos= Empleado.listaInicialDespedirEmpleado(fecha)
-        a_despedir = info_despidos[0]
-        mensajes = info_despidos[1]
-
-        for mensaje in mensajes:
-            print(mensaje)
-
-        print("\nEsta es una lista de empleados que no estan rindiendo correctamente, ¿que deseas hacer?")
-
-        diferenciaSalarios -= Persona.diferenciaSalarios()
-        if diferenciaSalarios > 0:
-            print(f"Tus empleados estan {diferenciaSalarios:,} sobre el promedio de salarios")
-        elif diferenciaSalarios < 0:
-            print(f"Tus empleados estan {diferenciaSalarios:,} bajo el promedio de salarios")
-        else:
-            print("Tus empleados estan en el promedio de salarios")
-
-        for emp in a_despedir:
-            print(f"Nombre: {emp.getNombre()}, Área: {emp.getAreaActual()}, Documento: {emp.getDocumento()}")
-
-        opcion = 2
-        while opcion == 2:
-            print("1. Elegir a los despedidos")
-            print("2. Añadir a alguien más")
-            opcion = Main.nextIntSeguro()
-            if opcion == 2:
-                print("¿De que sede quieres añadir al empleado?")
-                for i , sede in Sede.getlistaSedes():
-                    print(f"{i}. {sede.getNombre()}")
-                sede = Main.nextIntSeguro()
-                print("¿Que empleado quieres despedir? Pon su nombre completo o documento, esto lo añadirá a la lista de despedibles.")
-                for emp in Sede.getlistaSedes().get(sede).getlistaEmpleados():
-                    print(f"{emp.getNombre()} {emp.getAreaActual()} {emp.getDocumento()}")
-                nombre = input().strip()
-                for emp in Sede.getlistaSedes().get(sede).getlistaEmpleados():
-                    if emp.getNombre() == nombre or (nombre.isdigit() and emp.getDocumento() == int(nombre)):
-                        a_despedir.append(emp)
-
-        seleccion = []
-        print("¿Que empleados quieres despedir? Pon su nombre completo, documento o FIN para terminar.")
-        for emp in a_despedir:
-            print(f"{emp.getNombre()} {emp.getAreaActual()} {emp.getDocumento()}")
-        nombre = input().strip()
-        while nombre.lower() != "fin":
-            for emp in a_despedir:
-                if emp.getNombre() == nombre or (nombre.isdigit() and emp.getDocumento() == int(nombre)):
-                    seleccion.append(emp)
-            nombre = input().strip()
-
-        print("Despidiendo empleados...")
-        Empleado.despedirEmpleados(seleccion, True, fecha)
-        print("Listo!")
-        return seleccion
+   
 
     def reorganizarEmpleados(despedidos):
         print(f"Todavía nos quedan {len(despedidos)} empleados por reemplazar, revisamos la posibilidad de transferir empleados.")
@@ -1512,7 +1457,32 @@ class Main:
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Cata, 700, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Mario, 700, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia , 300, sede2)
-        pass 
+        pass
+
+    @classmethod
+    def listaInicialDespedirEmpleado(cls):
+        return Empleado.listaInicialDespedirEmpleado(Main.fecha)
+
+    @classmethod
+    def despedirEmpleados(cls, empleados):
+        Empleado.despedirEmpleados(empleados, True, Main.fecha)
+    
+    @classmethod
+    def verificarSedeExiste(cls, sede:str): # verifica que la sede exista
+        return Sede.sedeExiste(sede)
+
+    @classmethod
+    def posiblesSedes(cls)->str:
+        posiblesSedes="Posibles sedes:\n"
+        for sede in Sede.getListaSedes():
+            posiblesSedes+=sede.getNombre()+"\n"
+        return posiblesSedes
+    
+    @classmethod    
+    def sedePorNombre(cls,nombre:str)->Sede:
+        for sede in Sede.getListaSedes():
+            if sede.getNombre()==nombre:
+                return sede
 
 
 if __name__=="__main__":
