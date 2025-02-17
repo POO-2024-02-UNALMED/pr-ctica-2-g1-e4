@@ -80,14 +80,12 @@ class Main:
     def reorganizarEmpleados(despedidos):
         print(f"Todavía nos quedan {len(despedidos)} empleados por reemplazar, revisamos la posibilidad de transferir empleados.")
         necesidades = Sede.obtenerNecesidadTransferenciaEmpleados(despedidos)
-        
         # Desempacamos los datos dados por GestorAplicacion
         roles_a_transferir = necesidades[0]
         transferir_de = necesidades[1]
         a_contratar = necesidades[2]
         # Lista de empleados a transferir de sede, seleccionados por el usuario.
         a_transferir = []
-
         for rolidx in range(len(roles_a_transferir)):
             rol = roles_a_transferir[rolidx]
             sede = transferir_de[rolidx]
@@ -113,7 +111,6 @@ class Main:
                         a_transferir.append(emp)
 
         Sede.reemplazarPorCambioSede(despedidos, a_transferir)
-
         return a_contratar
 
     def reorganizarEmpleados(despedidos):
@@ -151,9 +148,7 @@ class Main:
                 for emp in Sede.getListaEmpleados(sede):
                     if Empleado.getNombre(emp) == nombre:
                         aTransferir.append(emp)
-    
         Sede.reemplazarPorCambioSede(despedidos, aTransferir)
-    
         return aContratar
     
     def contratarEmpleados(aReemplazar, fecha):
@@ -191,12 +186,9 @@ class Main:
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         from src.gestorAplicacion.administracion.deuda import Deuda
         from src.gestorAplicacion.administracion.area import Area
-        
         balanceCostosProduccion = Venta.calcularBalanceVentaProduccion(Main.fecha)
-
         deudaCalculada = Deuda.calcularDeudaMensual(Main.fecha, eleccion)
         balanceTotal = balanceCostosProduccion - deudaCalculada
-        
         nuevoBalance = EvaluacionFinanciera(balanceTotal, empleado)
         return nuevoBalance
 
@@ -208,7 +200,6 @@ class Main:
         while porcentaje < 0.0 or porcentaje > 1:
             print("\nIngrese porcentaje a modificar para fidelidad de los clientes sin membresía, entre 0% y 100%")
             porcentaje = Main.nextIntSeguro() / 100.0
-        
         diferenciaEstimado = EvaluacionFinanciera.estimadoVentasGastos(self.fecha, porcentaje, balanceAnterior)
         # Un mes se puede dar por salvado si el 80% de los gastos se pueden ver
         # cubiertos por las ventas predichas
@@ -234,7 +225,6 @@ class Main:
                 i = Main.nextIntSeguro()
                 if 0 <= i < len(bancos):
                     nombreBanco = Banco.getNombreEntidad(bancos[i])
-
             cuotas = 0
             while cuotas <= 0 or cuotas > 18:
                 print("Ingrese número de 1 a 18 para las cuotas en que se dividirá la deuda")
@@ -279,22 +269,18 @@ class Main:
         frame = frame
 
         for sede in Sede.getListaSedes():
-
             listaXSede = []
             insumoXSede = []
             cantidadAPedir = []
             pantalonesPredichos = False
             camisasPredichas = False
             prediccionC = None
-
             for prenda in Sede.getPrendasInventadas(sede):
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionP)))
-
                     F2Insumos.prediccion(frame, sede, prenda, prediccionP)
-
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
                     for cantidad in Pantalon.getCantidadInsumo():
@@ -305,9 +291,7 @@ class Main:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionC = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionC)))
-
                     F2Insumos.prediccion(frame, sede, prenda, prediccionC)
-
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
                         if insumo in insumoXSede:
@@ -327,12 +311,10 @@ class Main:
     # Interacción 2 
     def coordinarBodegas(retorno):
         listaA = []
-        
         for sede in retorno:
             insumosAPedir = []
             cantidadAPedir = []
             listaSede = []
-
             listaXSede = sede
             listaInsumos = listaXSede[0]
             listaCantidades = listaXSede[1]
@@ -375,7 +357,7 @@ class Main:
                             cantidadAPedir.append(cantidadNecesaria)
                         else:
                             print("Esa opción no es valida.")
-
+                            
             listaSede.append(insumosAPedir)
             listaSede.append(cantidadAPedir)
             listaA.append(listaSede)
@@ -427,7 +409,6 @@ class Main:
                             print("Esa opción no es valida.")
 
                     cantidad[idxInsumo] += cantidadAñadir
-
                     Sede.anadirInsumo(insumos[idxInsumo], sedee, cantidad[idxInsumo])
                     print(f"\nInsumo {insumos[idxInsumo]} comprado con éxito")
 
@@ -452,7 +433,6 @@ class Main:
                 return int(respuesta)
             else:
                 print("Por favor ingrese un número entero")
-# Hola 
 
     @classmethod
     def dondeRetirar(cls):
@@ -1083,24 +1063,10 @@ class Main:
         sede2 = Sede("Sede 2")
         # AGRUPACION DE LOS REPUESTOS EN LISTAS PARA ENVIARLOS A LAS MAQUINAS
         # CORRESPONDIENTES
-        repuestosMC = []
-        repuestosMCorte = []
-        repuestosPI = []
-        repuestosBI = []
-        repuestosMTermofijado = []
-        repuestosMTijereado = []
-        repuestosImp = []
-        repuestosRe = []
-        repuestosComp = []
-        repuestosMC2 = []
-        repuestosMCorte2 = []
-        repuestosPI2 = []
-        repuestosBI2 = []
-        repuestosMTermofijado2 = []
-        repuestosMTijereado2 = []
-        repuestosImp2 = []
-        repuestosRe2 = []
-        repuestosComp2 = []
+        repuestosMC = [], repuestosMCorte = [], repuestosPI = [], repuestosBI = []
+        repuestosMTermofijado = [], repuestosMTijereado = [], repuestosImp = [], repuestosRe = [],repuestosComp = []
+        repuestosMC2 = [], repuestosMCorte2 = [], repuestosPI2 = [], repuestosBI2 = [], repuestosMTermofijado2 = []
+        repuestosMTijereado2 = [], repuestosImp2 = [], repuestosRe2 = [], repuestosComp2 = []
         repuestosImp.append(TintaN)
         repuestosRe.append(PapelQuimico)
         repuestosRe.append(Lector)
@@ -1196,56 +1162,31 @@ class Main:
         i13 = Bolsa("Bolsa", p10, 1 * 20, sedeP, 1)
         i14 = Bolsa("Bolsa", p10, 1 * 20, sede2, 1)
 
-        betty = Empleado(Area.DIRECCION, Fecha(1, 1, 23), sedeP, "Beatriz Pinzón", 4269292,
-                Rol.PRESIDENTE, 10, Membresia.NULA, Computador)
-        Armando = Empleado(Area.DIRECCION, Fecha(30, 11, 20), sedeP, "Armando Mendoza", 19121311,
-                Rol.PRESIDENTE, 15, Membresia.PLATA, Computador.copiar())
-        Cata = Empleado(Area.OFICINA, Fecha(1, 6, 16), sedeP, "Catalina Ángel", 7296957, Rol.ASISTENTE,
-                20, Membresia.ORO, Impresora)
-        Mario = (Empleado(Area.OFICINA, Fecha(30, 11, 20), sedeP, "Mario Calderón", 19256002,
-                Rol.EJECUTIVO, 4, Membresia.PLATA, Impresora.copiar()))
-        Hugo = (Empleado(Area.CORTE, Fecha(1, 5, 14), sedeP, "Hugo Lombardi", 7980705, Rol.DISEÑADOR,
-                20, Membresia.ORO, MaquinaDeCorte))
-        Inez = (Empleado(Area.CORTE, Fecha(1, 5, 14), sedeP, "Inez Ramirez", 23103023, Rol.MODISTA, 2,
-                Membresia.NULA, MaquinaDeCoser))
-        Aura = (Empleado(Area.VENTAS, Fecha(1, 2, 23), sedeP, "Aura Maria", 4146118, Rol.SECRETARIA, 2,
-                Membresia.NULA, Registradora))
-        Sandra = (Empleado(Area.CORTE, Fecha(15, 9, 23), sedeP, "Sandra Patiño", 5941859, Rol.MODISTA,
-                5, Membresia.NULA, PlanchaIndustrial))
-        Sofia = (Empleado(Area.CORTE, Fecha(30, 9, 22), sedeP, "Sofía Lopez", 5079239, Rol.MODISTA, 6,
-                Membresia.NULA, MaquinaDeTermofijado))
-        Mariana = (Empleado(Area.CORTE, Fecha(1, 5, 23), sedeP, "Mariana Valdéz", 4051807, Rol.MODISTA,
-                10, Membresia.BRONCE, MaquinaDeTijereado))
-        Bertha = (Empleado(Area.CORTE, Fecha(25, 2, 20), sedeP, "Bertha Muñoz", 7137741, Rol.MODISTA,
-                15, Membresia.BRONCE, BordadoraIndustrial))
-        Wilson = (Empleado(Area.VENTAS, Fecha(4, 4, 22), sedeP, "Wilson Sastoque", 9634927, Rol.PLANTA,
-                5, Membresia.NULA, Registradora.copiar()))
-        Gutierrez = (Empleado(Area.DIRECCION, Fecha(5, 8, 19), sede2, "Saul Gutierrez", 9557933,
-                Rol.EJECUTIVO, 11, Membresia.NULA, Computador2))
-        Marcela = (Empleado(Area.DIRECCION, Fecha(30, 11, 20), sede2, "Marcela Valencia", 8519803,
-                Rol.EJECUTIVO, 10, Membresia.ORO, Computador2.copiar()))
-        Gabriela = (Empleado(Area.VENTAS, Fecha(1, 1, 24), sede2, "Gabriela Garza", 5287925,
-                Rol.VENDEDOR, 9, Membresia.PLATA, Registradora2))
-        Patricia = (Empleado(Area.OFICINA, Fecha(5, 2, 23), sede2, "Patricia Fernandez", 4595311,
-                Rol.SECRETARIA, 6, Membresia.BRONCE, Impresora2))
-        Kenneth = (Empleado(Area.CORTE, Fecha(1, 1, 24), sede2, "Kenneth Johnson", 7494184,
-                Rol.MODISTA, 8, Membresia.ORO, PlanchaIndustrial2))
-        Robles = (Empleado(Area.OFICINA, Fecha(12, 10, 24), sede2, "Miguel Robles", 7518004,
-                Rol.VENDEDOR, 7, Membresia.BRONCE, Impresora2.copiar()))
-        Alejandra = (Empleado(Area.CORTE, Fecha(1, 2, 24), sede2, "Alejandra Zingg", 6840296,
-                Rol.MODISTA, 2, Membresia.BRONCE, BordadoraIndustrial2))
-        Cecilia = (Empleado(Area.CORTE, Fecha(1, 2, 23), sede2, "Cecilia Bolocco", 7443886,
-                Rol.MODISTA, 10, Membresia.PLATA, MaquinaDeCoser2))
-        Freddy = (Empleado(Area.VENTAS, Fecha(31, 1, 22), sede2, "Freddy Contreras", 6740561,
-                Rol.PLANTA, 5, Membresia.NULA, Registradora2.copiar()))
-        Adriana = (Empleado(Area.CORTE, Fecha(18, 6, 25), sede2, "Adriana arboleda", 5927947,
-                Rol.MODISTA, 20, Membresia.ORO, MaquinaDeCorte2))
-        Karina = (Empleado(Area.CORTE, Fecha(9, 3, 25), sede2, "Karina Larson", 5229381, Rol.MODISTA,
-                2, Membresia.PLATA, MaquinaDeTermofijado2))
-        Jenny = (Empleado(Area.CORTE, Fecha(1, 8, 24), sede2, "Jenny Garcia", 4264643, Rol.MODISTA, 1,
-                Membresia.ORO, MaquinaDeTijereado2))
-        ol = Empleado(Area.DIRECCION, Fecha(1, 2, 20), sede2, "Gustavo Olarte", 7470922, Rol.EJECUTIVO,
-                3, Membresia.NULA, Computador2.copiar())
+        betty = Empleado(Area.DIRECCION, Fecha(1, 1, 23), sedeP, "Beatriz Pinzón", 4269292,Rol.PRESIDENTE, 10, Membresia.NULA, Computador)
+        Armando = Empleado(Area.DIRECCION, Fecha(30, 11, 20), sedeP, "Armando Mendoza", 19121311,Rol.PRESIDENTE, 15, Membresia.PLATA, Computador.copiar())
+        Cata = Empleado(Area.OFICINA, Fecha(1, 6, 16), sedeP, "Catalina Ángel", 7296957, Rol.ASISTENTE,20, Membresia.ORO, Impresora)
+        Mario = (Empleado(Area.OFICINA, Fecha(30, 11, 20), sedeP, "Mario Calderón", 19256002,Rol.EJECUTIVO, 4, Membresia.PLATA, Impresora.copiar()))
+        Hugo = (Empleado(Area.CORTE, Fecha(1, 5, 14), sedeP, "Hugo Lombardi", 7980705, Rol.DISEÑADOR,20, Membresia.ORO, MaquinaDeCorte))
+        Inez = (Empleado(Area.CORTE, Fecha(1, 5, 14), sedeP, "Inez Ramirez", 23103023, Rol.MODISTA, 2,Membresia.NULA, MaquinaDeCoser))
+        Aura = (Empleado(Area.VENTAS, Fecha(1, 2, 23), sedeP, "Aura Maria", 4146118, Rol.SECRETARIA, 2,Membresia.NULA, Registradora))
+        Sandra = (Empleado(Area.CORTE, Fecha(15, 9, 23), sedeP, "Sandra Patiño", 5941859, Rol.MODISTA,5, Membresia.NULA, PlanchaIndustrial))
+        Sofia = (Empleado(Area.CORTE, Fecha(30, 9, 22), sedeP, "Sofía Lopez", 5079239, Rol.MODISTA, 6,Membresia.NULA, MaquinaDeTermofijado))
+        Mariana = (Empleado(Area.CORTE, Fecha(1, 5, 23), sedeP, "Mariana Valdéz", 4051807, Rol.MODISTA,10, Membresia.BRONCE, MaquinaDeTijereado))
+        Bertha = (Empleado(Area.CORTE, Fecha(25, 2, 20), sedeP, "Bertha Muñoz", 7137741, Rol.MODISTA,15, Membresia.BRONCE, BordadoraIndustrial))
+        Wilson = (Empleado(Area.VENTAS, Fecha(4, 4, 22), sedeP, "Wilson Sastoque", 9634927, Rol.PLANTA,5, Membresia.NULA, Registradora.copiar()))
+        Gutierrez = (Empleado(Area.DIRECCION, Fecha(5, 8, 19), sede2, "Saul Gutierrez", 9557933,Rol.EJECUTIVO, 11, Membresia.NULA, Computador2))
+        Marcela = (Empleado(Area.DIRECCION, Fecha(30, 11, 20), sede2, "Marcela Valencia", 8519803,Rol.EJECUTIVO, 10, Membresia.ORO, Computador2.copiar()))
+        Gabriela = (Empleado(Area.VENTAS, Fecha(1, 1, 24), sede2, "Gabriela Garza", 5287925,Rol.VENDEDOR, 9, Membresia.PLATA, Registradora2))
+        Patricia = (Empleado(Area.OFICINA, Fecha(5, 2, 23), sede2, "Patricia Fernandez", 4595311,Rol.SECRETARIA, 6, Membresia.BRONCE, Impresora2))
+        Kenneth = (Empleado(Area.CORTE, Fecha(1, 1, 24), sede2, "Kenneth Johnson", 7494184,Rol.MODISTA, 8, Membresia.ORO, PlanchaIndustrial2))
+        Robles = (Empleado(Area.OFICINA, Fecha(12, 10, 24), sede2, "Miguel Robles", 7518004,Rol.VENDEDOR, 7, Membresia.BRONCE, Impresora2.copiar()))
+        Alejandra = (Empleado(Area.CORTE, Fecha(1, 2, 24), sede2, "Alejandra Zingg", 6840296,Rol.MODISTA, 2, Membresia.BRONCE, BordadoraIndustrial2))
+        Cecilia = (Empleado(Area.CORTE, Fecha(1, 2, 23), sede2, "Cecilia Bolocco", 7443886,Rol.MODISTA, 10, Membresia.PLATA, MaquinaDeCoser2))
+        Freddy = (Empleado(Area.VENTAS, Fecha(31, 1, 22), sede2, "Freddy Contreras", 6740561,Rol.PLANTA, 5, Membresia.NULA, Registradora2.copiar()))
+        Adriana = (Empleado(Area.CORTE, Fecha(18, 6, 25), sede2, "Adriana arboleda", 5927947,Rol.MODISTA, 20, Membresia.ORO, MaquinaDeCorte2))
+        Karina = (Empleado(Area.CORTE, Fecha(9, 3, 25), sede2, "Karina Larson", 5229381, Rol.MODISTA,2, Membresia.PLATA, MaquinaDeTermofijado2))
+        Jenny = (Empleado(Area.CORTE, Fecha(1, 8, 24), sede2, "Jenny Garcia", 4264643, Rol.MODISTA, 1,Membresia.ORO, MaquinaDeTijereado2))
+        ol = Empleado(Area.DIRECCION, Fecha(1, 2, 20), sede2, "Gustavo Olarte", 7470922, Rol.EJECUTIVO,3, Membresia.NULA, Computador2.copiar())
         ol.setTraslados(3)
         a = []
         a.append(Area.VENTAS)
@@ -1274,10 +1215,7 @@ class Main:
         c11 = Persona("Julia Solano", 28943158, Rol.SECRETARIA, 10, False, Membresia.BRONCE)
         c12 = Persona("Maria Beatriz Valencia", 6472799, Rol.ASISTENTE, 2, False, Membresia.BRONCE)
         c13 = Persona("Antonio Sanchéz", 8922998, Rol.VENDEDOR, 12, False, Membresia.NULA)
-        tiposp = []
-        cantidadesp = []
-        tiposc = []
-        cantidadesc = []
+        tiposp = [], cantidadesp = [],tiposc = [], cantidadesc = []
         tiposp.append("Tela")
         tiposp.append("Boton")
         tiposp.append("Cremallera")
@@ -1420,7 +1358,6 @@ class Main:
         for sede in Sede.getListaSedes():
             if sede.getNombre()==nombre:
                 return sede
-
 
 if __name__=="__main__":
     from src.uiMain.bienvenida.bienvenida import Aplication
