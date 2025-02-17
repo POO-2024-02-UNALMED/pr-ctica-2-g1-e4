@@ -152,7 +152,7 @@ class Sede:
     def getProdAproximada(self):
         return self.prodAproximada
     
-    def obtenerNecesidadTransferenciaEmpleados(despedidos):  # Despedidos es A en el doc.
+    def obtenerNecesidadTransferenciaEmpleados(despedidos:List):  # Despedidos es A en el doc.
         rolesARevisar = []; sedeOrigen = []
         for empleado in despedidos:
             if empleado.getRol() not in rolesARevisar:
@@ -223,9 +223,9 @@ class Sede:
 
     # Devuelve la cantidad de empleados que hay en la sede con el rol dado
     # metodo ayudante para reorganizarEmpleados
-    def cantidadPorRol(rol):
+    def cantidadPorRol(self,rol):
         cantidad = 0
-        for empleado in Sede.listaEmpleado:
+        for empleado in self.getListaEmpleados():
             if empleado.getRol() == rol:
                 cantidad += 1
         return cantidad
