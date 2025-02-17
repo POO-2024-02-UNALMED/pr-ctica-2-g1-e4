@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter.font import Font
 from tkinter import ttk as ttk
 
+from src.gestorAplicacion.administracion.banco import Banco
+from src.gestorAplicacion.administracion.deuda import Deuda
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
 from src.uiMain.fieldFrame import FieldFrame
@@ -22,7 +24,7 @@ class F3Financiera(tk.Frame):
             if Porcentaje != "0% / 100%":
                 Porcentaje = Porcentaje.strip("%")
                 b = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
-                confirmacion2.config(text=str(b))
+                confirmacion2.config(text="la diferencia entre ventas y deudas futuras, fue de: $"+str(b))
 
         def Interaccion2():
             frame2.destroy()
@@ -50,19 +52,77 @@ class F3Financiera(tk.Frame):
             
             confirmacion2 = tk.Label(frame5, text="", anchor="w")
             confirmacion2.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
-                
+
+        def LeerF3(field_frame2, confirmacion2):
+            from src.uiMain.main import Main
+            Porcentaje = FieldFrame.getValue(field_frame2, "Descuento")
+            
+            if Porcentaje != "0% / 100%":
+                Porcentaje = Porcentaje.strip("%")
+                b = Main.planRecuperacion()  # Use float to handle percentage
+                confirmacion2.config(text=str(b))
+            
+        def listaBancos(frameb):
+            
+            bancos=Banco.getListaBancos()
+
+            tituloNombre=tk.Label(frameb, text="Nombre", font=("Arial", 10))
+            tituloDeuda=tk.Label(frameb, text="Deuda inicial", font=("Arial", 10))
+            tituloAhorro=tk.Label(frameb, text="Ahorros", font=("Arial", 10))
+            tituloInter=tk.Label(frameb, text="Interés", font=("Arial", 10))
+            
+            tituloNombre.grid(row=2, column=0)
+            tituloDeuda.grid(row=2, column=1)
+            tituloAhorro.grid(row=2, column=2)
+            tituloInter.grid(row=2, column=3)
+
+            for row, banco in enumerate(bancos):
+                nombre = tk.Label(frameb, text=Banco.getNombreEntidad(banco), font=("Arial", 10))
+                deudaInicial=0
+                for deuda in Banco.getDeuda(banco):
+                    deudaInicial+=Deuda.getValorInicialDeuda(deuda)
+                deuda = tk.Label(frameb, text=deudaInicial, font=("Arial", 10))
+                ahorro = tk.Label(frameb, text=Banco.getAhorroBanco(banco), font=("Arial", 10))
+                Interes = tk.Label(frameb, text=Banco.getInteres(banco), font=("Arial", 10))
+                nombre.grid(row=row+3, column=0)
+                deuda.grid(row=row+3, column=1)
+                ahorro.grid(row=row+3, column=2)
+                Interes.grid(row=row+3, column=3)
+            
+            frameb.rowconfigure(0, weight=0)
+            frameb.rowconfigure(1, weight=4)
+            frameb.columnconfigure(0, weight=2)# Empleado insuficiente
+            frameb.columnconfigure(1, weight=1)# area
+            frameb.columnconfigure(2, weight=1)# rendimiento
+            frameb.columnconfigure(3, weight=1)# rendimiento esperado
+       
         def Interaccion3(frame4,frame5):
             frame4.destroy()
             frame5.destroy()
             frame6 = tk.Frame(framePrincipal, bg="light gray")
             frame6.pack(anchor="s",  expand=True, fill="both")
-            criterios = ["Descuento"]
-            valores = ["0% / 100%"]
+            criterios = ["Bancos"]
+            valores = ["Ingrese nombre"]
             habilitado = [True]
             # Creamos el FieldFrame con los botones
-            field_frame2 = FieldFrame(frame6, "Ingrese porcentaje a modificar para fidelidad de los clientes sin membresía", criterios, "", valores, habilitado)
-            field_frame2.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
-        
+            field_frame3 = FieldFrame(frame6, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
+            field_frame3.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
+            
+            frameb = tk.Frame(framePrincipal)
+            frameb.pack(anchor="s", expand=True, fill="both")
+            listaBancos(frameb)
+            
+            frame7 = tk.Frame(framePrincipal)
+            frame7.pack(anchor="s", expand=True, fill="both")
+            boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(field_frame3, confirmacion3))
+            boton1.place(relx=0.4, rely=0.7, relwidth=0.1, relheight=0.1, anchor="s")            
+            
+            boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion3(frame4, frame5))
+            boton2.place(relx=0.6, rely=0.7, relwidth=0.1, relheight=0.1, anchor="s")
+            
+            confirmacion3 = tk.Label(frame5, text="", anchor="w")
+            confirmacion3.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
+            
         def LeerF1():
             from src.uiMain.main import Main
             eleccionDeuda=0

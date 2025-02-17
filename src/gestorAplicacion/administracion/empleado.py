@@ -27,15 +27,15 @@ class Empleado(Persona, GastoMensual):
         Sede.getListaEmpleadosTotal().append(self)
 
     @override
-    def calcularGastoMensual():
-        gasto=super.calcularSalario()
+    def calcularGastoMensual(self):
+        gasto=super().calcularSalario()
         return gasto
     
 
     def gastoMensualClase():
         gasto=0
         for emp in Sede.getListaEmpleadosTotal():
-            gasto+=emp.calcularGastoMensual();
+            gasto+=emp.calcularGastoMensual()
         return gasto
     
     def calcularRendimiento(self, fecha: Fecha) -> float:

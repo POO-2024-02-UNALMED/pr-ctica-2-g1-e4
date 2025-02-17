@@ -274,9 +274,10 @@ class Main:
         # cubiertos por las ventas predichas
         return diferenciaEstimado
     # Interacción 3
-    def planRecuperacion(diferenciaEstimada, bancos):
+    def planRecuperacion(diferenciaEstimada):
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.administracion.deuda import Deuda
+        bancos=Banco.getListaBancos()
         if diferenciaEstimada > 0:
             print("\nEl estimado es positivo, las ventas superan las deudas")
             print("Hay dinero suficiente para hacer el pago de algunas Deudas")
