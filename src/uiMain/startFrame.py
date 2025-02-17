@@ -7,10 +7,10 @@ import sys
 from src.uiMain.F2Insumos import F2Insumos
 from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.main import Main
-from src.uiMain.frameInicial import frameInicial
-from src.uiMain.F3Financiera import deudas
+from src.uiMain.F3Financiera import F3Financiera
 from src.uiMain.F5Produccion import producir
 from src.uiMain.fieldFrame import FieldFrame
+from src.gestorAplicacion.fecha import Fecha
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -24,6 +24,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 class startFrame(tk.Tk):
     def __init__(self):
+        self.pagina="ninguna"
         numbre = ""
         super().__init__()
         self.title("Ecomoda")
@@ -40,7 +41,7 @@ class startFrame(tk.Tk):
 
         self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
-        self.procesosMenu.add_command(label="Despedir y reemplazar empleados", command = lambda :self.iniciarGestionHumana())
+        self.procesosMenu.add_command(label="Despedir y reemplazar empleados", command = lambda :self.abrirGestionHumana())
         self.procesosMenu.add_command(label="Pedir insumos", command = lambda : self.eliminarF2())
         self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.eliminarF3())
         self.procesosMenu.add_command(label="Facturacion", command = lambda : self.eliminarF4())
@@ -51,13 +52,10 @@ class startFrame(tk.Tk):
         self.barraMenus.add_cascade(label="Ayuda", menu=self.ayudaMenu)
         self.ayudaMenu.add_command(label="Acerca de", command= lambda : self.acercaDe())
 
-        self.areaPrincipal = frameInicial(self)
-        self.areaPrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+        self.abrirFrameInicial()
 
-    def acercaDe(self):
-        messagebox.showinfo("Acerca de", "Andres David Calderón Jiménez \nGelsy Jackelin Lozano Blanquiceth \nAndrea Merino Mesa \nLuis Rincon \nJuanita Valentina Rosero")
-        
-    def iniciarGestionHumana(self):
+    #-----------------Listeners para el menú superior-----------------
+    def abrirGestionHumana(self):
         self.areaPrincipal.destroy()
         self.cambiarFrame(self.crearGestionHumana())
     
@@ -80,16 +78,148 @@ class startFrame(tk.Tk):
     def cambiarFrame(self, reemplazo:tk.Frame):
         self.areaPrincipal = reemplazo
         reemplazo.pack(fill="both", expand=True, padx=7, pady=7)
+    
+    def abrirFrameInicial(self):
+        if self.pagina!="ninguna":
+            self.areaPrincipal.destroy()
+        self.pagina="inicial"
+        self.cambiarFrame(self.crearFrameInicial())
 
     def pasarABienvenida(self):
-        if isinstance(self.areaPrincipal, frameInicial):
+        if self.pagina=="inicial":
             import src.uiMain.bienvenida.bienvenida as bienvenida
             self.destroy()
             bienvenida.pasarAVentanaBienvenida()
         else:
-            self.areaPrincipal.destroy()
-            self.cambiarFrame(frameInicial(self))
+            self.abrirFrameInicial()
     
+    def acercaDe(self):
+        tk.messagebox.showinfo("Acerca de", "Andres David Calderón Jiménez \nGelsy Jackelin Lozano Blanquiceth \nAndrea Merino Mesa \nLuis Rincon \nJuanita Valentina Rosero")
+#-----------------Frame Inicial-----------------
+
+    def crearFrameInicial(self)->tk.Frame:
+        self.frameInicial=tk.Frame(self, bg="red")
+        self.createWidgetsFrameInicial()
+        return self.frameInicial
+
+    def createWidgetsFrameInicial(self):
+
+        #lbl_font = Font(family="Roboto Cn", size=17) 
+
+        self.tituloFrameInicial = tk.Label(self.frameInicial, text="Sistema Operativo de Ecomoda", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+        self.tituloFrameInicial.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+        ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
+
+        self.descripcionFrameInicial = tk.Label(self.frameInicial, text="Realiza un proceso de facturación, surte insumos, produce prendas, gestiona a tus empleados y revisa el estado financiero de tu empresa :)", relief="ridge")
+        self.descripcionFrameInicial.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
+
+        self.contenedorFecha = tk.Frame(self.frameInicial, bg="light gray")
+        self.contenedorFecha.pack(fill="both", expand=True, anchor="s")
+
+        self.instruccionesFrameInicial = tk.Label(
+            self.contenedorFecha, 
+            text="\nPuedes hacerlo a través de la opción: Procesos y Consultas >>", 
+            relief="ridge", 
+            anchor="n",  # Asegura que el texto esté alineado arriba
+            justify="center",  # Centra el texto horizontalmente
+        )
+        self.instruccionesFrameInicial.place(relx=0.5, rely=0, relwidth=1, relheight=0.7, anchor="n")
+
+        self.logoEcomoda = tk.PhotoImage(master=self.instruccionesFrameInicial, file=f"{os.getcwd()}\\src\\uiMain\\imagenes\\logoEcomoda.png")
+
+        # Redimensionar la imagen usando subsample()
+        # La imagen será reducida al tamaño deseado sin recortes
+        logo_resized = self.logoEcomoda.subsample(2, 2)  
+
+        # Crear el label con la imagen redimensionada
+        self.labelFotoEcomoda = tk.Label(master=self.instruccionesFrameInicial, image=logo_resized, bg="light gray")
+        self.labelFotoEcomoda.image = logo_resized  # Mantener la referencia de la imagen
+        self.labelFotoEcomoda.place(relx=0.5, rely=0.24, anchor="n")
+
+        self.tituloFecha = tk.Label(self.contenedorFecha, text="Para iniciar ingresa la fecha de hoy ", relief="ridge", anchor="w")
+        self.tituloFecha.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
+        self.tituloFecha.config(padx=200)  
+
+        self.entradaDia =tk.Entry(self.contenedorFecha, textvariable=tk.StringVar(self.contenedorFecha, value="d/ "), bg="plum3")
+        self.entradaDia.place(relx=0.55, rely=0.8, relwidth=0.06, relheight=0.1, anchor="n")
+        self.entradaMes =tk.Entry(self.contenedorFecha,  textvariable=tk.StringVar(self.contenedorFecha, value="m/ "), bg="plum3")
+        self.entradaMes.place(relx=0.615, rely=0.8, relwidth=0.06, relheight=0.1, anchor="n")
+        self.entradaAño =tk.Entry(self.contenedorFecha, textvariable=tk.StringVar(self.contenedorFecha, value="a/ "), bg="plum3")
+        self.entradaAño.place(relx=0.6849, rely=0.8, relwidth=0.07, relheight=0.1, anchor="n")
+        self.confirmacion = tk.Label(self.contenedorFecha, text="",  anchor="w")
+        self.confirmacion.place(relx=0.5, rely=0.9, relwidth=1, relheight=0.1, anchor="n")
+
+        self.enviarFecha=tk.Button(self.contenedorFecha,text="Enviar")
+        self.enviarFecha.place(relx=0.820, rely=0.8, relwidth=0.1, relheight=0.1, anchor="n")
+        self.enviarFecha.bind("<Button-1>", self.Ok)
+
+
+        # Función que se ejecutará al presionar el botón
+    def Ok(self,event):
+        # Leer los valores de las entradas
+        FDia = self.entradaDia.get() # Obtener el texto de la entrada para el día
+        FMes = self.entradaMes.get() # Obtener el texto de la entrada para el mes
+        FAño = self.entradaAño.get() # Obtener el texto de la entrada para el año
+        if not FDia or not FMes or not FAño:
+                error = ExceptionC1("Debes ingresar una fecha antes de continuar.")
+                error.contenidoVacio()
+                self.borrar()
+                self.after(100, self.Ok)
+                return 
+        self.ingresarFecha(FDia,FMes,FAño)
+        if isinstance(self.ingresarFecha(FDia,FMes,FAño),Fecha):
+            self.confirmacion.config(text="Fecha ingresada correctamente, estamos en "+Main.fecha.strCorto())
+        pass
+
+
+    def borrar(self):
+        self.entradaDia.delete(0, tk.END)
+        self.entradaMes.delete(0, tk.END)
+        self.entradaAño.delete(0, tk.END)
+        self.entradaDia.insert(0,"d/ ")
+        self.entradaMes.insert(0,"m/ ")
+        self.entradaAño.insert(0,"a/ ")    
+        
+    def ingresarFecha(self,diaI,mesI,añoI):
+        fecha=None
+        partes = diaI.split()
+        numero=-1
+        if partes[-1].isdigit():
+            numero = int(partes[-1])
+        dia = numero
+        partes = mesI.split()
+        if partes[-1].isdigit():
+            numero = int(partes[-1])
+        mes = numero
+        partes = añoI.split()
+        if partes[-1].isdigit():
+            numero = int(partes[-1])
+        año = numero
+        if dia <= 0 or dia > 31:
+            self.borrar()
+            error = ExceptionC1("El día ingresado no es válido.")
+            error.fechaNoValidada()
+            self.after(100, self.Ok) 
+        elif mes <= 0 or mes > 12:
+            self.borrar()
+            error = ExceptionC1("El mes ingresado no es válido.")
+            error.fechaNoValidada()
+            self.after(100, self.Ok) 
+        elif año <= 0:
+            self.borrar()
+            error = ExceptionC1("El año ingresado no es válido.")
+            error.fechaNoValidada()
+            self.after(100, self.Ok) 
+        else:
+            fecha = Fecha(dia, mes, año)
+            Main.fecha=fecha
+            self.fechaValida = True
+        return fecha
+
+
+
+    
+#-----------------Gestión Humana-----------------
     def crearGestionHumana(self):
         self.gestionHumana=tk.Frame(self)
         self.posiblesDespedidos=[]
