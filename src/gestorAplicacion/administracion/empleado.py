@@ -7,7 +7,7 @@ from src.gestorAplicacion.persona import Persona
 from ..fecha import Fecha
 from ..sede import Sede
 from .area import Area
-from typing import List
+from typing import List, override
 
 class Empleado(Persona, GastoMensual):
     def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia=Membresia.NULA, maquinaria: Maquinaria=[]):
@@ -26,6 +26,18 @@ class Empleado(Persona, GastoMensual):
         sede.anadirEmpleado(self)
         Sede.getListaEmpleadosTotal().append(self)
 
+    @override
+    def calcularGastoMensual():
+        gasto=super.calcularSalario()
+        return gasto
+    
+
+    def gastoMensualClase():
+        gasto=0
+        for emp in Sede.getListaEmpleadosTotal():
+            gasto+=emp.calcularGastoMensual();
+        return gasto
+    
     def calcularRendimiento(self, fecha: Fecha) -> float:
         from ..venta import Venta
         rendimiento = 0

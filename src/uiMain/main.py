@@ -324,7 +324,8 @@ class Main:
 #-----------------------------------------Insumos------------------------------------------------------------------------------------
    
     # Interacción 1 
-    def planificarProduccion(fecha, frame):
+    def planificarProduccion(frame):
+        fecha=Main.fecha
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         retorno = []
@@ -512,7 +513,7 @@ class Main:
         from src.gestorAplicacion.bodega.camisa import Camisa
         from src.gestorAplicacion.administracion.area import Area
         venta = None
-        productosSeleccionados = [], cantidadProductos = []
+        productosSeleccionados = []; cantidadProductos = []
         print("\nIngrese la fecha de la venta:")
         fechaVenta = Main.fecha
         print("\nSeleccione el cliente al que se le realizará la venta:")
@@ -543,15 +544,29 @@ class Main:
             print(f"0. Camisa - Precio {Camisa.precioVenta()}")
             print(f"1. Pantalon - Precio {Pantalon.precioVenta()}")
             productoSeleccionado = input()
-            prendaSeleccionada = next((prenda for prenda in Sede.getPrendasInventadasTotal() if Prenda.getNombre(prenda) == productoSeleccionado), None)
-            if prendaSeleccionada is None:
+            prenda="pantalon"
+            if productoSeleccionado==0:
+                prenda="camisa"
+            prendaSeleccionada = None
+            for prenda in Sede.getPrendasInventadasTotal():
+                if (Prenda.getNombre(prenda).lower()==prenda):
+                    prendaSeleccionada = prenda
+                    break
+            if (prendaSeleccionada == None):
                 print("Producto no encontrado. Intente nuevamente.")
                 continue
+
             nombrePrendaSeleccionada = Prenda.getNombre(prendaSeleccionada)
             print("Ingrese la cantidad de unidades que se desea del producto elegido:")
             cantidadPrenda = Main.nextIntSeguro()
-            cantidadProductos.append(cantidadPrenda)
-            cantidadDisponible = sum(1 for prenda in Sede.getPrendasInventadasTotal() if Prenda.getNombre(prenda) == Prenda.getNombre(prendaSeleccionada))
+            #cantidadDisponible = sum(1 for prenda in Sede.getPrendasInventadasTotal() if Prenda.getNombre(prenda) == Prenda.getNombre(prendaSeleccionada))
+            cantidadDisponible = 0
+            for i in range(len(cantidadPrenda)):
+                productosSeleccionados.append(prendaSeleccionada)
+                cantidadProductos.append(cantidadPrenda)
+            for prenda in Sede.getPrendasInventadasTotal():
+                if(Prenda.getNombre(prenda)==Prenda.getNombre(prendaSeleccionada)):
+                    cantidadDisponible+=1
             Main.manejarFaltantes(sede, cantidadPrenda, cantidadDisponible, nombrePrendaSeleccionada, costosEnvio)
             if 0 < cantidadPrenda < len(Sede.getPrendasInventadasTotal()):
                 eliminadas = 0

@@ -16,6 +16,7 @@ class Prenda(ABC, GastoMensual):
         self.fechaFabricacion = fecha
         self.sede = sede
         sede.prendasInventadas.append(self)
+        sede.getPrendasInventadasTotal().append(self)
         self.nombre = nombre
         self.modista = modista
         self.descartada = descartada
