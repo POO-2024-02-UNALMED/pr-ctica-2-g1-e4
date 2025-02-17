@@ -9,33 +9,32 @@ from src.uiMain.fieldFrame import FieldFrame
 def deudas(ventana:tk.Frame)->tk.Frame:
     
     def Siguiente():
+        from src.uiMain.main import Main
         eleccionDeuda=0
         resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
         resultadosB=FieldFrame.getValue(field_frame,"Banco")
-        if resultadosP[0].lowercase()!="si/no" and resultadosB[1].lowercase()!="si/no" and entradaCombo.get()!="":
+        if resultadosP.lower()!="si/no" and resultadosB.lower()!="si/no" and combo.get()!="":
             from src.uiMain.main import Main
-            Empleado=entradaCombo.get()
-            if resultadosP[0].lowercase() == "si" and resultadosB[1].lowercase()=="no":
+            Empleado=combo.get()
+            if resultadosP.lower() == "si" and resultadosB.lower()=="no":
                 elecionDeuda = 1
-            elif resultadosP[0].lowercase() == "no" and resultadosB[1].lowercase()=="si":
+            elif resultadosP.lower() == "no" and resultadosB.lower()=="si":
                 elecionDeuda = 2
-            elif resultadosP[0].lowercase() == "si" and resultadosB[1].lowercase()=="si":
+            elif resultadosP.lower() == "si" and resultadosB.lower()=="si":
                 elecionDeuda = 3
+        print("Entry abilitado")
         from src.gestorAplicacion.sede import Sede
         for empleado_actual in Sede.getListaEmpleadosTotal():
-            if empleado_actual.getNombre() == Empleado.getNombre():
+            seleccion=combo.get()
+            if empleado_actual.getNombre() == seleccion:
                 empleado = empleado_actual
             Main.calcularBalanceAnterior(empleado,eleccionDeuda)
         else:
             #Excepcion
             resultadosP[0].delete(0,"end")
             resultadosB[1].delete(0,"end")
-            entradaCombo.delete(0,"end")
+            combo.delete(0,"end")
             
-    
-    def changed(event):
-        entradaCombo.delete(0,"end")
-        entradaCombo.insert(0,combo.get())
         
 
     def Directivos():
@@ -77,13 +76,10 @@ def deudas(ventana:tk.Frame)->tk.Frame:
     label7.place(relx=0.5, rely=0.6, relwidth=1, relheight=1, anchor="s")
     label7.config(padx=200)
     Lista=Directivos()
-    combo = ttk.Combobox(master=label7,values=Lista)
-    combo.bind("<<ComboboxSelected>>",changed)
+    placeholder = tk.StringVar(master=label7, value="Elije al directivo")
+    combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
     combo.place(relx=0.5, rely=0.8, relwidth=0.5, relheight=0.2, anchor="s")
-    entradaCombo = tk.Entry(label7)
-    entradaCombo.config(state="disabled")
-    entradaCombo.grid(row=0,column=1,padx=10,pady=10,sticky="w")
-    boton1 = tk.Button(frame3, text="Aceptar", command = lambda: Siguiente)
+    boton1 = tk.Button(frame3, text="Aceptar", command = lambda: Siguiente())
     boton1.place(relx=0.5, rely=0.8, relwidth=0.2, relheight=0.2, anchor="s")
     
     return framePrincipal

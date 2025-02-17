@@ -59,14 +59,14 @@ class FieldFrame(Frame):
         else:
             return entry.config(state="readonly")
 
+
     def getValue(self, criterio):
         entry = None
         for i, c in enumerate(self.citerios):
             if c == criterio:
                 entry = self.valores[i]
                 break
-        print(entry.getText())
-        return entry.getText()
+        return entry.get()
     
     def configurarCallBack(self, criterio, evento, funcion):
         entry = None
