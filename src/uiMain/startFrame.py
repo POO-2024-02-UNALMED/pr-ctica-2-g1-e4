@@ -8,7 +8,7 @@ from src.uiMain.F2Insumos import surtir
 from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.main import Main
 from src.uiMain.frameInicial import frameInicial
-from src.uiMain.F3Financiera import deudas
+from src.uiMain.F3Financiera import F3Financiera
 from src.uiMain.F1Humana import F1Humana
 from src.uiMain.F5Produccion import producir
 
@@ -68,7 +68,7 @@ class startFrame(tk.Tk):
         
     def eliminarF3(self):
         self.areaPrincipal.destroy()
-        self.cambiarFrame(deudas(self))
+        self.cambiarFrame(F3Financiera(self))
 
     def iniciarProduccion(self):
         self.areaPrincipal.destroy()
