@@ -9,11 +9,11 @@ from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.venta import Venta
 
 
-def pesimismo(self):
+def pesimismo(self, c, v):
     from src.uiMain.main import Main
     from src.uiMain import fieldFrame, main
-    criterios = []
-    valores = []
+    criterios = c
+    valores = v
 
     framePrincipal =  tk.Frame(self, bg="blue")
     framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
@@ -31,19 +31,14 @@ def pesimismo(self):
     frame2 = tk.Frame(framePrincipal, bg="light gray")
     frame2.pack(anchor="s",  expand=True, fill="both")
         
-    for s in Sede.getListaSedes():
-        criterios.append(s)
-        valores.append(f"{round(Venta.getPesimismo()*100)}%")
     field = fieldFrame.FieldFrame(frame2, "Puede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True])
     field.pack(anchor="s",  expand=True, fill="both")
-    fecha =main.Main.fecha
-    pantalonesPredichos = False
-    camisasPredichas = False
+
      
 
 #Main.planificarProduccion(main.Main.fecha, frame2)
 def prediccion(frame2, sede, prenda, prediccion):
-    prediccion = tk.Label(frame2,text="\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccion)) + " en la "+ str(sede))
+    prediccion = tk.Text(frame2,text="\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccion)) + " en la "+ str(sede))
     prediccion.place(relx=1, rely=0, relwidth=1, relheight=0.4, anchor="e")
 
 

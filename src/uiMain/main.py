@@ -10,7 +10,7 @@ from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
 from src.gestorAplicacion.administracion.empleado import Empleado
-from src.uiMain.F2Insumos import F2Insumos
+from src.uiMain import F2Insumos
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.empleado import Empleado
@@ -96,7 +96,7 @@ class Main:
 
 
     
-    #----------------------------gestion humana-----------------------------------
+    #------------------------------------------- Gestión Humana --------------------------------------------------------------------
 
 
     def despedirEmpleadosConsola(fecha):
@@ -365,7 +365,7 @@ class Main:
                 cls.opcionesParaReemplazo.append(apto)
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
     
-    #-----------------Financiera--------------------------------------------
+    #----------------------------------------------Financiera------------------------------------------------------------
         
     def calcularBalanceAnterior(empleado, eleccion):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
@@ -426,7 +426,7 @@ class Main:
                         f"{nuevoDescuento * 100}%.")
         return analisisFuturo
 
-#-----------------------------------------Insumos------------------------------------------------------------------------------------
+#----------------------------------------------------Insumos------------------------------------------------------------------------------------
    
     # Interacción 1 
     def planificarProduccion(frame):
@@ -434,13 +434,22 @@ class Main:
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         retorno = []
+        criterios = []
+        valores = []
         frame = frame
+
         for sede in Sede.getListaSedes():
-            listaXSede = [], insumoXSede = [], cantidadAPedir = []
+            listaXSede = []
+            insumoXSede = []
+            cantidadAPedir = []
             pantalonesPredichos = False
             camisasPredichas = False
-            prediccionC = None
+            #prediccionC = None
+            criterios.append(sede)
+            valores.append(f"{round(Venta.getPesimismo()*100)}%")
+
             for prenda in Sede.getPrendasInventadas(sede):
+
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
@@ -451,11 +460,13 @@ class Main:
                     for cantidad in Pantalon.getCantidadInsumo():
                         cantidadAPedir.append(math.ceil(cantidad * prediccionP))
                     pantalonesPredichos = True
+
                 if isinstance(prenda, Camisa) and not camisasPredichas:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionC = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionC)))
                     F2Insumos.prediccion(frame, sede, prenda, prediccionC)
+
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
                         if insumo in insumoXSede:
@@ -465,9 +476,11 @@ class Main:
                             insumoXSede.append(insumo)
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
+
             listaXSede.append(insumoXSede)
             listaXSede.append(cantidadAPedir)
             retorno.append(listaXSede)
+
         return retorno
 
     # Interacción 2 
@@ -570,6 +583,7 @@ class Main:
 
         return f"Ahora nuestras deudas con los proveedores lucen asi:\n{deudas}"
         
+
     def nextIntSeguro():
         while True:
             respuesta = input()
