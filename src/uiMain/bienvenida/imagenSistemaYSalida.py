@@ -34,9 +34,6 @@ class ImagenSistemaYSalida(tk.Frame):
         self.foto.delete("imagen")
         self.foto.create_image(self.winfo_width()//2, self.winfo_height()//2, anchor="center", image=self.archivoImagenSistema, tags="imagen")
 
-
-
-
     def create_widgets(self):
         self.foto = tk.Canvas(master = self, highlightthickness=0,width=self.winfo_width())
         self.foto.grid(row = 0, column = 0,sticky="nswe")
@@ -46,7 +43,6 @@ class ImagenSistemaYSalida(tk.Frame):
 
         self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command= lambda : self.pasarAPrincipal())
         self.inicio.grid(row = 1, column = 0)
-
         self.columnconfigure(0,weight=3)
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=2)

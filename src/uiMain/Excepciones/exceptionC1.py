@@ -7,7 +7,6 @@ class ExceptionC1(ErrorAplicacion):
     def enteroNoValido(self):
        messagebox.showwarning("Alerta", f"{self}")
        raise self
-    
     def contenidoVacio(self):
         messagebox.showwarning("Alerta", f"{self}")
         raise self

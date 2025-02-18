@@ -1,13 +1,12 @@
 from typing import List
 from ..sede import Sede
 
-
 class Maquinaria:
-    def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos, sede: 'Sede'):
+    def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos, sede: 'Sede', horasUso=0):
         
         self.nombre = nombre
         self.user = None
-        self.horasUso = 0
+        self.horasUso = horasUso
         self.estado = True
         self.asignable = True
         self.mantenimiento = False
@@ -18,7 +17,6 @@ class Maquinaria:
         self.repuestos = repuestos
         sede.getListaMaquinas().append(self)
         self.asignarRepAsedes(sede, repuestos)
-
         self.ultFechaRevision = None
 
     def copiar(self):
@@ -56,23 +54,16 @@ class Maquinaria:
 
     def getNombre(self) -> str:
         return self.nombre
-
     def getRepuestos(self):
         return self.repuestos
-
     def setRepuestos(self, repaCambiar):
         self.repuestos.remove(repaCambiar)
-
     def getHoraRevision(self) -> int:
         return self.horaRevision
-
     def getHorasUso(self) -> int:
         return self.horasUso
-
     def getSede(self) -> 'Sede':
         return self.sede
-
-    
     
     @classmethod
     def agruparMaquinasDisponibles(cls, fecha) -> List['Maquinaria']:
@@ -80,13 +71,15 @@ class Maquinaria:
         from src.uiMain.main import Main
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.bodega.insumo import Insumo
-        from src.uiMain.F5Produccion import receptor, recibeProveedorB
+        from src.uiMain.F5Produccion import receptor, recibeProveedorB, recibeMaqPaRevisar
+        
         print("ENTRÉ")
         
         maqDisponibles = []
         todosProvBaratos = []
         encontrado = False
         proveedorBarato = None
+        maquinasPaRevisar = []
         for cadaSede in Sede.getListaSedes():
             for cadaMaquina in cadaSede.getListaMaquinas():
                 if (cadaMaquina.getHoraRevision() - cadaMaquina.getHorasUso()) > 0:
@@ -104,6 +97,13 @@ class Maquinaria:
                                     print(proveedorBarato.getNombre())
                                     Main.recibeProveedorB(proveedorBarato)
                                     break
+
+                            Main.evento_ui.clear()  
+                            print("Esperando confirmación del usuario en la UI...")
+                            Main.evento_ui.wait()
+                            receptor("No hay mas repuestos por cambiar,\npresiona el boton de abajo para ver el resumen de la revisión...")
+                            print("Usuario confirmó la compra. Continuando...")
+
                             for sedeCreada in Sede.getListaSedes():
                                 if sedeCreada.getCuentaSede().getAhorroBanco() >= proveedorBarato.getPrecio():
                                     #Main.dondeRetirar()
@@ -115,11 +115,15 @@ class Maquinaria:
                                     encontrado = True
                                     break
                             if not encontrado:
+                                #llamar metodo en F5Produccion para mostrar algun label que diga que no 
+                                #se pudo comprar el repuesto porque no hay plata en ninguna sede,
+                                #este label iría en donde se elige de cual sede descontar la plata 
                                 cadaRepuesto.setEstado()
+
+                           
                 else:
                     cadaMaquina.mantenimiento = True
                     cadaMaquina.ultFechaRevision = fecha
-
                 pista = 0
                 for rep in cadaMaquina.getRepuestos():
                     if rep.isEstado():
@@ -128,12 +132,13 @@ class Maquinaria:
                     cadaMaquina.estado = True
                 else:
                     cadaMaquina.estado = False
-
                 if not cadaMaquina.mantenimiento and cadaMaquina.estado:
                     maqDisponibles.append(cadaMaquina)
-
-                cadaMaquina.mantenimiento = False
-
+                else:
+                    maquinasPaRevisar.append(cadaMaquina)
+                #cadaMaquina.mantenimiento = False
+        recibeProveedorB(None)
+        recibeMaqPaRevisar(maquinasPaRevisar)
         return maqDisponibles
 
     @classmethod
@@ -141,7 +146,6 @@ class Maquinaria:
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from .repuesto import Repuesto
         listProveedoresBaratos = []
-        
         for cadaRepuesto in Repuesto.getListadoRepuestos():
             proveedorBarato = None
             for proveedores in Proveedor.getListaProveedores():
@@ -150,17 +154,15 @@ class Maquinaria:
                         proveedorBarato = proveedores
                     elif proveedores.getInsumo().getPrecioIndividual() <= proveedorBarato.getInsumo().getPrecioIndividual():
                         proveedorBarato = proveedores
-            
             if proveedorBarato not in listProveedoresBaratos:
                 listProveedoresBaratos.append(proveedorBarato)
-
         return listProveedoresBaratos
 
     @staticmethod
     def asignarMaquinaria(emp):
-        maquinariaPorAsignar = list(emp.getAreaActual().maquinariaNecesaria())
+        maquinariaPorAsignar = emp.getAreaActual().getMaquinariaNecesaria()
         for maq in emp.sede.getListaMaquinas():
-            if maq.nombre in maquinariaPorAsignar or maq.user is None:
+            if maq.nombre in maquinariaPorAsignar and maq.user is None:
                 maq.user = emp
                 maquinariaPorAsignar.remove(maq.nombre)
                 break
@@ -192,4 +194,3 @@ class Maquinaria:
     def dePantalon(self):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         return self.nombre in Pantalon.getMaquinariaNecesaria()
-

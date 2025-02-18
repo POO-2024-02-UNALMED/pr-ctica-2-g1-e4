@@ -18,9 +18,7 @@ class Deuda:
         self.interes = 0.0
         self.estadoDePago = False
         self.capitalPagado = 0
-
         Deuda.listaDeudas.append(self)
-
         if tipo == "Banco":
             for banco in Banco.getListaBancos():
                 if banco.getNombreEntidad() == entidad:
@@ -30,8 +28,7 @@ class Deuda:
         deudaAcumulada = 0
         if not self.estadoDePago:
             anos = self.cuotas - ano - self.fechaCreacion.year
-            deudaAcumulada += round((self.valorInicialDeuda - self.capitalPagado) +
-                                      (self.valorInicialDeuda - self.capitalPagado) * self.interes * anos)
+            deudaAcumulada += round((self.valorInicialDeuda - self.capitalPagado) +(self.valorInicialDeuda - self.capitalPagado) * self.interes * anos)
         return deudaAcumulada
 
     def deudaMensual(self, ano: int) -> int:
@@ -66,7 +63,6 @@ class Deuda:
             for banco in Banco.getListaBancos():
                 for deudaB in banco.getDeuda():
                     deudaCalculada += deudaB.deudaMensual(fecha.year)
-
         return deudaCalculada
 
     @staticmethod
@@ -85,53 +81,38 @@ class Deuda:
         return f"La deuda con el {self.tipoEntidad} {self.entidad} inició con un valor de: {self.valorInicialDeuda}\n" + \
                f"Con un interés de: {self.interes} y se debía pagar en: {self.cuotas} cuotas\n" + \
                f"Por ahora se ha pagado {self.capitalPagado}"
-
     @classmethod
     def getListaDeudas(cls):
         return cls.listaDeudas
-
     def getValorInicialDeuda(self):
         return self.valorInicialDeuda
-
     def getInteres(self):
         return self.interes
-
     def getEstadoDePago(self):
         return self.estadoDePago
-
     def getEntidad(self):
         return self.entidad
-
     def getTipoEntidad(self):
         return self.tipoEntidad
-
     def getCapitalPagado(self):
         return self.capitalPagado
-
     def getFechaCreacion(self):
         return self.fechaCreacion
-
     @classmethod
     def setListaDeudas(cls, listaDeudas):
         if listaDeudas is None:
             raise ValueError("La lista no puede ser nula")
         cls.listaDeudas = listaDeudas
-
     def setValorInicialDeuda(self, valorInicialDeuda):
         self.valorInicialDeuda = valorInicialDeuda
-
     def setInteres(self, interes):
         self.interes = interes
-
     def setEstadoDePago(self, estadoDePago):
         self.estadoDePago = estadoDePago
-
     def setEntidad(self, entidad):
         self.entidad = entidad
-
     def setCapitalPagado(self, capitalPagado):
         self.capitalPagado = capitalPagado
-
     def actualizarDeuda(self, fecha, montoDeuda, cuotas):
         deudaActual = self.deudaActual(fecha.getAno())
         self.valorInicialDeuda = montoDeuda + deudaActual

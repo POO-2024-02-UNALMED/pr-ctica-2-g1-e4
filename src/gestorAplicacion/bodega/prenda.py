@@ -16,6 +16,7 @@ class Prenda(ABC, GastoMensual):
         self.fechaFabricacion = fecha
         self.sede = sede
         sede.prendasInventadas.append(self)
+        sede.getPrendasInventadasTotal().append(self)
         self.nombre = nombre
         self.modista = modista
         self.descartada = descartada
@@ -26,7 +27,6 @@ class Prenda(ABC, GastoMensual):
         self.precio = 0
         self.enStock = []
         self.ultimoPaso = []
-
         if descartada:
             modista.prendasDescartadas += 1
         elif terminada:
@@ -38,13 +38,11 @@ class Prenda(ABC, GastoMensual):
         Prenda.cantidadUltimaProduccion = 0
         diaDeProduccion = hoy
         alcanzaInsumos = True
-
         for dia in planProduccion:
             for i, sede in enumerate(Sede.listaSedes):
                 if not Prenda.producirListaPrendas(dia[i], sede, diaDeProduccion):
                     alcanzaInsumos = False
             diaDeProduccion = diaDeProduccion.diaSiguiente()
-
         return alcanzaInsumos
 
     @staticmethod
@@ -56,7 +54,6 @@ class Prenda(ABC, GastoMensual):
         cantidadPantalones = planProduccion[0]
         cantidadCamisas = planProduccion[1]
         prendas = []
-
         insumosPantalon = sede.insumosPorNombre(Pantalon.getTipoInsumo())
         for _ in range(cantidadPantalones):
             if sede.quitarInsumos(insumosPantalon, Pantalon.getCantidadInsumo()):
@@ -67,7 +64,6 @@ class Prenda(ABC, GastoMensual):
                 alcanzaInsumos = False
                 Main.avisarFaltaDeInsumos(sede, fechaProduccion, "Pantalon")
                 break
-
         insumosCamisa = sede.insumosPorNombre(Camisa.getTipoInsumo())
         for _ in range(cantidadCamisas):
             if sede.quitarInsumos(insumosCamisa, Camisa.getCantidadInsumo()):
@@ -78,7 +74,6 @@ class Prenda(ABC, GastoMensual):
                 alcanzaInsumos = False
                 Main.avisarFaltaDeInsumos(sede, fechaProduccion, "Camisa")
                 break
-
         idxTanda = 0
         while prendas:
             tandas = [[] for _ in range(7)]
@@ -99,7 +94,6 @@ class Prenda(ABC, GastoMensual):
                     tandas[2].append(prenda)
                 elif paso == "bordadora industrial":
                     tandas[6].append(prenda)
-
             modista = Main.pedirModista(len(prendas), sede, idxTanda)
             for tanda in tandas:
                 if not tanda:
@@ -118,13 +112,11 @@ class Prenda(ABC, GastoMensual):
                         prendas.remove(prenda)
                         Prenda.cantidadUltimaProduccion += 1
             idxTanda += 1
-
         return alcanzaInsumos
 
     @abstractmethod
     def siguientePaso(self):
         pass
-
     @abstractmethod
     def realizarPaso(self, modista):
         pass
@@ -154,7 +146,7 @@ class Prenda(ABC, GastoMensual):
         return Venta.pesimismo
 
     def calcularCostoInsumos(self):
-        self.costoInsumos = sum(insumo.getprecioXUnidad() * cantidad for insumo, cantidad in zip(self.insumo, self.cantidadInsumo))
+        self.costoInsumos = sum(Insumo.getPrecioIndividual(insumo) * cantidad for insumo, cantidad in zip(self.insumo, self.getCantidadInsumo()))
         return self.costoInsumos
 
     def calcularCostoProduccion(self):
@@ -171,30 +163,22 @@ class Prenda(ABC, GastoMensual):
 
     def __str__(self):
         return f"La prenda de tipo {self.nombre}"
-
     def getPrendasDescartadas(self):
         return self.descartada
-
     def getNombre(self):
         return self.nombre
-
     def getInsumo(self):
         return self.insumo
-
     @classmethod
     def getCantidadInsumo(cls):
         return cls.cantidadInsumo
-
     def getCostoInsumos(self):
         return self.costoInsumos
-
     def getPrecio(self):
         return self.precio
-
     @classmethod
     def getCantidadUltimaProduccion(cls):
         return cls.cantidadUltimaProduccion
-
     @classmethod
     def getCantidadTelaUltimaProduccion(cls):
         return cls.cantidadTelaUltimaProduccion

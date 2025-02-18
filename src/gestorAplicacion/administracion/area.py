@@ -4,10 +4,10 @@ from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.fecha import Fecha
 
 class Area(Enum):
-    DIRECCION = ("Direccion", ["gerente", "subgerente", "director", "subdirector"],3)
-    OFICINA = ("Oficina", ["computador", "registradora"],2)
-    VENTAS = ("Ventas", ["escaner"],1)
-    CORTE = ("Corte", ["maquina de coser", "maquina de corte", "plancha industrial"],0)
+    DIRECCION = ("Direccion", ["Computador"],3); 
+    OFICINA = ("Oficina", ["Computador", "Caja Registradora"],2);
+    VENTAS = ("Ventas", ["escaner"],1); 
+    CORTE = ("Corte", ["Maquina de Coser Industrial", "Maquina de Corte", "Plancha Industrial"],0)
 
     def __init__(self, nombre, maquinaria, jerarquia):
         self.nombre = nombre
@@ -37,15 +37,11 @@ class Area(Enum):
             elif area == Area.CORTE:
                 prendasDescartadas = 0
                 prendasProducidas = 0
-
                 for empleado in sede.getListaEmpleados():
                     prendasDescartadas += empleado.getPrendasDescartadas()
                     prendasProducidas += empleado.getPrendasProducidas()
-
                 area.rendimientoDeseado = (prendasProducidas / (prendasDescartadas + prendasProducidas)) * 90
-
             rendimientoSede.append(area.rendimientoDeseado)
-
         return rendimientoSede
     
     @classmethod
@@ -53,3 +49,6 @@ class Area(Enum):
         for area in Area:
             if area.jerarquia == jerarquia:
                 return area
+
+    def getMaquinariaNecesaria(self):
+        return self.maquinariaNecesaria

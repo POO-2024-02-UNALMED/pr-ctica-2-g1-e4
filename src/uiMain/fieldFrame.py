@@ -1,23 +1,22 @@
-from tkinter import Frame, Label, Entry, Tk
+from tkinter import Frame, Label, Entry, Tk, Button
 
 
 class FieldFrame(Frame):
 
-    def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores=None, habilitado=None, ancho_entry=20, crecer=False, tamañoFuente=12):
+    #  aceptar y borrar se refieren a los respectivos botones que se pueden añadir al final del frame
+    def __init__(self, frame, tituloCriterios, criterios, tituloValores, valores=None, habilitado=None, ancho_entry=20, crecer=False, tamañoFuente=12, aceptar=False,borrar=False, callbackAceptar=None):
         super().__init__(frame)
         self.valores = [] # No guarda la lista de valores pasada, sino los Entries creados
         self.valoresPorDefecto = valores
         self.citerios= criterios
         self.crecer=crecer
         self.tamañoFuente=tamañoFuente
-        self.createWidgets(tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry)  
+        self.callbackAceptar=callbackAceptar
+        self.createWidgets(tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry,aceptar,borrar)  
 
-    def createWidgets(self,tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry):
-        Label(self, text=tituloCriterios, font=(
-            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=1, pady=5)
-
-        Label(self, text=tituloValores,  font=(
-            "Arial", self.tamañoFuente, "bold")).grid(row=0, column=2, pady=5)
+    def createWidgets(self,tituloCriterios,criterios,tituloValores,valores,habilitado,ancho_entry,aceptar,borrar):
+        Label(self, text=tituloCriterios, font=( "Arial", self.tamañoFuente, "bold")).grid(row=0, column=1, pady=5)
+        Label(self, text=tituloValores,  font=( "Arial", self.tamañoFuente, "bold")).grid(row=0, column=2, pady=5)
         self.columnconfigure(0,weight=3)
         self.columnconfigure(1,weight=1)
         self.columnconfigure(2,weight=1)
@@ -34,14 +33,19 @@ class FieldFrame(Frame):
             self.columnconfigure(3,weight=3)
 
             if valores is not None:
-
                 entry.insert(0, valores[i - 1])
 
             if habilitado is not None and not habilitado[i - 1]:
                 entry.config(state='readonly')
 
-
             self.valores.append(entry)
+        
+        if aceptar:
+            self.aceptar=Button(self,text="Aceptar",font=("Arial", self.tamañoFuente, "bold"),command=self.callbackAceptar)
+            self.aceptar.grid(row=i+1,column=1)
+        if borrar:
+            self.borrar=Button(self,text="Borrar",font=("Arial", self.tamañoFuente, "bold"),command=self.borrar)
+            self.borrar.grid(row=i+1,column=2)
         
         if self.crecer:
             self.columnconfigure(0, weight=1)
@@ -53,12 +57,10 @@ class FieldFrame(Frame):
             if c == criterio:
                 entry = self.valores[i]
                 break
-
         if habilitar:
             return entry.config(state="normal")
         else:
             return entry.config(state="readonly")
-
 
     def getValue(self, criterio):
         entry = None

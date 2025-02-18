@@ -7,10 +7,10 @@ from src.gestorAplicacion.persona import Persona
 from ..fecha import Fecha
 from ..sede import Sede
 from .area import Area
-from typing import List
+from typing import List, override
 
 class Empleado(Persona, GastoMensual):
-    def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia, maquinaria: Maquinaria):
+    def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia=Membresia.NULA, maquinaria: Maquinaria=[]):
         super().__init__(nombre, documento, rol, experiencia, True, membresia)
         self.areaActual = areaActual
         self.traslados = 0
@@ -22,11 +22,22 @@ class Empleado(Persona, GastoMensual):
         self.prendasProducidas = 0
         self.pericia = 0
         self.bonificacion = 0
-        self.evaluaciones = []
-        self.ventasEncargadas = []
+        self.evaluaciones = []; self.ventasEncargadas = []
         sede.anadirEmpleado(self)
         Sede.getListaEmpleadosTotal().append(self)
 
+    @override
+    def calcularGastoMensual(self):
+        gasto=super().calcularSalario()
+        return gasto
+    
+
+    def gastoMensualClase():
+        gasto=0
+        for emp in Sede.getListaEmpleadosTotal():
+            gasto+=emp.calcularGastoMensual()
+        return gasto
+    
     def calcularRendimiento(self, fecha: Fecha) -> float:
         from ..venta import Venta
         rendimiento = 0
@@ -59,10 +70,7 @@ class Empleado(Persona, GastoMensual):
     # Parte de la interacción 1 de gestion humana
     @classmethod
     def listaInicialDespedirEmpleado(cls, fecha: Fecha) -> List[List]:
-        listaADespedir = []
-        empleadosInsuficientes = []
-        rendimientoInsufuciencias= []
-        acciones = []
+        listaADespedir = [];empleadosInsuficientes = [];rendimientoInsufuciencias= [];acciones = []
         mensajes = [] # Heredado de la versión de java, usada para reportar a la funcion que la llama de errores o del proceso en general.
         retorno = [listaADespedir, mensajes, empleadosInsuficientes, rendimientoInsufuciencias, acciones]
         listaATransferir = [[] for _ in Sede.getListaSedes()]
@@ -71,7 +79,6 @@ class Empleado(Persona, GastoMensual):
             for emp in sede.getListaEmpleados():
                 rendimiento = emp.calcularRendimiento(fecha)
                 seVaADespedir = False
-
                 rendimientoDeseado = emp.sede.getRendimientoDeseado(emp.areaActual, fecha)
                 if rendimiento < rendimientoDeseado:
                     seVaADespedir = True
@@ -79,7 +86,6 @@ class Empleado(Persona, GastoMensual):
                     mensajes.append(f"El empleado {emp.nombre} tiene un rendimiento insuficiente, con un rendimiento de {rendimiento:.2f} y un rendimiento deseado de {rendimientoDeseado:.2f}")
                     empleadosInsuficientes.append(emp)
                     rendimientoInsufuciencias.append(rendimiento)
-
                 if seVaADespedir and sede.cantidadPorArea(emp.areaActual) == 1:
                     for idxSede, sedeDestino in enumerate(Sede.getListaSedes()):
                         if sedeDestino.getRendimientoDeseado(emp.areaActual, fecha) <= rendimiento + 20 and seVaADespedir:
@@ -88,7 +94,6 @@ class Empleado(Persona, GastoMensual):
                             listaATransferir[idxSede].append(emp)
                             seVaADespedir = False
                             acciones.append("transferencia-sede")
-
                 if seVaADespedir and emp.areaActual != Area.CORTE and emp.traslados < 2 and sede.cantidadPorArea(emp.areaActual) != 1:
                     puedeCambiarArea = True
                     for areaPasada in emp.areas:
@@ -101,10 +106,8 @@ class Empleado(Persona, GastoMensual):
                         seVaADespedir = False
                         listaADespedir.remove(emp)
                         acciones.append("traslado-area")
-                
                 if seVaADespedir:
                     acciones.append("sugerencia-despido")
-
         for idxSede, sede in enumerate(Sede.getListaSedes()):
             for emp in listaATransferir[idxSede]:
                 mensajes += emp.trasladarEmpleado(sede)
@@ -121,10 +124,8 @@ class Empleado(Persona, GastoMensual):
             mensajes.append("Perdonenos pero disculpenos: No se ha podido recibir la remuneración de daños, no hay cuenta principal, sugerimos añadir una.")
         self.modificarBonificacion(aPagar * -1)
         Maquinaria.liberarMaquinariaDe(self)
-
         self.traslados += 1
         self.setSede(sedeNueva)
-
         Maquinaria.asignarMaquinaria(self)
         return mensajes
     
@@ -141,85 +142,59 @@ class Empleado(Persona, GastoMensual):
 
     def __str__(self):
         return f"{super().__str__()}\nArea: {self.areaActual} - Sede: {self.sede} - Traslados: {self.traslados}"
-
     def modificarBonificacion(self, bonificacion):
         self.bonificacion += bonificacion
-
     def getTraslados(self):
         return self.traslados
-
     def setTraslados(self, traslados):
         self.traslados = traslados
-
     def getPrendasDescartadas(self):
         return self.prendasDescartadas
-
     def setPrendasDescartadas(self, prendas):
         self.prendasDescartadas = prendas
-
     def getPrendasProducidas(self):
         return self.prendasProducidas
-
     def setPrendasProducidas(self, prendasProducidas):
         self.prendasProducidas = prendasProducidas
-
     def getPericia(self):
         return self.pericia
-
     def setPericia(self, pericia):
         self.pericia = pericia
-
     def getAreaActual(self):
         return self.areaActual
-
     def setAreaActual(self, area):
         self.areaActual = area
-
     def getFechaContratacion(self):
         return self.fechaContratacion
-
     def setFechaContratacion(self, fecha):
         self.fechaContratacion = fecha
-
     def getSede(self):
         return self.sede
-
     def setSede(self, sede):
         if self.sede is not None:
             self.sede.quitarEmpleado(self)
         self.sede = sede
         self.sede.anadirEmpleado(self)
-
     def getMaquinaria(self):
         return self.maquinaria
-
     def setMaquinaria(self, maquinaria):
         self.maquinaria = maquinaria
-
     def getAreas(self):
         return self.areas
-
     def setAreas(self, areas):
         self.areas = areas
-
     def getBonificacion(self):
         return self.bonificacion
-
     def setRendimientoBonificacion(self, boni):
         self.bonificacion = boni
-
     def setSalario(self, salario):
         self.salario = salario
-
     def setEvaluacionesFinancieras(self, evaluaciones):
         self.evaluaciones = evaluaciones
-
     def getEvaluacionesFinancieras(self):
         return self.evaluaciones
-
     def getVentasEncargadas(self):
         return self.ventasEncargadas
-
     @staticmethod
     def getEmpCreados():
         return Sede.getListaEmpleadosTotal()
