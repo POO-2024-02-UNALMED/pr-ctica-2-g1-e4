@@ -38,10 +38,12 @@ def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):
     global proveedoresQueLlegan
     global preciosProvQueLlegan
     global totalGastado
-
+    global listMaqRev
     proveedoresQueLlegan = []
     preciosProvQueLlegan = []
     totalGastado = 0
+    nomListMaqRev = []
+    sedesListMaqRev = []
     buscarProveedor(ventana, descrip1, botonContinuar)
     #Maquinaria.agruparMaquinasDisponibles(10)
 
@@ -230,24 +232,56 @@ def eventoContinuador(event, labelDeCompra, labelSaldo):
     print(proveedorB)
     buscarProveedor(frameDeTrabajo, 1, 1)
 
+nomListMaqRev = []
+sedesListMaqRev = []
+def recibeMaqPaRevisar(listMaquinasRev):
+    from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+    global nomListMaqRev
+    global sedesListMaqRev
+
+    for maq in listMaquinasRev:
+        nomListMaqRev.append(maq.getNombre())
+        sedesListMaqRev.append(maq.getSede().getNombre())
+    
+
 def resultadosRev():
     from src.uiMain.fieldFrame import FieldFrame
     global proveedoresQueLlegan
     global preciosProvQueLlegan
     global totalGastado
+    global nomListMaqRev
+    global sedesListMaqRev
     
     criterios = proveedoresQueLlegan
     valores = preciosProvQueLlegan
     habilitado = [False for _ in range(len(proveedoresQueLlegan))]
 
-    cont = tk.Frame(frameDeTrabajo, bg="blue")
-    cont.pack(pady=20)
+    containerBig = tk.Frame(frameDeTrabajo, bg="light gray")
+    containerBig.pack(pady=10)
+
+    cont = tk.Frame(containerBig, bg="medium orchid")
+    cont.pack(side="left", pady=20)
     
     field_frame = FieldFrame(cont, "Los repuestos comprados fueron:", criterios, "", valores, habilitado)
     field_frame.pack(padx=10, pady=10)
 
     labelTotalGastado = tk.Label(cont, text=f"Total gastado: {totalGastado} pesos", font=("Arial", 12, "italic"))
     labelTotalGastado.pack(pady=10)
+
+    criterios2 = nomListMaqRev
+    valores2 = sedesListMaqRev
+    habilitado2 = [False for _ in range(len(nomListMaqRev))]
+
+    cont = tk.Frame(containerBig, bg="medium orchid")
+    cont.pack(side="left", pady=20, padx=5)
+    
+    field_frame = FieldFrame(cont, "Maquinas inhabilidas\npor falta de revisión:", criterios2, "", valores2, habilitado2)
+    field_frame.pack(padx=10, pady=10)
+
+    #labelTotalGastado = tk.Label(cont, text=f"Total gastado: {totalGastado} pesos", font=("Arial", 12, "italic"))
+    #labelTotalGastado.pack(pady=10)
+
+    
         
     
     
