@@ -13,7 +13,6 @@ from src.gestorAplicacion.administracion.empleado import Empleado
 from src.uiMain.F2Insumos import F2Insumos
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
-from typing import List
 from src.gestorAplicacion.administracion.empleado import Empleado
 import threading
 
@@ -272,18 +271,38 @@ class Main:
     # Retorna una lista con : [Opciones para cambio, sede origen, rol, cantidad a elegir]
     @classmethod
     def getTandaCambioSede(cls):
-        opciones = []
+        cls.opcionesParaReemplazo = []
         if cls.idxRol < len(cls.rolesATransferir):
             rol = cls.rolesATransferir[cls.idxRol]
             sede = cls.transferirDe[cls.idxRol]
             for emp in sede.getListaEmpleados():
                 if emp.getRol() == rol:
-                    opciones.append(emp)
+                    cls.opcionesParaReemplazo.append(emp)
             cantidad = sum(1 for emp in Main.despedidos if emp.getRol() == rol)
-            return [opciones, sede, rol, cantidad]
+            return [cls.opcionesParaReemplazo, sede, rol, cantidad]
         else:
             return None
     
+    @classmethod
+    def terminarTandaReemplazo(cls,reemplazos):
+        for nombre in reemplazos:
+            encontrado=False
+            for emp in cls.opcionesParaReemplazo:
+                if emp.getNombre() == nombre:
+                    encontrado=True
+            if not encontrado:
+                return False
+
+        empleadosReemplazo = []
+        for nombre in reemplazos:
+            for emp in cls.opcionesParaReemplazo:
+                if emp.getNombre() == nombre:
+                    empleadosReemplazo.append(emp)
+        
+        Sede.reemplazarPorCambioSede(Main.despedidos, empleadosReemplazo)
+        cls.idxRol+=1
+        return True
+
     @classmethod
     def listaInicialDespedirEmpleado(cls):
         return Empleado.listaInicialDespedirEmpleado(Main.fecha)

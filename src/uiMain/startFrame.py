@@ -18,7 +18,7 @@ from src.gestorAplicacion.administracion.rol import Rol
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
-#pygame.mixer.init() # Función para reproducir el audio #def reproducir_audio(): #ruta_audio = os.path.join("src", "uiMain", "imagenes", "EcomodaALaOrden.mp3") #pygame.mixer.music.load(ruta_audio)  # Cambia la ruta del archivo de audio #pygame.mixer.music.play()
+#pygame.mixer.init() Función para reproducir el audio #def reproducir_audio(): #ruta_audio = os.path.join("src", "uiMain", "imagenes", "EcomodaALaOrden.mp3") #pygame.mixer.music.load(ruta_audio)  # Cambia la ruta del archivo de audio #pygame.mixer.music.play()
 
 class startFrame(tk.Tk):
     def __init__(self):
@@ -45,6 +45,7 @@ class startFrame(tk.Tk):
         self.ayudaMenu = tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Ayuda", menu=self.ayudaMenu)
         self.ayudaMenu.add_command(label="Acerca de", command= lambda : self.acercaDe())
+        self.contenedorTandaTransferencia = None # Se llena al dar aceptar en la pantalla de transferir de sede en gestión humana.
 
         self.abrirFrameInicial()
 
@@ -53,7 +54,9 @@ class startFrame(tk.Tk):
         self.areaPrincipal.destroy()
         self.pagina="gestionHumana"
         self.cambiarFrame(self.crearGestionHumana())
-    
+    # LINK src/uiMain/fieldFrame.py
+    # ANCHOR eliminar f2
+
     def eliminarF2(self):
         self.areaPrincipal.destroy()
         self.cambiarFrame(F2Insumos(self))
@@ -432,8 +435,11 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         rol=tanda[2]
         cantidad:int = tanda[3]
 
-        self.contenedorTanda=tk.Frame(self.frame1)
-        self.contenedorTanda.grid(row=1, column=0, sticky="nswe")
+        if self.contenedorTandaTransferencia is not None:
+            self.contenedorTandaTransferencia.destroy()
+
+        self.contenedorTandaTransferencia=tk.Frame(self.frame1)
+        self.contenedorTandaTransferencia.grid(row=1, column=0, sticky="nswe")
         textoReemplazo=f"""Nececitamos reemplazar {cantidad} de {rol.name}, trayendolos de {sedeDonadora.getNombre()}, he aquí los candidatos, escriba el
 nombre del seleccionado en cada casilla:"""
         for candidato in candidatos:
@@ -441,15 +447,29 @@ nombre del seleccionado en cada casilla:"""
             if rol==Rol.MODISTA:
                 textoReemplazo+=f" y {candidato.pericia} de pericia"
 
-        self.tituloTanda=tk.Label(self.contenedorTanda, text=textoReemplazo, font=("Arial", 10))
+        self.tituloTanda=tk.Label(self.contenedorTandaTransferencia, text=textoReemplazo, font=("Arial", 10))
         self.tituloTanda.grid(row=0, column=0, sticky="nswe", columnspan=4)
 
-        self.seleccionadorReemplazo=FieldFrame(self.contenedorTanda,"Reemplazo numero", [f"Reemplazo {i}" for i in range(1,cantidad+1)], "Nombre")
+        self.seleccionadorReemplazo=FieldFrame(self.contenedorTandaTransferencia,"Reemplazo numero", [f"Reemplazo {i}" for i in range(1,cantidad+1)], "Nombre", aceptar=True, borrar=True,callbackAceptar=self.terminarTanda)
         self.seleccionadorReemplazo.grid(row=1, column=0, sticky="nswe", columnspan=4)
 
-        self.contenedorTanda.rowconfigure(0, weight=1)
-        self.contenedorTanda.rowconfigure(1, weight=3)
-        self.contenedorTanda.columnconfigure(0, weight=1)
+        self.contenedorTandaTransferencia.rowconfigure(0, weight=1)
+        self.contenedorTandaTransferencia.rowconfigure(1, weight=3)
+        self.contenedorTandaTransferencia.columnconfigure(0, weight=1)
+    
+    def terminarTanda(self):
+        reemplazos=[]
+        for i in range(1, len(self.seleccionadorReemplazo.valores)+1):
+            reemplazos.append(self.seleccionadorReemplazo.getValue(f"Reemplazo {i}"))
+        existen=Main.terminarTandaReemplazo(reemplazos)
+        if existen:
+            self.reemplazarPorCambioSede()
+        else:
+            tanda=Main.getTandaCambioSede()
+            if tanda is None:
+                pass
+            else:
+                self.dibujarTandaReemplazo(Main.getTandaCambioSede())
 
 
 
