@@ -13,6 +13,8 @@ class ExceptionC1(ErrorAplicacion):
     
    # def stringNoEntero(self, string):
 
+   
+
     
 
 

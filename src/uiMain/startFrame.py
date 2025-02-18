@@ -7,7 +7,7 @@ import sys
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.uiMain.F2Insumos import F2Insumos
 from src.uiMain.F4Facturaccion import Facturar
-from src.uiMain.exceptionC1 import ExceptionC1
+from src.uiMain.Excepciones.exceptionC1 import ExceptionC1
 from src.uiMain.main import Main
 from src.uiMain.F3Financiera import F3Financiera
 from src.uiMain.F5Produccion import producir
@@ -168,12 +168,22 @@ class startFrame(tk.Tk):
         FDia = self.entradaDia.get() # Obtener el texto de la entrada para el día
         FMes = self.entradaMes.get() # Obtener el texto de la entrada para el mes
         FAño = self.entradaAño.get() # Obtener el texto de la entrada para el año
-        if not FDia or not FMes or not FAño:
-                error = ExceptionC1("Debes ingresar una fecha antes de continuar.")
-                error.contenidoVacio()
-                self.borrar()
-                self.after(100, self.Ok)
-                return 
+        camposVacios = []  
+
+        if not FDia:  
+            camposVacios.append("Día")  
+        if not FMes:  
+            camposVacios.append("Mes")  
+        if not FAño:  
+            camposVacios.append("Año")  
+
+        if camposVacios:  
+            mensaje = f"Debes llenar los siguientes campos antes de continuar: ".format(", ".join(camposVacios))
+            vacio = ExceptionC1(mensaje)
+            vacio.contenidoVacio()  
+            self.borrar()  
+            self.after(100, self.Ok)  
+            return  
         self.ingresarFecha(FDia,FMes,FAño)
         if isinstance(self.ingresarFecha(FDia,FMes,FAño),Fecha):
             self.confirmacion.config(text="Fecha ingresada correctamente, estamos en "+Main.fecha.strCorto())
