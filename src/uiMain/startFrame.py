@@ -23,6 +23,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 class startFrame(tk.Tk):
     def __init__(self):
         self.pagina="ninguna"
+        Main.estadoGestionHumana="ninguno"
         numbre = ""
         super().__init__()
         self.title("Ecomoda")
@@ -58,18 +59,22 @@ class startFrame(tk.Tk):
     # ANCHOR eliminar f2
 
     def eliminarF2(self):
+        self.pagina="insumos"
         self.areaPrincipal.destroy()
         self.cambiarFrame(F2Insumos(self))
         
     def eliminarF4(self):
+        self.pagina="facturacion"
         self.areaPrincipal.destroy()
         self.cambiarFrame(Facturar(self))
         
     def eliminarF3(self):
+        self.pagina="financiera"
         self.areaPrincipal.destroy()
         self.cambiarFrame(F3Financiera(self))
 
     def iniciarProduccion(self):
+        self.pagina="produccion"
         self.areaPrincipal.destroy()
         self.cambiarFrame(producir(self))
         
@@ -225,6 +230,7 @@ class startFrame(tk.Tk):
         self.sede=None
         self.inicialGestionHumana()
         self.empleadosADespedir=[] # Se llena al dar aceptar en la pantalla de seleccion.
+        Main.estadoGestionHumana="despedir"
         return self.gestionHumana
         
     def inicialGestionHumana(self):
@@ -359,6 +365,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             if self.seleccionador.getValue(Empleado.getNombre(empleado)).lower()=="si":
                 self.empleadosADespedir.append(empleado)
         Main.despedirEmpleados(self.empleadosADespedir)
+        Main.estadoGestionHumana="cambio-sede"
         self.reemplazarPorCambioSede()
 
     # Parte de la interacción 1
@@ -423,25 +430,27 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         con gente de otras sedes""", relief="ridge", font=("Arial", 10))
         self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
         Main.prepararCambioSede()
-        tanda = Main.getTandaCambioSede()
+        tanda = Main.getTandaReemplazo()
         if tanda is not None:
             self.dibujarTandaDeReemplazo(tanda)
 
         self.frame1.columnconfigure(0, weight=3)
     
     def dibujarTandaDeReemplazo(self, tanda):
-        candidatos = tanda[0]
-        sedeDonadora=tanda[1]
-        rol=tanda[2]
-        cantidad:int = tanda[3]
+        candidatos,sedeDonadora,rol,cantidad = tanda
 
         if self.contenedorTandaTransferencia is not None:
             self.contenedorTandaTransferencia.destroy()
 
         self.contenedorTandaTransferencia=tk.Frame(self.frame1)
         self.contenedorTandaTransferencia.grid(row=1, column=0, sticky="nswe")
-        textoReemplazo=f"""Nececitamos reemplazar {cantidad} de {rol.name}, trayendolos de {sedeDonadora.getNombre()}, he aquí los candidatos, escriba el
-nombre del seleccionado en cada casilla:"""
+        textoReemplazo=f"""Nececitamos reemplazar {cantidad} de {rol.name}\n"""
+        if Main.estadoGestionHumana=="contratacion":
+            textoReemplazo+="""Por medio de contratación"""
+        else:
+            textoReemplazo+=f"""Por medio de transferencia desde la sede {sedeDonadora.getNombre()}."""
+        
+        textoReemplazo+="""\n He aquí los candidatos, escriba el nombre del seleccionado en cada casilla:"""
         for candidato in candidatos:
             textoReemplazo+=f"\n{candidato.getNombre()} con {candidato.experiencia} años de experiencia"
             if rol==Rol.MODISTA:
@@ -461,18 +470,21 @@ nombre del seleccionado en cada casilla:"""
         reemplazos=[]
         for i in range(1, len(self.seleccionadorReemplazo.valores)+1):
             reemplazos.append(self.seleccionadorReemplazo.getValue(f"Reemplazo {i}"))
-        existen=Main.terminarTandaReemplazo(reemplazos)
+        (existen)=Main.terminarTandaReemplazo(reemplazos)
         if existen:
-            self.reemplazarPorCambioSede()
-        else:
-            tanda=Main.getTandaCambioSede()
+            tanda=Main.getTandaReemplazo()
             if tanda is None:
-                pass
+                self.frame1.destroy()
+                self.frame1 = tk.Frame(self.framePrincipal)
+                self.frame1.grid(row=1, column=0, sticky="nswe")
+                self.descripcionCambioSede = tk.Label(self.frame1, text=f"""Se ha completado el reemplazo de los empleados, tenga buen día.""", relief="ridge", font=("Arial", 10))
+                self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
+                self.frame1.columnconfigure(0, weight=3)
+                self.frame1.rowconfigure(0, weight=3)
             else:
-                self.dibujarTandaReemplazo(Main.getTandaCambioSede())
-
-
-
+                self.dibujarTandaDeReemplazo(Main.getTandaReemplazo())
+        else:
+            tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado esta en la lista de candidatos.")
 
 
 def pasarAVentanaPrincipal():

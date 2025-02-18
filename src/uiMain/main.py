@@ -98,6 +98,7 @@ class Main:
     
     #----------------------------gestion humana-----------------------------------
 
+
     def despedirEmpleadosConsola(fecha):
         from ..gestorAplicacion.administracion.empleado import Empleado
         print("Obteniendo lista sugerida de empleados")
@@ -257,32 +258,42 @@ class Main:
     # Lo que siguen son para la versión grafica, o metodos puente para ella.
 
     despedidos=[] # Actualizado por la versión grafica de gestion humana
+    porReemplazar=[]
+    opcionesParaReemplazo=[] # Lista a elegir por cada rol
 
     @classmethod
     def prepararCambioSede(cls):
         nececidad = Sede.obtenerNecesidadTransferenciaEmpleados(Main.despedidos)
-        cls.rolesATransferir = nececidad[0] if nececidad else []
+        cls.rolesAReemplazar = nececidad[0] if nececidad else []
         cls.transferirDe = nececidad[1] if nececidad else []
         cls.aContratar = nececidad[2] if nececidad else []
         cls.seleccion = []
         cls.idxRol = 0
-        return cls.getTandaCambioSede()
+        return cls.getTandaReemplazo()
 
-    # Retorna una lista con : [Opciones para cambio, sede origen, rol, cantidad a elegir]
+    # Retorna una lista con : [Opciones para cambio, sede origen-> Solo aplica para cambio-sede, rol, cantidad a elegir]
     @classmethod
-    def getTandaCambioSede(cls):
+    def getTandaReemplazo(cls):
         cls.opcionesParaReemplazo = []
-        if cls.idxRol < len(cls.rolesATransferir):
-            rol = cls.rolesATransferir[cls.idxRol]
-            sede = cls.transferirDe[cls.idxRol]
-            for emp in sede.getListaEmpleados():
-                if emp.getRol() == rol:
-                    cls.opcionesParaReemplazo.append(emp)
-            cantidad = sum(1 for emp in Main.despedidos if emp.getRol() == rol)
-            return [cls.opcionesParaReemplazo, sede, rol, cantidad]
+        if cls.idxRol < len(cls.rolesAReemplazar):
+            sede=None
+            cantidad=0
+            rol = cls.rolesAReemplazar[cls.idxRol]
+            if cls.estadoGestionHumana == "cambio-sede":
+                sede = cls.transferirDe[cls.idxRol]
+                for emp in sede.getListaEmpleados():
+                    if emp.getRol() == rol:
+                        cls.opcionesParaReemplazo.append(emp)
+                cantidad = sum(1 for emp in Main.despedidos if emp.getRol() == rol)
+                return cls.opcionesParaReemplazo, sede, rol, cantidad
+            else:
+                return cls.getTandaContratacion() # Hace lo mismo, pero no toma en cuenta la sede.
+
         else:
             return None
-    
+        
+        
+            
     @classmethod
     def terminarTandaReemplazo(cls,reemplazos):
         for nombre in reemplazos:
@@ -293,14 +304,25 @@ class Main:
             if not encontrado:
                 return False
 
-        empleadosReemplazo = []
+        empleadosReemplazadores = []
         for nombre in reemplazos:
             for emp in cls.opcionesParaReemplazo:
                 if emp.getNombre() == nombre:
-                    empleadosReemplazo.append(emp)
+                    empleadosReemplazadores.append(emp)
         
-        Sede.reemplazarPorCambioSede(Main.despedidos, empleadosReemplazo)
+        if cls.estadoGestionHumana == "cambio-sede":
+            reemplazados=Sede.reemplazarPorCambioSede(Main.despedidos, empleadosReemplazadores)
+            for emp in reemplazados:
+                cls.porReemplazar.remove(emp)
+        else:
+            Persona.contratar(empleadosReemplazadores, cls.porReemplazar, Main.fecha)
+            for emp in cls.porReemplazar:
+                if emp.getRol() == cls.rolesAReemplazar[cls.idxRol]:
+                    cls.porReemplazar.remove(emp)
         cls.idxRol+=1
+        if cls.idxRol >= len(cls.rolesAReemplazar):
+            cls.estadoGestionHumana="contratacion"
+            cls.prepararContratacion()
         return True
 
     @classmethod
@@ -311,6 +333,7 @@ class Main:
     def despedirEmpleados(cls, empleados):
         Empleado.despedirEmpleados(empleados, True, Main.fecha)
         cls.despedidos = empleados
+        cls.porReemplazar = empleados.copy()
     
     @classmethod
     def verificarSedeExiste(cls, sede:str): # verifica que la sede exista
@@ -328,6 +351,20 @@ class Main:
         for sede in Sede.getListaSedes():
             if sede.getNombre()==getNombre:
                 return sede
+    
+    @classmethod
+    def prepararContratacion(cls):
+        cls.aptosParaContratar, cls.rolesAReemplazar, cls.cantidadAContratar= Persona.entrevistar(cls.porReemplazar)
+        cls.idxRol = 0
+    
+    @classmethod
+    def getTandaContratacion(cls):
+        cls.opcionesParaReemplazo=[]
+        for apto in cls.aptosParaContratar:
+            if apto.getRol()==cls.rolesAReemplazar[cls.idxRol]:
+                cls.opcionesParaReemplazo.append(apto)
+        return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
+    
     #-----------------Financiera--------------------------------------------
         
     def calcularBalanceAnterior(empleado, eleccion):

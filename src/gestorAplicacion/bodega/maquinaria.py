@@ -162,7 +162,7 @@ class Maquinaria:
     def asignarMaquinaria(emp):
         maquinariaPorAsignar = emp.getAreaActual().getMaquinariaNecesaria()
         for maq in emp.sede.getListaMaquinas():
-            if maq.nombre in maquinariaPorAsignar or maq.user is None:
+            if maq.nombre in maquinariaPorAsignar and maq.user is None:
                 maq.user = emp
                 maquinariaPorAsignar.remove(maq.nombre)
                 break

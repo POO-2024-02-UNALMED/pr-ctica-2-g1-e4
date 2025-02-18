@@ -192,8 +192,10 @@ class Sede:
         retorno.append(aReemplazar)
         return retorno
 
-    def reemplazarPorCambioSede(despedidos, aTransferir):
+    def reemplazarPorCambioSede(despedidos, aTransferir)->List:
         from .bodega.maquinaria import Maquinaria
+        aTransferir = aTransferir.copy() # Evita efectos secundarios.
+        reemplazados=[]
         for empleadoDespedido in despedidos:
             # Buscamos en la lista de empleados a transferir, quien pudo ser seleccionado como reemplazo.
             for empleadoReemplazo in aTransferir:
@@ -203,7 +205,9 @@ class Sede:
                     empleadoReemplazo.setSede(empleadoDespedido.getSede())
                     Maquinaria.asignarMaquinaria(empleadoReemplazo)
                     aTransferir.remove(empleadoReemplazo)
+                    reemplazados.append(empleadoDespedido)
                     break
+        return reemplazados
 
     def quitarInsumos(self, insumos, cantidad):
         hayInsumos = True
