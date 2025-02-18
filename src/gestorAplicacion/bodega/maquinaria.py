@@ -2,11 +2,11 @@ from typing import List
 from ..sede import Sede
 
 class Maquinaria:
-    def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos, sede: 'Sede'):
+    def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos, sede: 'Sede', horasUso=0):
         
         self.nombre = nombre
         self.user = None
-        self.horasUso = 0
+        self.horasUso = horasUso
         self.estado = True
         self.asignable = True
         self.mantenimiento = False
@@ -71,7 +71,7 @@ class Maquinaria:
         from src.uiMain.main import Main
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.bodega.insumo import Insumo
-        from src.uiMain.F5Produccion import receptor, recibeProveedorB
+        from src.uiMain.F5Produccion import receptor, recibeProveedorB, recibeMaqPaRevisar
         
         print("ENTRÉ")
         
@@ -79,6 +79,7 @@ class Maquinaria:
         todosProvBaratos = []
         encontrado = False
         proveedorBarato = None
+        maquinasPaRevisar = []
         for cadaSede in Sede.getListaSedes():
             for cadaMaquina in cadaSede.getListaMaquinas():
                 if (cadaMaquina.getHoraRevision() - cadaMaquina.getHorasUso()) > 0:
@@ -133,8 +134,11 @@ class Maquinaria:
                     cadaMaquina.estado = False
                 if not cadaMaquina.mantenimiento and cadaMaquina.estado:
                     maqDisponibles.append(cadaMaquina)
-                cadaMaquina.mantenimiento = False
-        recibeProveedorB(None) 
+                else:
+                    maquinasPaRevisar.append(cadaMaquina)
+                #cadaMaquina.mantenimiento = False
+        recibeProveedorB(None)
+        recibeMaqPaRevisar(maquinasPaRevisar)
         return maqDisponibles
 
     @classmethod
