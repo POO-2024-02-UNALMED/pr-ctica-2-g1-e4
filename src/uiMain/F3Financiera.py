@@ -7,6 +7,7 @@ from src.gestorAplicacion.administracion.banco import Banco
 from src.gestorAplicacion.administracion.deuda import Deuda
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
+from src.gestorAplicacion.venta import Venta
 from src.uiMain.fieldFrame import FieldFrame
 
 class F3Financiera(tk.Frame):
@@ -24,13 +25,13 @@ class F3Financiera(tk.Frame):
             if Porcentaje != "0% / 100%":
                 Porcentaje = Porcentaje.strip("%")
                 b = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
-                confirmacion2.config(text="la diferencia entre ventas y deudas futuras, fue de: $"+str(b))
+                confirmacion2.config(text="La diferencia entre ventas y deudas futuras, fue de: $"+str(b))
 
         def Interaccion2():
             frame2.destroy()
             frame3.destroy()
             
-            frame4 = tk.Frame(framePrincipal, bg="light gray")
+            frame4 = tk.Frame(framePrincipal)
             frame4.pack(anchor="s", expand=True, fill="both")
             
             criterios = ["Descuento"]
@@ -38,29 +39,32 @@ class F3Financiera(tk.Frame):
             habilitado = [True]
             
             # Creamos el FieldFrame con los botones
-            field_frame2 = FieldFrame(frame4, "Ingrese porcentaje a modificar para fidelidad de los clientes sin membresía", criterios, "", valores, habilitado)
-            field_frame2.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
+            field_frame2 = FieldFrame(frame4, "Ingrese porcentaje a modificar para:", criterios, "fidelidad de los clientes sin membresía", valores, habilitado)
+            field_frame2.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
             
             frame5 = tk.Frame(framePrincipal)
             frame5.pack(anchor="s", expand=True, fill="both")
             
             boton1 = tk.Button(frame5, text="Aceptar", command=lambda: LeerF2(field_frame2, confirmacion2))
-            boton1.place(relx=0.4, rely=0.7, relwidth=0.1, relheight=0.1, anchor="s")            
+            boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
             
             boton2 = tk.Button(frame5, text="Siguiente", command=lambda: Interaccion3(frame4, frame5))
-            boton2.place(relx=0.6, rely=0.7, relwidth=0.1, relheight=0.1, anchor="s")
+            boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
             
-            confirmacion2 = tk.Label(frame5, text="", anchor="w")
-            confirmacion2.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
+            confirmacion2 = tk.Label(frame5, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
+            confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
 
-        def LeerF3(field_frame2, confirmacion2):
+        def LeerF3(field_frame3, confirmacion3):
             from src.uiMain.main import Main
-            Porcentaje = FieldFrame.getValue(field_frame2, "Descuento")
-            
-            if Porcentaje != "0% / 100%":
-                Porcentaje = Porcentaje.strip("%")
-                b = Main.planRecuperacion()  # Use float to handle percentage
-                confirmacion2.config(text=str(b))
+            seleccion = FieldFrame.getValue(field_frame3, "Bancos")
+            banco=None
+            for banco_actual in Banco.getListaBancos():
+                if Banco.getNombre(banco_actual) == seleccion:
+                        banco = seleccion
+                        break
+                c = Main.planRecuperacion(Main.diferenciaEstimado,banco)  # Use float to handle percentage
+                confirmacion3.config(text=str(c),font=("Arial", 10))
+                return c
             
         def listaBancos(frameb):
             
@@ -97,6 +101,7 @@ class F3Financiera(tk.Frame):
             frameb.columnconfigure(3, weight=1)# rendimiento esperado
        
         def Interaccion3(frame4,frame5):
+            from src.uiMain.main import Main
             frame4.destroy()
             frame5.destroy()
             frame6 = tk.Frame(framePrincipal, bg="light gray")
@@ -107,22 +112,61 @@ class F3Financiera(tk.Frame):
             # Creamos el FieldFrame con los botones
             field_frame3 = FieldFrame(frame6, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
             field_frame3.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
-            
+
             frameb = tk.Frame(framePrincipal)
             frameb.pack(anchor="s", expand=True, fill="both")
-            listaBancos(frameb)
+            labelBanco= tk.Frame(frameb)
+            labelBanco.place(relx=0, rely=0, relwidth=1, relheight=1)
+            listaBancos(labelBanco)
             
             frame7 = tk.Frame(framePrincipal)
             frame7.pack(anchor="s", expand=True, fill="both")
             boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(field_frame3, confirmacion3))
-            boton1.place(relx=0.4, rely=0.7, relwidth=0.1, relheight=0.1, anchor="s")            
+            boton1.place(relx=0.4, rely=0.7, relwidth=0.1, relheight=0.2, anchor="s")            
             
-            boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion3(frame4, frame5))
-            boton2.place(relx=0.6, rely=0.7, relwidth=0.1, relheight=0.1, anchor="s")
+            boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion4(frame6, frameb, frame7,LeerF3(field_frame3, confirmacion3)))
+            boton2.place(relx=0.6, rely=0.7, relwidth=0.1, relheight=0.2, anchor="s")
             
-            confirmacion3 = tk.Label(frame5, text="", anchor="w")
-            confirmacion3.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
+            confirmacion3 = tk.Label(frame7, text="", anchor="center")
+            confirmacion3.place(relx=0, rely=0.8, relwidth=1, relheight=0.3)
+            if Main.diferenciaEstimado > 0:
+                confirmacion3.config("El estimado es positivo, las ventas superan las deudas\nHay dinero suficiente para hacer el pago de algunas Deudas")
+            else:
+                confirmacion3.config("El estimado es negativo, la deuda supera las ventas\nNo hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo")
+        
+        def Interaccion4(frame6,frameb, frame7,c):
+            from src.uiMain.main import Main
+            frame6.destroy()
+            frameb.destroy()
+            frame7.destroy()
             
+            frame4 = tk.Frame(framePrincipal)
+            frame4.pack(anchor="s", expand=True, fill="both")
+            descuento = Venta.blackFriday(Main.fecha)
+            resultado="si"
+            if descuento <= 0.0:
+                resultado="no"
+                
+            criterios = ["Descuento"]
+            valores = [str(descuento)]
+            habilitado = [True]
+            
+            # Creamos el FieldFrame con los botones
+            field_frame2 = FieldFrame(frame4, ("Según las Ventas anteriores, aplicar descuentos"+resultado+" funcionará"), criterios, "¿Desea Cambiar el siguiente descuento:?", valores, habilitado)
+            field_frame2.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
+            
+            frame5 = tk.Frame(framePrincipal)
+            frame5.pack(anchor="s", expand=True, fill="both")
+            
+            boton1 = tk.Button(frame5, text="Aceptar", command=lambda: LeerF2(field_frame2, confirmacion2))
+            boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
+            
+            boton2 = tk.Button(frame5, text="Siguiente", command=lambda: Interaccion3(frame4, frame5))
+            boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+            
+            confirmacion2 = tk.Label(frame5, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
+            confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+        
         def LeerF1():
             from src.uiMain.main import Main
             eleccionDeuda=0
@@ -167,14 +211,14 @@ class F3Financiera(tk.Frame):
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
         descripcionF3 = tk.Label(frame1, text="Se realiza una evaluación del estado financiero de la empresa haciendo el cálculo de los activos y los pasivos, para indicarle al usuario qué tan bien administrada está, mostrandole los resulatdos y su significado", relief="ridge", wraplength=600)
         descripcionF3.place(relx=1, rely=0.7, relwidth=1, relheight=0.4, anchor="e")
-        frame2 = tk.Frame(framePrincipal, bg="light gray")
+        frame2 = tk.Frame(framePrincipal)
         frame2.pack(anchor="s",  expand=True, fill="both")
         criterios = ["Proveedor", "Banco"]
         valores = ["Si/No", "Si/No"]
         habilitado = [True, True]
         # Creamos el FieldFrame con los botones
-        field_frame = FieldFrame(frame2, "Desea calcular las siguientes SistemaFinanciero", criterios, "", valores, habilitado)
-        field_frame.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
+        field_frame = FieldFrame(frame2, "Desea calcular las ", criterios, "siguientes Deudas", valores, habilitado)
+        field_frame.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
         frame3 = tk.Frame(framePrincipal)
         frame3.pack(anchor="s",  expand=True, fill="both")
         label7 = tk.Label(frame3, text="Directivos disponibles:",anchor="w", font=("Arial",12, "bold"))
@@ -183,11 +227,11 @@ class F3Financiera(tk.Frame):
         Lista=Directivos()
         placeholder = tk.StringVar(master=label7, value="Elije al directivo")
         combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
-        combo.place(relx=0.5, rely=0.8, relwidth=0.5, relheight=0.2, anchor="s")
+        combo.place(relx=0.5, rely=0.6, relwidth=0.5, relheight=0.2, anchor="s")
         boton1 = tk.Button(frame3, text="Aceptar", command = lambda: LeerF1())
-        boton1.place(relx=0.4, rely=0.7, relwidth=0.1, relheight=0.1, anchor="s")
+        boton1.place(relx=0.4, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
         boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2())
-        boton2.place(relx=0.6, rely=0.7, relwidth=0.1, relheight=0.1, anchor="s")
-        confirmacion = tk.Label(frame3, text="",  anchor="w")
-        confirmacion.place(relx=0.5, rely=0.7, relwidth=1, relheight=0.3, anchor="n")
+        boton2.place(relx=0.6, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+        confirmacion = tk.Label(frame3, text="Calculando la diferencia entre ingresos por venta y costos de producción...",  anchor="center")
+        confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
         return framePrincipal

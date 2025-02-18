@@ -387,35 +387,24 @@ class Main:
         diferenciaEstimado = EvaluacionFinanciera.estimadoVentasGastos(Main.fecha, porcentaje, Main.nuevoBalance)
         # Un mes se puede dar por salvado si el 80% de los gastos se pueden ver
         # cubiertos por las ventas predichas
+        Main.diferenciaEstimado=diferenciaEstimado
         return diferenciaEstimado
     # Interacción 3
-    def planRecuperacion(diferenciaEstimada):
+    def planRecuperacion(diferenciaEstimada, banco):
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.administracion.deuda import Deuda
         bancos=Banco.getListaBancos()
         if diferenciaEstimada > 0:
-            print("\nEl estimado es positivo, las ventas superan las deudas")
-            print("Hay dinero suficiente para hacer el pago de algunas Deudas")
             Deuda.compararDeudas(Main.fecha)
         else:
-            print("\nEl estimado es negativo, la deuda supera las ventas")
-            print("No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo")
-            i = -1
-            nombreBanco = None
-            while i < 0 or i >= len(bancos):
-                for idx in range(len(bancos)):
-                    print(f"{idx}: {Banco.getNombreEntidad(bancos[idx])}")
-                print(f"\nIngrese número de 0 a {len(bancos) - 1} para solicitar el prestamo al Banco de su elección")
-                i = Main.nextIntSeguro()
-                if 0 <= i < len(bancos):
-                    nombreBanco = Banco.getNombreEntidad(bancos[i])
             cuotas = 0
             while cuotas <= 0 or cuotas > 18:
-                print("Ingrese número de 1 a 18 para las cuotas en que se dividirá la deuda")
-                cuotas = Main.nextIntSeguro()
-            deudaAdquirir = Deuda(Main.fecha, diferenciaEstimada, nombreBanco, "Banco", cuotas)
+                Deuda.calcularCuotas(diferenciaEstimada)
+            deudaAdquirir = Deuda(Main.fecha, diferenciaEstimada, banco, "Banco", cuotas)
+            return deudaAdquirir
+            
+    def descuentosBlackFriday(descuento):
         print("\nAnalizando posibilidad de hacer descuentos para subir las ventas...")
-        descuento = Venta.blackFriday(Main.fecha)
         bfString = None
         if descuento <= 0.0:
             bfString = ("El análisis de ventas realizado sobre el Black Friday arrojó que la audiencia no reacciona tan bien a los descuentos, ""propusimos no hacer descuentos")
