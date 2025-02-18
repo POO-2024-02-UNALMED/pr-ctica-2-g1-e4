@@ -403,24 +403,12 @@ class Main:
             deudaAdquirir = Deuda(Main.fecha, diferenciaEstimada, banco, "Banco", cuotas)
             return deudaAdquirir
             
-    def descuentosBlackFriday(descuento):
-        print("\nAnalizando posibilidad de hacer descuentos para subir las ventas...")
+    def descuentosBlackFriday(descuento, nuevoDescuento):
         bfString = None
         if descuento <= 0.0:
             bfString = ("El análisis de ventas realizado sobre el Black Friday arrojó que la audiencia no reacciona tan bien a los descuentos, ""propusimos no hacer descuentos")
-            print("\nSegún las Ventas anteriores, aplicar descuentos no funcionará")
         else:
             bfString = ("El análisis de ventas realizado sobre el Black Friday arrojó que la audiencia reacciona bien a los descuentos, "f"propusimos un descuento del {descuento * 100}%")
-            print("\nSegún las Ventas anteriores, aplicar descuentos si funcionará")
-        print(f"¿Desea Cambiar el siguiente descuento: {descuento * 100}? marque 1 para Si, 2 para no ")
-        num = Main.nextIntSeguro()
-        nuevoDescuento = -0.1
-        if num == 1:
-            while nuevoDescuento < 0.0 or nuevoDescuento > 0.5:
-                print("Ingrese descuento entre 0% y 5%")
-                nuevoDescuento = Main.nextIntSeguro() / 100.0
-        else:
-            nuevoDescuento = descuento
         Prenda.prevenciones(descuento, nuevoDescuento, Main.fecha)
         analisisFuturo = (f"\n{bfString}, sin embargo su desición fue aplicar un descuento de: "
                         f"{nuevoDescuento * 100}%.")
