@@ -98,7 +98,8 @@ class startFrame(tk.Tk):
     
     def acercaDe(self):
         tk.messagebox.showinfo("Acerca de", "Andres David Calderón Jiménez \nGelsy Jackelin Lozano Blanquiceth \nAndrea Merino Mesa \nLuis Rincon \nJuanita Valentina Rosero")
-#-----------------Frame Inicial-----------------
+
+#----------------------------------------------Frame Inicial------------------------------------------------------------------------
 
     def crearFrameInicial(self)->tk.Frame:
         self.frameInicial=tk.Frame(self, bg="red")
@@ -233,7 +234,7 @@ class startFrame(tk.Tk):
             self.fechaValida = True
         return fecha
     
-#-----------------Gestión Humana-----------------
+#----------------------------------------------Gestión Humana-----------------------------------------------------------------
     def crearGestionHumana(self):
         self.gestionHumana=tk.Frame(self)
         self.posiblesDespedidos=[]
