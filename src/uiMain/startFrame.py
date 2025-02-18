@@ -14,6 +14,7 @@ from src.uiMain.F5Produccion import producir
 from src.uiMain.fieldFrame import FieldFrame
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.sede import Sede
+from src.gestorAplicacion.administracion.rol import Rol
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -415,12 +416,42 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame1.destroy()
         self.frame1 = tk.Frame(self.framePrincipal)
         self.frame1.grid(row=1, column=0, sticky="nswe")
-        self.descripcionCambioSede = tk.Label(self.frame1, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados""", relief="ridge", font=("Arial", 10))
-        self.descripcionCambioSede.grid(row=0, column=0, sticky="nswe", columnspan=4)
-        nececidades=Sede.obtenerNecesidadTransferenciaEmpleados(self.empleadosADespedir)
-        rolesATransferir=nececidades[0]
-        transferirDe=nececidades[1]
-        aContratar=nececidades[2]
+        self.descripcionCambioSede = tk.Label(self.frame1, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados, verificamos si se pueden reemplazar
+        con gente de otras sedes""", relief="ridge", font=("Arial", 10))
+        self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
+        Main.prepararCambioSede()
+        tanda = Main.getTandaCambioSede()
+        if tanda is not None:
+            self.dibujarTandaDeReemplazo(tanda)
+
+        self.frame1.columnconfigure(0, weight=3)
+    
+    def dibujarTandaDeReemplazo(self, tanda):
+        candidatos = tanda[0]
+        sedeDonadora=tanda[1]
+        rol=tanda[2]
+        cantidad:int = tanda[3]
+
+        self.contenedorTanda=tk.Frame(self.frame1)
+        self.contenedorTanda.grid(row=1, column=0, sticky="nswe")
+        textoReemplazo=f"""Nececitamos reemplazar {cantidad} de {rol.name}, trayendolos de {sedeDonadora.getNombre()}, he aquí los candidatos, escriba el
+nombre del seleccionado en cada casilla:"""
+        for candidato in candidatos:
+            textoReemplazo+=f"\n{candidato.getNombre()} con {candidato.experiencia} años de experiencia"
+            if rol==Rol.MODISTA:
+                textoReemplazo+=f" y {candidato.pericia} de pericia"
+
+        self.tituloTanda=tk.Label(self.contenedorTanda, text=textoReemplazo, font=("Arial", 10))
+        self.tituloTanda.grid(row=0, column=0, sticky="nswe", columnspan=4)
+
+        self.seleccionadorReemplazo=FieldFrame(self.contenedorTanda,"Reemplazo numero", [f"Reemplazo {i}" for i in range(1,cantidad+1)], "Nombre")
+        self.seleccionadorReemplazo.grid(row=1, column=0, sticky="nswe", columnspan=4)
+
+        self.contenedorTanda.rowconfigure(0, weight=1)
+        self.contenedorTanda.rowconfigure(1, weight=3)
+        self.contenedorTanda.columnconfigure(0, weight=1)
+
+
 
 
 

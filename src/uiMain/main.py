@@ -93,6 +93,9 @@ class Main:
         from src.gestorAplicacion.bodega.prenda import Prenda
         print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
         print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
+
+
+
     
     #----------------------------gestion humana-----------------------------------
 
@@ -250,7 +253,63 @@ class Main:
         Persona.contratar(aContratar, aReemplazar, fecha)
         
     def errorDeReemplazo(persona):
-        print(f"No se pudo contratar a {Persona.getNombre(persona)}, no sabemos a quien reemplaza.")    
+        print(f"No se pudo contratar a {Persona.getNombre(persona)}, no sabemos a quien reemplaza.")
+    
+    # Lo que siguen son para la versión grafica, o metodos puente para ella.
+
+    despedidos=[] # Actualizado por la versión grafica de gestion humana
+
+    @classmethod
+    def prepararCambioSede(cls):
+        nececidad = Sede.obtenerNecesidadTransferenciaEmpleados(Main.despedidos)
+        cls.rolesATransferir = nececidad[0] if nececidad else []
+        cls.transferirDe = nececidad[1] if nececidad else []
+        cls.aContratar = nececidad[2] if nececidad else []
+        cls.seleccion = []
+        cls.idxRol = 0
+        return cls.getTandaCambioSede()
+
+    # Retorna una lista con : [Opciones para cambio, sede origen, rol, cantidad a elegir]
+    @classmethod
+    def getTandaCambioSede(cls):
+        opciones = []
+        if cls.idxRol < len(cls.rolesATransferir):
+            rol = cls.rolesATransferir[cls.idxRol]
+            sede = cls.transferirDe[cls.idxRol]
+            for emp in sede.getListaEmpleados():
+                if emp.getRol() == rol:
+                    opciones.append(emp)
+            cantidad = sum(1 for emp in Main.despedidos if emp.getRol() == rol)
+            return [opciones, sede, rol, cantidad]
+        else:
+            return None
+    
+    @classmethod
+    def listaInicialDespedirEmpleado(cls):
+        return Empleado.listaInicialDespedirEmpleado(Main.fecha)
+
+    @classmethod
+    def despedirEmpleados(cls, empleados):
+        Empleado.despedirEmpleados(empleados, True, Main.fecha)
+        cls.despedidos = empleados
+    
+    @classmethod
+    def verificarSedeExiste(cls, sede:str): # verifica que la sede exista
+        return Sede.sedeExiste(sede)
+
+    @classmethod
+    def posiblesSedes(cls)->str:
+        posiblesSedes="Posibles sedes:\n"
+        for sede in Sede.getListaSedes():
+            posiblesSedes+=sede.getNombre()+"\n"
+        return posiblesSedes
+    
+    @classmethod    
+    def sedePorNombre(cls,getNombre:str)->Sede:
+        for sede in Sede.getListaSedes():
+            if sede.getNombre()==getNombre:
+                return sede
+    #-----------------Financiera--------------------------------------------
         
     def calcularBalanceAnterior(empleado, eleccion):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
@@ -1371,31 +1430,6 @@ class Main:
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Mario, 700, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia , 300, sede2)
         pass
-
-    @classmethod
-    def listaInicialDespedirEmpleado(cls):
-        return Empleado.listaInicialDespedirEmpleado(Main.fecha)
-
-    @classmethod
-    def despedirEmpleados(cls, empleados):
-        Empleado.despedirEmpleados(empleados, True, Main.fecha)
-    
-    @classmethod
-    def verificarSedeExiste(cls, sede:str): # verifica que la sede exista
-        return Sede.sedeExiste(sede)
-
-    @classmethod
-    def posiblesSedes(cls)->str:
-        posiblesSedes="Posibles sedes:\n"
-        for sede in Sede.getListaSedes():
-            posiblesSedes+=sede.getNombre()+"\n"
-        return posiblesSedes
-    
-    @classmethod    
-    def sedePorNombre(cls,getNombre:str)->Sede:
-        for sede in Sede.getListaSedes():
-            if sede.getNombre()==getNombre:
-                return sede
 
 if __name__ == "__main__":
     print("Para usar la interfaz grafica, 1. Para usar la consola, 2")
