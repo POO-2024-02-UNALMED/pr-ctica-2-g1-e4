@@ -8,8 +8,7 @@ from src.gestorAplicacion.bodega.insumo import Insumo
 
 class Camisa(Prenda):
     serialVersionUid = 1
-    cantidadInsumo = []
-    tipoInsumo = []
+    cantidadInsumo = []; tipoInsumo = []
     pasoActual = 1
 
     maquinariaNecesaria = ["Maquina de Corte", "Bordadora Industrial", "Maquina de Coser Industrial", "Maquina de Termofijado", "Plancha Industrial"]
@@ -35,8 +34,7 @@ class Camisa(Prenda):
                 precios += camisa.calcularPrecio()
                 cantidades += 1
         if cantidades > 0:
-            precioVenta = round(precios / cantidades)
-        # Se promedian todos los "precios por los que se deberían vender las prendas para que todas las camisas se vendan al mismo"
+            precioVenta = round(precios / cantidades) # Se promedian todos los "precios por los que se deberían vender las prendas para que todas las camisas se vendan al mismo"
         return precioVenta
 
     def siguientePaso(self) -> List[Optional[int]]:
@@ -53,7 +51,6 @@ class Camisa(Prenda):
             retorno.extend(["Maquina de Termofijado", 10])
         else:
             retorno.append("LISTO")
-
         self.ultimoPaso = retorno
         return retorno
 
@@ -66,7 +63,6 @@ class Camisa(Prenda):
             probabilidadDeExito *= 0.8
         elif self.pasoActual == 5:
             probabilidadDeExito *= 0.9
-
         retorno = "CONTINUAR"
         self.pasoActual += 1
         suerte = random.random()

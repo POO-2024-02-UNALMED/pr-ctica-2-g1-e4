@@ -6,12 +6,10 @@ class GastoMensual:
     @abstractmethod
     def calcularGastoMensual(self):
         pass
-
     def gastoMensualTipo(self, fecha, fechaObjeto, objeto):
         gastoActual = 0
         gastoPasado = 0
         gastoTotal = [0, 0]
-        
         if fechaObjeto.getAno() == fecha.getAno():
             if fechaObjeto.getMes() == fecha.getMes():
                 gastoActual += objeto.calcularGastoMensual()
@@ -19,7 +17,6 @@ class GastoMensual:
             if fechaObjeto.getMes() == fecha.getMes() - 1:
                 gastoPasado += objeto.calcularGastoMensual()
                 gastoTotal[1] = gastoPasado
-        
         return gastoTotal
 
     @staticmethod

@@ -18,38 +18,27 @@ class Persona:
 
     def __str__(self) -> str:
         return f"Nombre: {self.nombre} - Documento: {self.documento} - Rol: {self.rol}"
-
     def getRol(self):
         return self.rol
-
     def getMembresia(self):
         return self.membresia
-
     def getDocumento(self):
         return self.documento
-
     def getNombre(self):
         return self.nombre
-
     def getExperiencia(self):
         return self.experiencia
-
     def isTrabaja(self):
         return self.trabaja
-
     @staticmethod
     def getListaPersonas():
         return Persona.listaPersonas
-
     @staticmethod
     def setListaPersonas(lista):
         Persona.listaPersonas = lista  # Used when deserializing
-
-    # Interaction 3 of Human Management
-    # Returns the list of suitable candidates, the list of roles, and how many of each role.
-    @staticmethod
-    def entrevistar(aReemplazar):
-        rolesAReemplazar = []
+    @classmethod
+    def entrevistar(cls,aReemplazar):
+        rolesAReemplazar = [];
         cantidad = []
         for empleado in aReemplazar:
             if empleado.getRol() not in rolesAReemplazar:
@@ -57,14 +46,11 @@ class Persona:
                 cantidad.append(0)
             rolIdx = rolesAReemplazar.index(empleado.getRol())
             cantidad[rolIdx] += 1
-
         aptos = []
-
-        for persona in Persona.listaPersonas:
+        for persona in cls.listaPersonas:
             if not persona.trabaja and persona.getRol() in rolesAReemplazar:
                 aptos.append(persona)
-
-        return [aptos, rolesAReemplazar, cantidad]
+        return aptos, rolesAReemplazar, cantidad
 
     # Interaction 3 of Human Management
     @staticmethod
@@ -82,7 +68,7 @@ class Persona:
                     aReemplazar.remove(antiguo)
                     break
             if area is not None and sede is not None:
-                emp = Empleado(area, fecha, sede, persona)
+                emp = Empleado(area, fecha, sede, persona.getNombre(), persona.getDocumento(), persona.getRol(), persona.getExperiencia(), True, persona.getMembresia())
                 Maquinaria.asignarMaquinaria(emp)
                 emp.setSalario(int(persona.getRol().getSalarioInicial() + persona.getRol().getSalarioInicial() * 0.5 * persona.getExperiencia()))
             else:
@@ -92,11 +78,7 @@ class Persona:
         rolString = str(self.rol) if self.rol is not None else "Sin rol"
         trabajaString = "Trabaja" if self.trabaja else "No trabaja"
         membresiaString = str(self.membresia) if self.membresia is not None else "Sin membresía"
-
-        return (f"Nombre: {self.nombre}, Documento: {self.documento}, Rol: {rolString}, "
-                f"Experiencia: {self.experiencia}, Trabaja: {trabajaString}, "
-                f"Membresía: {membresiaString}")
-
+        return (f"Nombre: {self.nombre}, Documento: {self.documento}, Rol: {rolString}, "f"Experiencia: {self.experiencia}, Trabaja: {trabajaString}, "f"Membresía: {membresiaString}")
     def calcularSalario(self) -> int:
         return round((self.rol.getSalarioInicial() * 0.05) * self.experiencia) + self.rol.getSalarioInicial()
 
