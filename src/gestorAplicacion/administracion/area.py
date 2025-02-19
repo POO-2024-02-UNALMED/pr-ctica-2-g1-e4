@@ -4,7 +4,7 @@ from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.fecha import Fecha
 
 class Area(Enum):
-    DIRECCION = ("Direccion", ["Computador"],3); 
+    DIRECCION = ("Direccion", ["Computador","Impresora"],3); 
     OFICINA = ("Oficina", ["Computador", "Caja Registradora"],2);
     VENTAS = ("Ventas", ["escaner"],1); 
     CORTE = ("Corte", ["Maquina de Coser Industrial", "Maquina de Corte", "Plancha Industrial"],0)

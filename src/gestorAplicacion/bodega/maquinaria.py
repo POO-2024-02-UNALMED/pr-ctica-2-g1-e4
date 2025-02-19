@@ -156,9 +156,9 @@ class Maquinaria:
 
     @staticmethod
     def asignarMaquinaria(emp):
-        maquinariaPorAsignar = emp.getAreaActual().getMaquinariaNecesaria()
+        maquinariaPorAsignar = emp.getAreaActual().getMaquinariaNecesaria().copy()
         for maq in emp.sede.getListaMaquinas():
-            if maq.nombre in maquinariaPorAsignar or maq.user is None:
+            if maq.nombre in maquinariaPorAsignar and maq.user is None:
                 maq.user = emp
                 maquinariaPorAsignar.remove(maq.nombre)
                 break
