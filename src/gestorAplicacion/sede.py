@@ -265,7 +265,7 @@ class Sede:
     def sobreCargada(cls, fecha: 'Fecha') -> int:
         senal = 0
         produccionSedes = cls.calcProduccionSedes(fecha)
-        #print(produccionSedes)
+        print(f"La produccion por ahora es: {produccionSedes}")
         modistas = cls.modistasQueHay()
         if modistas[0] > 0 and ((produccionSedes[0][0] + produccionSedes[0][1]) / modistas[0]) > 10:
             senal = 5
@@ -332,7 +332,8 @@ class Sede:
     def planProduccion(cls, maqDisponible: List, fecha: 'Fecha') -> List[List[List[int]]]:
         from .bodega.maquinaria import Maquinaria
         from src.uiMain.main import Main
-        from src.uiMain.F5Produccion import recibeMaqDispSeparadas, recibeTextIndicador
+        from src.uiMain.F5Produccion import recibeMaqDispSeparadas, recibeTextIndicador, recibeProdFinal
+        import math
         aProducirFinal = []; aProducir = []; listaEspera = []; listaDeCeros = [0, 0]
         listaEsperaVacia = [listaDeCeros.copy(), listaDeCeros.copy()]
         maqSedeP = []; maqSede2 = []
@@ -452,36 +453,31 @@ class Sede:
                     else:
                         Main.printsInt2(8)
             elif senalRec == 15:
-                Main.printsInt2(9)
-                opciom = 0
-                while opciom not in [1, 2]:
-                    opciom = int(input())
-                    if opciom == 1:
-                        pSedePEspera = max(0, cls.calcProduccionSedes(fecha)[0][0] - 10 * cls.modistasQueHay()[0])
-                        pSedeP = cls.calcProduccionSedes(fecha)[0][0] - pSedePEspera
-                        cSedePEspera = max(0, cls.calcProduccionSedes(fecha)[0][1] - 10 * cls.modistasQueHay()[0])
-                        cSedeP = cls.calcProduccionSedes(fecha)[0][1] - cSedePEspera
-                        pSede2Espera = max(0, cls.calcProduccionSedes(fecha)[1][0] - 10 * cls.modistasQueHay()[1])
-                        pSede2 = cls.calcProduccionSedes(fecha)[1][0] - pSede2Espera
-                        cSede2Espera = max(0, cls.calcProduccionSedes(fecha)[1][1] - 10 * cls.modistasQueHay()[1])
-                        cSede2 = cls.calcProduccionSedes(fecha)[1][1] - cSede2Espera
-                        elGuardaPDeHoy = [pSedeP, cSedeP]
-                        elGuarda2DeHoy = [pSede2, cSede2]
-                        elGuardaPDeManana = [pSedePEspera, cSedePEspera]
-                        elGuarda2DeManana = [pSede2Espera, cSede2Espera]
-                        aProducir = [elGuardaPDeHoy, elGuarda2DeHoy]
-                        listaEspera = [elGuardaPDeManana, elGuarda2DeManana]
-                        aProducirFinal = [aProducir, listaEspera]
-                    elif opciom == 2:
-                        aProducir = cls.calcProduccionSedes(fecha)
-                        aProducirFinal = [aProducir, []]
-                    else:
-                        Main.printsInt2(10)
+                pSedePEspera = math.ceil(cls.calcProduccionSedes(fecha)[0][0]*0.3)
+                pSedeP = cls.calcProduccionSedes(fecha)[0][0] - pSedePEspera
+                cSedePEspera = math.ceil(cls.calcProduccionSedes(fecha)[0][1]*0.3)
+                cSedeP = cls.calcProduccionSedes(fecha)[0][1] - cSedePEspera
+                pSede2Espera = math.ceil(cls.calcProduccionSedes(fecha)[1][0]*0.3)
+                pSede2 = cls.calcProduccionSedes(fecha)[1][0] - pSede2Espera
+                cSede2Espera = math.ceil(cls.calcProduccionSedes(fecha)[1][1]*0.3)
+                cSede2 = cls.calcProduccionSedes(fecha)[1][1] - cSede2Espera
+                elGuardaPDeHoy = [pSedeP, cSedeP]
+                elGuarda2DeHoy = [pSede2, cSede2]
+                elGuardaPDeManana = [pSedePEspera, cSedePEspera]
+                elGuarda2DeManana = [pSede2Espera, cSede2Espera]
+                aProducir = [elGuardaPDeHoy, elGuarda2DeHoy]
+                listaEspera = [elGuardaPDeManana, elGuarda2DeManana]
+                
+                aProducirFinal = [aProducir, listaEspera]
+                print(f"La produccion final es: {aProducirFinal}")
+                
             elif senalRec == 0:
                 aProducir = cls.calcProduccionSedes(fecha)
-                aProducirFinal = [aProducir, []]
+                aProducirFinal = [aProducir, listaEsperaVacia.copy()]
         else:
             Main.printsInt2(11)
+        
+        recibeProdFinal(aProducirFinal)
         return aProducirFinal
 
     @classmethod

@@ -5,20 +5,19 @@ from tkinter import ttk
 import threading
 
 def producir(ventana:tk.Frame):
-    global indicaRepMalo
-    global frameDeTrabajo
+    global indicaRepMalo, frameDeTrabajo, descripcionF5
     framePrincipal =  tk.Frame(ventana, bg="blue")
     framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
 
-    frame1 = tk.Frame(framePrincipal, height=150)
+    frame1 = tk.Frame(framePrincipal)
     frame1.pack(side="top", fill="x")
 
-    tituloF5 = tk.Label(frame1, text="Producción", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-    tituloF5.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+    tituloF5 = tk.Label(frame1, text="Producción", bg="medium orchid", relief="ridge", height=3, font=("Arial",16, "bold"))
+    tituloF5.pack(fill="both", expand=True) 
     ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
-    descripcionF5 = tk.Label(frame1, text="Se registra la producción de prendas y actualiza su inventario: Se toma la cantidad necesaria del stock de materiales para fabricar nuevas prendas y se actualizan los datos, tanto de lo que se descontó de Stock como lo que se agregó a la cantidad de pendas.", relief="ridge")
-    descripcionF5.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
+    descripcionF5 = tk.Label(frame1, text="Se registra la producción de prendas y actualiza su inventario: Se toma la cantidad necesaria del stock de materiales para fabricar nuevas prendas y se actualizan los datos, tanto de lo que se descontó de Stock como lo que se agregó a la cantidad de pendas.", height=3,wraplength=800, font=("Arial", 10, "italic"))
+    descripcionF5.pack(fill="both", expand=True)
 
     frame2 = tk.Frame(framePrincipal, bg="light gray")
     frame2.pack(anchor="s",  expand=True, fill="both")
@@ -42,6 +41,7 @@ def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #cr
     global nomMaqProdDispSedeP, sedeMaqProdDispSedeP, horasUsoMaqProdDispSedeP
     global nomMaqProdDispSede2, sedeMaqProdDispSede2, horasUsoMaqProdDispSede2
     global textIndicador, senalizador
+    global aProdFinal
     proveedoresQueLlegan = []
     preciosProvQueLlegan = []
     totalGastado = 0
@@ -57,6 +57,7 @@ def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #cr
     horasUsoMaqProdDispSede2 = []
     textIndicador = None
     senalizador = 0
+    aProdFinal = []
     buscarProveedor(ventana, descrip1, botonContinuar)
     #Maquinaria.agruparMaquinasDisponibles(10)
 
@@ -78,6 +79,7 @@ indicaRepMalo = None
 frameDeTrabajo = None
 proveedorB = None
 botonProveedorB = None
+descripcionF5 = None
 
 senal2 = 0
 def buscarProveedor(ventana:tk.Frame, descrip1: tk.Label, botonContinuar:tk.Button):
@@ -393,8 +395,15 @@ def inicioInt2(event, containerBig, cont, field_frame, labelTG, cont2, field_fra
     btnPlanificarProd.pack(side="left", pady=5, padx=15)
     btnPlanificarProd.bind("<Button-1>", lambda event: planProduccionn(event, containerBig, cont, field_frame, cont2, field_frame2, contLabelYBoton, labelTextIndicador))
 
+aProdFinal = []
+def recibeProdFinal(aProdF):
+    global aProdFinal
+    aProdFinal = aProdF
+    #colocar evento_senalizador.set()
+
 def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLyB, labelTextInd):
     from src.uiMain.main import Main
+    global descripcionF5
     containerBig.destroy()
     cont.destroy()
     field_f1.destroy()
@@ -402,7 +411,28 @@ def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLy
     field_f2.destroy()
     contLyB.destroy()
     labelTextInd.destroy()
+    descripcionF5.destroy()
     event.widget.destroy()
+
+    contBigRecor = tk.Frame(frameDeTrabajo)
+    contBigRecor.pack(fill="x")
+
+    contRe1 = tk.Frame(contBigRecor)
+    contRe1.pack(pady=3)
+    recorderis = tk.Label(contRe1, text="Si en la produccion de hoy\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"))
+    recorderis.pack(side="left", padx=10, pady=2)
+    textRecorderis = tk.Label(contRe1, text="Sobre costo = 5000 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"))
+    textRecorderis.pack(side="left", padx=10, pady=2)
+    #separador
+    separador = ttk.Separator(contBigRecor, orient="horizontal")
+    separador.pack(fill="x", padx=50)
+    contRe2 = tk.Frame(contBigRecor)
+    contRe2.pack(pady=3)
+    recorderis2 = tk.Label(contRe2, text="Si en la produccion de la otra semana\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"))
+    recorderis2.pack(side="left", padx=10, pady=2)
+    textRecorderis2 = tk.Label(contRe2, text="Sobre costo = 2500 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"))
+    textRecorderis2.pack(side="left", padx=10, pady=2)
+
     Main.evento_ui.set()
 
 
