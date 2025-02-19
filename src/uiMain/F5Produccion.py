@@ -35,6 +35,7 @@ def producir(ventana:tk.Frame):
     
 def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #creo que al poner varias variables en global no sirve para modificarlas globalmente, verificar
     from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+    from src.uiMain.main import Main
     global proveedoresQueLlegan, preciosProvQueLlegan, totalGastado
     global nomListMaqRev, sedesListMaqRev
     global maqDisponibless
@@ -59,7 +60,7 @@ def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #cr
     buscarProveedor(ventana, descrip1, botonContinuar)
     #Maquinaria.agruparMaquinasDisponibles(10)
 
-    threading.Thread(target=Maquinaria.agruparMaquinasDisponibles, args=(10,), daemon=True).start()
+    threading.Thread(target=Maquinaria.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
     
 senal= 0
 def receptor(texto):
@@ -338,6 +339,7 @@ def inicioInt2(event, containerBig, cont, field_frame, labelTG, cont2, field_fra
     global textIndicador, senalizador, evento_senalizador
     from src.uiMain.fieldFrame import FieldFrame
     from src.gestorAplicacion.sede import Sede
+    from src.uiMain.main import Main
     containerBig.destroy()
     cont.destroy()
     field_frame.destroy()
@@ -345,7 +347,7 @@ def inicioInt2(event, containerBig, cont, field_frame, labelTG, cont2, field_fra
     cont2.destroy()
     field_frame2.destroy()
     event.widget.destroy()
-    threading.Thread(target=Sede.planProduccion, args=(maqDisponibless, 10), daemon=True).start()
+    threading.Thread(target=Sede.planProduccion, args=(maqDisponibless, Main.fecha), daemon=True).start()
 
     criterios = nomMaqProdDispSedeP
     valores = horasUsoMaqProdDispSedeP

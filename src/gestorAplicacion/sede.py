@@ -265,6 +265,7 @@ class Sede:
     def sobreCargada(cls, fecha: 'Fecha') -> int:
         senal = 0
         produccionSedes = cls.calcProduccionSedes(fecha)
+        #print(produccionSedes)
         modistas = cls.modistasQueHay()
         if modistas[0] > 0 and ((produccionSedes[0][0] + produccionSedes[0][1]) / modistas[0]) > 10:
             senal = 5
