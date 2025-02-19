@@ -583,7 +583,7 @@ def SistemaFinanciero(self)->tk.Frame:
         from src.uiMain.fieldFrame import FieldFrame
         ventana=self      
                     
-        def LeerF2(self, field_frame2, confirmacion2):
+        def LeerF2(self, field_frame2, texto2):
             from src.uiMain.startFrame import startFrame
             from src.uiMain.main import Main
             Porcentaje = FieldFrame.getValue(field_frame2, "Descuento")
@@ -591,8 +591,11 @@ def SistemaFinanciero(self)->tk.Frame:
             if Porcentaje != "0% / 100%":
                 Porcentaje = Porcentaje.strip("%")
                 startFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
-                confirmacion2.config(text="La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.diferencia_estimada))
-
+                texto2.config(state="normal")   # Habilitar edición
+                texto2.delete("1.0", "end")     # Eliminar texto actual
+                texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.diferencia_estimada), "center")  # Insertar nuevo texto
+                texto2.config(state="disabled") 
+                
         def Interaccion2(self):
             frame2.destroy()
             frame3.destroy()
@@ -611,7 +614,7 @@ def SistemaFinanciero(self)->tk.Frame:
             frame5 = tk.Frame(framePrincipal)
             frame5.pack(anchor="s", expand=True, fill="both")
             
-            boton1 = tk.Button(frame5, text="Aceptar", command=lambda: LeerF2(self, field_frame2, confirmacion2))
+            boton1 = tk.Button(frame5, text="Aceptar", command=lambda: LeerF2(self, field_frame2, texto2))
             boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
             
             boton2 = tk.Button(frame5, text="Siguiente", command=lambda: Interaccion3(self,frame4, frame5))
@@ -619,8 +622,17 @@ def SistemaFinanciero(self)->tk.Frame:
             
             confirmacion2 = tk.Label(frame5, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
             confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+            
+            texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+            texto2.pack(fill="both", expand=True)
+            texto2.tag_configure("center", justify="center",spacing1=10, spacing3=10)
 
-        def LeerF3(self,field_frame3, confirmacion3: tk.Label):
+            texto2.config(state="normal")   # Habilitar edición
+            texto2.delete("1.0", "end")     # Eliminar texto actual
+            texto2.insert("1.0", "Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", "center")  # Insertar nuevo texto
+            texto2.config(state="disabled") 
+
+        def LeerF3(self,field_frame3, texto3):
             from src.uiMain.main import Main
             seleccion = FieldFrame.getValue(field_frame3, "Bancos")
             banco=None
@@ -628,8 +640,11 @@ def SistemaFinanciero(self)->tk.Frame:
                 if Banco.getNombreEntidad(banco_actual) == seleccion:
                         banco = seleccion
                         break
-            c = Main.planRecuperacion(startFrame.diferencia_estimada,banco)  # Use float to handle percentage
-            confirmacion3.config(text=""+str(c))
+            c = Main.planRecuperacion(startFrame.diferencia_estimada,banco)  # Use float to handle percentage  
+            texto3.config(state="normal")   # Habilitar edición
+            texto3.delete("1.0", "end")     # Eliminar texto actual
+            texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
+            texto3.config(state="disabled") 
                 
             return c
             
@@ -688,7 +703,7 @@ def SistemaFinanciero(self)->tk.Frame:
             
             frame7 = tk.Frame(framePrincipal)
             frame7.pack(anchor="s", expand=True, fill="both")
-            boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(self, field_frame3, confirmacion3))
+            boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(self, field_frame3,texto3))
             boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
             
             boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion4(self, frame6, frameb, frame7))
@@ -696,12 +711,21 @@ def SistemaFinanciero(self)->tk.Frame:
             
             confirmacion3 = tk.Label(frame7, text="", anchor="center")
             confirmacion3.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
+            texto3 = tk.Text(confirmacion3, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+            texto3.pack(fill="both", expand=True)
+            texto3.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+            texto3.config(state="normal")   # Habilitar edición
+            
             if startFrame.diferencia_estimada > 0:
-                confirmacion3.config(text="El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", wraplength=600)
+                texto3.delete("1.0", "end")     # Eliminar texto actual
+                texto3.insert("1.0", "El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", "center")  # Insertar nuevo texto
+                texto3.config(state="disabled") 
             else:
-                confirmacion3.config(text="El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo",  wraplength=600)
+                texto3.delete("1.0", "end")     # Eliminar texto actual
+                texto3.insert("1.0", "El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo", "center")  # Insertar nuevo texto
+                texto3.config(state="disabled") 
 
-        def LeerF4(self,field_frame4, confirmacion4, descuento):
+        def LeerF4(self,field_frame4, texto4, descuento):
             from src.uiMain.startFrame import startFrame
             from src.uiMain.main import Main
             Porcentaje = FieldFrame.getValue(field_frame4, "Descuento entre 0% y 5%")
@@ -709,8 +733,11 @@ def SistemaFinanciero(self)->tk.Frame:
             if Porcentaje != str(descuento):
                 Porcentaje = Porcentaje.strip("%")
                 startFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
-                confirmacion4.config(text="La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro),wraplength=600)
 
+                texto4.config(state="normal")   # Habilitar edición
+                texto4.delete("1.0", "end")     # Eliminar texto actual
+                texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro), "center")  # Insertar nuevo texto
+                texto4.config(state="disabled") 
         
         def Interaccion4(self,frame6,frameb, frame7):
             from src.uiMain.main import Main
@@ -736,14 +763,22 @@ def SistemaFinanciero(self)->tk.Frame:
             frame9 = tk.Frame(framePrincipal)
             frame9.pack(anchor="s", expand=True, fill="both")
             
-            boton1 = tk.Button(frame9, text="Aceptar", command=lambda: LeerF4(self, field_frame4, confirmacion4, descuento))
+            boton1 = tk.Button(frame9, text="Aceptar", command=lambda: LeerF4(self, field_frame4, texto4, descuento))
             boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
             
             boton2 = tk.Button(frame9, text="Siguiente", command=lambda: Interaccion5(self, frame8, frame9))
             boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
             
-            confirmacion4 = tk.Label(frame9, text="Analizando posibilidad de hacer descuentos para subir las ventas...", anchor="center")
+            confirmacion4 = tk.Label(frame9, anchor="center")
             confirmacion4.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+            texto4 = tk.Text(confirmacion4, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+            texto4.pack(fill="both", expand=True)
+            texto4.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+
+            texto4.config(state="normal")   # Habilitar edición
+            texto4.delete("1.0", "end")     # Eliminar texto actual
+            texto4.insert("1.0", "Analizando posibilidad de hacer descuentos para subir las ventas...", "center")  # Insertar nuevo texto
+            texto4.config(state="disabled") 
         
         def Interaccion5(self,frame8, frame9):
             from src.uiMain.startFrame import startFrame
@@ -753,12 +788,15 @@ def SistemaFinanciero(self)->tk.Frame:
             s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(startFrame.diferencia_estimada)
             s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(startFrame.analisis_futuro)
             s4= "\n y por tanto el nuevo porcentaje de pesimismo de la producción es:\n" + str(Venta.getPesimismo())+ "."        
+            confirmacion5 = tk.Label(framePrincipal, anchor="center")
+            confirmacion5.place(relx=0, rely=0.3, relwidth=1, relheight=0.4)
+            texto5 = tk.Text(confirmacion5, width=50, height=5,bg="plum3", font=("Arial", 10))  # Usa valores válidos
+            texto5.pack(fill="both", expand=True)
+            texto5.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+            texto5.insert(1.0,s1+s2+s3+s4)
             
-            texto = tk.Text(framePrincipal,width=framePrincipal.winfo_width(),height=framePrincipal.winfo_height(), bg="plum3", font=("Arial", 10, "bold"))
-            texto.pack()
-            texto.insert(1.0,s1+s2+s3+s4)
-            boton2 = tk.Button(framePrincipal, text="Salir", command=lambda: startFrame.abrirFrameInicial(self))
-            boton2.place(relx=0.4, rely=0.9, relwidth=0.1, relheight=0.1, anchor="s")  
+            boton2 = tk.Button(framePrincipal, text="Salir", bg="medium orchid",command=lambda: startFrame.abrirFrameInicial(self))
+            boton2.place(relx=0.5, rely=0.9, relwidth=0.1, relheight=0.1, anchor="s")  
         
         
         def LeerF1(self):
@@ -783,7 +821,11 @@ def SistemaFinanciero(self)->tk.Frame:
                     if Empleado.getNombre(empleado_actual) == seleccion:
                         empleado = empleado_actual
                 startFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
-                confirmacion.config(text=EvaluacionFinanciera.informe(startFrame.balance_anterior))
+                
+                texto.config(state="normal")   # Habilitar edición
+                texto.delete("1.0", "end")     # Eliminar texto actual
+                texto.insert("1.0", EvaluacionFinanciera.informe(startFrame.balance_anterior), "center")  # Insertar nuevo texto
+                texto.config(state="disabled") 
             else: #Excepcion
                 combo.delete(0,"end")
 
@@ -797,7 +839,7 @@ def SistemaFinanciero(self)->tk.Frame:
                     elegible_empleados.append(empleado_actual.getNombre())
             return elegible_empleados
             
-        framePrincipal =  tk.Frame(ventana, bg="blue")
+        framePrincipal =  tk.Frame(ventana)
         framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
         frame1 = tk.Frame(framePrincipal, height=150)
         frame1.pack(side="top", fill="x")
@@ -827,9 +869,22 @@ def SistemaFinanciero(self)->tk.Frame:
         boton1.place(relx=0.4, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
         boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
         boton2.place(relx=0.6, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
-        confirmacion = tk.Label(frame3, text="Calculando la diferencia entre ingresos por venta y costos de producción...",  anchor="center")
+        confirmacion = tk.Frame(frame3)
         confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+
+        confirmacion.update_idletasks()  # Asegura que el tamaño se actualice correctamente
+
+        texto = tk.Text(confirmacion, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+        texto.pack(fill="both", expand=True)
+        texto.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+
+        # Insertar el texto con el tag "center"
+        texto.insert("1.0", "Calculando la diferencia entre ingresos por venta y costos de producción...", "center")
+
+        # Deshabilitar edición si solo quieres mostrar el texto
+        texto.config(state="disabled")
         return framePrincipal
+
 
 
 def pasarAVentanaPrincipal():

@@ -18,7 +18,7 @@ class infoSistema(tk.Frame):
         mensaje = """Bienvenido a ecomoda, 
 Haz click en la imagen para empezar"""
 
-        self.saludo = tk.Label(self.frameArriba, text=mensaje, justify="center", font=("Arial", 20))
+        self.saludo = tk.Label(self.frameArriba, text=mensaje, justify="center", font=("Arial", 18, "bold"))
         self.frameArriba.bind('<Configure>', lambda e: self.saludo.config(wraplength=self.frameArriba.winfo_width()*0.9))
         self.saludo.pack(expand=True)
         
