@@ -71,7 +71,7 @@ class Maquinaria:
         from src.uiMain.main import Main
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.bodega.insumo import Insumo
-        from src.uiMain.F5Produccion import receptor, recibeProveedorB, recibeMaqPaRevisar
+        from src.uiMain.F5Produccion import receptor, recibeProveedorB, recibeMaqPaRevisar, recibeMaqDisp
         
         print("ENTRÉ")
         
@@ -139,6 +139,8 @@ class Maquinaria:
                 #cadaMaquina.mantenimiento = False
         recibeProveedorB(None)
         recibeMaqPaRevisar(maquinasPaRevisar)
+        recibeMaqDisp(maqDisponibles)
+        print("finish interaccion 1")
         return maqDisponibles
 
     @classmethod

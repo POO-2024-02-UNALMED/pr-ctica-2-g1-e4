@@ -33,17 +33,29 @@ def producir(ventana:tk.Frame):
     indicaRepMalo = tk.Label(frame2, text="", bg="light gray")
     indicaRepMalo.place(relx=0.5, rely=0.35, anchor="center")
     
-def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):
+def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #creo que al poner varias variables en global no sirve para modificarlas globalmente, verificar
     from src.gestorAplicacion.bodega.maquinaria import Maquinaria
-    global proveedoresQueLlegan
-    global preciosProvQueLlegan
-    global totalGastado
-    global listMaqRev
+    global proveedoresQueLlegan, preciosProvQueLlegan, totalGastado
+    global nomListMaqRev, sedesListMaqRev
+    global maqDisponibless
+    global nomMaqProdDispSedeP, sedeMaqProdDispSedeP, horasUsoMaqProdDispSedeP
+    global nomMaqProdDispSede2, sedeMaqProdDispSede2, horasUsoMaqProdDispSede2
+    global textIndicador, senalizador
     proveedoresQueLlegan = []
     preciosProvQueLlegan = []
     totalGastado = 0
     nomListMaqRev = []
     sedesListMaqRev = []
+    
+    maqDisponibless = []
+    nomMaqProdDispSedeP = []
+    sedeMaqProdDispSedeP = []
+    horasUsoMaqProdDispSedeP = []
+    nomMaqProdDispSede2 = []
+    sedeMaqProdDispSede2 = []
+    horasUsoMaqProdDispSede2 = []
+    textIndicador = None
+    senalizador = 0
     buscarProveedor(ventana, descrip1, botonContinuar)
     #Maquinaria.agruparMaquinasDisponibles(10)
 
@@ -272,14 +284,118 @@ def resultadosRev():
     valores2 = sedesListMaqRev
     habilitado2 = [False for _ in range(len(nomListMaqRev))]
 
-    cont = tk.Frame(containerBig, bg="medium orchid")
-    cont.pack(side="left", pady=20, padx=5)
+    cont2 = tk.Frame(containerBig, bg="medium orchid")
+    cont2.pack(side="left", pady=20, padx=5)
     
-    field_frame = FieldFrame(cont, "Maquinas inhabilidas\npor falta de revisión:", criterios2, "", valores2, habilitado2)
-    field_frame.pack(padx=10, pady=10)
+    field_frame2 = FieldFrame(cont2, "Maquinas inhabilidas\npor falta de revisión:", criterios2, "", valores2, habilitado2)
+    field_frame2.pack(padx=10, pady=10)
 
     #labelTotalGastado = tk.Label(cont, text=f"Total gastado: {totalGastado} pesos", font=("Arial", 12, "italic"))
     #labelTotalGastado.pack(pady=10)
+
+    botonInt2 = tk.Button(frameDeTrabajo, text="Maquinaria Disponible", font=("Arial", 12, "bold italic"))
+    botonInt2.pack(pady=4)
+    botonInt2.bind("<Button-1>", lambda event: inicioInt2(event, containerBig, cont, field_frame, labelTotalGastado, cont2, field_frame2))
+
+maqDisponibless = []
+
+def recibeMaqDisp(maqDisponibles):
+    global maqDisponibless
+    maqDisponibless = maqDisponibles
+    
+
+nomMaqProdDispSedeP = []
+sedeMaqProdDispSedeP = []
+horasUsoMaqProdDispSedeP = []
+nomMaqProdDispSede2 = []
+sedeMaqProdDispSede2 = []
+horasUsoMaqProdDispSede2 = []
+def recibeMaqDispSeparadas(maqProdSedeP, maqProdSede2):
+    global nomMaqProdDispSedeP, sedeMaqProdDispSedeP, horasUsoMaqProdDispSedeP
+    global nomMaqProdDispSede2, sedeMaqProdDispSede2, horasUsoMaqProdDispSede2
+    for maquinasSedeP in maqProdSedeP:
+        nomMaqProdDispSedeP.append(maquinasSedeP.getNombre())
+        sedeMaqProdDispSedeP.append(maquinasSedeP.getSede().getNombre())
+        horasUsoMaqProdDispSedeP.append(maquinasSedeP.getHorasUso())
+    for maquinasSede2 in maqProdSede2:
+        nomMaqProdDispSede2.append(maquinasSede2.getNombre())
+        sedeMaqProdDispSede2.append(maquinasSede2.getSede().getNombre())
+        horasUsoMaqProdDispSede2.append(maquinasSede2.getHorasUso())
+
+textIndicador = None
+senalizador = 0
+evento_senalizador = threading.Event()
+def recibeTextIndicador(textRecibido, senal):
+    global textIndicador, senalizador, evento_senalizador
+    textIndicador = textRecibido
+    senalizador = senal
+    evento_senalizador.set()
+
+def inicioInt2(event, containerBig, cont, field_frame, labelTG, cont2, field_frame2):
+    global maqDisponibless
+    global nomMaqProdDispSedeP, sedeMaqProdDispSedeP, horasUsoMaqProdDispSedeP
+    global nomMaqProdDispSede2, sedeMaqProdDispSede2, horasUsoMaqProdDispSede2
+    global textIndicador, senalizador, evento_senalizador
+    from src.uiMain.fieldFrame import FieldFrame
+    from src.gestorAplicacion.sede import Sede
+    containerBig.destroy()
+    cont.destroy()
+    field_frame.destroy()
+    labelTG.destroy()
+    cont2.destroy()
+    field_frame2.destroy()
+    event.widget.destroy()
+    threading.Thread(target=Sede.planProduccion, args=(maqDisponibless, 10), daemon=True).start()
+
+    criterios = nomMaqProdDispSedeP
+    valores = horasUsoMaqProdDispSedeP
+    habilitado = [False for _ in range(len(nomMaqProdDispSedeP))]
+
+    containerBig = tk.Frame(frameDeTrabajo, bg="light gray")
+    containerBig.pack(pady=4)
+
+    evento_senalizador.wait()
+    evento_senalizador.clear()
+    #print(f"\nsenalizador = {senalizador}")
+    if senalizador == 2:
+        cont = tk.Frame(containerBig, bg="gray")
+        cont.pack(side="left", padx=5, pady=20)
+    else:
+        cont = tk.Frame(containerBig, bg="medium orchid")
+        cont.pack(side="left", padx=5, pady=20)
+    
+    field_frame = FieldFrame(cont, "Sede Pincipal", criterios, "", valores, habilitado)
+    field_frame.pack(padx=10, pady=10)
+
+    criterios2 = nomMaqProdDispSede2
+    valores2 = horasUsoMaqProdDispSede2
+    habilitado2 = [False for _ in range(len(nomMaqProdDispSede2))]
+
+    if senalizador == 1:
+        cont2 = tk.Frame(containerBig, bg="gray")
+        cont2.pack(side="left", padx=5,pady=20)
+    else:
+        cont2 = tk.Frame(containerBig, bg="medium orchid")
+        cont2.pack(side="left", padx=5,pady=20)
+    
+    field_frame2 = FieldFrame(cont2, "Sede 2", criterios2, "", valores2, habilitado2)
+    field_frame2.pack(padx=10, pady=10)
+
+    labelTextIndicador = tk.Label(frameDeTrabajo, text=textIndicador, font=("Arial", 14, "bold"), bg="light gray")
+    labelTextIndicador.pack(pady=5)
+
+    btnPlanificarProd = tk.Button(frameDeTrabajo, text="Planificar Produccion", font=("Arial", 12, "bold italic"))
+    btnPlanificarProd.pack(pady=8)
+    btnPlanificarProd.bind("<Button-1>", planProduccionn)
+
+def planProduccionn(event):
+    from src.uiMain.main import Main
+    Main.evento_ui.set()
+
+
+    
+
+
 
     
         

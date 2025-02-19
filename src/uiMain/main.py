@@ -1015,11 +1015,12 @@ class Main:
             else:
                 print("Opción inválida. Intente nuevamente.")
 
-    def printsInt2(senall):
+    @classmethod
+    def printsInt2(cls, senall):
         mensajes = {
-            1: "La Sede 2 no está trabajando por falta de maquinaria disponible...\n1. ¿Desea producir todo hoy desde la Sede Principal?\n2. ¿Desea producir mañana lo de la Sede 2 desde la sede Principal?",
+            1: "Sede Principal disponible\nLa Sede 2 no puede trabajar por falta de maquinaria...",
             2: "\n Marque una opcion correcta entre 1 o 2...\n",
-            3: "La Sede Principal no esta trabajando por falta de maquinaria disponible...\n1. ¿Desea producir todo hoy desde la Sede 2\n2. ¿Desea producir mañana lo de la Sede Principal desde la sede 2?",
+            3: "Sede 2 disponible\nLa Sede Principal no puede trabajar por falta de maquinaria...",
             4: "\n Marque una opcion correcta entre 1 o 2...\n",
             5: "La Sede Principal esta sobrecargada, ¿Que desea hacer? \n1. Enviar parte de la produccion a la Sede 2, para producir por partes iguales.\n2. Ejecutar produccion, asumiendo todo el costo por sobrecarga en la Sede Principal.",
             6: "Coloca una opcion indicada entre 1 o 2...",
@@ -1027,9 +1028,12 @@ class Main:
             8: "Coloca una opcion indicada entre 1 o 2...",
             9: "Las dos sedes estan sobrecargadas, ¿Que quieres hacer?...\n1. Producir mañana las prendas que generan sobrecarga.\n2. Producir todo hoy, asumiendo el costo por sobrecarga.",
             10: "Seleccione una opcion indicada entre 1 o 2...",
-            11: "\n Lo sentimos, se debe arreglar la maquinaria en alguna de las dos sedes para comenzar a producir...\n"
+            11: "\n Lo sentimos, se debe arreglar la maquinaria en alguna de las dos sedes para comenzar a producir...\n",
+            
+            12: "Las dos sedes están disponibles"
         }
         print(mensajes.get(senall, ""))
+        return mensajes.get(senall)
 
     @classmethod
     def printsInt1(cls, signal, rep, maq, sede):
@@ -1257,7 +1261,7 @@ class Main:
         MaquinaDeCorte = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte, sedeP, 701)
         PlanchaIndustrial = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI, sedeP)
         BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP)
-        MaquinaDeTermofijado = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado, sedeP)
+        MaquinaDeTermofijado = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado, sedeP, 1001)
         MaquinaDeTijereado = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado,sedeP, 601)
         Impresora = Maquinaria("Impresora", 800000, 2000, repuestosImp, sedeP)
         Registradora = Maquinaria("Caja Registradora", 700000, 17000, repuestosRe, sedeP)
