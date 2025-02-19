@@ -40,9 +40,6 @@ class ImagenSistemaYSalida(tk.Frame):
         self.foto.bind("<Enter>", lambda e:  self.actualizarImagenSistema(True))
         self.window.bind("<Map>", lambda e: self.actualizarImagenSistema(False))
         self.bind("<Configure>", lambda e: self.actualizarImagenSistema(False))
-
-        self.inicio = tk.Button(master = self,text="Seguir a la ventana principal", command= lambda : self.pasarAPrincipal())
-        self.inicio.grid(row = 1, column = 0)
+        self.foto.bind("<Button-1>", lambda e: self.pasarAPrincipal())
         self.columnconfigure(0,weight=3)
         self.rowconfigure(0,weight=10)
-        self.rowconfigure(1,weight=2)
