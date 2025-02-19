@@ -36,7 +36,7 @@ class Empleado(Persona, GastoMensual):
     def gastoMensualClase():
         gasto=0
         for emp in Sede.getListaEmpleadosTotal():
-            gasto+=emp.calcularGastoMensual()
+            gasto+=Empleado.calcularGastoMensual(emp)
         return gasto
     
     def calcularRendimiento(self, fecha: Fecha) -> float:
@@ -77,8 +77,8 @@ class Empleado(Persona, GastoMensual):
         listaATransferir = [[] for _ in Sede.getListaSedes()]
 
         for sede in Sede.getListaSedes():
-            for emp in sede.getListaEmpleados():
-                rendimiento = emp.calcularRendimiento(fecha)
+            for emp in Sede.getListaEmpleados(sede):
+                rendimiento = Empleado.calcularRendimiento(emp,fecha)
                 seVaADespedir = False
                 rendimientoDeseado = emp.sede.getRendimientoDeseado(emp.areaActual, fecha)
                 if rendimiento < rendimientoDeseado:
@@ -133,7 +133,7 @@ class Empleado(Persona, GastoMensual):
     @classmethod
     def despedirEmpleados(cls, empleados:List, conTransaccciones:bool, fecha:Fecha):
         for empleado in empleados:
-            empleado.sede.quitarEmpleado(empleado)
+            Empleado.sede.quitarEmpleado(empleado)
             Sede.getListaEmpleadosTotal().remove(empleado)
             if conTransaccciones:
                 aPagar:int = Maquinaria.remuneracionDanos(empleado)

@@ -40,9 +40,13 @@ class startFrame(tk.Tk):
         self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
         self.procesosMenu.add_command(label="Despedir y reemplazar empleados", command = lambda :self.abrirGestionHumana())
+        self.procesosMenu.add_separator()
         self.procesosMenu.add_command(label="Pedir insumos", command = lambda : self.eliminarF2())
+        self.procesosMenu.add_separator()
         self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.eliminarF3())
+        self.procesosMenu.add_separator()
         self.procesosMenu.add_command(label="Facturacion", command = lambda : self.eliminarF4())
+        self.procesosMenu.add_separator()
         self.procesosMenu.add_command(label="Producir prendas", command= lambda : self.iniciarProduccion())
 
         self.ayudaMenu = tk.Menu(self.barraMenus, tearoff=0)

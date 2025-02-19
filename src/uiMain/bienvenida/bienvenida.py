@@ -19,10 +19,13 @@ class Aplication(tk.Frame):
 
 
     def create_widgets(self):
-        self.titulo = tk.Label(self)
-        self.titulo["font"] = ("Arial", 30, "bold")
-        self.titulo["text"] = "Inicio"
-        self.titulo.grid(row = 0, column = 0,columnspan=2, sticky="w", padx=5)
+        self.barraMenus = tk.Menu(self.master)
+        self.master.config(menu=self.barraMenus)
+        self.inicioMenu = tk.Menu(self.barraMenus, tearoff=0,)
+        self.barraMenus.add_cascade(label="Inicio", menu=self.inicioMenu)
+        self.inicioMenu.add_command(label="Salir")
+        self.inicioMenu.add_separator()
+        self.inicioMenu.add_command(label="Descripción")
 
         self.infoSistema = infoSistema(window = self.master, master = self)
         self.infoSistema.grid(row = 1, column = 1, sticky="sewn")
