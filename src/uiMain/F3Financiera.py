@@ -3,14 +3,8 @@ import tkinter as tk
 from tkinter.font import Font
 from tkinter import ttk as ttk
 
-from src.gestorAplicacion.administracion.banco import Banco
-from src.gestorAplicacion.administracion.deuda import Deuda
-from src.gestorAplicacion.administracion.empleado import Empleado
-from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
-from src.gestorAplicacion.venta import Venta
-from src.uiMain.fieldFrame import FieldFrame
-
 class F3Financiera(tk.Frame):
+    
 
     def __init__(self,master):
         super().__init__(master)
@@ -18,6 +12,12 @@ class F3Financiera(tk.Frame):
 
 
     def SistemaFinanciero(ventana:tk.Frame)->tk.Frame:
+        from src.gestorAplicacion.administracion.banco import Banco
+        from src.gestorAplicacion.administracion.deuda import Deuda
+        from src.gestorAplicacion.administracion.empleado import Empleado
+        from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
+        from src.gestorAplicacion.venta import Venta
+        from src.uiMain.fieldFrame import FieldFrame
                     
         def LeerF2(field_frame2, confirmacion2):
             from src.uiMain.startFrame import startFrame
@@ -124,17 +124,17 @@ class F3Financiera(tk.Frame):
             frame7 = tk.Frame(framePrincipal)
             frame7.pack(anchor="s", expand=True, fill="both")
             boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(field_frame3, confirmacion3))
-            boton1.place(relx=0.4, rely=0.7, relwidth=0.1, relheight=0.2, anchor="s")            
+            boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
             
             boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion4(frame6, frameb, frame7))
-            boton2.place(relx=0.6, rely=0.7, relwidth=0.1, relheight=0.2, anchor="s")
+            boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
             
             confirmacion3 = tk.Label(frame7, text="", anchor="center")
-            confirmacion3.place(relx=0, rely=0.8, relwidth=1, relheight=0.3)
+            confirmacion3.place(relx=0, rely=0.8, relwidth=1, relheight=0.4)
             if Main.diferenciaEstimado > 0:
-                confirmacion3.config("El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", wraplength=confirmacion3.winfo_width)
+                confirmacion3.config(text="El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", wraplength=confirmacion3.winfo_width())
             else:
-                confirmacion3.config("El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo",  wraplength=confirmacion3.winfo_width)
+                confirmacion3.config(text="El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo",  wraplength=confirmacion3.winfo_width())
 
         def LeerF4(field_frame4, confirmacion4, descuento):
             from src.uiMain.startFrame import startFrame
@@ -184,20 +184,17 @@ class F3Financiera(tk.Frame):
             from src.uiMain.startFrame import startFrame
             frame8.destroy()
             frame9.destroy()
-            frame10 = tk.Frame(framePrincipal)
-            frame10.pack(anchor="s", expand=True, fill="both") 
             s1="\nSegún la evaluación del estado Financiero actual: " + "\n"+str(EvaluacionFinanciera.informe(startFrame.balance_anterior))
             s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos. \n"+ str(startFrame.diferencia_estimada)
             s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(startFrame.analisis_futuro)
-            s4=" y por tanto el nuevo porcentaje de pesimismo de la producción es:" + str(Venta.getPesimismo())+ "."       
- 
-            confirmacion5 = tk.Label(frame9, text="", anchor="center")
-            confirmacion5.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
-            final = tk.Text(frame10,bg="plum3")
-            final.insert(1.0, s1+s2+s3+s4)
+            s4=" y por tanto el nuevo porcentaje de pesimismo de la producción es:" + str(Venta.getPesimismo())+ "."        
             
-            boton2 = tk.Button(frame10, text="Salir", command=lambda: startFrame.abrirFrameInicial())
-            boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")   
+            texto = tk.Text(framePrincipal,width=framePrincipal.winfo_width(),height=framePrincipal.winfo_height())
+            texto.pack()
+            texto.insert(1.0,s1+s2+s3+s4)
+             
+            boton2 = tk.Button(framePrincipal, text="Salir", command=lambda: startFrame.abrirFrameInicial())
+            boton2.place(relx=0.6, rely=0.9, relwidth=0.1, relheight=0.1, anchor="s")  
         
         
         def LeerF1():

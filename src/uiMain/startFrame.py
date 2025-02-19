@@ -2,6 +2,7 @@
 # O en el caso respectivo, no dibuja una funcionalidad, sino frameInicial.
 import os
 import tkinter as tk
+from tkinter import ttk
 from tkinter.font import Font
 import sys
 from src.gestorAplicacion.administracion.empleado import Empleado
@@ -78,7 +79,7 @@ class startFrame(tk.Tk):
     def eliminarF3(self):
         self.pagina="financiera"
         self.areaPrincipal.destroy()
-        self.cambiarFrame(F3Financiera(self))
+        self.cambiarFrame(SistemaFinanciero(self))
 
     def iniciarProduccion(self):
         self.pagina="produccion"
@@ -565,7 +566,268 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 #-------------------------------------------------- Producción -------------------------------------------------------------------
 
 
+#----------------------------------------------Sistema Financiero------------------------------------------------------------------------
+
+def SistemaFinanciero(self)->tk.Frame:
+        from src.gestorAplicacion.administracion.banco import Banco
+        from src.gestorAplicacion.administracion.deuda import Deuda
+        from src.gestorAplicacion.administracion.empleado import Empleado
+        from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
+        from src.gestorAplicacion.venta import Venta
+        from src.uiMain.fieldFrame import FieldFrame
+        ventana=self      
+                    
+        def LeerF2(self, field_frame2, confirmacion2):
+            from src.uiMain.startFrame import startFrame
+            from src.uiMain.main import Main
+            Porcentaje = FieldFrame.getValue(field_frame2, "Descuento")
+            
+            if Porcentaje != "0% / 100%":
+                Porcentaje = Porcentaje.strip("%")
+                startFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
+                confirmacion2.config(text="La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.diferencia_estimada))
+
+        def Interaccion2(self):
+            frame2.destroy()
+            frame3.destroy()
+            
+            frame4 = tk.Frame(framePrincipal)
+            frame4.pack(anchor="s", expand=True, fill="both")
+            
+            criterios = ["Descuento"]
+            valores = ["0% / 100%"]
+            habilitado = [True]
+            
+            # Creamos el FieldFrame con los botones
+            field_frame2 = FieldFrame(frame4, "Ingrese porcentaje a modificar para:", criterios, "fidelidad de los clientes sin membresía", valores, habilitado)
+            field_frame2.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
+            
+            frame5 = tk.Frame(framePrincipal)
+            frame5.pack(anchor="s", expand=True, fill="both")
+            
+            boton1 = tk.Button(frame5, text="Aceptar", command=lambda: LeerF2(self, field_frame2, confirmacion2))
+            boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
+            
+            boton2 = tk.Button(frame5, text="Siguiente", command=lambda: Interaccion3(self,frame4, frame5))
+            boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+            
+            confirmacion2 = tk.Label(frame5, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
+            confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+
+        def LeerF3(self,field_frame3, confirmacion3: tk.Label):
+            from src.uiMain.main import Main
+            seleccion = FieldFrame.getValue(field_frame3, "Bancos")
+            banco=None
+            for banco_actual in Banco.getListaBancos():
+                if Banco.getNombreEntidad(banco_actual) == seleccion:
+                        banco = seleccion
+                        break
+            c = Main.planRecuperacion(startFrame.diferencia_estimada,banco)  # Use float to handle percentage
+            print(c)
+            confirmacion3.config(text=""+str(c))
+                
+            return c
+            
+        def listaBancos(self, frameb):
+            
+            bancos=Banco.getListaBancos()
+
+            tituloNombre=tk.Label(frameb, text="Nombre", font=("Arial", 10))
+            tituloDeuda=tk.Label(frameb, text="Deuda inicial", font=("Arial", 10))
+            tituloAhorro=tk.Label(frameb, text="Ahorros", font=("Arial", 10))
+            tituloInter=tk.Label(frameb, text="Interés", font=("Arial", 10))
+            
+            tituloNombre.grid(row=2, column=0)
+            tituloDeuda.grid(row=2, column=1)
+            tituloAhorro.grid(row=2, column=2)
+            tituloInter.grid(row=2, column=3)
+
+            for row, banco in enumerate(bancos):
+                nombre = tk.Label(frameb, text=Banco.getNombreEntidad(banco), font=("Arial", 10))
+                deudaInicial=0
+                for deuda in Banco.getDeuda(banco):
+                    deudaInicial+=Deuda.getValorInicialDeuda(deuda)
+                deuda = tk.Label(frameb, text=deudaInicial, font=("Arial", 10))
+                ahorro = tk.Label(frameb, text=Banco.getAhorroBanco(banco), font=("Arial", 10))
+                Interes = tk.Label(frameb, text=Banco.getInteres(banco), font=("Arial", 10))
+                nombre.grid(row=row+3, column=0)
+                deuda.grid(row=row+3, column=1)
+                ahorro.grid(row=row+3, column=2)
+                Interes.grid(row=row+3, column=3)
+            
+            frameb.rowconfigure(0, weight=0)
+            frameb.rowconfigure(1, weight=4)
+            frameb.columnconfigure(0, weight=2)# Empleado insuficiente
+            frameb.columnconfigure(1, weight=1)# area
+            frameb.columnconfigure(2, weight=1)# rendimiento
+            frameb.columnconfigure(3, weight=1)# rendimiento esperado
+       
+        def Interaccion3(self,frame4,frame5):
+            from src.uiMain.main import Main
+            frame4.destroy()
+            frame5.destroy()
+            frame6 = tk.Frame(framePrincipal, bg="light gray")
+            frame6.pack(anchor="s",  expand=True, fill="both")
+            criterios = ["Bancos"]
+            valores = ["Ingrese nombre"]
+            habilitado = [True]
+            # Creamos el FieldFrame con los botones
+            field_frame3 = FieldFrame(frame6, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
+            field_frame3.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
+
+            frameb = tk.Frame(framePrincipal)
+            frameb.pack(anchor="s", expand=True, fill="both")
+            labelBanco= tk.Frame(frameb)
+            labelBanco.place(relx=0, rely=0, relwidth=1, relheight=1)
+            listaBancos(self,labelBanco)
+            
+            frame7 = tk.Frame(framePrincipal)
+            frame7.pack(anchor="s", expand=True, fill="both")
+            boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(self, field_frame3, confirmacion3))
+            boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
+            
+            boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion4(self, frame6, frameb, frame7))
+            boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
+            
+            confirmacion3 = tk.Label(frame7, text="", anchor="center")
+            confirmacion3.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
+            if startFrame.diferencia_estimada > 0:
+                confirmacion3.config(text="El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", wraplength=600)
+            else:
+                confirmacion3.config(text="El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo",  wraplength=600)
+
+        def LeerF4(self,field_frame4, confirmacion4, descuento):
+            from src.uiMain.startFrame import startFrame
+            from src.uiMain.main import Main
+            Porcentaje = FieldFrame.getValue(field_frame4, "Descuento entre 0% y 5%")
+            
+            if Porcentaje != str(descuento):
+                Porcentaje = Porcentaje.strip("%")
+                startFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
+                confirmacion4.config(text="La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro),wraplength=600)
+
+        
+        def Interaccion4(self,frame6,frameb, frame7):
+            from src.uiMain.main import Main
+            frame6.destroy()
+            frameb.destroy()
+            frame7.destroy()
+            
+            frame8 = tk.Frame(framePrincipal)
+            frame8.pack(anchor="s", expand=True, fill="both")
+            descuento = Venta.blackFriday(Main.fecha)
+            resultado="si"
+            if descuento <= 0.0:
+                resultado="no"
+                
+            criterios = ["Descuento entre 0% y 5%"]
+            valores = [str(descuento*100)]
+            habilitado = [True]
+            
+            # Creamos el FieldFrame con los botones
+            field_frame4 = FieldFrame(frame8, ("Según las Ventas anteriores, aplicar descuentos"+resultado+" funcionará"), criterios, "¿Desea Cambiar el siguiente descuento:?", valores, habilitado)
+            field_frame4.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
+            
+            frame9 = tk.Frame(framePrincipal)
+            frame9.pack(anchor="s", expand=True, fill="both")
+            
+            boton1 = tk.Button(frame9, text="Aceptar", command=lambda: LeerF4(self, field_frame4, confirmacion4, descuento))
+            boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
+            
+            boton2 = tk.Button(frame9, text="Siguiente", command=lambda: Interaccion5(self, frame8, frame9))
+            boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+            
+            confirmacion4 = tk.Label(frame9, text="Analizando posibilidad de hacer descuentos para subir las ventas...", anchor="center")
+            confirmacion4.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+        
+        def Interaccion5(self,frame8, frame9):
+            from src.uiMain.startFrame import startFrame
+            frame8.destroy()
+            frame9.destroy()
+            s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(startFrame.balance_anterior))
+            s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(startFrame.diferencia_estimada)
+            s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(startFrame.analisis_futuro)
+            s4= "\n y por tanto el nuevo porcentaje de pesimismo de la producción es:\n" + str(Venta.getPesimismo())+ "."        
+            
+            texto = tk.Text(framePrincipal,width=framePrincipal.winfo_width(),height=framePrincipal.winfo_height(), bg="plum3", font=("Arial", 10, "bold"))
+            texto.pack()
+            texto.insert(1.0,s1+s2+s3+s4)
+            boton2 = tk.Button(framePrincipal, text="Salir", command=lambda: startFrame.abrirFrameInicial(self))
+            boton2.place(relx=0.4, rely=0.9, relwidth=0.1, relheight=0.1, anchor="s")  
+        
+        
+        def LeerF1(self):
+            from src.uiMain.main import Main
+            from src.uiMain.startFrame import startFrame
+            eleccionDeuda=0
+            resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
+            resultadosB=FieldFrame.getValue(field_frame,"Banco")
+            if resultadosP.lower()!="si/no" and resultadosB.lower()!="si/no" and combo.get()!="":
+                from src.uiMain.main import Main
+                cosa=combo.get()
+                if resultadosP.lower() == "si" and resultadosB.lower()=="no":
+                    elecionDeuda = 1
+                elif resultadosP.lower() == "no" and resultadosB.lower()=="si":
+                    elecionDeuda = 2
+                elif resultadosP.lower() == "si" and resultadosB.lower()=="si":
+                    elecionDeuda = 3
+                from src.gestorAplicacion.sede import Sede
+                empleado=None
+                for empleado_actual in Sede.getListaEmpleadosTotal():
+                    seleccion=combo.get()
+                    if Empleado.getNombre(empleado_actual) == seleccion:
+                        empleado = empleado_actual
+                startFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
+                confirmacion.config(text=EvaluacionFinanciera.informe(startFrame.balance_anterior))
+            else: #Excepcion
+                combo.delete(0,"end")
+
+        def Directivos():
+            from src.gestorAplicacion.administracion.area import Area
+            from src.gestorAplicacion.sede import Sede
+            
+            elegible_empleados = []
+            for empleado_actual in Sede.getListaEmpleadosTotal():
+                if empleado_actual.getAreaActual() == Area.DIRECCION:
+                    elegible_empleados.append(empleado_actual.getNombre())
+            return elegible_empleados
+            
+        framePrincipal =  tk.Frame(ventana, bg="blue")
+        framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+        frame1 = tk.Frame(framePrincipal, height=150)
+        frame1.pack(side="top", fill="x")
+        tituloF3 = tk.Label(frame1, text="Gestión Financiera", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+        tituloF3.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+        ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
+        descripcionF3 = tk.Label(frame1, text="Se realiza una evaluación del estado financiero de la empresa haciendo el cálculo de los activos y los pasivos, para indicarle al usuario qué tan bien administrada está, mostrandole los resulatdos y su significado", relief="ridge", wraplength=600)
+        descripcionF3.place(relx=1, rely=0.7, relwidth=1, relheight=0.4, anchor="e")
+        frame2 = tk.Frame(framePrincipal)
+        frame2.pack(anchor="s",  expand=True, fill="both")
+        criterios = ["Proveedor", "Banco"]
+        valores = ["Si/No", "Si/No"]
+        habilitado = [True, True]
+        # Creamos el FieldFrame con los botones
+        field_frame = FieldFrame(frame2, "Desea calcular las ", criterios, "siguientes Deudas", valores, habilitado)
+        field_frame.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
+        frame3 = tk.Frame(framePrincipal)
+        frame3.pack(anchor="s",  expand=True, fill="both")
+        label7 = tk.Label(frame3, text="Directivos disponibles:",anchor="w", font=("Arial",12, "bold"))
+        label7.place(relx=0.5, rely=0.6, relwidth=1, relheight=1, anchor="s")
+        label7.config(padx=200)
+        Lista=Directivos()
+        placeholder = tk.StringVar(master=label7, value="Elije al directivo")
+        combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
+        combo.place(relx=0.5, rely=0.6, relwidth=0.5, relheight=0.2, anchor="s")
+        boton1 = tk.Button(frame3, text="Aceptar", command = lambda: LeerF1(self))
+        boton1.place(relx=0.4, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+        boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
+        boton2.place(relx=0.6, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+        confirmacion = tk.Label(frame3, text="Calculando la diferencia entre ingresos por venta y costos de producción...",  anchor="center")
+        confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+        return framePrincipal
+
 
 def pasarAVentanaPrincipal():
     ventana = startFrame()
     ventana.mainloop()
+    
