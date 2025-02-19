@@ -7,7 +7,7 @@ from tkinter.font import Font
 import sys
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.uiMain.F4Facturaccion import Facturar
-from src.uiMain.Excepciones.exceptionC1 import ExceptionC1
+from src.uiMain.Excepciones.exceptionC1 import *
 from src.uiMain.main import Main
 from src.uiMain.F3Financiera import F3Financiera
 from src.uiMain.F5Produccion import producir
@@ -189,14 +189,17 @@ class startFrame(tk.Tk):
             camposVacios.append("Mes")  
         if not FAño:  
             camposVacios.append("Año")  
-
-        if camposVacios:  
-            mensaje = f"Debes llenar los siguientes campos antes de continuar: ".format(", ".join(camposVacios))
-            vacio = ExceptionC1(mensaje)
-            vacio.contenidoVacio()  
-            self.borrar()  
-            self.after(100, self.Ok)  
-            return  
+        
+        try:
+            hayExcepcion = False
+            if camposVacios: 
+                hayExcepcion = True
+            if hayExcepcion:
+                raise ExcepcionContenidoVacio(camposVacios)
+        except ExcepcionContenidoVacio as viejaMetida:
+            messagebox.showwarning(title="Alerta",message=viejaMetida.mensaje_completo)
+            return hayExcepcion
+               
         self.ingresarFecha(FDia,FMes,FAño)
         if isinstance(self.ingresarFecha(FDia,FMes,FAño),Fecha):
             self.confirmacion.config(text="Fecha ingresada correctamente, estamos en "+Main.fecha.strCorto())
