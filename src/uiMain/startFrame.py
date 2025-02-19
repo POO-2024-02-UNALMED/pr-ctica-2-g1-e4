@@ -67,21 +67,25 @@ class startFrame(tk.Tk):
     # ANCHOR eliminar f2
 
     def eliminarF2(self):
+        self.Ok()
         self.pagina="insumos"
         self.areaPrincipal.destroy()
         self.cambiarFrame(self.crearInsumos(self))
         
     def eliminarF4(self):
+        self.Ok()
         self.pagina="facturacion"
         self.areaPrincipal.destroy()
         self.cambiarFrame(Facturar(self))
         
     def eliminarF3(self):
+        self.Ok()
         self.pagina="financiera"
         self.areaPrincipal.destroy()
         self.cambiarFrame(SistemaFinanciero(self))
 
     def iniciarProduccion(self):
+        self.Ok()
         self.pagina="produccion"
         self.areaPrincipal.destroy()
         self.cambiarFrame(producir(self))
@@ -161,9 +165,9 @@ class startFrame(tk.Tk):
         self.confirmacion = tk.Label(self.contenedorFecha, text="",  anchor="w")
         self.confirmacion.place(relx=0.5, rely=0.9, relwidth=1, relheight=0.05, anchor="n")
 
-        self.enviarFecha=tk.Button(self.contenedorFecha,text="Enviar")
+        self.enviarFecha=tk.Button(self.contenedorFecha,text="Enviar", command=lambda:  self.Ok())
         self.enviarFecha.place(relx=0.820, rely=0.8, relwidth=0.1, relheight=0.1, anchor="n")
-        self.enviarFecha.bind("<Button-1>", self.Ok)
+        self.enviarFecha.bind("<Button-1>")
         
         self.frameInicial.rowconfigure(0, weight=1)
         self.frameInicial.rowconfigure(1, weight=3)
@@ -172,7 +176,7 @@ class startFrame(tk.Tk):
 
 
         # Función que se ejecutará al presionar el botón
-    def Ok(self,event):
+    def Ok(self):
         # Leer los valores de las entradas
         FDia = self.entradaDia.get() # Obtener el texto de la entrada para el día
         FMes = self.entradaMes.get() # Obtener el texto de la entrada para el mes
@@ -210,6 +214,8 @@ class startFrame(tk.Tk):
         fecha=None
         partes = diaI.split()
         numero=-1
+        if diaI=="d/ " or mesI=="m/ " or añoI=="a/ ":
+            error.fechaNoValidada()
         if partes[-1].isdigit():
             numero = int(partes[-1])
         dia = numero
@@ -623,7 +629,6 @@ def SistemaFinanciero(self)->tk.Frame:
                         banco = seleccion
                         break
             c = Main.planRecuperacion(startFrame.diferencia_estimada,banco)  # Use float to handle percentage
-            print(c)
             confirmacion3.config(text=""+str(c))
                 
             return c
