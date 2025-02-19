@@ -52,3 +52,6 @@ class Area(Enum):
 
     def getMaquinariaNecesaria(self):
         return self.maquinariaNecesaria
+    
+    def getNombre(self):
+        return self.nombre

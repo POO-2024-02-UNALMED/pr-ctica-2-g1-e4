@@ -36,9 +36,10 @@ class Persona:
     @staticmethod
     def setListaPersonas(lista):
         Persona.listaPersonas = lista  # Used when deserializing
-    @staticmethod
-    def entrevistar(aReemplazar):
-        rolesAReemplazar = []; cantidad = []
+    @classmethod
+    def entrevistar(cls,aReemplazar):
+        rolesAReemplazar = [];
+        cantidad = []
         for empleado in aReemplazar:
             if empleado.getRol() not in rolesAReemplazar:
                 rolesAReemplazar.append(empleado.getRol())
@@ -46,10 +47,10 @@ class Persona:
             rolIdx = rolesAReemplazar.index(empleado.getRol())
             cantidad[rolIdx] += 1
         aptos = []
-        for persona in Persona.listaPersonas:
+        for persona in cls.listaPersonas:
             if not persona.trabaja and persona.getRol() in rolesAReemplazar:
                 aptos.append(persona)
-        return [aptos, rolesAReemplazar, cantidad]
+        return aptos, rolesAReemplazar, cantidad
 
     # Interaction 3 of Human Management
     @staticmethod

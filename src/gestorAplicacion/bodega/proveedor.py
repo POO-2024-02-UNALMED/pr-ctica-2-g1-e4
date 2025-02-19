@@ -11,7 +11,7 @@ class Proveedor:
         self.precio = precio
         self.nombre = nombre
         self.descuento = 0.0
-        self.deuda = None
+        self.deuda = Deuda(Fecha(10,1,25), 0, nombre, "Proveedor", 0)
         self.tipoInsumo = insumo
         Proveedor.listaProveedores.append(self)
 

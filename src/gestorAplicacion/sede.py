@@ -192,8 +192,10 @@ class Sede:
         retorno.append(aReemplazar)
         return retorno
 
-    def reemplazarPorCambioSede(despedidos, aTransferir):
+    def reemplazarPorCambioSede(despedidos, aTransferir)->List:
         from .bodega.maquinaria import Maquinaria
+        aTransferir = aTransferir.copy() # Evita efectos secundarios.
+        reemplazados=[]
         for empleadoDespedido in despedidos:
             # Buscamos en la lista de empleados a transferir, quien pudo ser seleccionado como reemplazo.
             for empleadoReemplazo in aTransferir:
@@ -203,7 +205,9 @@ class Sede:
                     empleadoReemplazo.setSede(empleadoDespedido.getSede())
                     Maquinaria.asignarMaquinaria(empleadoReemplazo)
                     aTransferir.remove(empleadoReemplazo)
+                    reemplazados.append(empleadoDespedido)
                     break
+        return reemplazados
 
     def quitarInsumos(self, insumos, cantidad):
         hayInsumos = True
@@ -257,19 +261,22 @@ class Sede:
         return cantidad
 
     # PARA LA INTERACCION 2 DE PRODUCCION
-    def sobreCargada(self, fecha: 'Fecha') -> int:
+    @classmethod
+    def sobreCargada(cls, fecha: 'Fecha') -> int:
         senal = 0
-        produccionSedes = self.calcProduccionSedes(fecha)
-        modistas = self.modistasQueHay()
+        produccionSedes = cls.calcProduccionSedes(fecha)
+        print(f"La produccion por ahora es: {produccionSedes}")
+        modistas = cls.modistasQueHay()
         if modistas[0] > 0 and ((produccionSedes[0][0] + produccionSedes[0][1]) / modistas[0]) > 10:
             senal = 5
         if modistas[1] > 0 and ((produccionSedes[1][0] + produccionSedes[1][1]) / modistas[1]) > 10:
             senal += 10
         return senal
 
-    def calcProduccionSedes(self, fecha: 'Fecha') -> List[List[int]]:
+    @classmethod
+    def calcProduccionSedes(cls, fecha: 'Fecha') -> List[List[int]]:
         from .venta import Venta
-        prodSedesCalculada = [], prodCalculadaSedeP = [], prodCalculadaSede2 = []
+        prodSedesCalculada = []; prodCalculadaSedeP = []; prodCalculadaSede2 = []
         prodCalculadaSedeP.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Pantalon"))
         prodCalculadaSedeP.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Camisa"))
         prodCalculadaSede2.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[1], "Pantalon"))
@@ -278,15 +285,17 @@ class Sede:
         prodSedesCalculada.append(prodCalculadaSede2)
         return prodSedesCalculada
 
-    def prodSedeP(self, fecha: 'Fecha') -> List[int]:
-        pantalonesSedeP = self.calcProduccionSedes(fecha)[0][0] + self.calcProduccionSedes(fecha)[1][0]
-        camisasSedeP = self.calcProduccionSedes(fecha)[0][1] + self.calcProduccionSedes(fecha)[1][1]
+    @classmethod
+    def prodSedeP(cls, fecha: 'Fecha') -> List[int]:
+        pantalonesSedeP = cls.calcProduccionSedes(fecha)[0][0] + cls.calcProduccionSedes(fecha)[1][0]
+        camisasSedeP = cls.calcProduccionSedes(fecha)[0][1] + cls.calcProduccionSedes(fecha)[1][1]
         prodAproximada = [pantalonesSedeP, camisasSedeP]
         return prodAproximada
 
-    def prodSede2(self, fecha: 'Fecha') -> List[int]:
-        pantalonesSede2 = self.calcProduccionSedes(fecha)[1][0]
-        camisasSede2 = self.calcProduccionSedes(fecha)[1][1]
+    @classmethod        #siento que aquí falta algo
+    def prodSede2(cls, fecha: 'Fecha') -> List[int]:
+        pantalonesSede2 = cls.calcProduccionSedes(fecha)[1][0]
+        camisasSede2 = cls.calcProduccionSedes(fecha)[1][1]
         prodAproximada = [pantalonesSede2, camisasSede2]
         return prodAproximada
 
@@ -298,9 +307,10 @@ class Sede:
                     insumos.append(insumo)
         return insumos
 
-    def modistasQueHay(self) -> List[int]:
+    @classmethod
+    def modistasQueHay(cls) -> List[int]:
         modistasEnCadaSede = [0, 0]
-        for empCreados in self.listaEmpleadosTotal:
+        for empCreados in Sede.listaEmpleadosTotal:
             if empCreados.getAreaActual().getNombre().lower() == "corte":
                 if empCreados.getSede().getNombre().lower() == "sede principal":
                     modistasEnCadaSede[0] += 1
@@ -308,17 +318,22 @@ class Sede:
                     modistasEnCadaSede[1] += 1
         return modistasEnCadaSede
 
-    def prodTransferida1(self, fecha) -> List[int]:
-        produccionSedes = self.calcProduccionSedes(fecha)
+    @classmethod
+    def prodTransferida1(cls, fecha) -> List[int]:
+        produccionSedes = cls.calcProduccionSedes(fecha)
         return [produccionSedes[1][0], produccionSedes[1][1]]
 
-    def prodTransferida2(self, fecha) -> List[int]:
-        produccionSedes = self.calcProduccionSedes(fecha)
+    @classmethod
+    def prodTransferida2(cls, fecha) -> List[int]:
+        produccionSedes = cls.calcProduccionSedes(fecha)
         return [produccionSedes[0][0], produccionSedes[0][1]]
 
-    def planProduccion(self, maqDisponible: List, fecha: 'Fecha', scanner: 'int') -> List[List[List[int]]]:
+    @classmethod
+    def planProduccion(cls, maqDisponible: List, fecha: 'Fecha') -> List[List[List[int]]]:
         from .bodega.maquinaria import Maquinaria
-        from src.uiMain import Main
+        from src.uiMain.main import Main
+        from src.uiMain.F5Produccion import recibeMaqDispSeparadas, recibeTextIndicador, recibeProdFinal
+        import math
         aProducirFinal = []; aProducir = []; listaEspera = []; listaDeCeros = [0, 0]
         listaEsperaVacia = [listaDeCeros.copy(), listaDeCeros.copy()]
         maqSedeP = []; maqSede2 = []
@@ -342,25 +357,31 @@ class Sede:
                 Sede.getListaSedes()[1].maqProduccion.append(todMaqSede2)
             else:
                 Sede.getListaSedes()[1].maqOficina.append(todMaqSede2)
-        if len(Sede.getListaSedes()[0].maqProduccion) >= 3:
+        if len(Sede.getListaSedes()[0].maqProduccion) > 3:
             senal = 5
-        if len(Sede.getListaSedes()[1].maqProduccion) >= 3:
+        if len(Sede.getListaSedes()[1].maqProduccion) > 3:
             senal += 10
 
+        recibeMaqDispSeparadas(Sede.getListaSedes()[0].maqProduccion, Sede.getListaSedes()[1].maqProduccion)
+
         if senal == 5:
-            Main.printsInt2(1)
+            recibeTextIndicador(Main.printsInt2(1), 1)
+            Main.evento_ui.clear()  
+            print("\nEsperando confirmación para seguir con la produccion")
+            Main.evento_ui.wait()
+            print("Seguir planificando produccion en la sede principal\n")
             opcion = 0
             while opcion != 1 and opcion != 2:
                 opcion = int(input())
                 if opcion == 1:
-                    aProducir.insert(0, self.prodSedeP(fecha))
+                    aProducir.insert(0, cls.prodSedeP(fecha))
                     aProducir.insert(1, listaDeCeros)
                     aProducirFinal.insert(0, aProducir)
                     aProducirFinal.insert(1, listaEsperaVacia)
                 elif opcion == 2:
-                    aProducir.insert(0, self.calcProduccionSedes(fecha)[0])
+                    aProducir.insert(0, cls.calcProduccionSedes(fecha)[0])
                     aProducir.insert(1, listaDeCeros)
-                    listaEspera.insert(0, self.prodTransferida1(fecha))
+                    listaEspera.insert(0, cls.prodTransferida1(fecha))
                     listaEspera.insert(1, listaDeCeros)
                     aProducirFinal.insert(0, aProducir)
                     aProducirFinal.insert(1, listaEspera)
@@ -368,38 +389,47 @@ class Sede:
                     Main.printsInt2(2)
 
         elif senal == 10:
-            Main.printsInt2(3)
+            recibeTextIndicador(Main.printsInt2(3), 2)
+            Main.evento_ui.clear()  
+            print("\nEsperando confirmación para seguir con la produccion")
+            Main.evento_ui.wait()
+            print("Seguir planificando produccion en la sede 2\n")
             opcion = 0
             while opcion != 1 and opcion != 2:
                 opcion = int(input())
                 if opcion == 1:
                     # Producir todo en la sede 2
-                    aProducir = [listaDeCeros.copy(), self.prodSede2(fecha)]
+                    aProducir = [listaDeCeros.copy(), cls.prodSede2(fecha)]
                     aProducirFinal = [aProducir, listaEsperaVacia]
                 elif opcion == 2:
                     # Pasar producción a lista de espera
-                    aProducir = [listaDeCeros.copy(), self.calcProduccionSedes(fecha)[1]]
-                    listaEspera = [listaDeCeros.copy(), self.prodTransferida2(fecha)]
+                    aProducir = [listaDeCeros.copy(), cls.calcProduccionSedes(fecha)[1]]
+                    listaEspera = [listaDeCeros.copy(), cls.prodTransferida2(fecha)]
                     aProducirFinal = [aProducir, listaEspera]
                 else:
                     Main.printsInt2(4)
 
         elif senal == 15:
             # Se produce todo entre las dos sedes
-            senalRec = self.sobreCargada(fecha)
+            recibeTextIndicador(Main.printsInt2(12), 3)
+            Main.evento_ui.clear()  
+            print("\nEsperando confirmación para seguir con la produccion")
+            Main.evento_ui.wait()
+            print("Seguir planificando produccion en las dos sedes...\n")
+            senalRec = cls.sobreCargada(fecha)
             if senalRec == 5:
                 Main.printsInt2(5)
                 opciom = 0
                 while opciom not in [1, 2]:
                     opciom = int(input())
                     if opciom == 1:
-                        nuevosPantP = self.calcProduccionSedes(fecha)[0][0] + -(- (self.calcProduccionSedes(fecha)[0][0] + self.calcProduccionSedes(fecha)[1][0]) // 2)
-                        nuevosPant2 = self.calcProduccionSedes(fecha)[1][0] + ((self.calcProduccionSedes(fecha)[0][0] + self.calcProduccionSedes(fecha)[1][0]) // 2)
-                        nuevasCamP = self.calcProduccionSedes(fecha)[0][1] + -(- (self.calcProduccionSedes(fecha)[0][1] + self.calcProduccionSedes(fecha)[1][1]) // 2)
-                        nuevasCam2 = self.calcProduccionSedes(fecha)[1][1] + ((self.calcProduccionSedes(fecha)[0][1] + self.calcProduccionSedes(fecha)[1][1]) // 2)
+                        nuevosPantP = cls.calcProduccionSedes(fecha)[0][0] + -(- (cls.calcProduccionSedes(fecha)[0][0] + cls.calcProduccionSedes(fecha)[1][0]) // 2)
+                        nuevosPant2 = cls.calcProduccionSedes(fecha)[1][0] + ((cls.calcProduccionSedes(fecha)[0][0] + cls.calcProduccionSedes(fecha)[1][0]) // 2)
+                        nuevasCamP = cls.calcProduccionSedes(fecha)[0][1] + -(- (cls.calcProduccionSedes(fecha)[0][1] + cls.calcProduccionSedes(fecha)[1][1]) // 2)
+                        nuevasCam2 = cls.calcProduccionSedes(fecha)[1][1] + ((cls.calcProduccionSedes(fecha)[0][1] + cls.calcProduccionSedes(fecha)[1][1]) // 2)
                         loDeLaP = [nuevosPantP, nuevasCamP], loDeLa2 = [nuevosPant2, nuevasCam2], aProducir = [loDeLaP, loDeLa2], aProducirFinal = [aProducir, []]
                     elif opciom == 2:
-                        aProducir = self.calcProduccionSedes(fecha)
+                        aProducir = cls.calcProduccionSedes(fecha)
                         aProducirFinal = [aProducir, []]
                     else:
                         Main.printsInt2(6)
@@ -409,50 +439,45 @@ class Sede:
                 while opciom not in [1, 2]:
                     opciom = int(input())
                     if opciom == 1:
-                        nuevosPantP = self.calcProduccionSedes(fecha)[0][0] + ((self.calcProduccionSedes(fecha)[0][0] + self.calcProduccionSedes(fecha)[1][0]) // 2)
-                        nuevosPant2 = self.calcProduccionSedes(fecha)[1][0] + -(- (self.calcProduccionSedes(fecha)[0][0] + self.calcProduccionSedes(fecha)[1][0]) // 2)
-                        nuevasCamP = self.calcProduccionSedes(fecha)[0][1] + ((self.calcProduccionSedes(fecha)[0][1] + self.calcProduccionSedes(fecha)[1][1]) // 2)
-                        nuevasCam2 = self.calcProduccionSedes(fecha)[1][1] + -(- (self.calcProduccionSedes(fecha)[1][1] + self.calcProduccionSedes(fecha)[0][1]) // 2)
+                        nuevosPantP = cls.calcProduccionSedes(fecha)[0][0] + ((cls.calcProduccionSedes(fecha)[0][0] + cls.calcProduccionSedes(fecha)[1][0]) // 2)
+                        nuevosPant2 = cls.calcProduccionSedes(fecha)[1][0] + -(- (cls.calcProduccionSedes(fecha)[0][0] + cls.calcProduccionSedes(fecha)[1][0]) // 2)
+                        nuevasCamP = cls.calcProduccionSedes(fecha)[0][1] + ((cls.calcProduccionSedes(fecha)[0][1] + cls.calcProduccionSedes(fecha)[1][1]) // 2)
+                        nuevasCam2 = cls.calcProduccionSedes(fecha)[1][1] + -(- (cls.calcProduccionSedes(fecha)[1][1] + cls.calcProduccionSedes(fecha)[0][1]) // 2)
                         loDeLaP = [nuevosPantP, nuevasCamP]
                         loDeLa2 = [nuevosPant2, nuevasCam2]
                         aProducir = [loDeLaP, loDeLa2]
                         aProducirFinal = [aProducir, []]
                     elif opciom == 2:
-                        aProducir = self.calcProduccionSedes(fecha)
+                        aProducir = cls.calcProduccionSedes(fecha)
                         aProducirFinal = [aProducir, []]
                     else:
                         Main.printsInt2(8)
             elif senalRec == 15:
-                Main.printsInt2(9)
-                opciom = 0
-                while opciom not in [1, 2]:
-                    opciom = int(input())
-                    if opciom == 1:
-                        pSedePEspera = max(0, self.calcProduccionSedes(fecha)[0][0] - 10 * self.modistasQueHay()[0])
-                        pSedeP = self.calcProduccionSedes(fecha)[0][0] - pSedePEspera
-                        cSedePEspera = max(0, self.calcProduccionSedes(fecha)[0][1] - 10 * self.modistasQueHay()[0])
-                        cSedeP = self.calcProduccionSedes(fecha)[0][1] - cSedePEspera
-                        pSede2Espera = max(0, self.calcProduccionSedes(fecha)[1][0] - 10 * self.modistasQueHay()[1])
-                        pSede2 = self.calcProduccionSedes(fecha)[1][0] - pSede2Espera
-                        cSede2Espera = max(0, self.calcProduccionSedes(fecha)[1][1] - 10 * self.modistasQueHay()[1])
-                        cSede2 = self.calcProduccionSedes(fecha)[1][1] - cSede2Espera
-                        elGuardaPDeHoy = [pSedeP, cSedeP]
-                        elGuarda2DeHoy = [pSede2, cSede2]
-                        elGuardaPDeManana = [pSedePEspera, cSedePEspera]
-                        elGuarda2DeManana = [pSede2Espera, cSede2Espera]
-                        aProducir = [elGuardaPDeHoy, elGuarda2DeHoy]
-                        listaEspera = [elGuardaPDeManana, elGuarda2DeManana]
-                        aProducirFinal = [aProducir, listaEspera]
-                    elif opciom == 2:
-                        aProducir = self.calcProduccionSedes(fecha)
-                        aProducirFinal = [aProducir, []]
-                    else:
-                        Main.printsInt2(10)
+                pSedePEspera = math.ceil(cls.calcProduccionSedes(fecha)[0][0]*0.3)
+                pSedeP = cls.calcProduccionSedes(fecha)[0][0] - pSedePEspera
+                cSedePEspera = math.ceil(cls.calcProduccionSedes(fecha)[0][1]*0.3)
+                cSedeP = cls.calcProduccionSedes(fecha)[0][1] - cSedePEspera
+                pSede2Espera = math.ceil(cls.calcProduccionSedes(fecha)[1][0]*0.3)
+                pSede2 = cls.calcProduccionSedes(fecha)[1][0] - pSede2Espera
+                cSede2Espera = math.ceil(cls.calcProduccionSedes(fecha)[1][1]*0.3)
+                cSede2 = cls.calcProduccionSedes(fecha)[1][1] - cSede2Espera
+                elGuardaPDeHoy = [pSedeP, cSedeP]
+                elGuarda2DeHoy = [pSede2, cSede2]
+                elGuardaPDeManana = [pSedePEspera, cSedePEspera]
+                elGuarda2DeManana = [pSede2Espera, cSede2Espera]
+                aProducir = [elGuardaPDeHoy, elGuarda2DeHoy]
+                listaEspera = [elGuardaPDeManana, elGuarda2DeManana]
+                
+                aProducirFinal = [aProducir, listaEspera]
+                print(f"La produccion final es: {aProducirFinal}")
+                
             elif senalRec == 0:
-                aProducir = self.calcProduccionSedes(fecha)
-                aProducirFinal = [aProducir, []]
+                aProducir = cls.calcProduccionSedes(fecha)
+                aProducirFinal = [aProducir, listaEsperaVacia.copy()]
         else:
             Main.printsInt2(11)
+        
+        recibeProdFinal(aProducirFinal)
         return aProducirFinal
 
     @classmethod
