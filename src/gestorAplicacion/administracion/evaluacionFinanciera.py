@@ -26,7 +26,7 @@ class EvaluacionFinanciera:
         return f"El monto del balance a cargo de: {self.presidente.getNombre()} fue de: ${self.balance} pesos"
 
     @staticmethod
-    def estimadoVentasGastos(fechaActual: Fecha, porcentajeUsuario: float, balanceAnterior: 'EvaluacionFinanciera') -> int:
+    def estimadoVentasGastos(fechaActual: Fecha, porcentajeUsuario: float, balanceAnterior) -> int:
         montoVentasPasado = 0
         for sede in Sede.listaSedes:
             for venta in sede.historialVentas:
@@ -34,7 +34,7 @@ class EvaluacionFinanciera:
                     Fecha.compararMes(fechaActual.mes - 1, Fecha.getMes(Venta.getFechaVenta(venta)))):
                     montoVentasPasado += Venta.getSubtotal(venta)+ Venta.getCostoEnvio(venta)
         # Predecimos las ventas con un porcentaje de fidelidad 
-        porcentajeFidelidadOro = 0.8 if balanceAnterior.balance >= 0 else 0.5
+        porcentajeFidelidadOro = 0.8 if EvaluacionFinanciera.getBalance(balanceAnterior) >= 0 else 0.5
         if porcentajeUsuario == 0.0:
             porcentajeFidelidadOro = 0.9
         porcentajeFidelidadPlata = porcentajeFidelidadOro - 0.2

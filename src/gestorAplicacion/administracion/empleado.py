@@ -133,7 +133,7 @@ class Empleado(Persona, GastoMensual):
     @classmethod
     def despedirEmpleados(cls, empleados:List, conTransaccciones:bool, fecha:Fecha):
         for empleado in empleados:
-            Empleado.sede.quitarEmpleado(empleado)
+            Empleado.getSede(empleado).quitarEmpleado(empleado)
             Sede.getListaEmpleadosTotal().remove(empleado)
             if conTransaccciones:
                 aPagar:int = Maquinaria.remuneracionDanos(empleado)

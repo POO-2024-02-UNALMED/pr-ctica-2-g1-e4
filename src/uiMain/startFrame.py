@@ -6,6 +6,7 @@ from tkinter import ttk
 from tkinter.font import Font
 import sys
 from src.gestorAplicacion.administracion.empleado import Empleado
+from src.uiMain import fieldFrame
 from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.Excepciones.exceptionC1 import *
 from src.uiMain.main import Main
@@ -627,10 +628,11 @@ def SistemaFinanciero(self)->tk.Frame:
             frame5.pack(anchor="s", expand=True, fill="both")
             
             boton1 = tk.Button(frame5, text="Aceptar", command=lambda: LeerF2(self, field_frame2, texto2))
-            boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
-            
+            boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
+            borrar=tk.Button(frame5,text="Borrar", command = lambda: field_frame2.borrar())
+            borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
             boton2 = tk.Button(frame5, text="Siguiente", command=lambda: Interaccion3(self,frame4, frame5))
-            boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+            boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
             
             confirmacion2 = tk.Label(frame5, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
             confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
@@ -716,10 +718,11 @@ def SistemaFinanciero(self)->tk.Frame:
             frame7 = tk.Frame(framePrincipal)
             frame7.pack(anchor="s", expand=True, fill="both")
             boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(self, field_frame3,texto3))
-            boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
-            
+            boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
+            borrar=tk.Button(frame7,text="Borrar", command = lambda: field_frame3.borrar())
+            borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
             boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion4(self, frame6, frameb, frame7))
-            boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
+            boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
             
             confirmacion3 = tk.Label(frame7, text="", anchor="center")
             confirmacion3.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
@@ -776,10 +779,11 @@ def SistemaFinanciero(self)->tk.Frame:
             frame9.pack(anchor="s", expand=True, fill="both")
             
             boton1 = tk.Button(frame9, text="Aceptar", command=lambda: LeerF4(self, field_frame4, texto4, descuento))
-            boton1.place(relx=0.4, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
-            
+            boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
+            borrar4=tk.Button(frame9,text="Borrar", command = lambda: field_frame4.borrar())
+            borrar4.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
             boton2 = tk.Button(frame9, text="Siguiente", command=lambda: Interaccion5(self, frame8, frame9))
-            boton2.place(relx=0.6, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+            boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
             
             confirmacion4 = tk.Label(frame9, anchor="center")
             confirmacion4.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
@@ -850,7 +854,7 @@ def SistemaFinanciero(self)->tk.Frame:
                 if empleado_actual.getAreaActual() == Area.DIRECCION:
                     elegible_empleados.append(empleado_actual.getNombre())
             return elegible_empleados
-            
+
         framePrincipal =  tk.Frame(ventana)
         framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
         frame1 = tk.Frame(framePrincipal, height=150)
@@ -878,9 +882,11 @@ def SistemaFinanciero(self)->tk.Frame:
         combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
         combo.place(relx=0.5, rely=0.6, relwidth=0.5, relheight=0.2, anchor="s")
         boton1 = tk.Button(frame3, text="Aceptar", command = lambda: LeerF1(self))
-        boton1.place(relx=0.4, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+        boton1.place(relx=0.3, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+        borrar=tk.Button(frame3,text="Borrar", command = lambda: field_frame.borrar())
+        borrar.place(relx=0.5, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
         boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
-        boton2.place(relx=0.6, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+        boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
         confirmacion = tk.Frame(frame3)
         confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
 
@@ -896,6 +902,7 @@ def SistemaFinanciero(self)->tk.Frame:
         # Deshabilitar edición si solo quieres mostrar el texto
         texto.config(state="disabled")
         return framePrincipal
+    
 
 
 

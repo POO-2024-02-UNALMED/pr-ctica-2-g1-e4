@@ -19,7 +19,7 @@ class Main:
     fecha:Fecha=None
     proveedorBdelmain=None
     evento_ui = threading.Event()
-    nuevoBalance=0
+    nuevoBalance=None
     diferenciaEstimado=0
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
