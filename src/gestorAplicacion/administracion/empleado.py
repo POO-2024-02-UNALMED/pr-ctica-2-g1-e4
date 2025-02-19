@@ -7,7 +7,8 @@ from src.gestorAplicacion.persona import Persona
 from ..fecha import Fecha
 from ..sede import Sede
 from .area import Area
-from typing import List, override
+from typing import List
+from typing_extensions import override 
 
 class Empleado(Persona, GastoMensual):
     def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia=Membresia.NULA, maquinaria: Maquinaria=[]):
@@ -35,7 +36,7 @@ class Empleado(Persona, GastoMensual):
     def gastoMensualClase():
         gasto=0
         for emp in Sede.getListaEmpleadosTotal():
-            gasto+=emp.calcularGastoMensual()
+            gasto+=Empleado.calcularGastoMensual(emp)
         return gasto
     
     def calcularRendimiento(self, fecha: Fecha) -> float:
@@ -76,8 +77,8 @@ class Empleado(Persona, GastoMensual):
         listaATransferir = [[] for _ in Sede.getListaSedes()]
 
         for sede in Sede.getListaSedes():
-            for emp in sede.getListaEmpleados():
-                rendimiento = emp.calcularRendimiento(fecha)
+            for emp in Sede.getListaEmpleados(sede):
+                rendimiento = Empleado.calcularRendimiento(emp,fecha)
                 seVaADespedir = False
                 rendimientoDeseado = emp.sede.getRendimientoDeseado(emp.areaActual, fecha)
                 if rendimiento < rendimientoDeseado:
@@ -132,7 +133,7 @@ class Empleado(Persona, GastoMensual):
     @classmethod
     def despedirEmpleados(cls, empleados:List, conTransaccciones:bool, fecha:Fecha):
         for empleado in empleados:
-            empleado.sede.quitarEmpleado(empleado)
+            Empleado.sede.quitarEmpleado(empleado)
             Sede.getListaEmpleadosTotal().remove(empleado)
             if conTransaccciones:
                 aPagar:int = Maquinaria.remuneracionDanos(empleado)

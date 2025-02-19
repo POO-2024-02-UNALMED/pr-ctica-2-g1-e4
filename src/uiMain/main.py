@@ -10,7 +10,6 @@ from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
 from src.gestorAplicacion.administracion.empleado import Empleado
-from src.uiMain.F2Insumos import F2Insumos
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.empleado import Empleado
@@ -97,7 +96,7 @@ class Main:
 
 
     
-    #----------------------------gestion humana-----------------------------------
+    #------------------------------------------- Gestión Humana --------------------------------------------------------------------
 
 
     def despedirEmpleadosConsola(fecha):
@@ -366,7 +365,7 @@ class Main:
                 cls.opcionesParaReemplazo.append(apto)
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
     
-    #-----------------Financiera--------------------------------------------
+    #----------------------------------------------Financiera------------------------------------------------------------
         
     def calcularBalanceAnterior(empleado, eleccion):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
@@ -411,36 +410,51 @@ class Main:
         analisisFuturo = (f"{bfString}, sin embargo su desición fue aplicar un descuento de: {nuevoDescuento * 100}%.")
         return analisisFuturo
 
-#-----------------------------------------Insumos------------------------------------------------------------------------------------
+#----------------------------------------------------Insumos------------------------------------------------------------------------------------
    
     # Interacción 1 
-    def planificarProduccion(frame):
+    def planificarProduccion(self):
+        from src.uiMain.startFrame import startFrame
         fecha=Main.fecha
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         retorno = []
-        frame = frame
+        criterios = []
+        valores = []
+
         for sede in Sede.getListaSedes():
-            listaXSede = [], insumoXSede = [], cantidadAPedir = []
+            listaXSede = []
+            insumoXSede = []
+            cantidadAPedir = []
             pantalonesPredichos = False
             camisasPredichas = False
-            prediccionC = None
+            #prediccionC = None
+            criterios.append(sede)
+            valores.append(f"{round(Venta.getPesimismo()*100)}%")
+        
+        startFrame.pesimismo(criterios, valores)
+
+        for sede in Sede.getListaSedes():
             for prenda in Sede.getPrendasInventadas(sede):
+
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionP)))
-                    F2Insumos.prediccion(frame, sede, prenda, prediccionP)
+                    startFrame.prediccion(sede, prenda, prediccionP)
+
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
                     for cantidad in Pantalon.getCantidadInsumo():
                         cantidadAPedir.append(math.ceil(cantidad * prediccionP))
                     pantalonesPredichos = True
+
                 if isinstance(prenda, Camisa) and not camisasPredichas:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionC = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionC)))
-                    F2Insumos.prediccion(frame, sede, prenda, prediccionC)
+                    startFrame.prediccion(sede, prenda, prediccionC)
+
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
                         if insumo in insumoXSede:
@@ -450,9 +464,11 @@ class Main:
                             insumoXSede.append(insumo)
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
+
             listaXSede.append(insumoXSede)
             listaXSede.append(cantidadAPedir)
             retorno.append(listaXSede)
+
         return retorno
 
     # Interacción 2 
@@ -469,7 +485,7 @@ class Main:
                     cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
                     productoEnOtraSede = Sede.verificarProductoOtraSede(i)
                     if productoEnOtraSede.getEncontrado():
-                        print(f"\nTenemos el insumo {i.getNombre} en nuestra {productoEnOtraSede.sede}.")
+                        print(f"\nTenemos el insumo {Insumo.getNombre(i)} en nuestra {productoEnOtraSede.sede}.")
                         print(f"El insumo tiene un costo de {productoEnOtraSede.precio}")
                         print("\nSeleccione una de las siguientes opciones:")
                         print(f"1. Deseo transferir el insumo desde la {productoEnOtraSede.sede}")
@@ -483,9 +499,9 @@ class Main:
                                 cantidadAPedir.append(restante)
                                 if Empleado.getNombre(i)== "Tela":
                                     print(f"\nTenemos una cantidad de {restante} cm de tela restantes a pedir")
-                                elif i.getNombre == "Boton":
+                                elif Insumo.getNombre(i) == "Boton":
                                     print(f"\nTenemos una cantidad de {restante} botones restantes a pedir")
-                                elif i.getNombre == "Cremallera":
+                                elif Insumo.getNombre(i) == "Cremallera":
                                     print(f"\nTenemos una cantidad de {restante} cremalleras restantes a pedir")
                                 else:
                                     print(f"\nTenemos una cantidad de {restante} cm de hilo restantes a pedir")
@@ -555,6 +571,7 @@ class Main:
 
         return f"Ahora nuestras deudas con los proveedores lucen asi:\n{deudas}"
         
+
     def nextIntSeguro():
         while True:
             respuesta = input()
