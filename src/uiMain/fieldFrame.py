@@ -1,5 +1,7 @@
 from tkinter import Frame, Label, Entry, Tk, Button
-
+from src.uiMain.Excepciones.errorAplicacion import ErrorAplicacion
+from src.uiMain.Excepciones.exceptionC1 import ExcepcionContenidoVacio
+from tkinter import messagebox
 
 class FieldFrame(Frame):
 
@@ -50,6 +52,18 @@ class FieldFrame(Frame):
         if self.crecer:
             self.columnconfigure(0, weight=1)
             self.columnconfigure(3, weight=1)
+    
+    def aceptar(self):
+        try:
+            hayExcepcion = False
+            if self.callbackAceptar is not None:
+                self.callbackAceptar()
+                hayExcepcion = True
+            if hayExcepcion:
+                raise ExcepcionContenidoVacio()
+        except ExcepcionContenidoVacio as moscorrofio:
+            messagebox.showwarning(title="Alerta",message=moscorrofio.mensaje_completo)
+            return hayExcepcion
 
     def habilitarEntry(self, criterio, habilitar):
         entry = None

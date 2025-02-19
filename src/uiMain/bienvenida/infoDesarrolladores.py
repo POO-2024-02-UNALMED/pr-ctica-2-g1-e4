@@ -20,21 +20,21 @@ carpetaDesarrolladores=[
 ]
 hojasDeVida=[
     """
-    Representado Por: Beatriz pinzón
+    Representada Por: Beatriz pinzón
     Edad: 17 años
     Ciudad Natal: Medellin
     Programa: Ingeniería de Sistemas
     Gustos: La programación y el arte.
         """,
     """
-    Representado Por: Armando Mendoza
+    Representada Por: Armando Mendoza
     Edad: 18 años
     Ciudad Natal: Pasto
     Programa: Ingeniería de Sistemas
     Gustos: Bailar y los desafíos.   
     """,
     """
-    Representado Por: Mariana valdez
+    Representada Por: Mariana valdez
     Edad: 18 años
     Ciudad Natal: Quibdó
     Programa: Ingeniería de Sistemas
@@ -59,6 +59,7 @@ hojasDeVida=[
 ]
 class infoDesarrolladores(tk.Frame):
     def __init__(self,window, master=None):
+        self.mostrando=False
         super().__init__(master)
         self.master = master
         self.window = window

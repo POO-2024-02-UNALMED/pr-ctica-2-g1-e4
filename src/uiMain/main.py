@@ -427,8 +427,6 @@ class Main:
             listaXSede = []
             insumoXSede = []
             cantidadAPedir = []
-            pantalonesPredichos = False
-            camisasPredichas = False
             #prediccionC = None
             criterios.append(sede)
             valores.append(f"{round(Venta.getPesimismo()*100)}%")
@@ -437,6 +435,8 @@ class Main:
         startFrame.pesimismo(self, criterios, valores)
 
         for sede in Sede.getListaSedes():
+            pantalonesPredichos = False
+            camisasPredichas = False
             for prenda in Sede.getPrendasInventadas(sede):
 
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
@@ -444,7 +444,7 @@ class Main:
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
                     texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionP)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
-
+                    print(texto)
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
                     for cantidad in Pantalon.getCantidadInsumo():
@@ -456,7 +456,7 @@ class Main:
                     prediccionC = proyeccion * (1 - Venta.getPesimismo())
                     texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionC)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
-
+                    print(texto)
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
                         if insumo in insumoXSede:
@@ -466,7 +466,6 @@ class Main:
                             insumoXSede.append(insumo)
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
-
 
             listaXSede.append(insumoXSede)
             listaXSede.append(cantidadAPedir)

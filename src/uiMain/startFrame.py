@@ -217,8 +217,11 @@ class startFrame(tk.Tk):
         fecha=None
         partes = diaI.split()
         numero=-1
-        if diaI=="d/ " or mesI=="m/ " or añoI=="a/ ":
-            error.fechaNoValidada()
+        if not (diaI.isdigit() and mesI.isdigit() and añoI.isdigit()):
+            self.borrar()
+            error = ExceptionC1("Los valores ingresados no son válidos.")
+            error.enteroNoValido()
+            self.after(100, self.Ok)
         if partes[-1].isdigit():
             numero = int(partes[-1])
         dia = numero
@@ -233,17 +236,15 @@ class startFrame(tk.Tk):
         if dia <= 0 or dia > 31:
             self.borrar()
             error = ExceptionC1("El día ingresado no es válido.")
-            error.fechaNoValidada()
+            error.enteroNoValido()
             self.after(100, self.Ok) 
         elif mes <= 0 or mes > 12:
             self.borrar()
             error = ExceptionC1("El mes ingresado no es válido.")
-            error.fechaNoValidada()
             self.after(100, self.Ok) 
         elif año <= 0:
             self.borrar()
             error = ExceptionC1("El año ingresado no es válido.")
-            error.fechaNoValidada()
             self.after(100, self.Ok) 
         else:
             fecha = Fecha(dia, mes, año)
