@@ -10,7 +10,6 @@ from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
 from src.gestorAplicacion.administracion.empleado import Empleado
-from src.uiMain import F2Insumos
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.empleado import Empleado
@@ -417,14 +416,14 @@ class Main:
 #----------------------------------------------------Insumos------------------------------------------------------------------------------------
    
     # Interacción 1 
-    def planificarProduccion(frame):
+    def planificarProduccion(self):
+        from src.uiMain.startFrame import startFrame
         fecha=Main.fecha
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         retorno = []
         criterios = []
         valores = []
-        frame = frame
 
         for sede in Sede.getListaSedes():
             listaXSede = []
@@ -435,14 +434,18 @@ class Main:
             #prediccionC = None
             criterios.append(sede)
             valores.append(f"{round(Venta.getPesimismo()*100)}%")
+        
+        startFrame.pesimismo(criterios, valores)
 
+        for sede in Sede.getListaSedes():
             for prenda in Sede.getPrendasInventadas(sede):
 
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionP)))
-                    F2Insumos.prediccion(frame, sede, prenda, prediccionP)
+                    startFrame.prediccion(sede, prenda, prediccionP)
+
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
                     for cantidad in Pantalon.getCantidadInsumo():
@@ -453,7 +456,7 @@ class Main:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionC = proyeccion * (1 - Venta.getPesimismo())
                     print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionC)))
-                    F2Insumos.prediccion(frame, sede, prenda, prediccionC)
+                    startFrame.prediccion(sede, prenda, prediccionC)
 
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
@@ -485,7 +488,7 @@ class Main:
                     cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
                     productoEnOtraSede = Sede.verificarProductoOtraSede(i)
                     if productoEnOtraSede.getEncontrado():
-                        print(f"\nTenemos el insumo {i.getNombre} en nuestra {productoEnOtraSede.sede}.")
+                        print(f"\nTenemos el insumo {Insumo.getNombre(i)} en nuestra {productoEnOtraSede.sede}.")
                         print(f"El insumo tiene un costo de {productoEnOtraSede.precio}")
                         print("\nSeleccione una de las siguientes opciones:")
                         print(f"1. Deseo transferir el insumo desde la {productoEnOtraSede.sede}")
@@ -499,9 +502,9 @@ class Main:
                                 cantidadAPedir.append(restante)
                                 if Empleado.getNombre(i)== "Tela":
                                     print(f"\nTenemos una cantidad de {restante} cm de tela restantes a pedir")
-                                elif i.getNombre == "Boton":
+                                elif Insumo.getNombre(i) == "Boton":
                                     print(f"\nTenemos una cantidad de {restante} botones restantes a pedir")
-                                elif i.getNombre == "Cremallera":
+                                elif Insumo.getNombre(i) == "Cremallera":
                                     print(f"\nTenemos una cantidad de {restante} cremalleras restantes a pedir")
                                 else:
                                     print(f"\nTenemos una cantidad de {restante} cm de hilo restantes a pedir")

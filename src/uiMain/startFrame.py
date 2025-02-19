@@ -5,7 +5,6 @@ import tkinter as tk
 from tkinter.font import Font
 import sys
 from src.gestorAplicacion.administracion.empleado import Empleado
-from src.uiMain.F2Insumos import F2Insumos
 from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.Excepciones.exceptionC1 import ExceptionC1
 from src.uiMain.main import Main
@@ -53,7 +52,8 @@ class startFrame(tk.Tk):
 
         self.abrirFrameInicial()
 
-    #-----------------Listeners para el menú superior-----------------
+    #----------------------------------- Listeners para el menú superior ------------------------------------------------------------------
+    
     def abrirGestionHumana(self):
         self.areaPrincipal.destroy()
         self.pagina="gestionHumana"
@@ -64,7 +64,7 @@ class startFrame(tk.Tk):
     def eliminarF2(self):
         self.pagina="insumos"
         self.areaPrincipal.destroy()
-        self.cambiarFrame(F2Insumos(self))
+        self.cambiarFrame(self.crearInsumos(self))
         
     def eliminarF4(self):
         self.pagina="facturacion"
@@ -499,6 +499,67 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.dibujarTandaDeReemplazo(Main.getTandaReemplazo())
         else:
             tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado esta en la lista de candidatos.")
+
+#--------------------------------------------------- Insumos -------------------------------------------------------------------
+
+    def crearInsumos(self):
+        self.insumos=tk.Frame(self)
+        self.inicialInsumos()
+        return self.insumos
+
+    def inicialInsumos(self):
+        from src.uiMain.main import Main
+        self.framePrincipal =  tk.Frame(self.insumos, bg="blue")
+        self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+        
+        frame1 = tk.Frame(self.framePrincipal, height=150)
+        frame1.pack(side="top", fill="x")
+
+        tituloF2 = tk.Label(frame1, text="Surtir Insumos", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+        tituloF2.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+
+            ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
+        descripcionF2 = tk.Label(frame1, text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", relief="ridge",wraplength=600)
+        descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
+        
+        Main.planificarProduccion()
+
+    # Interacción 1
+    def pesimismo(self, c, v):
+        from src.uiMain import fieldFrame
+        criterios = c
+        valores = v
+
+        frame2 = tk.Frame(self.framePrincipal, bg="light gray")
+        frame2.pack(anchor="s",  expand=True, fill="both")
+            
+        field = fieldFrame.FieldFrame(frame2, "Puede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True])
+        field.pack(anchor="s",  expand=True, fill="both")
+
+        
+
+       
+
+    
+        
+
+    def prediccion(frame2, sede, prenda, prediccion):
+        prediccion = tk.Text(frame2,text="\nLa predicción de ventas para " + prenda + " es de " + prediccion + " en la "+ sede + "\n Según dicha predicción se hará la compra de los insumos")
+        prediccion.place(relx=1, rely=0, relwidth=1, relheight=0.4, anchor="e")
+
+    # Interacción 2
+
+
+#----------------------------------------------- Sistema Financiero -------------------------------------------------------------------
+
+
+
+#-------------------------------------------------- Facturación -------------------------------------------------------------------
+
+
+
+#-------------------------------------------------- Producción -------------------------------------------------------------------
+
 
 
 def pasarAVentanaPrincipal():

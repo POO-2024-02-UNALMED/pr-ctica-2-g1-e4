@@ -7,7 +7,8 @@ from src.gestorAplicacion.persona import Persona
 from ..fecha import Fecha
 from ..sede import Sede
 from .area import Area
-from typing import List, override
+from typing import List
+from typing_extensions import override 
 
 class Empleado(Persona, GastoMensual):
     def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia=Membresia.NULA, maquinaria: Maquinaria=[]):
