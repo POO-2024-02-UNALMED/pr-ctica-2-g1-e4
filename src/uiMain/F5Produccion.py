@@ -364,7 +364,7 @@ def inicioInt2(event, containerBig, cont, field_frame, labelTG, cont2, field_fra
         cont = tk.Frame(containerBig, bg="medium orchid")
         cont.pack(side="left", padx=5, pady=20)
     
-    field_frame = FieldFrame(cont, "Sede Pincipal", criterios, "", valores, habilitado)
+    field_frame = FieldFrame(cont, "Sede Principal", criterios, "", valores, habilitado)
     field_frame.pack(padx=10, pady=10)
 
     criterios2 = nomMaqProdDispSede2
@@ -381,15 +381,26 @@ def inicioInt2(event, containerBig, cont, field_frame, labelTG, cont2, field_fra
     field_frame2 = FieldFrame(cont2, "Sede 2", criterios2, "", valores2, habilitado2)
     field_frame2.pack(padx=10, pady=10)
 
-    labelTextIndicador = tk.Label(frameDeTrabajo, text=textIndicador, font=("Arial", 14, "bold"), bg="light gray")
-    labelTextIndicador.pack(pady=5)
+    contLabelYBoton = tk.Frame(frameDeTrabajo, bg="light gray")
+    contLabelYBoton.pack(pady=0)
 
-    btnPlanificarProd = tk.Button(frameDeTrabajo, text="Planificar Produccion", font=("Arial", 12, "bold italic"))
-    btnPlanificarProd.pack(pady=8)
-    btnPlanificarProd.bind("<Button-1>", planProduccionn)
+    labelTextIndicador = tk.Label(contLabelYBoton, text=textIndicador, font=("Arial", 14, "bold"), bg="light gray")
+    labelTextIndicador.pack(side="left", pady=5 ,padx=5)
 
-def planProduccionn(event):
+    btnPlanificarProd = tk.Button(contLabelYBoton, text="Planificar Produccion", font=("Arial", 12, "bold italic"))
+    btnPlanificarProd.pack(side="left", pady=5, padx=15)
+    btnPlanificarProd.bind("<Button-1>", lambda event: planProduccionn(event, containerBig, cont, field_frame, cont2, field_frame2, contLabelYBoton, labelTextIndicador))
+
+def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLyB, labelTextInd):
     from src.uiMain.main import Main
+    containerBig.destroy()
+    cont.destroy()
+    field_f1.destroy()
+    cont2.destroy()
+    field_f2.destroy()
+    contLyB.destroy()
+    labelTextInd.destroy()
+    event.widget.destroy()
     Main.evento_ui.set()
 
 

@@ -413,7 +413,7 @@ class Sede:
             Main.evento_ui.clear()  
             print("\nEsperando confirmación para seguir con la produccion")
             Main.evento_ui.wait()
-            print("Seguir planificando produccion...\n")
+            print("Seguir planificando produccion en las dos sedes...\n")
             senalRec = cls.sobreCargada(fecha)
             if senalRec == 5:
                 Main.printsInt2(5)
