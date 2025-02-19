@@ -43,3 +43,4 @@ class ImagenSistemaYSalida(tk.Frame):
         self.foto.bind("<Button-1>", lambda e: self.pasarAPrincipal())
         self.columnconfigure(0,weight=3)
         self.rowconfigure(0,weight=10)
+    

@@ -25,7 +25,7 @@ class Aplication(tk.Frame):
         self.barraMenus.add_cascade(label="Inicio", menu=self.inicioMenu)
         self.inicioMenu.add_command(label="Salir" ,command=lambda: self.salirDelPrograma())
         self.inicioMenu.add_separator()
-        self.inicioMenu.add_command(label="Descripción")
+        self.inicioMenu.add_command(label="Descripción", command=lambda: self.infoSistema.ponerDescripcion())
 
         self.infoSistema = infoSistema(window = self.master, master = self)
         self.infoSistema.grid(row = 1, column = 1, sticky="sewn")
