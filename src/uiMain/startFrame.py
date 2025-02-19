@@ -68,7 +68,7 @@ class startFrame(tk.Tk):
     def eliminarF2(self):
         self.pagina="insumos"
         self.areaPrincipal.destroy()
-        self.cambiarFrame(self.crearInsumos(self))
+        self.cambiarFrame(self.crearInsumos())
         
     def eliminarF4(self):
         self.pagina="facturacion"
@@ -526,7 +526,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         descripcionF2 = tk.Label(frame1, text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", relief="ridge",wraplength=600)
         descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
         
-        Main.planificarProduccion()
+        Main.planificarProduccion(self)
 
     # Interacción 1
     def pesimismo(self, c, v):
@@ -535,23 +535,31 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         valores = v
 
         frame2 = tk.Frame(self.framePrincipal, bg="light gray")
-        frame2.pack(anchor="s",  expand=True, fill="both")
+        frame2.pack(anchor="s", fill="x")
             
         field = fieldFrame.FieldFrame(frame2, "Puede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True])
-        field.pack(anchor="s",  expand=True, fill="both")
+        field.pack(anchor="s",  expand=True, fill="both", padx=3)
 
-        
+    def prediccion(self, texto):
+        frame3 = tk.Frame(self.framePrincipal, bg="light gray")
+        frame3.pack(anchor="s",  expand=True, fill="both")
+        prediccion = tk.Text(frame3)
+        mensaje = texto
+        prediccion.insert("1.0", mensaje)
+        prediccion.place(relx=0.5, rely=0.5, relwidth=1, relheight=1,anchor="c")
+        prediccion.config(state="disabled")
 
-       
+        frame3 = tk.Frame(self.framePrincipal)
+        frame3.pack(anchor="s", expand=True, fill="both")
+        label3 = tk.Label(frame3, text="Según dicha predicción se hará la compra de los insumos")
+        label3.place(relx=0.7, rely=0.7, relwidth=1, relheight=0.6, anchor="c")    
+        aceptar = tk.Button(frame3, text="Aceptar")
+        aceptar.place(relx=0.4, rely=0.7, relwidth=0.1, relheight=0.4, anchor="s")            
+            
 
-    
-        
-
-    def prediccion(frame2, sede, prenda, prediccion):
-        prediccion = tk.Text(frame2,text="\nLa predicción de ventas para " + prenda + " es de " + prediccion + " en la "+ sede + "\n Según dicha predicción se hará la compra de los insumos")
-        prediccion.place(relx=1, rely=0, relwidth=1, relheight=0.4, anchor="e")
 
     # Interacción 2
+    
 
 
 #----------------------------------------------- Sistema Financiero -------------------------------------------------------------------

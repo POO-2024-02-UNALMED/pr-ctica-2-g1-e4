@@ -424,6 +424,7 @@ class Main:
         retorno = []
         criterios = []
         valores = []
+        texto = []
 
         for sede in Sede.getListaSedes():
             listaXSede = []
@@ -434,8 +435,9 @@ class Main:
             #prediccionC = None
             criterios.append(sede)
             valores.append(f"{round(Venta.getPesimismo()*100)}%")
+            
         
-        startFrame.pesimismo(criterios, valores)
+        startFrame.pesimismo(self, criterios, valores)
 
         for sede in Sede.getListaSedes():
             for prenda in Sede.getPrendasInventadas(sede):
@@ -443,8 +445,8 @@ class Main:
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
-                    print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionP)))
-                    startFrame.prediccion(sede, prenda, prediccionP)
+                    texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionP)} para la sede {sede}")
+                    #startFrame.prediccion(self, texto)
 
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
@@ -455,8 +457,8 @@ class Main:
                 if isinstance(prenda, Camisa) and not camisasPredichas:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionC = proyeccion * (1 - Venta.getPesimismo())
-                    print("\nLa predicción de ventas para " + str(prenda) + " es de " + str(math.ceil(prediccionC)))
-                    startFrame.prediccion(sede, prenda, prediccionC)
+                    texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionC)} para la sede {sede}")
+                    #startFrame.prediccion(self, texto)
 
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
@@ -468,10 +470,12 @@ class Main:
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
 
+
             listaXSede.append(insumoXSede)
             listaXSede.append(cantidadAPedir)
             retorno.append(listaXSede)
 
+        startFrame.prediccion(self, texto)
         return retorno
 
     # Interacción 2 
