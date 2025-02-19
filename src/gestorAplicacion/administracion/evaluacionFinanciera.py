@@ -23,7 +23,7 @@ class EvaluacionFinanciera:
             presidente.evaluaciones.append(self)
 
     def informe(self) -> str:
-        return f"El monto del balance a cargo de: {self.presidente} fue de: ${self.balance} pesos"
+        return f"El monto del balance a cargo de: {self.presidente.getNombre()} fue de: ${self.balance} pesos"
 
     @staticmethod
     def estimadoVentasGastos(fechaActual: Fecha, porcentajeUsuario: float, balanceAnterior: 'EvaluacionFinanciera') -> int:

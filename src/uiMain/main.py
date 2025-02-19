@@ -19,7 +19,8 @@ class Main:
     fecha:Fecha=None
     proveedorBdelmain=None
     evento_ui = threading.Event()
-
+    nuevoBalance=0
+    diferenciaEstimado=0
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
@@ -379,10 +380,6 @@ class Main:
     # Interaccion 2 
     def calcularEstimado(porcentaje):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
-        print("\nCalculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...")
-        while porcentaje < 0.0 or porcentaje > 1:
-            print("\nIngrese porcentaje a modificar para fidelidad de los clientes sin membresía, entre 0% y 100%")
-            porcentaje = Main.nextIntSeguro() / 100.0
         diferenciaEstimado = EvaluacionFinanciera.estimadoVentasGastos(Main.fecha, porcentaje, Main.nuevoBalance)
         # Un mes se puede dar por salvado si el 80% de los gastos se pueden ver
         # cubiertos por las ventas predichas
@@ -394,7 +391,8 @@ class Main:
         from src.gestorAplicacion.administracion.deuda import Deuda
         bancos=Banco.getListaBancos()
         if diferenciaEstimada > 0:
-            Deuda.compararDeudas(Main.fecha)
+            deudaPagada= Deuda.compararDeudas(Main.fecha)
+            return deudaPagada
         else:
             cuotas = 0
             while cuotas <= 0 or cuotas > 18:
@@ -409,8 +407,7 @@ class Main:
         else:
             bfString = ("El análisis de ventas realizado sobre el Black Friday arrojó que la audiencia reacciona bien a los descuentos, "f"propusimos un descuento del {descuento * 100}%")
         Prenda.prevenciones(descuento, nuevoDescuento, Main.fecha)
-        analisisFuturo = (f"\n{bfString}, sin embargo su desición fue aplicar un descuento de: "
-                        f"{nuevoDescuento * 100}%.")
+        analisisFuturo = (f"{bfString}, sin embargo su desición fue aplicar un descuento de: {nuevoDescuento * 100}%.")
         return analisisFuturo
 
 #----------------------------------------------------Insumos------------------------------------------------------------------------------------

@@ -23,9 +23,9 @@ class Aplication(tk.Frame):
         self.master.config(menu=self.barraMenus)
         self.inicioMenu = tk.Menu(self.barraMenus, tearoff=0,)
         self.barraMenus.add_cascade(label="Inicio", menu=self.inicioMenu)
-        self.inicioMenu.add_command(label="Salir")
+        self.inicioMenu.add_command(label="Salir" ,command=lambda: self.salirDelPrograma())
         self.inicioMenu.add_separator()
-        self.inicioMenu.add_command(label="Descripción")
+        self.inicioMenu.add_command(label="Descripción", command=lambda: self.infoSistema.ponerDescripcion())
 
         self.infoSistema = infoSistema(window = self.master, master = self)
         self.infoSistema.grid(row = 1, column = 1, sticky="sewn")
@@ -43,6 +43,9 @@ class Aplication(tk.Frame):
         self.rowconfigure(0,weight=1)
         self.rowconfigure(1,weight=9)
         self.rowconfigure(2,weight=1)
+    
+    def salirDelPrograma(self):
+        self.master.destroy()
 
     def imagenDeTamaño(path:str, masterForImage:tk.Widget):
         archivo = tk.PhotoImage(master = masterForImage, file = path)
