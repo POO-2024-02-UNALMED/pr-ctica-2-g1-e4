@@ -41,7 +41,7 @@ def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #cr
     global nomMaqProdDispSedeP, sedeMaqProdDispSedeP, horasUsoMaqProdDispSedeP
     global nomMaqProdDispSede2, sedeMaqProdDispSede2, horasUsoMaqProdDispSede2
     global textIndicador, senalizador
-    global aProdFinal
+    global aProdFinal, aProducirPaEnviar
     proveedoresQueLlegan = []
     preciosProvQueLlegan = []
     totalGastado = 0
@@ -57,7 +57,7 @@ def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #cr
     horasUsoMaqProdDispSede2 = []
     textIndicador = None
     senalizador = 0
-    aProdFinal = []
+    aProdFinal = [] ; aProducirPaEnviar = []
     buscarProveedor(ventana, descrip1, botonContinuar)
     #Maquinaria.agruparMaquinasDisponibles(10)
 
@@ -406,10 +406,9 @@ def recibeProdFinal(aProdF):
     print("\n",len(tempProd) , f"- la produccion en una sola lista es: {tempProd}\n")
     aProdFinal.append(tempProd[0]); aProdFinal.append(tempProd[1]); aProdFinal.append(tempProd[4]); aProdFinal.append(tempProd[5])
     aProdFinal.append(tempProd[2]); aProdFinal.append(tempProd[3]); aProdFinal.append(tempProd[6]); aProdFinal.append(tempProd[7])
-    print("\n",len(aProdFinal) , f"- la produccion en una sola lista es: {aProdFinal}\n")
+    print("\n",len(aProdFinal) , f"- la produccion cruzada en una sola lista es: {aProdFinal}\n")
     evento_senalizador.set()
 
-montoInicial = 1000
 enlacesP = [(0, 2), (0, 4), (0, 6)]  
 enlacesC = [(1, 3), (1, 5), (1, 7)]
 indiceEnlaceP = 0
@@ -454,9 +453,52 @@ def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLy
     evento_senalizador.wait()
     evento_senalizador.clear()
     varEntries = [tk.StringVar(value=str(aProdFinal[x])) for x in range(8)]
+    #print(f"\nvalores de entrada de la interfaz: {[int(var.get()) for var in varEntries]}")
     entries = []
     flechas = []
     varIntermedio = tk.StringVar()
+
+    def confirmarProduccion(event):
+        from tkinter import messagebox
+        listSobreCostos = calcularSobreCostos()
+        produccionPaEnviar()
+        respuesta = messagebox.askyesno("Confirmación", f"¿Deseas continuar?\n\n* Sobre Costo de la Sede Principal = {listSobreCostos[0]}\n* Sobre Costo de la Sede 2 = {listSobreCostos[1]}")
+        
+        if respuesta:
+            messagebox.showinfo("Continuar", "¡Listo, vamos a producir las prendas!")
+            print("El usuario eligió continuar.")
+            contBigRecor.destroy() ; contRe1.destroy() ; recorderis.destroy() ; textRecorderis.destroy() ; separador.destroy()
+            contRe2.destroy() ; recorderis2.destroy() ; textRecorderis2.destroy()
+            inicioInt3()
+        else:
+            print("El usuario canceló la acción.")
+
+    def produccionPaEnviar():
+        global aProducirPaEnviar
+        valores = [int(modificados.get()) for modificados in varEntries]
+        list1 = [valores[0], valores[1]] ; list2 = [valores[4], valores[5]] ; listProdHoy = [list1, list2]
+        list3 = [valores[2], valores[3]] ; list4 = [valores[6], valores[7]] ; listProdOWeek = [list3, list4]
+        aProducirPaEnviar = [listProdHoy, listProdOWeek]
+        print(f"\nproduccion pa enviar: {aProducirPaEnviar}")
+
+    def calcularSobreCostos():
+        import math
+        sedesSC = []
+        valores = [int(modificados.get()) for modificados in varEntries]
+        prendasSCHoySedeP = math.floor((valores[0] + valores[1]) / 6)
+        dinero1SedeP = prendasSCHoySedeP * 5000
+        prendasSCMSedeP = math.floor((valores[2] + valores[3]) / 6)
+        dinero2SedeP = prendasSCMSedeP * 2500
+        sobreCostoTotalSedeP = dinero1SedeP + dinero2SedeP
+
+        prendasSCHoySede2 = math.floor((valores[4] + valores[5]) / 6)
+        dinero1Sede2 = prendasSCHoySede2 * 5000
+        prendasSCMSede2 = math.floor((valores[6] + valores[7]) / 6)
+        dinero2Sede2 = prendasSCMSede2 * 2500
+        sobreCostoTotalSede2 = dinero1Sede2 + dinero2Sede2
+
+        sedesSC = [sobreCostoTotalSedeP, sobreCostoTotalSede2]
+        return sedesSC
 
     def actualizarValores(event=None):
         global direccion, idx1, idx2
@@ -567,11 +609,18 @@ def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLy
     botonCambiarC.pack(side=tk.LEFT, padx=15, pady=1)
 
     # Entry para ingresar cantidad
-    frameEntry = tk.Frame(frameDeTrabajo)
+    frameEntry = tk.Frame(frameDeTrabajo, bg="white")
     frameEntry.pack(pady=10)
     botonCambiarDir = tk.Button(frameEntry, text="Cambiar Dirección", command=cambiarDireccion, font=("Arial", 11, "bold italic"))
-    botonCambiarDir.pack()
+    botonCambiarDir.pack(side="left", padx=15)
+    botonContinue = tk.Button(frameEntry, text="CONTINUAR", font=("Arial", 13, "bold italic"))
+    botonContinue.pack(side="left", padx=15)
+    botonContinue.bind("<Button-1>", confirmarProduccion)
 
     # Iniciar con los primeros enlaces resaltados
     cambiarEnlaceP()
 
+aProducirPaEnviar = []
+
+def inicioInt3():
+    print("\nComienzo de la interacción 3...")
