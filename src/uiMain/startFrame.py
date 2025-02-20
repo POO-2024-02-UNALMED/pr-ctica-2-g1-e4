@@ -1126,7 +1126,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.seleccionador.destroy()
         self.seleccionadorDespedidos()
     
-    def despedir(self):
+    def anadirOtraPrenda(self):
         nombresADespedir=self.seleccionador.obtenerTodosLosValores()
         del nombresADespedir[0]
         (existen,self.empleadosADespedir)=Main.despedirEmpleados(nombresADespedir)
@@ -1162,7 +1162,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
-        self.opcionAñadir=tk.Button(self.frameCambianteGHumana, text="Añadir otra Prenda", font=("Arial", 12, "bold"), command=self.pantallaDatosFactura)
+        self.opcionAñadir=tk.Button(self.frameCambianteGHumana, text="Añadir otra Prenda", font=("Arial", 12, "bold"), command=self.anadirPrenda)
         self.opcionAñadir.grid(row=2, column=2)
         
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
@@ -1171,6 +1171,34 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.columnconfigure(1, weight=2)
         self.frameCambianteGHumana.columnconfigure(3, weight=3)
         self.frameCambianteGHumana.columnconfigure(4, weight=3)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=10)
+   
+    def anadirPrenda(self):
+        self.frameCambianteGHumana.destroy()
+
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
+        self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
+
+        self.descripcionAñadirDespedido = tk.Label(self.frameCambianteGHumana, text="""La prenda que desea añadir y la cantidad a comprar""", relief="ridge", font=("Arial", 10))
+        self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=4)
+
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Añadir Prenda" ,["Prenda","Cantidad"],"valor", ["Camisa/Pantalon","0"],[True,False],ancho_entry=25, tamañoFuente=10, callbackAceptar= self.actualizarDatosAñadirSede())
+        self.datosDespedido.grid(row=1, column=0, columnspan=2)
+
+        self.pistas=tk.Label(self.frameCambianteGHumana, text=Main.posiblesSedes(), font=("Arial", 10))
+        self.pistas.grid(row=1, column=3)
+        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.anadirOtraPrenda)
+        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
+
+        self.aceptar.grid(row=2, column=0)
+        self.botonBorrarSeleccion.grid(row=2, column=1)
+        
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=2)
+        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.frameCambianteGHumana.columnconfigure(3, weight=4)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
     
@@ -1205,7 +1233,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             tk.messagebox.showwarning("El empleado no trabaja aquí", "Intente otra vez, luego de verificar el nombre del empleado")
 
     def enviarVenta(self):
-        if self.sede is not None and self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is not None:
+        ["Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"]
+        cliente=None
+        for persona in Persona.getListaPersonas():
+            if persona.getNombre() == self.datosDespedido.getValue("Cliente"):
+                cliente=persona
+        if (cliente is not None) and (self.sede is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja")) is not None) and ((self.datosDespedido.getValue("Prenda").lower()=="camisa") or (self.datosDespedido.getValue("Prenda").lower()=="pantalon")) :
             self.posiblesDespedidos.append(self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")))
         self.pantallaBaseFacturacion(True)
 
@@ -1213,14 +1246,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.destroy()
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
         self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
-        self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados, verificamos si se pueden reemplazar
-        con gente de otras sedes""", relief="ridge", font=("Arial", 10))
+        self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text="Se han añadido las prenda a su compra", relief="ridge", font=("Arial", 10))
         self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
-        Main.prepararCambioSede()
-        tanda = Main.getTandaReemplazo()
-        if tanda is not None:
-            self.dibujarTandaDePrendas(tanda)
-
+        self.listaPrendas=[]
         self.frameCambianteGHumana.columnconfigure(0, weight=3)
     
     def dibujarTandaDePrendas(self, tanda):
