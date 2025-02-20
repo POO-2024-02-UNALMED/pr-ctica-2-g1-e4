@@ -33,6 +33,7 @@ class startFrame(tk.Tk):
         super().__init__()
         self.title("Ecomoda")
         self.geometry("800x500")
+        self.fechaValida = False
         # Llamar a la función de audio al abrir la ventana #reproducir_audio()
 
         self.barraMenus = tk.Menu(self)
@@ -62,6 +63,8 @@ class startFrame(tk.Tk):
     #----------------------------------- Listeners para el menú superior ------------------------------------------------------------------
     
     def abrirGestionHumana(self):
+        if not self.fechaValida:
+            return
         self.areaPrincipal.destroy()
         self.pagina="gestionHumana"
         self.cambiarFrame(self.crearGestionHumana())
@@ -69,25 +72,29 @@ class startFrame(tk.Tk):
     # ANCHOR eliminar f2
 
     def eliminarF2(self):
-        self.Ok()
+        if not self.fechaValida:
+            return        
         self.pagina="insumos"
         self.areaPrincipal.destroy()
         self.cambiarFrame(self.crearInsumos())
         
     def eliminarF4(self):
-        self.Ok()
+        if not self.fechaValida:
+            return
         self.pagina="facturacion"
         self.areaPrincipal.destroy()
         self.cambiarFrame(self.Facturar())
         
     def eliminarF3(self):
-        self.Ok()
+        if not self.fechaValida:
+            return
         self.pagina="financiera"
         self.areaPrincipal.destroy()
         self.cambiarFrame(SistemaFinanciero(self))
 
     def iniciarProduccion(self):
-        self.Ok()
+        if not self.fechaValida:
+            return
         self.pagina="produccion"
         self.areaPrincipal.destroy()
         self.cambiarFrame(producir(self))
@@ -204,7 +211,7 @@ class startFrame(tk.Tk):
         except ExcepcionContenidoVacio as viejaMetida:
             messagebox.showwarning(title="Alerta",message=viejaMetida.mensaje_completo)
             self.borrar()
-            return None
+            return hayExcepcion
                
         self.ingresarFecha(FDia,FMes,FAño)
         if isinstance(self.ingresarFecha(FDia,FMes,FAño),Fecha):
@@ -244,7 +251,7 @@ class startFrame(tk.Tk):
         except ExcepcionEnteroNoValido as moscaMuerta:
                 messagebox.showwarning(title="Alerta", message=moscaMuerta.mensaje_completo)
                 self.borrar()
-                return None
+                return hayExcepcion1
               
         try:
             hayExcepcion2 = False
@@ -255,7 +262,7 @@ class startFrame(tk.Tk):
         except ExcepcionEnteroNoValido as carrastrufia:
             messagebox.showwarning(title="Alerta", message=carrastrufia.mensaje_completo)
             self.borrar()
-            return None
+            return hayExcepcion2
 
         try:
             hayExcepcion3 = False
@@ -266,7 +273,7 @@ class startFrame(tk.Tk):
         except ExcepcionEnteroNoValido as mojarra:
             messagebox.showwarning(title="Alerta", message=mojarra.mensaje_completo)
             self.borrar()
-            return None
+            return hayExcepcion3
             
 
         fecha = Fecha(dia, mes, año)
