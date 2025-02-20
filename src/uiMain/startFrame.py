@@ -244,7 +244,7 @@ class startFrame(tk.Tk):
                 raise ExcepcionEnteroNoValido(dia)
         except ExcepcionEnteroNoValido as moscaMuerta:
                 messagebox.showwarning(title="Alerta", message=moscaMuerta.mensaje_completo)
-                self.after(100, self.Ok) 
+                self.after(100, self.ingresarFecha) 
                 return hayExcepcion
         try:
             hayExcepcion2 = False
@@ -255,7 +255,7 @@ class startFrame(tk.Tk):
                 raise ExcepcionEnteroNoValido(mes)
         except ExcepcionEnteroNoValido as carrastrufia:
             messagebox.showwarning(title="Alerta", message=carrastrufia.mensaje_completo)
-            self.after(100, self.Ok) 
+            self.after(100, self.ingresarFecha) 
             return hayExcepcion2
         try:
             hayExcepcion3 = False
@@ -266,7 +266,7 @@ class startFrame(tk.Tk):
                 raise ExcepcionEnteroNoValido(año)
         except ExcepcionEnteroNoValido as mojarra:
             messagebox.showwarning(title="Alerta", message=mojarra.mensaje_completo)
-            self.after(100, self.Ok) 
+            self.after(100, self.ingresarFecha) 
             return hayExcepcion3
 
         fecha = Fecha(dia, mes, año)
