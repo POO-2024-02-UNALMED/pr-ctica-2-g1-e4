@@ -304,12 +304,16 @@ class startFrame(tk.Tk):
 
         self.tituloF1 = tk.Label(self.framePrincipal, text="Gestión Humana", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
         self.tituloF1.grid(row=0, column=0, sticky="nswe")
+        
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
+        self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
 
-        self.frame1 = tk.Frame(self.framePrincipal, height=150)
-        self.frame1.grid(row=1, column=0, sticky="nswe")
+        self.outputGHumana=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2)
+        self.outputGHumana.grid(row=2, column=0, sticky="nswe")
+
 
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-        self.descripcionF1 = tk.Label(self.frame1, wraplength=700 ,text="""Este área analiza la lista de todos los empleados y permite modificarla:
+        self.descripcionF1 = tk.Label(self.frameCambianteGHumana, wraplength=700 ,text="""Este área analiza la lista de todos los empleados y permite modificarla:
 Se puede contratar a un nuevo empleado, establecer su salario y el rol o las funciones que cumple en la empresa.
 También se puede despedir a un empleado ya existente en el equipo de trabajo.
         
@@ -329,11 +333,11 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.rendimientoInsufuciencias = infoMalos[3]
         self.acciones=infoMalos[4]
 
-        self.tituloNombre=tk.Label(self.frame1, text="Nombre", font=("Arial", 10))
-        self.tituloArea=tk.Label(self.frame1, text="Area", font=("Arial", 10))
-        self.tituloRendimiento=tk.Label(self.frame1, text="Rendimiento", font=("Arial", 10))
-        self.tituloRendimientoEsperado=tk.Label(self.frame1, text="Rendimiento esperado", font=("Arial", 10))
-        self.tituloAccion=tk.Label(self.frame1, text="Acción", font=("Arial", 10))
+        self.tituloNombre=tk.Label(self.frameCambianteGHumana, text="Nombre", font=("Arial", 10))
+        self.tituloArea=tk.Label(self.frameCambianteGHumana, text="Area", font=("Arial", 10))
+        self.tituloRendimiento=tk.Label(self.frameCambianteGHumana, text="Rendimiento", font=("Arial", 10))
+        self.tituloRendimientoEsperado=tk.Label(self.frameCambianteGHumana, text="Rendimiento esperado", font=("Arial", 10))
+        self.tituloAccion=tk.Label(self.frameCambianteGHumana, text="Acción", font=("Arial", 10))
         
         self.tituloNombre.grid(row=2, column=0)
         self.tituloArea.grid(row=2, column=1)
@@ -343,10 +347,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.widgetsTablaInsuficientes=[]
         row=3
         for i, empleado in enumerate(self.empleadosInsuficientes):
-            nombre = tk.Label(self.frame1, text=Empleado.getNombre(empleado), font=("Arial", 10))
-            area = tk.Label(self.frame1, text=Empleado.getNombre(Empleado.getAreaActual(empleado)), font=("Arial", 10))
-            rendimiento = tk.Label(self.frame1, text=f"{int(self.rendimientoInsufuciencias[i])}", font=("Arial", 10))
-            rendimientoDeseado = tk.Label(self.frame1, text=f"{int(Sede.getRendimientoDeseado(Empleado.getSede(empleado),Empleado.getAreaActual(empleado), Main.fecha))}", font=("Arial", 10))
+            nombre = tk.Label(self.frameCambianteGHumana, text=Empleado.getNombre(empleado), font=("Arial", 10))
+            area = tk.Label(self.frameCambianteGHumana, text=Empleado.getNombre(Empleado.getAreaActual(empleado)), font=("Arial", 10))
+            rendimiento = tk.Label(self.frameCambianteGHumana, text=f"{int(self.rendimientoInsufuciencias[i])}", font=("Arial", 10))
+            rendimientoDeseado = tk.Label(self.frameCambianteGHumana, text=f"{int(Sede.getRendimientoDeseado(Empleado.getSede(empleado),Empleado.getAreaActual(empleado), Main.fecha))}", font=("Arial", 10))
             textoAccion = ""
             match self.acciones[i]:
                 case "transferencia-sede":
@@ -356,7 +360,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 case "sugerencia-despido":
                     textoAccion = "¿Despedir?"
 
-            accion = tk.Label(self.frame1, text=textoAccion, font=("Arial", 10))
+            accion = tk.Label(self.frameCambianteGHumana, text=textoAccion, font=("Arial", 10))
             
             nombre.grid(row=row, column=0)
             area.grid(row=row, column=1)
@@ -367,28 +371,29 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.widgetsTablaInsuficientes.append((nombre, area, rendimiento, rendimientoDeseado, accion))
             row += 1
         
-        self.botonSeguirPreInteraccion=tk.Button(self.frame1, text="Siguiente", font=("Arial", 12, "bold"), command=lambda : self.pantallaEleccionDespedir(True))
+        self.botonSeguirPreInteraccion=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=lambda : self.pantallaEleccionDespedir(True))
         self.botonSeguirPreInteraccion.grid(row=row, column=0, columnspan=5)
 
-        self.frame1.rowconfigure(0, weight=1)
-        self.frame1.rowconfigure(1, weight=10)
-        self.frame1.columnconfigure(0, weight=1)# Empleado insuficiente
-        self.frame1.columnconfigure(1, weight=1)# area
-        self.frame1.columnconfigure(2, weight=1)# rendimiento
-        self.frame1.columnconfigure(3, weight=1)# rendimiento esperado
-        self.frame1.columnconfigure(4, weight=1)# acción
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=1)# Empleado insuficiente
+        self.frameCambianteGHumana.columnconfigure(1, weight=1)# area
+        self.frameCambianteGHumana.columnconfigure(2, weight=1)# rendimiento
+        self.frameCambianteGHumana.columnconfigure(3, weight=1)# rendimiento esperado
+        self.frameCambianteGHumana.columnconfigure(4, weight=1)# acción
         for i in range(0,row):
-            self.frame1.rowconfigure(i, weight=1)
+            self.frameCambianteGHumana.rowconfigure(i, weight=1)
         
         self.framePrincipal.columnconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
+        self.framePrincipal.rowconfigure(2, weight=2)
 
     def pantallaEleccionDespedir(self, limpiarFrame=False):
         if limpiarFrame:
-            self.frame1.destroy()
-            self.frame1 = tk.Frame(self.framePrincipal)
-            self.frame1.grid(row=1, column=0, sticky="nswe",columnspan=4)
+            self.frameCambianteGHumana.destroy()
+            self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
+            self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe",columnspan=4)
 
         empleadosMalosString=""
         
@@ -396,7 +401,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         empleadosMalosString += """También puede añadir a otros empleados, para buscar mas empleados, haga click en "Añadir empleado a la lista guía" """
 
-        self.labelPreConsulta=tk.Label(self.frame1, text=empleadosMalosString, relief="ridge", font=("Arial", 10))
+        self.labelPreConsulta=tk.Label(self.frameCambianteGHumana, text=empleadosMalosString, relief="ridge", font=("Arial", 10))
         self.labelPreConsulta.grid(row=1, column=0, sticky="nswe",columnspan=4)
 
         nombres=""
@@ -407,18 +412,18 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.seleccionadorDespedidos()
 
-        self.malRendidos=tk.Label(self.frame1, text=nombres, font=("Arial", 10))
+        self.malRendidos=tk.Label(self.frameCambianteGHumana, text=nombres, font=("Arial", 10))
         self.malRendidos.grid(row=2, column=1,sticky="nswe")
 
-        self.opcionAñadir=tk.Button(self.frame1, text="Añadir empleado a la lista guía", font=("Arial", 12, "bold"), command=self.pantallaAñadirDespedido)
+        self.opcionAñadir=tk.Button(self.frameCambianteGHumana, text="Añadir empleado a la lista guía", font=("Arial", 12, "bold"), command=self.pantallaAñadirDespedido)
         self.opcionAñadir.grid(row=3, column=0,columnspan=2)
 
-        self.frame1.rowconfigure(0, weight=1)
-        self.frame1.rowconfigure(1, weight=5)
-        self.frame1.rowconfigure(2, weight=10)
-        self.frame1.rowconfigure(3, weight=10)
-        self.frame1.columnconfigure(0, weight=10)
-        self.frame1.columnconfigure(1, weight=10)
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=5)
+        self.frameCambianteGHumana.rowconfigure(2, weight=10)
+        self.frameCambianteGHumana.rowconfigure(3, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=10)
+        self.frameCambianteGHumana.columnconfigure(1, weight=10)
         self.framePrincipal.columnconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
@@ -429,7 +434,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         for i in range(self.cantidadADespedir):
             criterios.append(f"Nombre del despedido {i+1}")
             valores.append("")
-        self.seleccionador=FieldFrame(self.frame1, "Dato", criterios, "valor",valores=valores, ancho_entry=20, tamañoFuente=10,aceptar=True, borrar=True, callbackAceptar=self.despedir)
+        self.seleccionador=FieldFrame(self.frameCambianteGHumana, "Dato", criterios, "valor",valores=valores, ancho_entry=20, tamañoFuente=10,aceptar=True, borrar=True, callbackAceptar=self.despedir)
         self.seleccionador.configurarCallBack("Cantidad de despedidos", "<Return>", lambda e:self.actualizarCantidadDespedidos())
         self.seleccionador.grid(row=2, column=0,columnspan=1)
     
@@ -450,31 +455,31 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
     # Parte de la interacción 1
     def pantallaAñadirDespedido(self):
-        self.frame1.destroy()
+        self.frameCambianteGHumana.destroy()
 
-        self.frame1 = tk.Frame(self.framePrincipal, height=150)
-        self.frame1.grid(row=1, column=0, sticky="nswe")
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
+        self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
 
-        self.descripcionAñadirDespedido = tk.Label(self.frame1, text="""Inserte los datos de el empleado a añadir a la lista, el panel de la derecha le ayudará, presione Enter al terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
+        self.descripcionAñadirDespedido = tk.Label(self.frameCambianteGHumana, text="""Inserte los datos de el empleado a añadir a la lista, el panel de la derecha le ayudará, presione Enter al terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
         self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=4)
 
-        self.datosDespedido=FieldFrame(self.frame1, "Dato del empleado" ,["sede","nombre"],"valor", ["",""],[True,False],ancho_entry=25, tamañoFuente=10)
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Dato del empleado" ,["sede","nombre"],"valor", ["",""],[True,False],ancho_entry=25, tamañoFuente=10)
         self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosAñadirSede)
         self.datosDespedido.grid(row=1, column=0, columnspan=2)
 
-        self.pistas=tk.Label(self.frame1, text=Main.posiblesSedes(), font=("Arial", 10))
+        self.pistas=tk.Label(self.frameCambianteGHumana, text=Main.posiblesSedes(), font=("Arial", 10))
         self.pistas.grid(row=1, column=3)
-        self.aceptar=tk.Button(self.frame1, text="Aceptar", font=("Arial", 12, "bold"), command=self.enviarEmpleadoNuevo)
-        self.botonBorrarSeleccion=tk.Button(self.frame1, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
+        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.enviarEmpleadoNuevo)
+        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
         
-        self.frame1.rowconfigure(0, weight=1)
-        self.frame1.rowconfigure(1, weight=10)
-        self.frame1.columnconfigure(0, weight=2)
-        self.frame1.columnconfigure(1, weight=2)
-        self.frame1.columnconfigure(3, weight=4)
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=2)
+        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.frameCambianteGHumana.columnconfigure(3, weight=4)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
     
@@ -503,10 +508,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.pantallaEleccionDespedir(True)
 
     def reemplazarPorCambioSede(self):
-        self.frame1.destroy()
-        self.frame1 = tk.Frame(self.framePrincipal)
-        self.frame1.grid(row=1, column=0, sticky="nswe")
-        self.descripcionCambioSede = tk.Label(self.frame1, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados, verificamos si se pueden reemplazar
+        self.frameCambianteGHumana.destroy()
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
+        self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
+        self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados, verificamos si se pueden reemplazar
         con gente de otras sedes""", relief="ridge", font=("Arial", 10))
         self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
         Main.prepararCambioSede()
@@ -514,7 +519,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         if tanda is not None:
             self.dibujarTandaDeReemplazo(tanda)
 
-        self.frame1.columnconfigure(0, weight=3)
+        self.frameCambianteGHumana.columnconfigure(0, weight=3)
     
     def dibujarTandaDeReemplazo(self, tanda):
         candidatos,sedeDonadora,rol,cantidad = tanda
@@ -522,7 +527,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         if self.contenedorTandaTransferencia is not None:
             self.contenedorTandaTransferencia.destroy()
 
-        self.contenedorTandaTransferencia=tk.Frame(self.frame1)
+        self.contenedorTandaTransferencia=tk.Frame(self.frameCambianteGHumana)
         self.contenedorTandaTransferencia.grid(row=1, column=0, sticky="nswe")
         textoReemplazo=f"""Nececitamos reemplazar {cantidad} de {rol.name}\n"""
         if Main.estadoGestionHumana=="contratacion":
@@ -554,13 +559,13 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         if existen:
             tanda=Main.getTandaReemplazo()
             if tanda is None:
-                self.frame1.destroy()
-                self.frame1 = tk.Frame(self.framePrincipal)
-                self.frame1.grid(row=1, column=0, sticky="nswe")
-                self.descripcionCambioSede = tk.Label(self.frame1, text=f"""Se ha completado el reemplazo de los empleados, tenga buen día.""", relief="ridge", font=("Arial", 10))
+                self.frameCambianteGHumana.destroy()
+                self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
+                self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
+                self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text=f"""Se ha completado el reemplazo de los empleados, tenga buen día.""", relief="ridge", font=("Arial", 10))
                 self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
-                self.frame1.columnconfigure(0, weight=3)
-                self.frame1.rowconfigure(0, weight=3)
+                self.frameCambianteGHumana.columnconfigure(0, weight=3)
+                self.frameCambianteGHumana.rowconfigure(0, weight=3)
             else:
                 self.dibujarTandaDeReemplazo(Main.getTandaReemplazo())
         else:
