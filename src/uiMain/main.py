@@ -733,9 +733,7 @@ class Main:
             if not isinstance(persona, Empleado):
                 noEmpleados.append(persona)
         index = 0
-        for persona in noEmpleados:
-            print(f"{index}. {persona}")
-            index += 1
+        return noEmpleados
 
     def realizarVenta(venta):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
