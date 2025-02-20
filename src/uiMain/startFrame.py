@@ -219,19 +219,6 @@ class startFrame(tk.Tk):
         fecha=None
         partes = diaI.split()
         numero=-1
-        try:
-            unaExcepcion = False
-            lista = []
-            if not (diaI.isdigit() and mesI.isdigit() and añoI.isdigit()):
-                unaExcepcion = True
-                cadena = f"{diaI},{mesI},{añoI}"
-                lista = cadena.split(",")
-            if unaExcepcion:
-                raise ExcepcionEnteroNoString(lista)
-        except ExcepcionEnteroNoString as pobreLagartija:
-                messagebox.showwarning(title="Alerta", message=pobreLagartija.mensaje_completo)
-                self.after(100, self.Ok)
-                return unaExcepcion
             
         if partes[-1].isdigit():
             numero = int(partes[-1])
