@@ -35,6 +35,8 @@ class startFrame(tk.Tk):
         self.title("Ecomoda")
         self.geometry("800x500")
         self.fechaValida = False
+        self.listaPrendas=[]
+        self.cantidadPrendas=[]
         # Llamar a la función de audio al abrir la ventana #reproducir_audio()
 
         self.barraMenus = tk.Menu(self)
@@ -1144,7 +1146,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.reemplazarPorCambioFactura()
         else:
             tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado trabaja en la empresa.")
-
+    
+    #Este si
     # Parte de la interacción 1
     def pantallaDatosFactura(self):
         self.descripcionF1.config(text="""Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.\nInserte los datos de la sede y presione Enter para ver los empleados""")
@@ -1210,14 +1213,15 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.columnconfigure(3, weight=4)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
-    
+
+#Este si
     def actualizarDatosVendedores(self, evento):
         if Main.verificarSedeExiste(self.datosDespedido.getValue("sede")):
             self.datosDespedido.habilitarEntry("Vendedor", True)
             self.datosDespedido.configurarCallBack("Vendedor", "<Return>", lambda e: self.actualizarDatosAñadirVendedor())
             empleadosPosibles="Vendedores posibles"
             self.datosDespedido.habilitarEntry("Empleado caja", True)
-            self.datosDespedido.configurarCallBack("Empleado caja", "<Return>", lambda e: self.actualizarDatosAñadirVendedor())
+            self.datosDespedido.configurarCallBack("Empleado caja", "<Return>", lambda e: self.actualizarDatosAñadirCaja())
             asesoresPosibles="\n\nEmpleados de caja posibles"
             
             self.sede = Main.sedePorNombre(self.datosDespedido.getValue("sede"))
@@ -1236,20 +1240,52 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.datosDespedido.habilitarEntry("sede", True)
             self.datosDespedido.habilitarEntry("Vendedor", False)
             tk.messagebox.showwarning("La sede no existe", "Intente otra vez, luego de verificar el nombre de la sede")
-
+    #Este si
     def actualizarDatosAñadirVendedor(self):
         if self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is None:
             tk.messagebox.showwarning("El empleado no trabaja aquí", "Intente otra vez, luego de verificar el nombre del empleado")
 
+  #Este si
+    def actualizarDatosAñadirCaja(self):
+        if self.sede.getEmpleado(self.datosDespedido.getValue("Empleado Caja")) is None:
+            tk.messagebox.showwarning("El empleado no trabaja aquí", "Intente otra vez, luego de verificar el nombre del empleado")
+
+    #Este si
     def enviarVenta(self):
-        ["Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"]
+        #Acá va lo de la excepcion
+        excepcion=False
         cliente=None
         for persona in Persona.getListaPersonas():
             if persona.getNombre() == self.datosDespedido.getValue("Cliente"):
                 cliente=persona
         if (cliente is not None) and (self.sede is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja")) is not None) and ((self.datosDespedido.getValue("Prenda").lower()=="camisa") or (self.datosDespedido.getValue("Prenda").lower()=="pantalon")) :
-            self.posiblesDespedidos.append(self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")))
-        self.pantallaBaseFacturacion(True)
+            self.cliente=cliente
+            self.vendedor=self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor"))
+            self.caja=self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja"))
+            prenda=None
+            for prendai in Sede.getPrendasInventadasTotal():
+                if (prendai.getNombre().lower()==self.datosDespedido.getValue("Prenda").lower()):
+                    prenda = prendai
+                    break
+                elif (prenda == None):
+                    continue
+            if prenda not in self.listaPrendas:
+                self.listaPrendas.append(prenda)
+                self.cantidadPrendas.append(int(self.datosDespedido.getValue("Cantidad")))
+            else:
+                self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosDespedido.getValue("Cantidad"))
+            if excepcion:
+                #self.pantallaBaseFacturacion(True)
+                self.datosDespedido.habilitarEntry("Cliente", False)
+                self.datosDespedido.habilitarEntry("sede", False)
+                self.datosDespedido.habilitarEntry("Vendedor", False)
+                self.datosDespedido.habilitarEntry("Empleado caja", False)
+            else: 
+                venta=Main.vender(self.cliente,self.sede,self.vendedor,self.caja,self.listaPrendas,self.cantidadPrendas)
+                self.outputGHumana.config(state="normal")
+                self.outputGHumana.delete("1.0", "end")
+                self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {venta.getSubtotal()}", "center", Font=("Arial", 10))
+                self.outputGHumana.config(state="disabled")
 
     def reemplazarPorCambioFactura(self):
         self.frameCambianteGHumana.destroy()

@@ -164,7 +164,7 @@ class Venta:
         return self.montoPagado
     def setMontoPagado(self, monto):
         if self.montoPagado == 0:
-            self.Sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() + monto)
+            self.sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() + monto)
             self.montoPagado = monto
         else:
             self.sede.getCuentaSede().setAhorroBanco(self.sede.getCuentaSede().getAhorroBanco() - self.montoPagado)

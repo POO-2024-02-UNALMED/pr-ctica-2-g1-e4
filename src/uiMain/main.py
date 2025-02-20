@@ -660,67 +660,23 @@ class Main:
                 listaEmpleado.append(empleado)
         return listaEmpleado
     
-    def vender():
+    def vender(cliente, sede, encargado, vendedor, productosSeleccionados, cantidadProductos):
         from ..gestorAplicacion.administracion.empleado import Empleado
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         from src.gestorAplicacion.administracion.area import Area
         venta = None
-        productosSeleccionados = []; cantidadProductos = []
-        print("\nIngrese la fecha de la venta:")
         fechaVenta = Main.fecha
-        print("\nSeleccione el cliente al que se le realizará la venta:")
-        Main.imprimirNoEmpleados()  # Muestra la lista de clientes con índices
-        clienteSeleccionado = Main.nextIntSeguro()
-        noEmpleados = [persona for persona in Persona.getListaPersonas() if not isinstance(persona, Empleado)]
-        cliente = noEmpleados[clienteSeleccionado]
-        print("\nSeleccione el número de la sede en la que se encuentra el cliente:")
-        for i, sede in enumerate(Sede.getListaSedes()):
-            print(f"{i}. {Sede.getNombre(sede)}")
-        sedeSeleccionada = Main.nextIntSeguro()
-        sede = Sede.getListaSedes()[sedeSeleccionada]
-        print("\nSeleccione el número del empleado que se hará cargo del registro de la venta:")
-        for i, empleado in enumerate(sede.getListaEmpleados()):
-            if Empleado.getAreaActual(empleado) == Area.OFICINA:
-                print(f"{i}. {Empleado.getNombre(empleado)}")
-        encargadoSeleccionado = Main.nextIntSeguro()
-        encargado = Sede.getListaEmpleados(sede)[encargadoSeleccionado]
-        print("\nSeleccione el número del empleado que se hará cargo de asesorar la venta:")
-        for i, empleado in enumerate(Sede.getListaEmpleados(sede)):
-            if empleado.getAreaActual() == Area.VENTAS:
-                print(f"{i}. {Empleado.getNombre(empleado)}")
-        vendedorSeleccionado = Main.nextIntSeguro()
-        vendedor = Sede.getListaEmpleados(sede)[vendedorSeleccionado]
         costosEnvio = 0
-        while True:
-            print("\nSeleccione el getNombre del producto que venderá:")
-            print(f"0. Camisa - Precio {Camisa.precioVenta()}")
-            print(f"1. Pantalon - Precio {Pantalon.precioVenta()}")
-            productoSeleccionado = input()
-            prenda="pantalon"
-            if productoSeleccionado==0:
-                prenda="camisa"
-            prendaSeleccionada = None
-            for prenda in Sede.getPrendasInventadasTotal():
-                if (Prenda.getNombre(prenda).lower()==prenda):
-                    prendaSeleccionada = prenda
-                    break
-            if (prendaSeleccionada == None):
-                print("Producto no encontrado. Intente nuevamente.")
-                continue
-
-            nombrePrendaSeleccionada = Prenda.getNombre(prendaSeleccionada)
-            print("Ingrese la cantidad de unidades que se desea del producto elegido:")
-            cantidadPrenda = Main.nextIntSeguro()
+        for i in range(len(productosSeleccionados)):
+            cantidadPrenda= cantidadProductos[i]
+            prendaSeleccionada = productosSeleccionados[i]
             #cantidadDisponible = sum(1 for prenda in Sede.getPrendasInventadasTotal() if Prenda.getNombre(prenda) == Prenda.getNombre(prendaSeleccionada))
             cantidadDisponible = 0
-            for i in range(len(cantidadPrenda)):
-                productosSeleccionados.append(prendaSeleccionada)
-                cantidadProductos.append(cantidadPrenda)
             for prenda in Sede.getPrendasInventadasTotal():
                 if(Prenda.getNombre(prenda)==Prenda.getNombre(prendaSeleccionada)):
                     cantidadDisponible+=1
-            Main.manejarFaltantes(sede, cantidadPrenda, cantidadDisponible, nombrePrendaSeleccionada, costosEnvio)
+            Main.manejarFaltantes(sede, cantidadPrenda, cantidadDisponible, prendaSeleccionada.getNombre(), costosEnvio)
             if 0 < cantidadPrenda < len(Sede.getPrendasInventadasTotal()):
                 eliminadas = 0
                 for i in range(len(Sede.getPrendasInventadasTotal())):
@@ -728,16 +684,8 @@ class Main:
                         break
                     if Sede.getPrendasInventadasTotal()[i] == prendaSeleccionada:
                         eliminada = Sede.getPrendasInventadasTotal().pop(i)
-                        Sede.getPrendasInventadas(sede).remove(eliminada)
                         eliminadas += 1
                         i -= 1
-            print("\n¿Deseas agregar otro producto a la venta?: (si/no)")
-            decision = input().lower()
-            if decision == "no":
-                print("Selección finalizada")
-                break
-            if decision != "si":
-                break
         sumaPreciosPrendas = 0
         cantidadCamisas = 0
         cantidadPantalon = 0
@@ -874,7 +822,6 @@ class Main:
 
         if faltantes > 0:
             costosEnvio += 3000 + (faltantes * 1000)
-            print("Valor de costos de envío: " + str(costosEnvio))
             prendasTransferidas = 0
             for otraSede in Sede.getListaSedes():
                 if otraSede != sede:
