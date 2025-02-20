@@ -179,6 +179,9 @@ class startFrame(tk.Tk):
 
         # Función que se ejecutará al presionar el botón
     def Ok(self):
+        if self.pagina!="inicial":
+            return # Si es así, ninguno de los Widgets a tratar existen.
+
         # Leer los valores de las entradas
         FDia = self.entradaDia.get() # Obtener el texto de la entrada para el día
         FMes = self.entradaMes.get() # Obtener el texto de la entrada para el mes
@@ -571,9 +574,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.field.pack(anchor="s",  expand=True, fill="both")
 
     def prediccion(self, texto):
-        self.frame3 = tk.Frame(self.framePrincipal, bg="light gray")
+        self.frame3 = tk.Frame(self.framePrincipal, bg="#f0f0f0")
         self.frame3.pack(anchor="s",  expand=True, fill="both",pady=5)
-        prediccion = tk.Text(frame3, font=("Arial", 10), bg="#f0f0f0", relief="flat")
+        prediccion = tk.Text(self.frame3, font=("Arial", 10), bg="#f0f0f0", relief="flat")
         mensaje = ""
 
         for caso in texto:
@@ -582,7 +585,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         prediccion.tag_config("center", justify="center")
         prediccion.insert("1.0", mensaje,"center")
 
-        prediccion.place(relx=0.5, rely=0.5, relwidth=1, relheight=1,anchor="c")
+        prediccion.place(relx=0.5, rely=0.5, relwidth=1, relheight=0.7,anchor="c")
         prediccion.config(state="disabled")
 
         label3 = tk.Label(self.frame3, text="Según dicha predicción se hará la compra de los insumos")
