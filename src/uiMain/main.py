@@ -333,18 +333,18 @@ class Main:
     def despedirEmpleados(cls, nombres):
         empleados = []
         for nombre in nombres:
-            for emp in cls.despedidos:
-                encontrado=False
+            encontrado=False
+            for emp in Sede.getListaEmpleadosTotal():
                 if emp.getNombre() == nombre:
                     empleados.append(emp)
                     encontrado=True
-                if not encontrado:
-                    return False
+            if not encontrado:
+                return (False,[])
                 
         Empleado.despedirEmpleados(empleados, True, Main.fecha)
         cls.despedidos = empleados
         cls.porReemplazar = empleados.copy()
-        return True
+        return (True,empleados)
 
     @classmethod
     def verificarSedeExiste(cls, sede:str): # verifica que la sede exista
