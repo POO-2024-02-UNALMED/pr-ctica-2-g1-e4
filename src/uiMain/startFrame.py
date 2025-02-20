@@ -586,7 +586,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def prediccion(self, texto):
         frame3 = tk.Frame(self.framePrincipal, bg="light gray")
         frame3.pack(anchor="s",  expand=True, fill="both")
-        prediccion = tk.Text(frame3, font=("Arial", 10), bg="#f0f0f0")
+        prediccion = tk.Text(frame3, font=("Arial", 10), bg="#f0f0f0", relief="flat")
         mensaje = ""
         for caso in texto:
             mensaje += caso + "\n"
