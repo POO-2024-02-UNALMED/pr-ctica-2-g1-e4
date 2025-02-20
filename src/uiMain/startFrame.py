@@ -282,6 +282,7 @@ class startFrame(tk.Tk):
         self.inicialGestionHumana()
         self.empleadosADespedir=[] # Se llena al dar aceptar en la pantalla de seleccion.
         Main.estadoGestionHumana="despedir"
+        self.cantidadADespedir=0
         return self.gestionHumana
         
     def inicialGestionHumana(self):
@@ -378,46 +379,64 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         empleadosMalosString=""
         
-        empleadosMalosString += """Estos empleados tienen un rendimiento menor al esperado, y no puedieron ser transferidos ni cambiados de cargo.\n"""
+        empleadosMalosString += """Los empleados de la derecha no rinden correctamente y no pudieron ser cambiados ni de area ni de sede. .\n"""
 
-        empleadosMalosString += """Puede elegir despedir a estos empleados si lo desea, insertando SI en el campo de texto, o puede añadir mas empleados a la lista de despedibles"""
+        empleadosMalosString += """También puede añadir a otros empleados, para buscar mas empleados, haga click en "Añadir empleado a la lista guía" """
 
         self.labelPreConsulta=tk.Label(self.frame1, text=empleadosMalosString, relief="ridge", font=("Arial", 10))
         self.labelPreConsulta.grid(row=1, column=0, sticky="nswe",columnspan=4)
 
-        nombres=[]
+        nombres=""
         for empleado in self.posiblesDespedidos:
-            nombres.append(Empleado.getNombre(empleado))
+            nombres+=Empleado.getNombre(empleado)+"\n"
 
-        self.seleccionador=FieldFrame(self.frame1, "Nombre del empleado a despedir", nombres, "¿Despedir?", ancho_entry=5, tamañoFuente=10)
-        self.seleccionador.grid(row=2, column=1,columnspan=2)
-        self.opcionAñadir=tk.Button(self.frame1, text="Añadir empleado a la lista de despedibles", font=("Arial", 12, "bold"), command=self.pantallaAñadirDespedido)
-        self.opcionAñadir.grid(row=3, column=1,columnspan=2)
-        self.aceptarDespedidos=tk.Button(self.frame1, text="Aceptar", font=("Arial", 12, "bold"), command=self.despedir)
-        self.resetDespedidos=tk.Button(self.frame1, text="Borrar", font=("Arial", 12, "bold"), command=self.seleccionador.borrar)
-        self.aceptarDespedidos.grid(row=4, column=1)
-        self.resetDespedidos.grid(row=4, column=2)
+        self.cantidadADespedir=len(self.posiblesDespedidos)
+
+        self.seleccionadorDespedidos()
+
+        self.malRendidos=tk.Label(self.frame1, text=nombres, font=("Arial", 10))
+        self.malRendidos.grid(row=2, column=1,sticky="nswe")
+
+        self.opcionAñadir=tk.Button(self.frame1, text="Añadir empleado a la lista guía", font=("Arial", 12, "bold"), command=self.pantallaAñadirDespedido)
+        self.opcionAñadir.grid(row=3, column=0,columnspan=2)
 
         self.frame1.rowconfigure(0, weight=1)
         self.frame1.rowconfigure(1, weight=5)
         self.frame1.rowconfigure(2, weight=10)
         self.frame1.rowconfigure(3, weight=10)
         self.frame1.columnconfigure(0, weight=10)
-        self.frame1.columnconfigure(1, weight=6)
-        self.frame1.columnconfigure(2, weight=6)
-        self.frame1.columnconfigure(3, weight=10)
+        self.frame1.columnconfigure(1, weight=10)
         self.framePrincipal.columnconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
     
+    def seleccionadorDespedidos(self):
+        valores=[self.cantidadADespedir]
+        criterios=["Cantidad de despedidos"]
+        for i in range(self.cantidadADespedir):
+            criterios.append(f"Nombre del despedido {i+1}")
+            valores.append("")
+        self.seleccionador=FieldFrame(self.frame1, "Dato", criterios, "valor",valores=valores, ancho_entry=20, tamañoFuente=10,aceptar=True, borrar=True, callbackAceptar=self.despedir)
+        self.seleccionador.configurarCallBack("Cantidad de despedidos", "<Return>", lambda e:self.actualizarCantidadDespedidos())
+        self.seleccionador.grid(row=2, column=0,columnspan=1)
+    
+    def actualizarCantidadDespedidos(self):
+        self.cantidadADespedir=int(self.seleccionador.getValue("Cantidad de despedidos"))
+        self.seleccionador.destroy()
+        self.seleccionadorDespedidos()
+    
     def despedir(self):
         self.empleadosADespedir=[]
-        for empleado in self.posiblesDespedidos:
-            if self.seleccionador.getValue(Empleado.getNombre(empleado)).lower()=="si":
-                self.empleadosADespedir.append(empleado)
-        Main.despedirEmpleados(self.empleadosADespedir)
-        Main.estadoGestionHumana="cambio-sede"
-        self.reemplazarPorCambioSede()
+        seleccionados=self.seleccionador.valores.copy()
+        del seleccionados[0]
+        for empleado in seleccionados:
+            self.empleadosADespedir.append(empleado)
+        existen=Main.despedirEmpleados(self.empleadosADespedir)
+        if existen:
+            Main.estadoGestionHumana="cambio-sede"
+            self.reemplazarPorCambioSede()
+        else:
+            tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado trabaja en la empresa.")
 
     # Parte de la interacción 1
     def pantallaAñadirDespedido(self):

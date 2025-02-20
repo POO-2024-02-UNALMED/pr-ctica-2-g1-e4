@@ -91,7 +91,7 @@ class FieldFrame(Frame):
     def obtenerTodosLosValores(self):
         return [entry.get() for entry in self.valores]
     
-    def configurarCallBack(self, criterio, evento, funcion):
+    def configurarCallBack(self, criterio:str, evento, funcion):
         entry = None
         for i, c in enumerate(self.citerios):
             if c == criterio:
