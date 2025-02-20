@@ -81,48 +81,58 @@ class infoDesarrolladores(tk.Frame):
         self.actualizarImagenes()
 
     def create_widgets(self):
-
         self.p5HojaDeVida = tk.Frame(master = self, highlightbackground="black",highlightthickness=1)
-        self.p5HojaDeVida.bind()
-        self.desarrollador = random.randrange(0,4)
-        hojaDeVida = hojasDeVida[self.desarrollador]
-        self.nombreDesarrollador = tk.Label(master = self.p5HojaDeVida, text=desarrolladores[self.desarrollador])
-        self.hojaDeVida = ttk.Label(master = self.p5HojaDeVida, text=hojaDeVida, wraplength=320,width=30)
-
-        self.hojaDeVida.grid(row = 1, column = 0, sticky="nswe")
-        self.nombreDesarrollador.grid(row=0, column=0, padx=10, pady=10)
-
-        # ponemos listeners
-        cambiarHoja = lambda e : self.cambiarHojaDeVida()
-        self.p5HojaDeVida.bind("<Button-1>", cambiarHoja)
-        self.nombreDesarrollador.bind("<Button-1>", cambiarHoja)
-        self.hojaDeVida.bind("<Button-1>", cambiarHoja)
-
-        self.p5HojaDeVida.grid(row = 0, column = 0, padx=10, pady=10, sticky="nswe")
-        self.p5HojaDeVida.rowconfigure(0,weight=1)
-        self.p5HojaDeVida.rowconfigure(1,weight=10)
-        self.p5HojaDeVida.columnconfigure(0,weight=10)
 
         self.contenedorAbajoP6 = tk.Frame(master = self, highlightbackground="black",highlightthickness=1)
-        self.labelsImagenesDesarrollador=[]
-        rows=[0,0,1,1]
-        columns=[0,1,0,1]
-        for i in range(4):
-            self.labelsImagenesDesarrollador.append(tk.Canvas(master = self.contenedorAbajoP6, highlightthickness=0, width=self.winfo_width()/4, height=self.winfo_height()/4))
-            self.labelsImagenesDesarrollador[i].grid(row=rows[i], column=columns[i], sticky="nswe")
 
-        self.bind("<Configure>", lambda e: self.actualizarImagenes())
-        self.window.bind("<Map>", lambda e: self.actualizarImagenes())
+        if self.mostrando:
+            self.desarrollador = random.randrange(0,4)
+            hojaDeVida = hojasDeVida[self.desarrollador]
+            self.nombreDesarrollador = tk.Label(master = self.p5HojaDeVida, text=desarrolladores[self.desarrollador])
+            self.hojaDeVida = ttk.Label(master = self.p5HojaDeVida, text=hojaDeVida, wraplength=320,width=30)
+
+            self.hojaDeVida.grid(row = 1, column = 0, sticky="nswe")
+            self.nombreDesarrollador.grid(row=0, column=0, padx=10, pady=10)
+
+            # ponemos listeners
+            cambiarHoja = lambda e : self.cambiarHojaDeVida()
+        
+            self.p5HojaDeVida.bind("<Button-1>", cambiarHoja)
+            self.nombreDesarrollador.bind("<Button-1>", cambiarHoja)
+            self.hojaDeVida.bind("<Button-1>", cambiarHoja)
+
+            self.labelsImagenesDesarrollador=[]
+            rows=[0,0,1,1]
+            columns=[0,1,0,1]
+            for i in range(4):
+                self.labelsImagenesDesarrollador.append(tk.Canvas(master = self.contenedorAbajoP6, highlightthickness=0, width=self.winfo_width()/4, height=self.winfo_height()/4))
+                self.labelsImagenesDesarrollador[i].grid(row=rows[i], column=columns[i], sticky="nswe")
+
+            self.bind("<Configure>", lambda e: self.actualizarImagenes())
+            self.window.bind("<Map>", lambda e: self.actualizarImagenes())
+        else:
+            self.botonDesarroladores=ttk.Button(master = self.p5HojaDeVida, text="Desarrolladores", command=lambda: self.mostrarDesarrolladores())
+            self.botonDesarroladores.grid(row=0,column=0, padx=10, pady=10)
 
         self.contenedorAbajoP6.grid(row = 1, column = 0, padx=10, pady=10, sticky="nswe")
         self.contenedorAbajoP6.rowconfigure(0,weight=3)
         self.contenedorAbajoP6.rowconfigure(1,weight=3)
         self.contenedorAbajoP6.columnconfigure(0,weight=3)
         self.contenedorAbajoP6.columnconfigure(1,weight=3)
+        
+        self.p5HojaDeVida.grid(row = 0, column = 0, padx=10, pady=10, sticky="nswe")
+        self.p5HojaDeVida.rowconfigure(0,weight=1)
+        self.p5HojaDeVida.rowconfigure(1,weight=10)
+        self.p5HojaDeVida.columnconfigure(0,weight=10)
+
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=20)
         self.columnconfigure(0,weight=10)
     
+    def mostrarDesarrolladores(self):
+        self.mostrando=True
+        self.create_widgets()
+
     def actualizarImagenes(self):
         # Get container width and height for images
         container_width = self.contenedorAbajoP6.winfo_width()
