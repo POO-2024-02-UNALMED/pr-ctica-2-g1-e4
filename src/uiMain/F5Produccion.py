@@ -468,7 +468,10 @@ def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLy
             messagebox.showinfo("Continuar", "¡Listo, vamos a producir las prendas!")
             print("El usuario eligió continuar.")
             contBigRecor.destroy() ; contRe1.destroy() ; recorderis.destroy() ; textRecorderis.destroy() ; separador.destroy()
-            contRe2.destroy() ; recorderis2.destroy() ; textRecorderis2.destroy()
+            contRe2.destroy() ; recorderis2.destroy() ; textRecorderis2.destroy() ; frameGeneral.destroy() ; frameIzq.destroy() ; frameDer.destroy()
+            for subf in subframes:
+                subf.destroy()
+            frameBotones.destroy() ; frameEntry.destroy()
             inicioInt3()
         else:
             print("El usuario canceló la acción.")
