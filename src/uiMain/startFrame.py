@@ -179,6 +179,9 @@ class startFrame(tk.Tk):
 
         # Función que se ejecutará al presionar el botón
     def Ok(self):
+        if self.pagina!="inicial":
+            return # Si es así, ninguno de los Widgets a tratar existen.
+
         # Leer los valores de las entradas
         FDia = self.entradaDia.get() # Obtener el texto de la entrada para el día
         FMes = self.entradaMes.get() # Obtener el texto de la entrada para el mes
