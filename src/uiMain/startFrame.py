@@ -638,8 +638,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.field2 = fieldFrame.FieldFrame(self.frame4, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))])
         self.field2.pack(anchor="s",  expand=True, fill="both")
 
-#----------------------------------------------- Sistema Financiero -------------------------------------------------------------------
-
 
 
 #-------------------------------------------------- Facturación -------------------------------------------------------------------
