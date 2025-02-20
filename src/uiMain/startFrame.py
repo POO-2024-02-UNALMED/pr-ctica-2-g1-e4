@@ -16,6 +16,7 @@ from src.uiMain.fieldFrame import FieldFrame
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.rol import Rol
+import math
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -222,8 +223,6 @@ class startFrame(tk.Tk):
             unaExcepcion = False
             if not (diaI.isdigit() and mesI.isdigit() and añoI.isdigit()):
                 unaExcepcion = True
-            if unaExcepcion:
-                raise ExcepcionEnteroNoString(diaI,mesI,añoI)
         except ExcepcionEnteroNoString as pobreLagartija:
                 messagebox.showwarning(title="Alerta", message=pobreLagartija.mensaje_completo)
                 self.after(100, self.Ok)
@@ -648,25 +647,25 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             clientes=Main.imprimirNoEmpleados()
             
             tituloCliente=tk.Label(labelCliente, text="Clientes: ", font=("Arial", 10, "bold"))
-                
+            
             tituloCliente.grid(row=2, column=0)
             contador=0
             rowbase=3
             for cliente in clientes:
-                if contador<=(len(clientes)/3):
+                if contador<=math.ceil(len(clientes)/3):
                     nombre1 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
                     nombre1.grid(row=rowbase, column=0)
-                    if contador==(len(clientes)/3):
+                    if contador==math.ceil(len(clientes)/3):
                         rowbase=3
                     else:
                         rowbase+=1
                     contador+=1
-                        
+                
                 elif contador<=((len(clientes)/3)*2) and contador>(len(clientes)/3):
                     nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
                     nombre2.grid(row=rowbase, column=1)
                     contador+=1
-                    if contador==((len(clientes)/3)*2):
+                    if contador==math.ceil((len(clientes)/3)*2):
                         rowbase=3
                     else:
                         rowbase+=1
