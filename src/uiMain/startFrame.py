@@ -634,33 +634,35 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             tituloF4 = tk.Label(frame1, text="Facturación", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
             tituloF4.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
             ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-            descripcionF4 = tk.Label(frame1, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial",10), wraplength=600)
+            descripcionF4 = tk.Label(frame1, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial",10), wraplength=800)
             descripcionF4.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
-            frame2 = tk.Frame(framePrincipal)
-            frame2.pack(anchor="s",  expand=True, fill="both")
+            frameGeneral= tk.Frame(framePrincipal)
+            frameGeneral.pack(expand=True, fill="both")
+            frame2 = tk.Frame(frameGeneral)
+            frame2.place(relx=0, rely=0, relwidth=1, relheight=0.6)
             criterios = ["Cliente","Sede","Tipo de Prenda", "Cantidad Prenda"]
-            valores = ["","Sede Principal", "Si/No","camisa/pantalon","0"]
+            valores = ["","Sede Principal","camisa/pantalon","0"]
             habilitado = [True, True,True,True]
             # Creamos el FieldFrame con los botones
             field_frame = FieldFrame(frame2, "Detalles Venta", criterios, "Campos", valores, habilitado, ancho_entry=20, crecer=False, tamañoFuente=12, aceptar=True,borrar=True, callbackAceptar=None)
-            field_frame.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
+            field_frame.place(relx=1, rely=0.1, relwidth=1, relheight=1, anchor="e")
 
-            framec = tk.Frame(framePrincipal)
-            framec.pack(anchor="s", expand=True, fill="both")
+            framec = tk.Frame(frameGeneral)
+            framec.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
             labelCliente= tk.Frame(framec)
             labelCliente.place(relx=0, rely=0, relwidth=1, relheight=1)
             clientes=Main.imprimirNoEmpleados()
             
-            tituloCliente=tk.Label(labelCliente, text="Clientes: ", font=("Arial", 10, "bold"))
+            tituloCliente=tk.Label(labelCliente, text="Clientes: ", font=("Arial", 12, "bold"), anchor="center")
             
-            tituloCliente.grid(row=2, column=0)
-            contador=0
+            tituloCliente.grid(row=2, column=0, columnspan=3)
+            contador=1
             rowbase=3
             for cliente in clientes:
-                if contador<=math.ceil(len(clientes)/3):
+                if contador<=(len(clientes)/3):
                     nombre1 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
                     nombre1.grid(row=rowbase, column=0)
-                    if contador==math.ceil(len(clientes)/3):
+                    if contador==(len(clientes)/3):
                         rowbase=3
                     else:
                         rowbase+=1
@@ -669,11 +671,11 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 elif contador<=((len(clientes)/3)*2) and contador>(len(clientes)/3):
                     nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
                     nombre2.grid(row=rowbase, column=1)
-                    contador+=1
-                    if contador==math.ceil((len(clientes)/3)*2):
+                    if contador==((len(clientes)/3)*2):
                         rowbase=3
                     else:
                         rowbase+=1
+                    contador+=1
                 else:
                     nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
                     nombre2.grid(row=rowbase, column=2)
