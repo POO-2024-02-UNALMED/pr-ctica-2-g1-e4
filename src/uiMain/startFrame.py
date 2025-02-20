@@ -6,6 +6,7 @@ from tkinter import ttk
 from tkinter.font import Font
 import sys
 from src.gestorAplicacion.administracion.empleado import Empleado
+from src.gestorAplicacion.persona import Persona
 from src.uiMain import fieldFrame
 from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.Excepciones.exceptionC1 import *
