@@ -308,7 +308,7 @@ class startFrame(tk.Tk):
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
         self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
 
-        self.outputGHumana=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2)
+        self.outputGHumana=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 8),height=2)
         self.outputGHumana.grid(row=2, column=0, sticky="nswe")
 
 
@@ -329,6 +329,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.posiblesDespedidos = infoMalos[0]
         self.procesoListaInicial = infoMalos[1]
+
+        self.outputGHumana.config(state="normal")
+        mensaje=""
+        for i in self.procesoListaInicial:
+            mensaje+=i+"\n"
+        self.outputGHumana.insert("1.0", mensaje)
+        self.outputGHumana.config(state="disabled")
+
         self.empleadosInsuficientes = infoMalos[2]
         self.rendimientoInsufuciencias = infoMalos[3]
         self.acciones=infoMalos[4]
