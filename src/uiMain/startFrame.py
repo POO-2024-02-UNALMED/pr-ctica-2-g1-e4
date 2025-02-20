@@ -620,9 +620,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         label3 = tk.Label(self.frame3, text="Según dicha predicción se hará la compra de los insumos")
         label3.place(relx=0.4, rely=0.8, relwidth=1, relheight=0.1, anchor="c")    
-        aceptar = tk.Button(self.frame3, text="Aceptar")
+        aceptar = tk.Button(self.frame3, text="Aceptar", command=lambda: self.pasarAInteraccion2())
         aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.1, anchor="c")   
 
+    def pasarAInteraccion2(self):
         self.listaA = Main.coordinarBodegas(self, self.retorno)
             
 
