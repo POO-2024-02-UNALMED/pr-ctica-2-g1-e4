@@ -555,9 +555,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def prediccion(self, texto):
         frame3 = tk.Frame(self.framePrincipal, bg="light gray")
         frame3.pack(anchor="s",  expand=True, fill="both")
-        prediccion = tk.Text(frame3)
-        mensaje = texto
-        prediccion.insert("1.0", mensaje)
+        prediccion = tk.Text(frame3, font=("Arial", 10), bg="#f0f0f0")
+        mensaje = ""
+        for caso in texto:
+            mensaje += caso + "\n"
+        prediccion.tag_add("center", "1.0", "end")
+        prediccion.tag_config("center", justify="center")
+        prediccion.insert("1.0", mensaje,"center")
+
         prediccion.place(relx=0.5, rely=0.5, relwidth=1, relheight=1,anchor="c")
         prediccion.config(state="disabled")
 
