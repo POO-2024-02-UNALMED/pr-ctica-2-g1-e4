@@ -189,22 +189,23 @@ class startFrame(tk.Tk):
         FAño = self.entradaAño.get() # Obtener el texto de la entrada para el año
         camposVacios = []  
 
-        if not FDia:  
+        if not FDia or FDia == -1 or FDia == " ":  
             camposVacios.append("Día")  
-        if not FMes:  
+        if not FMes or FMes == -1 or FMes == " ":  
             camposVacios.append("Mes")  
-        if not FAño:  
-            camposVacios.append("Año")  
-        
+        if not FAño or FAño == -1 or FAño == " ":  
+            camposVacios.append("Año")         
         try:
             hayExcepcion = False
             if camposVacios: 
+    
                 hayExcepcion = True
             if hayExcepcion:
                 raise ExcepcionContenidoVacio(camposVacios)
         except ExcepcionContenidoVacio as viejaMetida:
             messagebox.showwarning(title="Alerta",message=viejaMetida.mensaje_completo)
-            return hayExcepcion
+            self.borrar()
+            return None
                
         self.ingresarFecha(FDia,FMes,FAño)
         if isinstance(self.ingresarFecha(FDia,FMes,FAño),Fecha):
@@ -221,67 +222,53 @@ class startFrame(tk.Tk):
         
     def ingresarFecha(self,diaI,mesI,añoI):
         fecha=None
-        partes = diaI.split()
-        numero=-1
-        try:
-            unaExcepcion = False
-            lista = []
-            if not (diaI.isdigit() and mesI.isdigit() and añoI.isdigit()):
-                unaExcepcion = True
-                cadena = f"{diaI},{mesI},{añoI}"
-                lista = cadena.split(",")
-            if unaExcepcion:
-                raise ExcepcionEnteroNoString(lista)
-        except ExcepcionEnteroNoString as pobreLagartija:
-                messagebox.showwarning(title="Alerta", message=pobreLagartija.mensaje_completo)
-                self.after(100, self.Ok)
-                return unaExcepcion
+        partesDia = diaI.split()
+        partesMes = mesI.split()
+        partesAño = añoI.split()
+        dia = -1
+        mes = -1
+        año = -1
             
-        if partes[-1].isdigit():
-            numero = int(partes[-1])
-        dia = numero
-        partes = mesI.split()
-        if partes[-1].isdigit():
-            numero = int(partes[-1])
-        mes = numero
-        partes = añoI.split()
-        if partes[-1].isdigit():
-            numero = int(partes[-1])
-        año = numero
+        if partesDia[-1].isdigit():
+            dia = int(partesDia[-1])
+        if partesMes[-1].isdigit():
+            mes = int(partesMes[-1])
+        if partesAño[-1].isdigit():
+            año = int(partesAño[-1])
 
         try:
-            hayExcepcion = False
+            hayExcepcion1 = False
             if dia <= 0 or dia > 31:
-                hayExcepcion = True
-                self.borrar()
-            if hayExcepcion:
+                hayExcepcion1 = True
+            if hayExcepcion1:
                 raise ExcepcionEnteroNoValido(dia)
         except ExcepcionEnteroNoValido as moscaMuerta:
                 messagebox.showwarning(title="Alerta", message=moscaMuerta.mensaje_completo)
-                self.after(100, self.ingresarFecha) 
-                return hayExcepcion
+                self.borrar()
+                return None
+              
         try:
             hayExcepcion2 = False
             if mes <= 0 or mes > 12:
                 hayExcepcion2 = True
-                self.borrar()
             if hayExcepcion2:
                 raise ExcepcionEnteroNoValido(mes)
         except ExcepcionEnteroNoValido as carrastrufia:
             messagebox.showwarning(title="Alerta", message=carrastrufia.mensaje_completo)
-            self.after(100, self.ingresarFecha) 
-            return hayExcepcion2
+            self.borrar()
+            return None
+
         try:
             hayExcepcion3 = False
             if año <= 0:
                 hayExcepcion3 = True
-                self.borrar()
             if hayExcepcion3:
                 raise ExcepcionEnteroNoValido(año)
         except ExcepcionEnteroNoValido as mojarra:
             messagebox.showwarning(title="Alerta", message=mojarra.mensaje_completo)
-            self.after(100, self.ingresarFecha) 
-            return hayExcepcion3
+            self.borrar()
+            return None
+            
 
         fecha = Fecha(dia, mes, año)
         Main.fecha=fecha
