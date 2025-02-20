@@ -421,7 +421,7 @@ class Main:
         analisisFuturo = (f"{bfString}, sin embargo su desición fue aplicar un descuento de: {nuevoDescuento * 100}%.")
         return analisisFuturo
 
-#----------------------------------------------------Insumos------------------------------------------------------------------------------------
+#-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
     # Interacción 1 
     def planificarProduccion(self):
@@ -429,10 +429,10 @@ class Main:
         fecha=Main.fecha
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
-        retorno = []
+        Main.retorno = []
         criterios = []
         valores = []
-        texto = []
+        Main.texto = []
 
         for sede in Sede.getListaSedes():
             #prediccionC = None
@@ -453,9 +453,9 @@ class Main:
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
-                    texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionP)} para la sede {sede}")
+                    Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionP)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
-                    print(texto)
+                    print(Main.texto)
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
                     for cantidad in Pantalon.getCantidadInsumo():
@@ -465,9 +465,9 @@ class Main:
                 if isinstance(prenda, Camisa) and not camisasPredichas:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionC = proyeccion * (1 - Venta.getPesimismo())
-                    texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionC)} para la sede {sede}")
+                    Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionC)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
-                    print(texto)
+                    print(Main.texto)
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
                         if insumo in insumoXSede:
@@ -478,16 +478,18 @@ class Main:
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
 
-            retorno.append(listaXSede)
+            Main.retorno.append(listaXSede)
 
-        startFrame.prediccion(self, texto, retorno)
-        return retorno
+        #startFrame.prediccion(self, Main.texto, Main.retorno)
+        return Main.retorno
+
+    coordinacionBodegas = []
 
     # Interacción 2 
-    def coordinarBodegas(self,retorno):
+    def coordinarBodegas(self, retorno):
         from src.uiMain.startFrame import startFrame
-        listaA = []
         insumoFieldFrame = []
+        
         for indexSede,sede in enumerate(retorno):
             insumoFieldFrame.clear()
             insumosAPedir = []
@@ -498,7 +500,8 @@ class Main:
             listaCantidades = listaXSede[1]
 
             s=Sede.getListaSedes()[indexSede]
-            for i in listaInsumos:
+
+        for i in listaInsumos:
                 insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
                 productoEnBodega = Sede.verificarProductoBodega(i, s)
                 idxInsumo = listaInsumos.index(i)
@@ -535,17 +538,17 @@ class Main:
                     else:
                         print("Esa opción no es valida.")
 
-            startFrame.transferir(self, insumoFieldFrame,s)    
-                       
-            listaSede.append(insumosAPedir)
-            listaSede.append(cantidadAPedir)
-            listaA.append(listaSede)
+     
+                startFrame.transferir(self, insumoFieldFrame, s)    
+                      
+        listaSede.append(insumosAPedir)
+        listaSede.append(cantidadAPedir)
+        Main.coordinarBodegas.append(listaSede)
 
-            
-        return listaA
+        return Main.coordinarBodegas
 
     # Interacción 3
-    def comprarInsumos(fecha, listaA):
+    def comprarInsumos(fecha):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
         deudas = []

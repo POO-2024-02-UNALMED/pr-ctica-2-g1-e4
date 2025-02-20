@@ -61,7 +61,7 @@ class startFrame(tk.Tk):
 
         self.abrirFrameInicial()
 
-    #----------------------------------- Listeners para el menú superior ------------------------------------------------------------------
+    #-------------------------------------------- Listeners para el menú superior ------------------------------------------------------------------
     
     def abrirGestionHumana(self):
         if not self.fechaValida:
@@ -121,7 +121,7 @@ class startFrame(tk.Tk):
     def acercaDe(self):
         tk.messagebox.showinfo("Acerca de", "Andres David Calderón Jiménez \nGelsy Jackelin Lozano Blanquiceth \nAndrea Merino Mesa \nLuis Rincon \nJuanita Valentina Rosero")
 
-#----------------------------------------------Frame Inicial------------------------------------------------------------------------
+#---------------------------------------------------------Frame Inicial------------------------------------------------------------------------
 
     def crearFrameInicial(self)->tk.Frame:
         self.frameInicial=tk.Frame(self, bg="red")
@@ -282,7 +282,7 @@ class startFrame(tk.Tk):
         self.fechaValida = True
         return fecha
     
-#----------------------------------------------Gestión Humana-----------------------------------------------------------------
+#------------------------------------------------------------------------Gestión Humana---------------------------------------------------------------------------------------------
     def crearGestionHumana(self):
         self.gestionHumana=tk.Frame(self)
         self.posiblesDespedidos=[]
@@ -574,7 +574,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         else:
             tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado esta en la lista de candidatos.")
 
-#--------------------------------------------------- Insumos -------------------------------------------------------------------
+
+#---------------------------------------------------------------- Insumos ------------------------------------------------------------------------------------------------------------------
 
     def crearInsumos(self):
         self.insumos=tk.Frame(self)
@@ -607,11 +608,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame2 = tk.Frame(self.framePrincipal, bg="light gray")
         self.frame2.pack(anchor="s", fill="x")
             
-        self.field = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True])
+        self.field = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True], 20, False, 10, True, False, lambda : self.prediccion(Main.texto, Main.retorno))
         self.field.pack(anchor="s",  expand=True, fill="both")
 
+
     def prediccion(self, texto, retorno):
+
         self.retorno = retorno
+        self.texto = texto
         self.frame3 = tk.Frame(self.framePrincipal, bg="#f0f0f0")
         self.frame3.pack(anchor="s",  expand=True, fill="both",pady=5)
         prediccion = tk.Text(self.frame3, font=("Arial", 10), bg="#f0f0f0", relief="flat")
@@ -619,10 +623,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         for caso in texto:
             mensaje += caso + "\n"
+
         prediccion.tag_add("center", "1.0", "end")
         prediccion.tag_config("center", justify="center")
         prediccion.insert("1.0", mensaje,"center")
-
         prediccion.place(relx=0.5, rely=0.5, relwidth=1, relheight=0.7,anchor="c")
         prediccion.config(state="disabled")
 
@@ -634,7 +638,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def pasarAInteraccion2(self):
         self.listaA = Main.coordinarBodegas(self, self.retorno)
             
-
     # Interacción 2
     def transferir(self, criterios, sede):
         self.frame2.destroy()
@@ -643,14 +646,13 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame4 = tk.Frame(self.framePrincipal)
         self.frame4.pack(anchor="s", expand=True, fill="both")
 
-        self.field2 = fieldFrame.FieldFrame(self.frame4, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))])
+        self.field2 = fieldFrame.FieldFrame(self.frame4, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
         self.field2.pack(anchor="s",  expand=True, fill="both")
 
 
 
-#-------------------------------------------------- Facturación -------------------------------------------------------------------
 
-
+#--------------------------------------------------------------------------- Facturación ------------------------------------------------------------------------------------------------
 
     def Facturar(self):
         from src.gestorAplicacion.administracion.area import Area
@@ -727,10 +729,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         return Interaccion1(self)
 
 
-#-------------------------------------------------- Producción -------------------------------------------------------------------
+#---------------------------------------------------------------------- Producción ----------------------------------------------------------------------------------------------------
 
 
-#----------------------------------------------Sistema Financiero------------------------------------------------------------------------
+#-------------------------------------------------------------------Sistema Financiero--------------------------------------------------------------------------------------------------------
 
     def SistemaFinanciero(self)->tk.Frame:
             from src.gestorAplicacion.administracion.banco import Banco
@@ -1048,7 +1050,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             texto.config(state="disabled")
             return framePrincipal
     
-#--------------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     def Facturar(self):
         self.Facturacion=tk.Frame(self)
         self.posiblesDespedidos=[]
