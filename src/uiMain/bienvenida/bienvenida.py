@@ -15,7 +15,6 @@ class Aplication(tk.Frame):
         self.master = master
         self.pack(expand=1,fill="both")
         self.create_widgets()
-        self.infoDesarrolladores.actualizarImagenes()
 
 
     def create_widgets(self):
