@@ -439,12 +439,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.seleccionadorDespedidos()
     
     def despedir(self):
-        self.empleadosADespedir=[]
-        seleccionados=self.seleccionador.valores.copy()
-        del seleccionados[0]
-        for empleado in seleccionados:
-            self.empleadosADespedir.append(empleado)
-        existen=Main.despedirEmpleados(self.empleadosADespedir)
+        nombresADespedir=self.seleccionador.obtenerTodosLosValores()
+        del nombresADespedir[0]
+        (existen,self.empleadosADespedir)=Main.despedirEmpleados(nombresADespedir)
         if existen:
             Main.estadoGestionHumana="cambio-sede"
             self.reemplazarPorCambioSede()
@@ -637,8 +634,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame4 = tk.Frame(self.framePrincipal)
         self.frame4.pack(anchor="s", expand=True, fill="both")
 
-        self.field2 = fieldFrame.FieldFrame(self.frame4, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C","T/C","T/C","T/C"], [True, True, True, True])
-        self.field.pack(anchor="s",  expand=True, fill="both")
+        self.field2 = fieldFrame.FieldFrame(self.frame4, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))])
+        self.field2.pack(anchor="s",  expand=True, fill="both")
 
 
 
