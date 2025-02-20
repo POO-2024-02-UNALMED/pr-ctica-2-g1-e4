@@ -631,12 +631,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 else:
                     nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
                     nombre2.grid(row=row+3, column=2)
-            framec.rowconfigure(0, weight=0)
-            framec.rowconfigure(1, weight=4)
-            framec.columnconfigure(0, weight=2)# Empleado insuficiente
-            framec.columnconfigure(1, weight=1)# area
-            framec.columnconfigure(2, weight=1)# rendimiento
-            framec.columnconfigure(3, weight=1)# rendimiento esperado
+            labelCliente.rowconfigure(0, weight=0)
+            labelCliente.rowconfigure(1, weight=4)
+            labelCliente.columnconfigure(0, weight=2)# Empleado insuficiente
+            labelCliente.columnconfigure(1, weight=1)# area
+            labelCliente.columnconfigure(2, weight=1)# rendimiento
+            labelCliente.columnconfigure(3, weight=1)# rendimiento esperado
             return framePrincipal
 
         def Siguiente(event):
