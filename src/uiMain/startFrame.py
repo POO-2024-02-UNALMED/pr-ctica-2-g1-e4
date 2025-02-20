@@ -6,6 +6,7 @@ from tkinter import ttk
 from tkinter.font import Font
 import sys
 from src.gestorAplicacion.administracion.empleado import Empleado
+from src.gestorAplicacion.persona import Persona
 from src.uiMain import fieldFrame
 from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.Excepciones.exceptionC1 import *
@@ -657,7 +658,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
 
 
-    def Facturar(self):
+    def u(self):
         from src.gestorAplicacion.administracion.area import Area
         from src.gestorAplicacion.administracion.empleado import Empleado
         from src.gestorAplicacion.persona import Persona
@@ -737,326 +738,601 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
 #----------------------------------------------Sistema Financiero------------------------------------------------------------------------
 
-def SistemaFinanciero(self)->tk.Frame:
-        from src.gestorAplicacion.administracion.banco import Banco
-        from src.gestorAplicacion.administracion.deuda import Deuda
-        from src.gestorAplicacion.administracion.empleado import Empleado
-        from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
-        from src.gestorAplicacion.venta import Venta
-        from src.uiMain.fieldFrame import FieldFrame
-        ventana=self      
+    def SistemaFinanciero(self)->tk.Frame:
+            from src.gestorAplicacion.administracion.banco import Banco
+            from src.gestorAplicacion.administracion.deuda import Deuda
+            from src.gestorAplicacion.administracion.empleado import Empleado
+            from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
+            from src.gestorAplicacion.venta import Venta
+            from src.uiMain.fieldFrame import FieldFrame
+            ventana=self      
+                        
+            def LeerF2(self, field_frame2, texto2):
+                from src.uiMain.startFrame import startFrame
+                from src.uiMain.main import Main
+                Porcentaje = FieldFrame.getValue(field_frame2, "Descuento")
+                
+                if Porcentaje != "0% / 100%":
+                    Porcentaje = Porcentaje.strip("%")
+                    startFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
+                    texto2.config(state="normal")   # Habilitar edición
+                    texto2.delete("1.0", "end")     # Eliminar texto actual
+                    texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.diferencia_estimada), "center")  # Insertar nuevo texto
+                    texto2.config(state="disabled") 
                     
-        def LeerF2(self, field_frame2, texto2):
-            from src.uiMain.startFrame import startFrame
-            from src.uiMain.main import Main
-            Porcentaje = FieldFrame.getValue(field_frame2, "Descuento")
-            
-            if Porcentaje != "0% / 100%":
-                Porcentaje = Porcentaje.strip("%")
-                startFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
+            def Interaccion2(self):
+                frame2.destroy()
+                frame3.destroy()
+                
+                frame4 = tk.Frame(framePrincipal)
+                frame4.pack(anchor="s", expand=True, fill="both")
+                
+                criterios = ["Descuento"]
+                valores = ["0% / 100%"]
+                habilitado = [True]
+                
+                # Creamos el FieldFrame con los botones
+                field_frame2 = FieldFrame(frame4, "Ingrese porcentaje a modificar para:", criterios, "fidelidad de los clientes sin membresía", valores, habilitado)
+                field_frame2.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
+                
+                frame5 = tk.Frame(framePrincipal)
+                frame5.pack(anchor="s", expand=True, fill="both")
+                
+                boton1 = tk.Button(frame5, text="Aceptar", command=lambda: LeerF2(self, field_frame2, texto2))
+                boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
+                borrar=tk.Button(frame5,text="Borrar", command = lambda: field_frame2.borrar())
+                borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+                boton2 = tk.Button(frame5, text="Siguiente", command=lambda: Interaccion3(self,frame4, frame5))
+                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+                
+                confirmacion2 = tk.Label(frame5, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
+                confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+                
+                texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+                texto2.pack(fill="both", expand=True)
+                texto2.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+
                 texto2.config(state="normal")   # Habilitar edición
                 texto2.delete("1.0", "end")     # Eliminar texto actual
-                texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.diferencia_estimada), "center")  # Insertar nuevo texto
+                texto2.insert("1.0", "Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", "center")  # Insertar nuevo texto
                 texto2.config(state="disabled") 
-                
-        def Interaccion2(self):
-            frame2.destroy()
-            frame3.destroy()
-            
-            frame4 = tk.Frame(framePrincipal)
-            frame4.pack(anchor="s", expand=True, fill="both")
-            
-            criterios = ["Descuento"]
-            valores = ["0% / 100%"]
-            habilitado = [True]
-            
-            # Creamos el FieldFrame con los botones
-            field_frame2 = FieldFrame(frame4, "Ingrese porcentaje a modificar para:", criterios, "fidelidad de los clientes sin membresía", valores, habilitado)
-            field_frame2.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
-            
-            frame5 = tk.Frame(framePrincipal)
-            frame5.pack(anchor="s", expand=True, fill="both")
-            
-            boton1 = tk.Button(frame5, text="Aceptar", command=lambda: LeerF2(self, field_frame2, texto2))
-            boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
-            borrar=tk.Button(frame5,text="Borrar", command = lambda: field_frame2.borrar())
-            borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-            boton2 = tk.Button(frame5, text="Siguiente", command=lambda: Interaccion3(self,frame4, frame5))
-            boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-            
-            confirmacion2 = tk.Label(frame5, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
-            confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
-            
-            texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
-            texto2.pack(fill="both", expand=True)
-            texto2.tag_configure("center", justify="center",spacing1=10, spacing3=10)
 
-            texto2.config(state="normal")   # Habilitar edición
-            texto2.delete("1.0", "end")     # Eliminar texto actual
-            texto2.insert("1.0", "Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", "center")  # Insertar nuevo texto
-            texto2.config(state="disabled") 
-
-        def LeerF3(self,field_frame3, texto3):
-            from src.uiMain.main import Main
-            seleccion = FieldFrame.getValue(field_frame3, "Bancos")
-            banco=None
-            for banco_actual in Banco.getListaBancos():
-                if Banco.getNombreEntidad(banco_actual) == seleccion:
-                        banco = seleccion
-                        break
-            c = Main.planRecuperacion(startFrame.diferencia_estimada,banco)  # Use float to handle percentage  
-            texto3.config(state="normal")   # Habilitar edición
-            texto3.delete("1.0", "end")     # Eliminar texto actual
-            texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
-            texto3.config(state="disabled") 
-                
-            return c
-            
-        def listaBancos(self, frameb):
-            
-            bancos=Banco.getListaBancos()
-
-            tituloNombre=tk.Label(frameb, text="Nombre", font=("Arial", 10))
-            tituloDeuda=tk.Label(frameb, text="Deuda inicial", font=("Arial", 10))
-            tituloAhorro=tk.Label(frameb, text="Ahorros", font=("Arial", 10))
-            tituloInter=tk.Label(frameb, text="Interés", font=("Arial", 10))
-            
-            tituloNombre.grid(row=2, column=0)
-            tituloDeuda.grid(row=2, column=1)
-            tituloAhorro.grid(row=2, column=2)
-            tituloInter.grid(row=2, column=3)
-
-            for row, banco in enumerate(bancos):
-                nombre = tk.Label(frameb, text=Banco.getNombreEntidad(banco), font=("Arial", 10))
-                deudaInicial=0
-                for deuda in Banco.getDeuda(banco):
-                    deudaInicial+=Deuda.getValorInicialDeuda(deuda)
-                deuda = tk.Label(frameb, text=deudaInicial, font=("Arial", 10))
-                ahorro = tk.Label(frameb, text=Banco.getAhorroBanco(banco), font=("Arial", 10))
-                Interes = tk.Label(frameb, text=Banco.getInteres(banco), font=("Arial", 10))
-                nombre.grid(row=row+3, column=0)
-                deuda.grid(row=row+3, column=1)
-                ahorro.grid(row=row+3, column=2)
-                Interes.grid(row=row+3, column=3)
-            
-            frameb.rowconfigure(0, weight=0)
-            frameb.rowconfigure(1, weight=4)
-            frameb.columnconfigure(0, weight=2)# Empleado insuficiente
-            frameb.columnconfigure(1, weight=1)# area
-            frameb.columnconfigure(2, weight=1)# rendimiento
-            frameb.columnconfigure(3, weight=1)# rendimiento esperado
-       
-        def Interaccion3(self,frame4,frame5):
-            from src.uiMain.main import Main
-            frame4.destroy()
-            frame5.destroy()
-            frame6 = tk.Frame(framePrincipal, bg="light gray")
-            frame6.pack(anchor="s",  expand=True, fill="both")
-            criterios = ["Bancos"]
-            valores = ["Ingrese nombre"]
-            habilitado = [True]
-            # Creamos el FieldFrame con los botones
-            field_frame3 = FieldFrame(frame6, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
-            field_frame3.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
-
-            frameb = tk.Frame(framePrincipal)
-            frameb.pack(anchor="s", expand=True, fill="both")
-            labelBanco= tk.Frame(frameb)
-            labelBanco.place(relx=0, rely=0, relwidth=1, relheight=1)
-            listaBancos(self,labelBanco)
-            
-            frame7 = tk.Frame(framePrincipal)
-            frame7.pack(anchor="s", expand=True, fill="both")
-            boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(self, field_frame3,texto3))
-            boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
-            borrar=tk.Button(frame7,text="Borrar", command = lambda: field_frame3.borrar())
-            borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
-            boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion4(self, frame6, frameb, frame7))
-            boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
-            
-            confirmacion3 = tk.Label(frame7, text="", anchor="center")
-            confirmacion3.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
-            texto3 = tk.Text(confirmacion3, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
-            texto3.pack(fill="both", expand=True)
-            texto3.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-            texto3.config(state="normal")   # Habilitar edición
-            
-            if startFrame.diferencia_estimada > 0:
+            def LeerF3(self,field_frame3, texto3):
+                from src.uiMain.main import Main
+                seleccion = FieldFrame.getValue(field_frame3, "Bancos")
+                banco=None
+                for banco_actual in Banco.getListaBancos():
+                    if Banco.getNombreEntidad(banco_actual) == seleccion:
+                            banco = seleccion
+                            break
+                c = Main.planRecuperacion(startFrame.diferencia_estimada,banco)  # Use float to handle percentage  
+                texto3.config(state="normal")   # Habilitar edición
                 texto3.delete("1.0", "end")     # Eliminar texto actual
-                texto3.insert("1.0", "El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", "center")  # Insertar nuevo texto
+                texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
                 texto3.config(state="disabled") 
-            else:
-                texto3.delete("1.0", "end")     # Eliminar texto actual
-                texto3.insert("1.0", "El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo", "center")  # Insertar nuevo texto
-                texto3.config(state="disabled") 
+                    
+                return c
+                
+            def listaBancos(self, frameb):
+                
+                bancos=Banco.getListaBancos()
 
-        def LeerF4(self,field_frame4, texto4, descuento):
-            from src.uiMain.startFrame import startFrame
-            from src.uiMain.main import Main
-            Porcentaje = FieldFrame.getValue(field_frame4, "Descuento entre 0% y 5%")
+                tituloNombre=tk.Label(frameb, text="Nombre", font=("Arial", 10))
+                tituloDeuda=tk.Label(frameb, text="Deuda inicial", font=("Arial", 10))
+                tituloAhorro=tk.Label(frameb, text="Ahorros", font=("Arial", 10))
+                tituloInter=tk.Label(frameb, text="Interés", font=("Arial", 10))
+                
+                tituloNombre.grid(row=2, column=0)
+                tituloDeuda.grid(row=2, column=1)
+                tituloAhorro.grid(row=2, column=2)
+                tituloInter.grid(row=2, column=3)
+
+                for row, banco in enumerate(bancos):
+                    nombre = tk.Label(frameb, text=Banco.getNombreEntidad(banco), font=("Arial", 10))
+                    deudaInicial=0
+                    for deuda in Banco.getDeuda(banco):
+                        deudaInicial+=Deuda.getValorInicialDeuda(deuda)
+                    deuda = tk.Label(frameb, text=deudaInicial, font=("Arial", 10))
+                    ahorro = tk.Label(frameb, text=Banco.getAhorroBanco(banco), font=("Arial", 10))
+                    Interes = tk.Label(frameb, text=Banco.getInteres(banco), font=("Arial", 10))
+                    nombre.grid(row=row+3, column=0)
+                    deuda.grid(row=row+3, column=1)
+                    ahorro.grid(row=row+3, column=2)
+                    Interes.grid(row=row+3, column=3)
+                
+                frameb.rowconfigure(0, weight=0)
+                frameb.rowconfigure(1, weight=4)
+                frameb.columnconfigure(0, weight=2)# Empleado insuficiente
+                frameb.columnconfigure(1, weight=1)# area
+                frameb.columnconfigure(2, weight=1)# rendimiento
+                frameb.columnconfigure(3, weight=1)# rendimiento esperado
+        
+            def Interaccion3(self,frame4,frame5):
+                from src.uiMain.main import Main
+                frame4.destroy()
+                frame5.destroy()
+                frame6 = tk.Frame(framePrincipal, bg="light gray")
+                frame6.pack(anchor="s",  expand=True, fill="both")
+                criterios = ["Bancos"]
+                valores = ["Ingrese nombre"]
+                habilitado = [True]
+                # Creamos el FieldFrame con los botones
+                field_frame3 = FieldFrame(frame6, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
+                field_frame3.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
+
+                frameb = tk.Frame(framePrincipal)
+                frameb.pack(anchor="s", expand=True, fill="both")
+                labelBanco= tk.Frame(frameb)
+                labelBanco.place(relx=0, rely=0, relwidth=1, relheight=1)
+                listaBancos(self,labelBanco)
+                
+                frame7 = tk.Frame(framePrincipal)
+                frame7.pack(anchor="s", expand=True, fill="both")
+                boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(self, field_frame3,texto3))
+                boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
+                borrar=tk.Button(frame7,text="Borrar", command = lambda: field_frame3.borrar())
+                borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
+                boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion4(self, frame6, frameb, frame7))
+                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
+                
+                confirmacion3 = tk.Label(frame7, text="", anchor="center")
+                confirmacion3.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
+                texto3 = tk.Text(confirmacion3, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+                texto3.pack(fill="both", expand=True)
+                texto3.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+                texto3.config(state="normal")   # Habilitar edición
+                
+                if startFrame.diferencia_estimada > 0:
+                    texto3.delete("1.0", "end")     # Eliminar texto actual
+                    texto3.insert("1.0", "El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", "center")  # Insertar nuevo texto
+                    texto3.config(state="disabled") 
+                else:
+                    texto3.delete("1.0", "end")     # Eliminar texto actual
+                    texto3.insert("1.0", "El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo", "center")  # Insertar nuevo texto
+                    texto3.config(state="disabled") 
+
+            def LeerF4(self,field_frame4, texto4, descuento):
+                from src.uiMain.startFrame import startFrame
+                from src.uiMain.main import Main
+                Porcentaje = FieldFrame.getValue(field_frame4, "Descuento entre 0% y 5%")
+                
+                if Porcentaje != str(descuento):
+                    Porcentaje = Porcentaje.strip("%")
+                    startFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
+
+                    texto4.config(state="normal")   # Habilitar edición
+                    texto4.delete("1.0", "end")     # Eliminar texto actual
+                    texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro), "center")  # Insertar nuevo texto
+                    texto4.config(state="disabled") 
             
-            if Porcentaje != str(descuento):
-                Porcentaje = Porcentaje.strip("%")
-                startFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
+            def Interaccion4(self,frame6,frameb, frame7):
+                from src.uiMain.main import Main
+                frame6.destroy()
+                frameb.destroy()
+                frame7.destroy()
+                
+                frame8 = tk.Frame(framePrincipal)
+                frame8.pack(anchor="s", expand=True, fill="both")
+                descuento = Venta.blackFriday(Main.fecha)
+                resultado="si"
+                if descuento <= 0.0:
+                    resultado="no"
+                    
+                criterios = ["Descuento entre 0% y 5%"]
+                valores = [str(descuento*100)]
+                habilitado = [True]
+                
+                # Creamos el FieldFrame con los botones
+                field_frame4 = FieldFrame(frame8, ("Según las Ventas anteriores, aplicar descuentos"+resultado+" funcionará"), criterios, "¿Desea Cambiar el siguiente descuento:?", valores, habilitado)
+                field_frame4.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
+                
+                frame9 = tk.Frame(framePrincipal)
+                frame9.pack(anchor="s", expand=True, fill="both")
+                
+                boton1 = tk.Button(frame9, text="Aceptar", command=lambda: LeerF4(self, field_frame4, texto4, descuento))
+                boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
+                borrar4=tk.Button(frame9,text="Borrar", command = lambda: field_frame4.borrar())
+                borrar4.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+                boton2 = tk.Button(frame9, text="Siguiente", command=lambda: Interaccion5(self, frame8, frame9))
+                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+                
+                confirmacion4 = tk.Label(frame9, anchor="center")
+                confirmacion4.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+                texto4 = tk.Text(confirmacion4, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+                texto4.pack(fill="both", expand=True)
+                texto4.tag_configure("center", justify="center",spacing1=10, spacing3=10)
 
                 texto4.config(state="normal")   # Habilitar edición
                 texto4.delete("1.0", "end")     # Eliminar texto actual
-                texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro), "center")  # Insertar nuevo texto
+                texto4.insert("1.0", "Analizando posibilidad de hacer descuentos para subir las ventas...", "center")  # Insertar nuevo texto
                 texto4.config(state="disabled") 
-        
-        def Interaccion4(self,frame6,frameb, frame7):
-            from src.uiMain.main import Main
-            frame6.destroy()
-            frameb.destroy()
-            frame7.destroy()
             
-            frame8 = tk.Frame(framePrincipal)
-            frame8.pack(anchor="s", expand=True, fill="both")
-            descuento = Venta.blackFriday(Main.fecha)
-            resultado="si"
-            if descuento <= 0.0:
-                resultado="no"
+            def Interaccion5(self,frame8, frame9):
+                from src.uiMain.startFrame import startFrame
+                frame8.destroy()
+                frame9.destroy()
+                s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(startFrame.balance_anterior))
+                s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(startFrame.diferencia_estimada)
+                s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(startFrame.analisis_futuro)
+                s4= "\n y por tanto el nuevo porcentaje de pesimismo de la producción es:\n" + str(Venta.getPesimismo())+ "."        
+                confirmacion5 = tk.Label(framePrincipal, anchor="center")
+                confirmacion5.place(relx=0, rely=0.3, relwidth=1, relheight=0.4)
+                texto5 = tk.Text(confirmacion5, width=50, height=5,bg="plum3", font=("Arial", 10))  # Usa valores válidos
+                texto5.pack(fill="both", expand=True)
+                texto5.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+                texto5.insert(1.0,s1+s2+s3+s4)
                 
-            criterios = ["Descuento entre 0% y 5%"]
-            valores = [str(descuento*100)]
-            habilitado = [True]
+                boton2 = tk.Button(framePrincipal, text="Salir", bg="medium orchid",command=lambda: startFrame.abrirFrameInicial(self))
+                boton2.place(relx=0.5, rely=0.9, relwidth=0.1, relheight=0.1, anchor="s")  
             
-            # Creamos el FieldFrame con los botones
-            field_frame4 = FieldFrame(frame8, ("Según las Ventas anteriores, aplicar descuentos"+resultado+" funcionará"), criterios, "¿Desea Cambiar el siguiente descuento:?", valores, habilitado)
-            field_frame4.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
             
-            frame9 = tk.Frame(framePrincipal)
-            frame9.pack(anchor="s", expand=True, fill="both")
-            
-            boton1 = tk.Button(frame9, text="Aceptar", command=lambda: LeerF4(self, field_frame4, texto4, descuento))
-            boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
-            borrar4=tk.Button(frame9,text="Borrar", command = lambda: field_frame4.borrar())
-            borrar4.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-            boton2 = tk.Button(frame9, text="Siguiente", command=lambda: Interaccion5(self, frame8, frame9))
-            boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-            
-            confirmacion4 = tk.Label(frame9, anchor="center")
-            confirmacion4.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
-            texto4 = tk.Text(confirmacion4, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
-            texto4.pack(fill="both", expand=True)
-            texto4.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-
-            texto4.config(state="normal")   # Habilitar edición
-            texto4.delete("1.0", "end")     # Eliminar texto actual
-            texto4.insert("1.0", "Analizando posibilidad de hacer descuentos para subir las ventas...", "center")  # Insertar nuevo texto
-            texto4.config(state="disabled") 
-        
-        def Interaccion5(self,frame8, frame9):
-            from src.uiMain.startFrame import startFrame
-            frame8.destroy()
-            frame9.destroy()
-            s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(startFrame.balance_anterior))
-            s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(startFrame.diferencia_estimada)
-            s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(startFrame.analisis_futuro)
-            s4= "\n y por tanto el nuevo porcentaje de pesimismo de la producción es:\n" + str(Venta.getPesimismo())+ "."        
-            confirmacion5 = tk.Label(framePrincipal, anchor="center")
-            confirmacion5.place(relx=0, rely=0.3, relwidth=1, relheight=0.4)
-            texto5 = tk.Text(confirmacion5, width=50, height=5,bg="plum3", font=("Arial", 10))  # Usa valores válidos
-            texto5.pack(fill="both", expand=True)
-            texto5.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-            texto5.insert(1.0,s1+s2+s3+s4)
-            
-            boton2 = tk.Button(framePrincipal, text="Salir", bg="medium orchid",command=lambda: startFrame.abrirFrameInicial(self))
-            boton2.place(relx=0.5, rely=0.9, relwidth=0.1, relheight=0.1, anchor="s")  
-        
-        
-        def LeerF1(self):
-            from src.uiMain.main import Main
-            from src.uiMain.startFrame import startFrame
-            eleccionDeuda=0
-            resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
-            resultadosB=FieldFrame.getValue(field_frame,"Banco")
-            if resultadosP.lower()!="si/no" and resultadosB.lower()!="si/no" and combo.get()!="":
+            def LeerF1(self):
                 from src.uiMain.main import Main
-                cosa=combo.get()
-                if resultadosP.lower() == "si" and resultadosB.lower()=="no":
-                    elecionDeuda = 1
-                elif resultadosP.lower() == "no" and resultadosB.lower()=="si":
-                    elecionDeuda = 2
-                elif resultadosP.lower() == "si" and resultadosB.lower()=="si":
-                    elecionDeuda = 3
+                from src.uiMain.startFrame import startFrame
+                eleccionDeuda=0
+                resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
+                resultadosB=FieldFrame.getValue(field_frame,"Banco")
+                if resultadosP.lower()!="si/no" and resultadosB.lower()!="si/no" and combo.get()!="":
+                    from src.uiMain.main import Main
+                    cosa=combo.get()
+                    if resultadosP.lower() == "si" and resultadosB.lower()=="no":
+                        elecionDeuda = 1
+                    elif resultadosP.lower() == "no" and resultadosB.lower()=="si":
+                        elecionDeuda = 2
+                    elif resultadosP.lower() == "si" and resultadosB.lower()=="si":
+                        elecionDeuda = 3
+                    from src.gestorAplicacion.sede import Sede
+                    empleado=None
+                    for empleado_actual in Sede.getListaEmpleadosTotal():
+                        seleccion=combo.get()
+                        if Empleado.getNombre(empleado_actual) == seleccion:
+                            empleado = empleado_actual
+                    startFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
+                    
+                    texto.config(state="normal")   # Habilitar edición
+                    texto.delete("1.0", "end")     # Eliminar texto actual
+                    texto.insert("1.0", EvaluacionFinanciera.informe(startFrame.balance_anterior), "center")  # Insertar nuevo texto
+                    texto.config(state="disabled") 
+                else: #Excepcion
+                    combo.delete(0,"end")
+
+            def Directivos():
+                from src.gestorAplicacion.administracion.area import Area
                 from src.gestorAplicacion.sede import Sede
-                empleado=None
-                for empleado_actual in Sede.getListaEmpleadosTotal():
-                    seleccion=combo.get()
-                    if Empleado.getNombre(empleado_actual) == seleccion:
-                        empleado = empleado_actual
-                startFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
                 
-                texto.config(state="normal")   # Habilitar edición
-                texto.delete("1.0", "end")     # Eliminar texto actual
-                texto.insert("1.0", EvaluacionFinanciera.informe(startFrame.balance_anterior), "center")  # Insertar nuevo texto
-                texto.config(state="disabled") 
-            else: #Excepcion
-                combo.delete(0,"end")
+                elegible_empleados = []
+                for empleado_actual in Sede.getListaEmpleadosTotal():
+                    if empleado_actual.getAreaActual() == Area.DIRECCION:
+                        elegible_empleados.append(empleado_actual.getNombre())
+                return elegible_empleados
 
-        def Directivos():
-            from src.gestorAplicacion.administracion.area import Area
-            from src.gestorAplicacion.sede import Sede
-            
-            elegible_empleados = []
-            for empleado_actual in Sede.getListaEmpleadosTotal():
-                if empleado_actual.getAreaActual() == Area.DIRECCION:
-                    elegible_empleados.append(empleado_actual.getNombre())
-            return elegible_empleados
+            framePrincipal =  tk.Frame(ventana)
+            framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+            frame1 = tk.Frame(framePrincipal, height=150)
+            frame1.pack(side="top", fill="x")
+            tituloF3 = tk.Label(frame1, text="Gestión Financiera", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+            tituloF3.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+            ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
+            descripcionF3 = tk.Label(frame1, text="Se realiza una evaluación del estado financiero de la empresa haciendo el cálculo de los activos y los pasivos, para indicarle al usuario qué tan bien administrada está, mostrandole los resulatdos y su significado", relief="ridge", wraplength=600)
+            descripcionF3.place(relx=1, rely=0.7, relwidth=1, relheight=0.4, anchor="e")
+            frame2 = tk.Frame(framePrincipal)
+            frame2.pack(anchor="s",  expand=True, fill="both")
+            criterios = ["Proveedor", "Banco"]
+            valores = ["Si/No", "Si/No"]
+            habilitado = [True, True]
+            # Creamos el FieldFrame con los botones
+            field_frame = FieldFrame(frame2, "Desea calcular las ", criterios, "siguientes Deudas", valores, habilitado)
+            field_frame.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
+            frame3 = tk.Frame(framePrincipal)
+            frame3.pack(anchor="s",  expand=True, fill="both")
+            label7 = tk.Label(frame3, text="Directivos disponibles:",anchor="w", font=("Arial",12, "bold"))
+            label7.place(relx=0.5, rely=0.6, relwidth=1, relheight=1, anchor="s")
+            label7.config(padx=200)
+            Lista=Directivos()
+            placeholder = tk.StringVar(master=label7, value="Elije al directivo")
+            combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
+            combo.place(relx=0.5, rely=0.6, relwidth=0.5, relheight=0.2, anchor="s")
+            boton1 = tk.Button(frame3, text="Aceptar", command = lambda: LeerF1(self))
+            boton1.place(relx=0.3, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+            borrar=tk.Button(frame3,text="Borrar", command = lambda: field_frame.borrar())
+            borrar.place(relx=0.5, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+            boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
+            boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+            confirmacion = tk.Frame(frame3)
+            confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
 
-        framePrincipal =  tk.Frame(ventana)
-        framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
-        frame1 = tk.Frame(framePrincipal, height=150)
-        frame1.pack(side="top", fill="x")
-        tituloF3 = tk.Label(frame1, text="Gestión Financiera", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-        tituloF3.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
-        ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-        descripcionF3 = tk.Label(frame1, text="Se realiza una evaluación del estado financiero de la empresa haciendo el cálculo de los activos y los pasivos, para indicarle al usuario qué tan bien administrada está, mostrandole los resulatdos y su significado", relief="ridge", wraplength=600)
-        descripcionF3.place(relx=1, rely=0.7, relwidth=1, relheight=0.4, anchor="e")
-        frame2 = tk.Frame(framePrincipal)
-        frame2.pack(anchor="s",  expand=True, fill="both")
-        criterios = ["Proveedor", "Banco"]
-        valores = ["Si/No", "Si/No"]
-        habilitado = [True, True]
-        # Creamos el FieldFrame con los botones
-        field_frame = FieldFrame(frame2, "Desea calcular las ", criterios, "siguientes Deudas", valores, habilitado)
-        field_frame.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
-        frame3 = tk.Frame(framePrincipal)
-        frame3.pack(anchor="s",  expand=True, fill="both")
-        label7 = tk.Label(frame3, text="Directivos disponibles:",anchor="w", font=("Arial",12, "bold"))
-        label7.place(relx=0.5, rely=0.6, relwidth=1, relheight=1, anchor="s")
-        label7.config(padx=200)
-        Lista=Directivos()
-        placeholder = tk.StringVar(master=label7, value="Elije al directivo")
-        combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
-        combo.place(relx=0.5, rely=0.6, relwidth=0.5, relheight=0.2, anchor="s")
-        boton1 = tk.Button(frame3, text="Aceptar", command = lambda: LeerF1(self))
-        boton1.place(relx=0.3, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
-        borrar=tk.Button(frame3,text="Borrar", command = lambda: field_frame.borrar())
-        borrar.place(relx=0.5, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
-        boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
-        boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
-        confirmacion = tk.Frame(frame3)
-        confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+            confirmacion.update_idletasks()  # Asegura que el tamaño se actualice correctamente
 
-        confirmacion.update_idletasks()  # Asegura que el tamaño se actualice correctamente
+            texto = tk.Text(confirmacion, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+            texto.pack(fill="both", expand=True)
+            texto.tag_configure("center", justify="center",spacing1=10, spacing3=10)
 
-        texto = tk.Text(confirmacion, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
-        texto.pack(fill="both", expand=True)
-        texto.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+            # Insertar el texto con el tag "center"
+            texto.insert("1.0", "Calculando la diferencia entre ingresos por venta y costos de producción...", "center")
 
-        # Insertar el texto con el tag "center"
-        texto.insert("1.0", "Calculando la diferencia entre ingresos por venta y costos de producción...", "center")
-
-        # Deshabilitar edición si solo quieres mostrar el texto
-        texto.config(state="disabled")
-        return framePrincipal
+            # Deshabilitar edición si solo quieres mostrar el texto
+            texto.config(state="disabled")
+            return framePrincipal
     
+#--------------------------------------------------------------------------------------------------------------------------
+    def Facturar(self):
+        self.Facturacion=tk.Frame(self)
+        self.posiblesDespedidos=[]
+        self.sede=None
+        self.inicialFacturacion()
+        self.empleadosADespedir=[] # Se llena al dar aceptar en la pantalla de seleccion.
+        self.cantidadADespedir=0
+        return self.Facturacion
+        
+    def inicialFacturacion(self):
+        self.framePrincipal =  tk.Frame(self.Facturacion)
+        self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
 
+        self.tituloF1 = tk.Label(self.framePrincipal, text="Facturacion", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+        self.tituloF1.grid(row=0, column=0, sticky="nswe")
+        
+        ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
+        self.descripcionF1 = tk.Label(self.framePrincipal, wraplength=700 ,text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial", 10))
+        self.descripcionF1.grid(row=1, column=0, sticky="nswe")        
+        
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
+        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
 
+        self.outputGHumana=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 8),height=2)
+        self.outputGHumana.grid(row=3, column=0, sticky="nswe")
+        
+        self.framePrincipal.columnconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+        self.framePrincipal.rowconfigure(2, weight=10)
+        self.framePrincipal.rowconfigure(3, weight=2)
+        self.pantallaDatosFactura()
 
+    def pantallaBaseFacturacion(self, limpiarFrame=False):
+        if limpiarFrame:
+            self.frameCambianteGHumana.destroy()
+            self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
+            self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe",columnspan=4)
+
+        self.labelPreConsulta=tk.Label(self.frameCambianteGHumana, text="", relief="ridge", font=("Arial", 10))
+        self.labelPreConsulta.grid(row=1, column=0, sticky="nswe",columnspan=4)
+
+        nombres=""
+        for empleado in self.posiblesDespedidos:
+            nombres+=Empleado.getNombre(empleado)+"\n"
+
+        self.cantidadADespedir=len(self.posiblesDespedidos)
+
+        self.seleccionadorDespedidos()
+
+        self.malRendidos=tk.Label(self.frameCambianteGHumana, text=nombres, font=("Arial", 10))
+        self.malRendidos.grid(row=2, column=1,sticky="nswe")
+
+        self.opcionAñadir=tk.Button(self.frameCambianteGHumana, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", font=("Arial", 12, "bold"), command=self.pantallaDatosFactura)
+        self.opcionAñadir.grid(row=3, column=0,columnspan=2)
+
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=5)
+        self.frameCambianteGHumana.rowconfigure(2, weight=10)
+        self.frameCambianteGHumana.rowconfigure(3, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=10)
+        self.frameCambianteGHumana.columnconfigure(1, weight=10)
+        self.framePrincipal.columnconfigure(0, weight=1)
+        self.framePrincipal.columnconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+        self.framePrincipal.rowconfigure(2, weight=10)
+        self.framePrincipal.rowconfigure(3, weight=2)
+    
+    def seleccionadorDespedidos(self):
+        valores=[self.cantidadADespedir]
+        criterios=["Cantidad de despedidos"]
+        for i in range(self.cantidadADespedir):
+            criterios.append(f"Nombre del despedido {i+1}")
+            valores.append("")
+        self.seleccionador=FieldFrame(self.frameCambianteGHumana, "Dato", criterios, "valor",valores=valores, ancho_entry=20, tamañoFuente=10,aceptar=True, borrar=True, callbackAceptar=self.despedir)
+        self.seleccionador.configurarCallBack("Cantidad de despedidos", "<Return>", lambda e:self.actualizarCantidadDespedidos())
+        self.seleccionador.grid(row=2, column=0,columnspan=1)
+    
+    def actualizarCantidadDespedidos(self):
+        self.cantidadADespedir=int(self.seleccionador.getValue("Cantidad de despedidos"))
+        self.seleccionador.destroy()
+        self.seleccionadorDespedidos()
+    
+    def despedir(self):
+        nombresADespedir=self.seleccionador.obtenerTodosLosValores()
+        del nombresADespedir[0]
+        (existen,self.empleadosADespedir)=Main.despedirEmpleados(nombresADespedir)
+        if existen:
+            Main.estadoGestionHumana="cambio-sede"
+            self.reemplazarPorCambioFactura()
+        else:
+            tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado trabaja en la empresa.")
+
+    # Parte de la interacción 1
+    def pantallaDatosFactura(self):
+        self.descripcionF1.config(text="""Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.\nInserte los datos de la sede y presione Enter para ver los empleados""")
+        self.frameCambianteGHumana.destroy()
+
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
+        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Detalles Venta" ,["Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", ["","Sede Principal", "","","Camisa/Pantalon","0"],[True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
+        self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosVendedores)
+        self.datosDespedido.grid(row=1, column=0, columnspan=2)
+        clientesPosibles="Clientes"
+        self.Clientes=tk.Label(self.frameCambianteGHumana, text=clientesPosibles, font=("Arial", 10))
+        self.Clientes.grid(row=1, column=3)
+        clientes= Main.imprimirNoEmpleados()
+        for cliente in clientes:
+            if isinstance(cliente,Persona):
+                clientesPosibles+="\n"+cliente.getNombre()        
+        self.Clientes.config(text=clientesPosibles)
+        self.pistas=tk.Label(self.frameCambianteGHumana, text=Main.posiblesSedes(), font=("Arial", 10))
+        self.pistas.grid(row=1, column=4)
+        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.enviarVenta)
+        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
+
+        self.aceptar.grid(row=2, column=0)
+        self.botonBorrarSeleccion.grid(row=2, column=1)
+        self.opcionAñadir=tk.Button(self.frameCambianteGHumana, text="Añadir otra Prenda", font=("Arial", 12, "bold"), command=self.pantallaDatosFactura)
+        self.opcionAñadir.grid(row=2, column=2)
+        
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=2)
+        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.frameCambianteGHumana.columnconfigure(3, weight=3)
+        self.frameCambianteGHumana.columnconfigure(4, weight=3)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=10)
+    
+    def actualizarDatosVendedores(self, evento):
+        if Main.verificarSedeExiste(self.datosDespedido.getValue("sede")):
+            self.datosDespedido.habilitarEntry("Vendedor", True)
+            self.datosDespedido.configurarCallBack("Vendedor", "<Return>", lambda e: self.actualizarDatosAñadirVendedor())
+            empleadosPosibles="Vendedores posibles"
+            self.datosDespedido.habilitarEntry("Empleado caja", True)
+            self.datosDespedido.configurarCallBack("Empleado caja", "<Return>", lambda e: self.actualizarDatosAñadirVendedor())
+            asesoresPosibles="\n\nEmpleados de caja posibles"
+            
+            self.sede = Main.sedePorNombre(self.datosDespedido.getValue("sede"))
+            empleados= Main.listaVendedores(self.sede)
+            empleados2= Main.listaEncargados(self.sede)
+            for empleado in empleados:
+                if isinstance(empleado,Persona):
+                    empleadosPosibles+="\n"+empleado.getNombre()
+                       
+            for empleado2 in empleados2:                
+                if isinstance(empleado2,Persona):
+                    asesoresPosibles+="\n"+empleado2.getNombre()
+            self.pistas.config(text=empleadosPosibles+asesoresPosibles)
+
+        else:
+            self.datosDespedido.habilitarEntry("sede", True)
+            self.datosDespedido.habilitarEntry("Vendedor", False)
+            tk.messagebox.showwarning("La sede no existe", "Intente otra vez, luego de verificar el nombre de la sede")
+
+    def actualizarDatosAñadirVendedor(self):
+        if self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is None:
+            tk.messagebox.showwarning("El empleado no trabaja aquí", "Intente otra vez, luego de verificar el nombre del empleado")
+
+    def enviarVenta(self):
+        if self.sede is not None and self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is not None:
+            self.posiblesDespedidos.append(self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")))
+        self.pantallaBaseFacturacion(True)
+
+    def reemplazarPorCambioFactura(self):
+        self.frameCambianteGHumana.destroy()
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
+        self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
+        self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados, verificamos si se pueden reemplazar
+        con gente de otras sedes""", relief="ridge", font=("Arial", 10))
+        self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
+        Main.prepararCambioSede()
+        tanda = Main.getTandaReemplazo()
+        if tanda is not None:
+            self.dibujarTandaDePrendas(tanda)
+
+        self.frameCambianteGHumana.columnconfigure(0, weight=3)
+    
+    def dibujarTandaDePrendas(self, tanda):
+        candidatos,sedeDonadora,rol,cantidad = tanda
+
+        if self.contenedorTandaTransferencia is not None:
+            self.contenedorTandaTransferencia.destroy()
+
+        self.contenedorTandaTransferencia=tk.Frame(self.frameCambianteGHumana)
+        self.contenedorTandaTransferencia.grid(row=1, column=0, sticky="nswe")
+        textoReemplazo=f"""Nececitamos reemplazar {cantidad} de {rol.name}\n"""
+        if Main.estadoGestionHumana=="contratacion":
+            textoReemplazo+="""Por medio de contratación"""
+        else:
+            textoReemplazo+=f"""Por medio de transferencia desde la sede {sedeDonadora.getNombre()}."""
+        
+        textoReemplazo+="""\n He aquí los candidatos, escriba el nombre del seleccionado en cada casilla:"""
+        for candidato in candidatos:
+            textoReemplazo+=f"\n{candidato.getNombre()} con {candidato.experiencia} años de experiencia"
+            if rol==Rol.MODISTA:
+                textoReemplazo+=f" y {candidato.pericia} de pericia"
+
+        self.tituloTanda=tk.Label(self.contenedorTandaTransferencia, text=textoReemplazo, font=("Arial", 10))
+        self.tituloTanda.grid(row=0, column=0, sticky="nswe", columnspan=4)
+
+        self.seleccionadorReemplazo=FieldFrame(self.contenedorTandaTransferencia,"Reemplazo numero", [f"Reemplazo {i}" for i in range(1,cantidad+1)], "Nombre", aceptar=True, borrar=True,callbackAceptar=self.terminarTandaPrendas)
+        self.seleccionadorReemplazo.grid(row=1, column=0, sticky="nswe", columnspan=4)
+
+        self.contenedorTandaTransferencia.rowconfigure(0, weight=1)
+        self.contenedorTandaTransferencia.rowconfigure(1, weight=3)
+        self.contenedorTandaTransferencia.columnconfigure(0, weight=1)
+    
+    def terminarTandaPrendas(self):
+        reemplazos=[]
+        for i in range(1, len(self.seleccionadorReemplazo.valores)+1):
+            reemplazos.append(self.seleccionadorReemplazo.getValue(f"Reemplazo {i}"))
+        (existen)=Main.terminarTandaReemplazo(reemplazos)
+        if existen:
+            tanda=Main.getTandaReemplazo()
+            if tanda is None:
+                self.frameCambianteGHumana.destroy()
+                self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
+                self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
+                self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text=f"""Se ha completado el reemplazo de los empleados, tenga buen día.""", relief="ridge", font=("Arial", 10))
+                self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
+                self.frameCambianteGHumana.columnconfigure(0, weight=3)
+                self.frameCambianteGHumana.rowconfigure(0, weight=3)
+            else:
+                self.dibujarTandaDePrendas(Main.getTandaReemplazo())
+        else:
+            tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado esta en la lista de candidatos.")
+
+    def cosa(self):
+        criterios = ["Cliente","Sede","Tipo de Prenda", "Cantidad Prenda"]
+        valores = ["","Sede Principal","camisa/pantalon","0"]
+        habilitado = [True, True,True,True]
+        # Creamos el FieldFrame con los botones
+        field_frame = FieldFrame(self.frameGeneral, "Detalles Venta", criterios, "Campos", valores, habilitado, ancho_entry=20, crecer=False, tamañoFuente=12, aceptar=True,borrar=True, callbackAceptar=None)
+        field_frame.place(relx=1, rely=0.1, relwidth=1, relheight=1, anchor="e")
+
+        framec = tk.Frame(self.frameGeneral)
+        framec.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
+        labelCliente= tk.Frame(framec)
+        labelCliente.place(relx=0, rely=0, relwidth=1, relheight=1)
+        clientes=Main.imprimirNoEmpleados()
+            
+        tituloCliente=tk.Label(labelCliente, text="Clientes: ", font=("Arial", 12, "bold"), anchor="center")
+            
+        tituloCliente.grid(row=2, column=0, columnspan=3)
+        contador=1
+        rowbase=3
+        for cliente in clientes:
+            if contador<=(len(clientes)/3):
+                nombre1 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
+                nombre1.grid(row=rowbase, column=0)
+                if contador==(len(clientes)/3):
+                    rowbase=3
+                else:
+                    rowbase+=1
+                contador+=1
+                
+            elif contador<=((len(clientes)/3)*2) and contador>(len(clientes)/3):
+                nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
+                nombre2.grid(row=rowbase, column=1)
+                if contador==((len(clientes)/3)*2):
+                    rowbase=3
+                else:
+                    rowbase+=1
+                contador+=1
+            else:
+                nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
+                nombre2.grid(row=rowbase, column=2)
+                rowbase+=1
+
+            labelCliente.columnconfigure(0, weight=1)
+            labelCliente.columnconfigure(1, weight=1)
+            labelCliente.columnconfigure(2, weight=1)
+            return self.framePrincipal
+        
 def pasarAVentanaPrincipal():
     ventana = startFrame()
     ventana.mainloop()
-    

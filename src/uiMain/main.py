@@ -641,6 +641,22 @@ class Main:
     def retornaProveedorB(cls):
         return cls.proveedorBdelmain
 
+    def listaVendedores(sede):
+        from src.gestorAplicacion.administracion.area import Area
+        listaEmpleado=[]
+        for i, empleado in enumerate(sede.getListaEmpleados()):
+            if Empleado.getAreaActual(empleado) == Area.OFICINA:
+                listaEmpleado.append(empleado)
+        return listaEmpleado
+
+    def listaEncargados(sede):
+        from src.gestorAplicacion.administracion.area import Area
+        listaEmpleado=[]
+        for i, empleado in enumerate(sede.getListaEmpleados()):
+            if Empleado.getAreaActual(empleado) == Area.VENTAS:
+                listaEmpleado.append(empleado)
+        return listaEmpleado
+    
     def vender():
         from ..gestorAplicacion.administracion.empleado import Empleado
         from src.gestorAplicacion.bodega.pantalon import Pantalon
