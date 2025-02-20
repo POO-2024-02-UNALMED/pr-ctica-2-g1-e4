@@ -218,11 +218,17 @@ class startFrame(tk.Tk):
         fecha=None
         partes = diaI.split()
         numero=-1
-        if not (diaI.isdigit() and mesI.isdigit() and añoI.isdigit()):
-            self.borrar()
-            error = ExceptionC1("Los valores ingresados no son válidos.")
-            error.enteroNoValido()
-            self.after(100, self.Ok)
+        try:
+            unaExcepcion = False
+            if not (diaI.isdigit() and mesI.isdigit() and añoI.isdigit()):
+                unaExcepcion = True
+            if unaExcepcion:
+                raise ExcepcionEnteroNoString(diaI,mesI,añoI)
+        except ExcepcionEnteroNoString as pobreLagartija:
+                messagebox.showwarning(title="Alerta", message=pobreLagartija.mensaje_completo)
+                self.after(100, self.Ok)
+                return unaExcepcion
+            
         if partes[-1].isdigit():
             numero = int(partes[-1])
         dia = numero
@@ -234,23 +240,44 @@ class startFrame(tk.Tk):
         if partes[-1].isdigit():
             numero = int(partes[-1])
         año = numero
-        if dia <= 0 or dia > 31:
-            self.borrar()
-            error = ExceptionC1("El día ingresado no es válido.")
-            error.enteroNoValido()
+
+        try:
+            hayExcepcion = False
+            if dia <= 0 or dia > 31:
+                hayExcepcion = True
+                self.borrar()
+            if hayExcepcion:
+                raise ExcepcionEnteroNoValido(dia)
+        except ExcepcionEnteroNoValido as moscaMuerta:
+                messagebox.showwarning(title="Alerta", message=moscaMuerta.mensaje_completo)
+                self.after(100, self.Ok) 
+                return hayExcepcion
+        try:
+            hayExcepcion2 = False
+            if mes <= 0 or mes > 12:
+                hayExcepcion2 = True
+                self.borrar()
+            if hayExcepcion2:
+                raise ExcepcionEnteroNoValido(mes)
+        except ExcepcionEnteroNoValido as carrastrufia:
+            messagebox.showwarning(title="Alerta", message=carrastrufia.mensaje_completo)
             self.after(100, self.Ok) 
-        elif mes <= 0 or mes > 12:
-            self.borrar()
-            error = ExceptionC1("El mes ingresado no es válido.")
+            return hayExcepcion2
+        try:
+            hayExcepcion3 = False
+            if año <= 0:
+                hayExcepcion3 = True
+                self.borrar()
+            if hayExcepcion3:
+                raise ExcepcionEnteroNoValido(año)
+        except ExcepcionEnteroNoValido as mojarra:
+            messagebox.showwarning(title="Alerta", message=mojarra.mensaje_completo)
             self.after(100, self.Ok) 
-        elif año <= 0:
-            self.borrar()
-            error = ExceptionC1("El año ingresado no es válido.")
-            self.after(100, self.Ok) 
-        else:
-            fecha = Fecha(dia, mes, año)
-            Main.fecha=fecha
-            self.fechaValida = True
+            return hayExcepcion3
+
+        fecha = Fecha(dia, mes, año)
+        Main.fecha=fecha
+        self.fechaValida = True
         return fecha
     
 #----------------------------------------------Gestión Humana-----------------------------------------------------------------
@@ -555,9 +582,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def prediccion(self, texto):
         frame3 = tk.Frame(self.framePrincipal, bg="light gray")
         frame3.pack(anchor="s",  expand=True, fill="both")
-        prediccion = tk.Text(frame3)
-        mensaje = texto
-        prediccion.insert("1.0", mensaje)
+        prediccion = tk.Text(frame3, font=("Arial", 10), bg="#f0f0f0")
+        mensaje = ""
+        for caso in texto:
+            mensaje += caso + "\n"
+        prediccion.tag_add("center", "1.0", "end")
+        prediccion.tag_config("center", justify="center")
+        prediccion.insert("1.0", mensaje,"center")
+
         prediccion.place(relx=0.5, rely=0.5, relwidth=1, relheight=1,anchor="c")
         prediccion.config(state="disabled")
 

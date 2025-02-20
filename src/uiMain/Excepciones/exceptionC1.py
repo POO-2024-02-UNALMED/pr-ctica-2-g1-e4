@@ -7,7 +7,7 @@ class ExceptionC1(ErrorAplicacion):
 
 class ExcepcionEnteroNoValido(ExceptionC1):
      def __init__(self, valor):
-        self.mensajeValor=f" La entrada {valor} no contiene un valor válido, por favor, intetar de nuevo "
+        self.mensajeValor=f" La(s) entrada(s) {valor} no contiene(n) un valor válido, por favor, intetar de nuevo "
         super().__init__( self.mensajeValor)
 
 class ExcepcionContenidoVacio(ExceptionC1):
@@ -18,6 +18,11 @@ class ExcepcionContenidoVacio(ExceptionC1):
 class ExcepcionStringNoEntero(ExceptionC1):
     def __init__(self, entero):
         self.mensajeEntero=f" La entrada {entero} no es válida, debe llenar este campo solo con String"
+        super().__init__( self.mensajeEntero)
+        
+class ExcepcionEnteroNoString(ExceptionC1):
+    def __init__(self, entero):
+        self.mensajeEntero=f" La entrada {entero} no es válida, debe llenar este campo solo con números enteros"
         super().__init__( self.mensajeEntero)
 
     def enteroNoValido(self):
