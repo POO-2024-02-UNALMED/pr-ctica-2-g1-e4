@@ -330,11 +330,22 @@ class Main:
         return Empleado.listaInicialDespedirEmpleado(Main.fecha)
 
     @classmethod
-    def despedirEmpleados(cls, empleados):
+    def despedirEmpleados(cls, nombres):
+        empleados = []
+        for nombre in nombres:
+            for emp in cls.despedidos:
+                encontrado=False
+                if emp.getNombre() == nombre:
+                    empleados.append(emp)
+                    encontrado=True
+                if not encontrado:
+                    return False
+                
         Empleado.despedirEmpleados(empleados, True, Main.fecha)
         cls.despedidos = empleados
         cls.porReemplazar = empleados.copy()
-    
+        return True
+
     @classmethod
     def verificarSedeExiste(cls, sede:str): # verifica que la sede exista
         return Sede.sedeExiste(sede)
@@ -1370,7 +1381,7 @@ class Main:
         c4 = Persona("Mónica Agudelo", 8748155, Rol.MODISTA, 8, False, Membresia.ORO)
         c5 = Persona("Daniel Valencia", 9818534, Rol.EJECUTIVO, 10, False, Membresia.BRONCE)
         c6 = Persona("Efraín Rodriguez", 8256519, Rol.VENDEDOR, 10, False, Membresia.NULA)
-        c7 = Persona("Mauricio Brightman", 8823954, Rol.ASISTENTE, 10, False, Membresia.ORO)
+        c7 = Persona("Mauricio Brightman", 8823954, Rol.PLANTA, 10, False, Membresia.ORO)
         c8 = Persona("Nicolás Mora", 4365567, Rol.EJECUTIVO, 8, False, Membresia.NULA)
         c9 = Persona("Roberto Mendoza", 28096740, Rol.PRESIDENTE, 2, False, Membresia.ORO)
         c10 = Persona("Hermes Pinzón", 21077781, Rol.ASISTENTE, 2, False, Membresia.NULA)
@@ -1378,6 +1389,7 @@ class Main:
         c12 = Persona("Maria Beatriz Valencia", 6472799, Rol.ASISTENTE, 2, False, Membresia.BRONCE)
         c13 = Persona("Antonio Sanchéz", 8922998, Rol.VENDEDOR, 12, False, Membresia.NULA)
         c15 = Persona("Armando Paredes", 1212312, Rol.PLANTA, 1, False, Membresia.NULA)
+        C16= Persona("Nuria Rendón", 1212312, Rol.PLANTA, 1, False, Membresia.NULA)
         tiposp = []; cantidadesp = [];tiposc = []; cantidadesc = []
         tiposp.append("Tela")
         tiposp.append("Boton")

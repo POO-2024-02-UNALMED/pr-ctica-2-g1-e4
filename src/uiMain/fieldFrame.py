@@ -59,9 +59,10 @@ class FieldFrame(Frame):
             vacios = []
             hayExcepcion = False
             for valor in entradas:
-              if valor.strip() == "":
-                vacios.append(valor)
-                hayExcepcion = True
+               for i in range(len(self.valores)):
+                if self.valores[i].get() == "" and valor.strip() == "":
+                    vacios.append(self.valores[i]) 
+                    hayExcepcion = True
             if hayExcepcion:
                 raise ExcepcionContenidoVacio(vacios)
         except ExcepcionContenidoVacio as moscorrofio:
@@ -90,7 +91,7 @@ class FieldFrame(Frame):
     def obtenerTodosLosValores(self):
         return [entry.get() for entry in self.valores]
     
-    def configurarCallBack(self, criterio, evento, funcion):
+    def configurarCallBack(self, criterio:str, evento, funcion):
         entry = None
         for i, c in enumerate(self.citerios):
             if c == criterio:
