@@ -12,7 +12,7 @@ from typing_extensions import override
 
 class Empleado(Persona, GastoMensual):
     def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia=Membresia.NULA, maquinaria: Maquinaria=[]):
-        super().__init__(nombre, documento, rol, experiencia, True, membresia)
+        Persona.__init__(self,nombre, documento, rol, experiencia, True, membresia)
         self.areaActual = areaActual
         self.traslados = 0
         self.areas = [] # Areas por las que ha pasado
@@ -143,6 +143,7 @@ class Empleado(Persona, GastoMensual):
 
     def __str__(self):
         return f"{super().__str__()}\nArea: {self.areaActual} - Sede: {self.sede} - Traslados: {self.traslados}"
+    
     def modificarBonificacion(self, bonificacion):
         self.bonificacion += bonificacion
     def getTraslados(self):
