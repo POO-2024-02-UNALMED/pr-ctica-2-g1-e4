@@ -12,7 +12,7 @@ def producir(ventana:tk.Frame):
     frame1 = tk.Frame(framePrincipal)
     frame1.pack(side="top", fill="x")
 
-    tituloF5 = tk.Label(frame1, text="Producción", bg="medium orchid", relief="ridge", height=3, font=("Arial",16, "bold"))
+    tituloF5 = tk.Label(frame1, text="Producción", bg="medium orchid", relief="ridge", height=2, font=("Arial",16, "bold"))
     tituloF5.pack(fill="both", expand=True) 
     ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
@@ -398,12 +398,28 @@ def inicioInt2(event, containerBig, cont, field_frame, labelTG, cont2, field_fra
 aProdFinal = []
 def recibeProdFinal(aProdF):
     global aProdFinal
-    aProdFinal = aProdF
-    #colocar evento_senalizador.set()
+    tempProd = []
+    for listas1 in aProdF:
+        for listas2 in listas1:
+            for listas3 in listas2:
+                tempProd.append(listas3)
+    print("\n",len(tempProd) , f"- la produccion en una sola lista es: {tempProd}\n")
+    aProdFinal.append(tempProd[0]); aProdFinal.append(tempProd[1]); aProdFinal.append(tempProd[4]); aProdFinal.append(tempProd[5])
+    aProdFinal.append(tempProd[2]); aProdFinal.append(tempProd[3]); aProdFinal.append(tempProd[6]); aProdFinal.append(tempProd[7])
+    print("\n",len(aProdFinal) , f"- la produccion en una sola lista es: {aProdFinal}\n")
+    evento_senalizador.set()
 
+montoInicial = 1000
+enlacesP = [(0, 2), (0, 4), (0, 6)]  
+enlacesC = [(1, 3), (1, 5), (1, 7)]
+indiceEnlaceP = 0
+indiceEnlaceC = 0
+direccion = False
+modoP = True
+idx1, idx2 = enlacesP[indiceEnlaceP]
 def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLyB, labelTextInd):
     from src.uiMain.main import Main
-    global descripcionF5
+    global descripcionF5, aProdFinal
     containerBig.destroy()
     cont.destroy()
     field_f1.destroy()
@@ -413,7 +429,7 @@ def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLy
     labelTextInd.destroy()
     descripcionF5.destroy()
     event.widget.destroy()
-
+    frameDeTrabajo.config(bg="white")
     contBigRecor = tk.Frame(frameDeTrabajo)
     contBigRecor.pack(fill="x")
 
@@ -434,17 +450,128 @@ def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLy
     textRecorderis2.pack(side="left", padx=10, pady=2)
 
     Main.evento_ui.set()
+            #CAMBIAR PRODUCCION A GUSTO
+    evento_senalizador.wait()
+    evento_senalizador.clear()
+    varEntries = [tk.StringVar(value=str(aProdFinal[x])) for x in range(8)]
+    entries = []
+    flechas = []
+    varIntermedio = tk.StringVar()
 
+    def actualizarValores(event=None):
+        global direccion, idx1, idx2
+        try:
+            valorIntermedio = int(varIntermedio.get()) if varIntermedio.get() else 0
+            val1 = int(varEntries[idx1].get())
+            val2 = int(varEntries[idx2].get())
 
-    
+            if direccion: 
+                if val2 - valorIntermedio < 0:
+                    valorIntermedio = val2
+                varEntries[idx1].set(str(val1 + valorIntermedio))
+                varEntries[idx2].set(str(val2 - valorIntermedio))
+            else:  
+                if val1 - valorIntermedio < 0:
+                    valorIntermedio = val1
+                varEntries[idx1].set(str(val1 - valorIntermedio))
+                varEntries[idx2].set(str(val2 + valorIntermedio))
 
+            varIntermedio.set("")  # Limpiar Entry intermedio
+        except ValueError:
+            pass  # Ignorar valores no numéricos
 
+    def cambiarEnlaceP():
+        global indiceEnlaceP, modoP, idx1, idx2
+        modoP = True  # Activar modo "cambiarP"
+        idx1, idx2 = enlacesP[indiceEnlaceP]  # Actualizar índices
+        indiceEnlaceP = (indiceEnlaceP + 1) % len(enlacesP)
+        actualizarFlechas()
 
-    
+    def cambiarEnlaceC():
+        global indiceEnlaceC, modoP, idx1, idx2
+        modoP = False  # Activar modo "cambiarC"
+        idx1, idx2 = enlacesC[indiceEnlaceC]  # Actualizar índices
+        indiceEnlaceC = (indiceEnlaceC + 1) % len(enlacesC)
+        actualizarFlechas()
+
+    def cambiarDireccion():
+        global direccion
+        direccion = not direccion
+        actualizarFlechas()
+
+    def actualizarFlechas():
+        for label in flechas:
+            label.config(text="")
+        flechas[idx1].config(text="⬅" if direccion else "➡")
+        flechas[idx2].config(text="➡" if not direccion else "⬅")
+
+    def onFocusIn(event):
+        if event.widget.get() == "Modifica aquí...":
+            event.widget.delete(0, tk.END)
+            event.widget.config(fg="black")
+
+    def onFocusOut(event):
+        if event.widget.get() == "":
+            event.widget.insert(0, "Modifica aquí...")
+            event.widget.config(fg="gray")
+        # Contenedores principales con títulos
+    frameGeneral = tk.Frame(frameDeTrabajo, bg="white")
+    frameGeneral.pack(pady=10)
+
+    frameIzq = tk.LabelFrame(frameGeneral, text="Sede Principal", padx=17, pady=3, bg="#E0A8F2", font=("Arial", 14, "bold italic"))
+    frameDer = tk.LabelFrame(frameGeneral, text="Sede 2", padx=17, pady=3, bg="#E0A8F2", font=("Arial", 14, "bold italic"))
+    frameIzq.pack(side=tk.LEFT, padx=10)
+    frameDer.pack(side=tk.RIGHT, padx=10)
+
+    # Crear los sub-frames (cada uno contiene 2 Entry)
+    subframes = []
+    labels = ["Comenzar\nproducción", "Producir la\notra semana", "Comenzar\nproducción", "Producir la\notra semana"]
+    for i in range(4):
+        frame = tk.Frame(frameIzq if i < 2 else frameDer, padx=12, pady=7, bg="#E6E6FA")
+        frame.pack(side=tk.LEFT, padx=12, pady=7)
+        label = tk.Label(frame, text=labels[i], font=("Arial", 12, "bold"), bg="#E6E6FA")
+        label.pack(pady=5)
+        subframes.append(frame)
+
+    # Crear los Entry, flechas y etiquetas "PANTALÓN" y "CAMISA"
+    for i in range(8):
+        text = "Pantalones" if i % 2 == 0 else "Camisas"
+        etiqueta = tk.Label(subframes[i // 2], text=text, font=("Arial", 10, "bold"), bg="#E6E6FA")
+        etiqueta.pack(pady=2)
+
+        frameEntry = tk.Frame(subframes[i // 2])
+        frameEntry.pack()
         
-    
-    
-    
+        flecha = tk.Label(frameEntry, text="", font=("Arial", 12))
+        flecha.pack(side=tk.LEFT)
+        flechas.append(flecha)
+        
+        entry = tk.Entry(frameEntry, textvariable=varEntries[i], width=10, justify="center", state="readonly")
+        entry.pack(side=tk.LEFT)
+        entries.append(entry)
 
-    
-    
+    # Contenedor de botones
+    frameBotones = tk.Frame(frameDeTrabajo, bg="white")
+    frameBotones.pack(pady=5)
+
+    botonModificarP = tk.Button(frameBotones, text="Modificar Pantalones", command=cambiarEnlaceP, font=("Arial", 11, "bold italic"), bg="light gray")
+    entryIntermedio = tk.Entry(frameBotones, textvariable=varIntermedio, width=15, justify="center", font=("Arial", 11), fg="gray", bg="light gray")
+    entryIntermedio.insert(0, "Modifica aquí...")  # Texto inicial
+    entryIntermedio.bind("<FocusIn>", onFocusIn)
+    entryIntermedio.bind("<FocusOut>", onFocusOut)
+    entryIntermedio.bind("<Return>", actualizarValores)
+    botonCambiarC = tk.Button(frameBotones, text="Modificar Camisas", command=cambiarEnlaceC, font=("Arial", 11, "bold italic"))
+
+    botonModificarP.pack(side=tk.LEFT, padx=15, pady=1)
+    entryIntermedio.pack(side=tk.LEFT, padx=15, pady=1)
+    botonCambiarC.pack(side=tk.LEFT, padx=15, pady=1)
+
+    # Entry para ingresar cantidad
+    frameEntry = tk.Frame(frameDeTrabajo)
+    frameEntry.pack(pady=10)
+    botonCambiarDir = tk.Button(frameEntry, text="Cambiar Dirección", command=cambiarDireccion, font=("Arial", 11, "bold italic"))
+    botonCambiarDir.pack()
+
+    # Iniciar con los primeros enlaces resaltados
+    cambiarEnlaceP()
+
