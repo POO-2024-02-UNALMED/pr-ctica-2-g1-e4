@@ -552,7 +552,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
     def inicialInsumos(self):
         from src.uiMain.main import Main
-        self.framePrincipal =  tk.Frame(self.insumos, bg="blue")
+        self.framePrincipal =  tk.Frame(self.insumos)
         self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
         
         self.frame1 = tk.Frame(self.framePrincipal, height=150)
@@ -576,22 +576,28 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame2 = tk.Frame(self.framePrincipal, bg="light gray")
         self.frame2.pack(anchor="s", fill="x")
             
-        self.field = fieldFrame.FieldFrame(self.frame2, "Puede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True])
-        self.field.pack(anchor="s",  expand=True, fill="both", padx=3)
+        self.field = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True])
+        self.field.pack(anchor="s",  expand=True, fill="both")
 
     def prediccion(self, texto):
         self.frame3 = tk.Frame(self.framePrincipal, bg="light gray")
-        self.frame3.pack(anchor="s",  expand=True, fill="both")
-        prediccion = tk.Text(self.frame3)
-        mensaje = texto
-        prediccion.insert("1.0", mensaje)
+        self.frame3.pack(anchor="s",  expand=True, fill="both", pady=5)
+        prediccion = tk.Text(self.frame3, font=("Arial", 10), bg="#f0f0f0")
+        mensaje = ""
+
+        for caso in texto:
+            mensaje += caso + "\n"
+        prediccion.tag_add("center", "1.0", "end")
+        prediccion.tag_config("center", justify="center")
+        prediccion.insert("1.0", mensaje,"center")
+
         prediccion.place(relx=0.5, rely=0.5, relwidth=1, relheight=1,anchor="c")
         prediccion.config(state="disabled")
 
         label3 = tk.Label(self.frame3, text="Según dicha predicción se hará la compra de los insumos")
-        label3.place(relx=0.7, rely=0.7, relwidth=1, relheight=0.6, anchor="c")    
+        label3.place(relx=0.4, rely=0.8, relwidth=1, relheight=0.1, anchor="c")    
         aceptar = tk.Button(self.frame3, text="Aceptar")
-        aceptar.place(relx=0.4, rely=0.7, relwidth=0.1, relheight=0.4, anchor="s")            
+        aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.1, anchor="c")    
             
 
 
