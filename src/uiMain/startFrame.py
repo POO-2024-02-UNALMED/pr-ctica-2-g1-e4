@@ -555,15 +555,15 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal =  tk.Frame(self.insumos, bg="blue")
         self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
         
-        frame1 = tk.Frame(self.framePrincipal, height=150)
-        frame1.pack(side="top", fill="x")
+        self.frame1 = tk.Frame(self.framePrincipal, height=150)
+        self.frame1.pack(side="top", fill="x")
 
-        tituloF2 = tk.Label(frame1, text="Surtir Insumos", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-        tituloF2.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+        self.tituloF2 = tk.Label(self.frame1, text="Surtir Insumos", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+        self.tituloF2.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
 
             ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-        descripcionF2 = tk.Label(frame1, text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", relief="ridge",wraplength=600)
-        descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
+        self.descripcionF2 = tk.Label(self.frame1, text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", relief="ridge",wraplength=600)
+        self.descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
         
         Main.planificarProduccion(self)
 
@@ -573,11 +573,11 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         criterios = c
         valores = v
 
-        frame2 = tk.Frame(self.framePrincipal, bg="light gray")
-        frame2.pack(anchor="s", fill="x")
+        self.frame2 = tk.Frame(self.framePrincipal, bg="light gray")
+        self.frame2.pack(anchor="s", fill="x")
             
-        field = fieldFrame.FieldFrame(frame2, "Puede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True])
-        field.pack(anchor="s",  expand=True, fill="both", padx=3)
+        self.field = fieldFrame.FieldFrame(frame2, "Puede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True])
+        self.field.pack(anchor="s",  expand=True, fill="both", padx=3)
 
     def prediccion(self, texto):
         frame3 = tk.Frame(self.framePrincipal, bg="light gray")
