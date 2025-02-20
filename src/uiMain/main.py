@@ -471,16 +471,26 @@ class Main:
             listaXSede.append(cantidadAPedir)
             retorno.append(listaXSede)
 
-        startFrame.prediccion(self, texto)
+        startFrame.prediccion(self, texto, retorno)
         return retorno
 
     # Interacción 2 
-    def coordinarBodegas(retorno):
+    def coordinarBodegas(self,retorno):
+        from src.uiMain.startFrame import startFrame
         listaA = []
+        insumoFieldFrame = []
         for sede in retorno:
-            insumosAPedir = [], cantidadAPedir = [], listaSede = [], listaXSede = sede, listaInsumos = listaXSede[0], listaCantidades = listaXSede[1]
+            insumoFieldFrame.clear
+            insumosAPedir = []
+            cantidadAPedir = []
+            listaSede = []
+            listaXSede = sede
+            listaInsumos = listaXSede[0]
+            listaCantidades = listaXSede[1]
+
             for s in Sede.getListaSedes():
                 for i in listaInsumos:
+                    insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
                     productoEnBodega = Sede.verificarProductoBodega(i, s)
                     idxInsumo = listaInsumos.index(i)
                     if productoEnBodega.getEncontrado():
@@ -515,9 +525,14 @@ class Main:
                             cantidadAPedir.append(cantidadNecesaria)
                         else:
                             print("Esa opción no es valida.")
+
+                startFrame.transferir(self, insumoFieldFrame, s)    
+                       
             listaSede.append(insumosAPedir)
             listaSede.append(cantidadAPedir)
             listaA.append(listaSede)
+
+            
         return listaA
 
     # Interacción 3

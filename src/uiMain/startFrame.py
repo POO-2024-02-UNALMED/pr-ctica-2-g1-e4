@@ -222,6 +222,19 @@ class startFrame(tk.Tk):
         fecha=None
         partes = diaI.split()
         numero=-1
+        try:
+            unaExcepcion = False
+            lista = []
+            if not (diaI.isdigit() and mesI.isdigit() and añoI.isdigit()):
+                unaExcepcion = True
+                cadena = f"{diaI},{mesI},{añoI}"
+                lista = cadena.split(",")
+            if unaExcepcion:
+                raise ExcepcionEnteroNoString(lista)
+        except ExcepcionEnteroNoString as pobreLagartija:
+                messagebox.showwarning(title="Alerta", message=pobreLagartija.mensaje_completo)
+                self.after(100, self.Ok)
+                return unaExcepcion
             
         if partes[-1].isdigit():
             numero = int(partes[-1])
@@ -559,7 +572,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.descripcionF2 = tk.Label(self.frame1, text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", relief="ridge",wraplength=600)
         self.descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
         
-        Main.planificarProduccion(self)
+        self.retorno = Main.planificarProduccion(self)
 
     # Interacción 1
     def pesimismo(self, c, v):
@@ -573,7 +586,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.field = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True])
         self.field.pack(anchor="s",  expand=True, fill="both")
 
-    def prediccion(self, texto):
+    def prediccion(self, texto, retorno):
+        self.retorno = retorno
         self.frame3 = tk.Frame(self.framePrincipal, bg="#f0f0f0")
         self.frame3.pack(anchor="s",  expand=True, fill="both",pady=5)
         prediccion = tk.Text(self.frame3, font=("Arial", 10), bg="#f0f0f0", relief="flat")
@@ -591,13 +605,21 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         label3 = tk.Label(self.frame3, text="Según dicha predicción se hará la compra de los insumos")
         label3.place(relx=0.4, rely=0.8, relwidth=1, relheight=0.1, anchor="c")    
         aceptar = tk.Button(self.frame3, text="Aceptar")
-        aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.1, anchor="c")    
+        aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.1, anchor="c")   
+
+        self.listaA = Main.coordinarBodegas(self, self.retorno)
             
 
-
     # Interacción 2
-    
+    def transferir(self, criterios, sede):
+        self.frame2.destroy()
+        self.frame3.destroy()
+            
+        self.frame4 = tk.Frame(self.framePrincipal)
+        self.frame4.pack(anchor="s", expand=True, fill="both")
 
+        self.field2 = fieldFrame.FieldFrame(self.frame4, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C","T/C","T/C","T/C"], [True, True, True, True])
+        self.field.pack(anchor="s",  expand=True, fill="both")
 
 #----------------------------------------------- Sistema Financiero -------------------------------------------------------------------
 
