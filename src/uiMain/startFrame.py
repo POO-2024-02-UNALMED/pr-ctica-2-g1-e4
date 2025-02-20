@@ -91,7 +91,7 @@ class startFrame(tk.Tk):
             return
         self.pagina="financiera"
         self.areaPrincipal.destroy()
-        self.cambiarFrame(SistemaFinanciero(self))
+        self.cambiarFrame(self.SistemaFinanciero())
 
     def iniciarProduccion(self):
         if not self.fechaValida:
