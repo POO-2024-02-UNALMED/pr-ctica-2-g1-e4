@@ -55,12 +55,15 @@ class FieldFrame(Frame):
     
     def aceptar(self):
         try:
+            entradas = self.obtenerTodosLosValores()
+            vacios = []
             hayExcepcion = False
-            if self.callbackAceptar is not None:
-                self.callbackAceptar()
+            for valor in entradas:
+              if valor.strip() == "":
+                vacios.append(valor)
                 hayExcepcion = True
             if hayExcepcion:
-                raise ExcepcionContenidoVacio()
+                raise ExcepcionContenidoVacio(vacios)
         except ExcepcionContenidoVacio as moscorrofio:
             messagebox.showwarning(title="Alerta",message=moscorrofio.mensaje_completo)
             return hayExcepcion
@@ -83,6 +86,9 @@ class FieldFrame(Frame):
                 entry = self.valores[i]
                 break
         return entry.get()
+
+    def obtenerTodosLosValores(self):
+        return [entry.get() for entry in self.valores]
     
     def configurarCallBack(self, criterio, evento, funcion):
         entry = None

@@ -16,6 +16,7 @@ from src.uiMain.fieldFrame import FieldFrame
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.rol import Rol
+import math
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -220,10 +221,13 @@ class startFrame(tk.Tk):
         numero=-1
         try:
             unaExcepcion = False
+            lista = []
             if not (diaI.isdigit() and mesI.isdigit() and añoI.isdigit()):
                 unaExcepcion = True
+                cadena = f"{diaI},{mesI},{añoI}"
+                lista = cadena.split(",")
             if unaExcepcion:
-                raise ExcepcionEnteroNoString(diaI,mesI,añoI)
+                raise ExcepcionEnteroNoString(lista)
         except ExcepcionEnteroNoString as pobreLagartija:
                 messagebox.showwarning(title="Alerta", message=pobreLagartija.mensaje_completo)
                 self.after(100, self.Ok)
@@ -643,31 +647,40 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             framec = tk.Frame(framePrincipal)
             framec.pack(anchor="s", expand=True, fill="both")
             labelCliente= tk.Frame(framec)
-            labelCliente.place(relx=1, rely=0.5, relwidth=1, relheight=1)
+            labelCliente.place(relx=0, rely=0, relwidth=1, relheight=1)
             clientes=Main.imprimirNoEmpleados()
             
             tituloCliente=tk.Label(labelCliente, text="Clientes: ", font=("Arial", 10, "bold"))
-                
+            
             tituloCliente.grid(row=2, column=0)
             contador=0
-            for row, cliente in enumerate(clientes):
-                if contador<=(len(clientes)//3):
+            rowbase=3
+            for cliente in clientes:
+                if contador<=math.ceil(len(clientes)/3):
                     nombre1 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                    nombre1.grid(row=row+3, column=0)
+                    nombre1.grid(row=rowbase, column=0)
+                    if contador==math.ceil(len(clientes)/3):
+                        rowbase=3
+                    else:
+                        rowbase+=1
                     contador+=1
-                if contador<=((len(clientes)//3)*2):
+                
+                elif contador<=((len(clientes)/3)*2) and contador>(len(clientes)/3):
                     nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                    nombre2.grid(row=row+3, column=1)
+                    nombre2.grid(row=rowbase, column=1)
                     contador+=1
+                    if contador==math.ceil((len(clientes)/3)*2):
+                        rowbase=3
+                    else:
+                        rowbase+=1
                 else:
                     nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                    nombre2.grid(row=row+3, column=2)
-            labelCliente.rowconfigure(0, weight=0)
-            labelCliente.rowconfigure(1, weight=4)
-            labelCliente.columnconfigure(0, weight=2)# Empleado insuficiente
-            labelCliente.columnconfigure(1, weight=1)# area
-            labelCliente.columnconfigure(2, weight=1)# rendimiento
-            labelCliente.columnconfigure(3, weight=1)# rendimiento esperado
+                    nombre2.grid(row=rowbase, column=2)
+                    rowbase+=1
+
+            labelCliente.columnconfigure(0, weight=1)
+            labelCliente.columnconfigure(1, weight=1)
+            labelCliente.columnconfigure(2, weight=1)
             return framePrincipal
 
         def Siguiente(event):

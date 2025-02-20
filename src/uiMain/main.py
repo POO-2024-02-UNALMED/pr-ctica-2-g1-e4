@@ -728,11 +728,9 @@ class Main:
     def imprimirNoEmpleados():
         from ..gestorAplicacion.administracion.empleado import Empleado
         noEmpleados = []
-        print("Lista de clientes:")
         for persona in Persona.getListaPersonas():
             if not isinstance(persona, Empleado):
                 noEmpleados.append(persona)
-        index = 0
         return noEmpleados
 
     def realizarVenta(venta):
