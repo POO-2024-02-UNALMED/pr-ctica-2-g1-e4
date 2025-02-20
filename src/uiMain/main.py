@@ -435,9 +435,6 @@ class Main:
         texto = []
 
         for sede in Sede.getListaSedes():
-            listaXSede = []
-            insumoXSede = []
-            cantidadAPedir = []
             #prediccionC = None
             criterios.append(sede)
             valores.append(f"{round(Venta.getPesimismo()*100)}%")
@@ -448,6 +445,9 @@ class Main:
         for sede in Sede.getListaSedes():
             pantalonesPredichos = False
             camisasPredichas = False
+            insumoXSede = []
+            cantidadAPedir = []
+            listaXSede = [insumoXSede, cantidadAPedir]
             for prenda in Sede.getPrendasInventadas(sede):
 
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
@@ -478,8 +478,6 @@ class Main:
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
 
-            listaXSede.append(insumoXSede)
-            listaXSede.append(cantidadAPedir)
             retorno.append(listaXSede)
 
         startFrame.prediccion(self, texto, retorno)
@@ -490,54 +488,54 @@ class Main:
         from src.uiMain.startFrame import startFrame
         listaA = []
         insumoFieldFrame = []
-        for sede in retorno:
-            insumoFieldFrame.clear
+        for indexSede,sede in enumerate(retorno):
+            insumoFieldFrame.clear()
             insumosAPedir = []
             cantidadAPedir = []
-            listaSede = []
-            listaXSede = sede
+            listaSede = [] # generado en este metodo
+            listaXSede = sede # Extraido de retorno
             listaInsumos = listaXSede[0]
             listaCantidades = listaXSede[1]
 
-            for s in Sede.getListaSedes():
-                for i in listaInsumos:
-                    insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
-                    productoEnBodega = Sede.verificarProductoBodega(i, s)
-                    idxInsumo = listaInsumos.index(i)
-                    if productoEnBodega.getEncontrado():
-                        listaCantidades[idxInsumo] = max(listaCantidades[idxInsumo] - Sede.getCantidadInsumosBodega(s)[productoEnBodega.index], 0)
-                    cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
-                    productoEnOtraSede = Sede.verificarProductoOtraSede(i)
-                    if productoEnOtraSede.getEncontrado():
-                        print(f"\nTenemos el insumo {Insumo.getNombre(i)} en nuestra {productoEnOtraSede.sede}.")
-                        print(f"El insumo tiene un costo de {productoEnOtraSede.precio}")
-                        print("\nSeleccione una de las siguientes opciones:")
-                        print(f"1. Deseo transferir el insumo desde la {productoEnOtraSede.sede}")
-                        print("2. Deseo comprar el insumo")
-                        opcion = int(input())
-                        if opcion == 1:
-                            restante = Sede.transferirInsumo(i, s, productoEnOtraSede.sede, cantidadNecesaria)
-                            print(f"\n{i} transferido desde {s} con éxito")
-                            if restante != 0:
-                                insumosAPedir.append(i)
-                                cantidadAPedir.append(restante)
-                                if Empleado.getNombre(i)== "Tela":
-                                    print(f"\nTenemos una cantidad de {restante} cm de tela restantes a pedir")
-                                elif Insumo.getNombre(i) == "Boton":
-                                    print(f"\nTenemos una cantidad de {restante} botones restantes a pedir")
-                                elif Insumo.getNombre(i) == "Cremallera":
-                                    print(f"\nTenemos una cantidad de {restante} cremalleras restantes a pedir")
-                                else:
-                                    print(f"\nTenemos una cantidad de {restante} cm de hilo restantes a pedir")
-                            else:
-                                print("Insumo transferido en su totalidad")
-                        elif opcion == 2:
+            s=Sede.getListaSedes()[indexSede]
+            for i in listaInsumos:
+                insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
+                productoEnBodega = Sede.verificarProductoBodega(i, s)
+                idxInsumo = listaInsumos.index(i)
+                if productoEnBodega.getEncontrado():
+                    listaCantidades[idxInsumo] = max(listaCantidades[idxInsumo] - Sede.getCantidadInsumosBodega(s)[productoEnBodega.index], 0)
+                cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
+                productoEnOtraSede = Sede.verificarProductoOtraSede(i)
+                if productoEnOtraSede.getEncontrado():
+                    print(f"\nTenemos el insumo {Insumo.getNombre(i)} en nuestra {productoEnOtraSede.sede}.")
+                    print(f"El insumo tiene un costo de {productoEnOtraSede.precio}")
+                    print("\nSeleccione una de las siguientes opciones:")
+                    print(f"1. Deseo transferir el insumo desde la {productoEnOtraSede.sede}")
+                    print("2. Deseo comprar el insumo")
+                    opcion = int(input())
+                    if opcion == 1:
+                        restante = Sede.transferirInsumo(i, s, productoEnOtraSede.sede, cantidadNecesaria)
+                        print(f"\n{i} transferido desde {s} con éxito")
+                        if restante != 0:
                             insumosAPedir.append(i)
-                            cantidadAPedir.append(cantidadNecesaria)
+                            cantidadAPedir.append(restante)
+                            if Empleado.getNombre(i)== "Tela":
+                                print(f"\nTenemos una cantidad de {restante} cm de tela restantes a pedir")
+                            elif Insumo.getNombre(i) == "Boton":
+                                print(f"\nTenemos una cantidad de {restante} botones restantes a pedir")
+                            elif Insumo.getNombre(i) == "Cremallera":
+                                print(f"\nTenemos una cantidad de {restante} cremalleras restantes a pedir")
+                            else:
+                                print(f"\nTenemos una cantidad de {restante} cm de hilo restantes a pedir")
                         else:
-                            print("Esa opción no es valida.")
+                            print("Insumo transferido en su totalidad")
+                    elif opcion == 2:
+                        insumosAPedir.append(i)
+                        cantidadAPedir.append(cantidadNecesaria)
+                    else:
+                        print("Esa opción no es valida.")
 
-                startFrame.transferir(self, insumoFieldFrame, s)    
+            startFrame.transferir(self, insumoFieldFrame,s)    
                        
             listaSede.append(insumosAPedir)
             listaSede.append(cantidadAPedir)
