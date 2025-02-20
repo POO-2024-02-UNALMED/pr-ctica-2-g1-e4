@@ -59,9 +59,10 @@ class FieldFrame(Frame):
             vacios = []
             hayExcepcion = False
             for valor in entradas:
-              if valor.strip() == "":
-                vacios.append(valor)
-                hayExcepcion = True
+               for i in range(len(self.valores)):
+                if self.valores[i].get() == "" and valor.strip() == "":
+                    vacios.append(self.valores[i]) 
+                    hayExcepcion = True
             if hayExcepcion:
                 raise ExcepcionContenidoVacio(vacios)
         except ExcepcionContenidoVacio as moscorrofio:
