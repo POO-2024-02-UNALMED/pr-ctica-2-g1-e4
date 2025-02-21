@@ -64,9 +64,7 @@ class Main:
                 sede = venta.getSede()
                 Sede.getHistorialVentas().append(venta)
             elif opcion == 5:
-                maquina = Maquinaria()
-                sedePrueba = Sede() 
-                plan = sedePrueba.planProduccion(maquina.agruparMaquinasDisponibles(Main.fecha), Main.fecha)
+                plan = Sede.planProduccion(Maquinaria.agruparMaquinasDisponibles(Main.fecha), Main.fecha)
                 creadas = Prenda.producirPrendas(plan,Main.fecha)
                 if (creadas):
                     print(Prenda.getCantidadUltimaProduccion()+" Prendas creadas con éxito")
@@ -1016,13 +1014,13 @@ class Main:
     def printsInt2(cls, senall):
         mensajes = {
             1: "Sede Principal disponible\nLa Sede 2 no puede trabajar por falta de maquinaria...",
-            2: "\n Marque una opcion correcta entre 1 o 2...\n",
+            #2: "\n Marque una opcion correcta entre 1 o 2...\n",
             3: "Sede 2 disponible\nLa Sede Principal no puede trabajar por falta de maquinaria...",
             4: "\n Marque una opcion correcta entre 1 o 2...\n",
             5: "La Sede Principal esta sobrecargada, ¿Que desea hacer? \n1. Enviar parte de la produccion a la Sede 2, para producir por partes iguales.\n2. Ejecutar produccion, asumiendo todo el costo por sobrecarga en la Sede Principal.",
-            6: "Coloca una opcion indicada entre 1 o 2...",
+            #6: "Coloca una opcion indicada entre 1 o 2...",
             7: "La Sede 2 esta sobrecargada, ¿Que desea hacer? \n1. Enviar parte de la produccion a la Sede Principal, para producir por partes iguales.\n2. Ejecutar produccion, asumiendo todo el costo por sobrecarga en la Sede 2.",
-            8: "Coloca una opcion indicada entre 1 o 2...",
+            #8: "Coloca una opcion indicada entre 1 o 2...",
             #9: "Las dos sedes estan sobrecargadas, ¿Que quieres hacer?...\n1. Producir mañana las prendas que generan sobrecarga.\n2. Producir todo hoy, asumiendo el costo por sobrecarga.",
             10: "Seleccione una opcion indicada entre 1 o 2...",
             11: "\n Lo sentimos, se debe arreglar la maquinaria en alguna de las dos sedes para comenzar a producir...\n",
@@ -1256,8 +1254,8 @@ class Main:
         # sedeP
         MaquinaDeCoser = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC, sedeP)
         MaquinaDeCorte = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte, sedeP)
-        PlanchaIndustrial = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI, sedeP, 901)
-        BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP)
+        PlanchaIndustrial = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI, sedeP)
+        BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP, 501)
         MaquinaDeTermofijado = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado, sedeP, 1001)
         MaquinaDeTijereado = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado,sedeP)
         Impresora = Maquinaria("Impresora", 800000, 2000, repuestosImp, sedeP)
@@ -1267,8 +1265,8 @@ class Main:
         # sede2
         MaquinaDeCoser2 = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC2, sede2)
         MaquinaDeCorte2 = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte2, sede2)
-        PlanchaIndustrial2 = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI2, sede2)
-        BordadoraIndustrial2 = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI2, sede2, 501)
+        PlanchaIndustrial2 = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI2, sede2, 901)
+        BordadoraIndustrial2 = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI2, sede2)
         MaquinaDeTermofijado2 = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado2, sede2)
         MaquinaDeTijereado2 = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado2,sede2)
         Impresora2 = Maquinaria("Impresora", 800000, 2000, repuestosImp2, sede2)
