@@ -669,7 +669,9 @@ class Main:
             if Empleado.getAreaActual(empleado) == Area.VENTAS:
                 listaEmpleado.append(empleado)
         return listaEmpleado
-    
+# ANCHOR facturacion
+#-----------------------------------------------------------------Facturación-----------------------------------------------------------------------------------
+
     def vender(cliente, sede, encargado, vendedor, productosSeleccionados, cantidadProductos):
         from ..gestorAplicacion.administracion.empleado import Empleado
         from src.gestorAplicacion.bodega.pantalon import Pantalon

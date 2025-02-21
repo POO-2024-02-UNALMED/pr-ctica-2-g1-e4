@@ -27,8 +27,8 @@ class Pantalon(Prenda):
                 totalCantidades += 1
         precioVenta = round(totalPrecios / totalCantidades)
         # Se promedian todos los "precios por los que se deberían vender las prendas para que todas las camisas se vendan al mismo precio"
-        return precioVenta
-
+        return precioVenta 
+    
     # Usa el modista en el atributo de la clase Prenda
     def siguientePaso(self):
         retorno = []
