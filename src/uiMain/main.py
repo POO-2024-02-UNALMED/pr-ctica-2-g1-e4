@@ -375,6 +375,16 @@ class Main:
             if apto.getRol()==cls.rolesAReemplazar[cls.idxRol]:
                 cls.opcionesParaReemplazo.append(apto)
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
+
+    @classmethod
+    def mensajePromedioHumanas(cls):
+        diferenciaSalarios = Persona.diferenciaSalarios()
+        if diferenciaSalarios > 0:
+            return f"Tus empleados estan {diferenciaSalarios:,} sobre el promedio de salarios"
+        elif diferenciaSalarios < 0:
+            return f"Tus empleados estan {-diferenciaSalarios:,} bajo el promedio de salarios"
+        else:
+            return "Tus empleados estan en el promedio de salarios"
     
     #----------------------------------------------Financiera------------------------------------------------------------
         

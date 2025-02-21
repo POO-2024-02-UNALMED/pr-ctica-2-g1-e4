@@ -392,7 +392,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         
         empleadosMalosString += """Los empleados de la derecha no rinden correctamente y no pudieron ser cambiados ni de area ni de sede. .\n"""
 
-        empleadosMalosString += """También puede añadir a otros empleados, para buscar mas empleados, haga click en "Añadir empleado a la lista guía" """
+        empleadosMalosString += """También puede añadir a otros empleados, para buscar mas empleados, haga click en "Añadir empleado a la lista guía" \n"""
+
+        empleadosMalosString+=Main.mensajePromedioHumanas()
 
         self.labelPreConsulta=tk.Label(self.frameCambianteGHumana, text=empleadosMalosString, relief="ridge", font=("Arial", 10))
         self.labelPreConsulta.grid(row=1, column=0, sticky="nswe",columnspan=4)
