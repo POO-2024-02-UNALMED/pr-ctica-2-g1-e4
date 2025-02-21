@@ -308,10 +308,6 @@ class startFrame(tk.Tk):
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
         self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
 
-        self.outputGHumana=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 8),height=2)
-        self.outputGHumana.grid(row=2, column=0, sticky="nswe")
-
-
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
         self.descripcionF1 = tk.Label(self.frameCambianteGHumana, wraplength=700 ,text="""Este área analiza la lista de todos los empleados y permite modificarla:
 Se puede contratar a un nuevo empleado, establecer su salario y el rol o las funciones que cumple en la empresa.
@@ -329,13 +325,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.posiblesDespedidos = infoMalos[0]
         self.procesoListaInicial = infoMalos[1]
-
-        self.outputGHumana.config(state="normal")
-        mensaje=""
-        for i in self.procesoListaInicial:
-            mensaje+=i+"\n"
-        self.outputGHumana.insert("1.0", mensaje)
-        self.outputGHumana.config(state="disabled")
 
         self.empleadosInsuficientes = infoMalos[2]
         self.rendimientoInsufuciencias = infoMalos[3]
@@ -395,7 +384,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.columnconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
-        self.framePrincipal.rowconfigure(2, weight=2)
 
     def pantallaEleccionDespedir(self, limpiarFrame=False):
         if limpiarFrame:
