@@ -67,7 +67,7 @@ class FieldFrame(Frame):
                 raise ExcepcionContenidoVacio(vacios)
         except ExcepcionContenidoVacio as moscorrofio:
             messagebox.showwarning(title="Alerta",message=moscorrofio.mensaje_completo)
-            return hayExcepcion
+            return None
 
     def habilitarEntry(self, criterio, habilitar):
         entry = None
