@@ -73,7 +73,6 @@ class Maquinaria:
         from src.gestorAplicacion.bodega.insumo import Insumo
         from src.uiMain.F5Produccion import receptor, recibeProveedorB, recibeMaqPaRevisar, recibeMaqDisp
         
-        print("ENTRÉ")
         
         maqDisponibles = []
         todosProvBaratos = []

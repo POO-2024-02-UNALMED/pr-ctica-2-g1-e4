@@ -11,6 +11,7 @@ class Prenda(ABC, GastoMensual):
     porcentajeGanancia = 0.40
     cantidadUltimaProduccion = 0
     cantidadTelaUltimaProduccion = 0
+    sobreCostoPorTrabajoExtra=0
 
     def __init__(self, fecha: Fecha, sede: Sede, nombre: str, modista:Empleado, descartada: bool, terminada: bool, insumos: Insumo):
         self.fechaFabricacion = fecha
@@ -152,7 +153,7 @@ class Prenda(ABC, GastoMensual):
     def calcularCostoProduccion(self):
         from src.gestorAplicacion.administracion.rol import Rol
         sumSalarios = sum(empleado.rol.getSalarioInicial() for empleado in self.sede.getListaEmpleados() if empleado.rol == Rol.MODISTA)
-        self.costoProduccion = round(sumSalarios * 0.01)
+        self.costoProduccion = round(sumSalarios * 0.01) + Prenda.sobreCostoPorTrabajoExtra
         return self.costoProduccion
 
     def calcularPrecio(self):
