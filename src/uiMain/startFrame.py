@@ -1079,7 +1079,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
         self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
 
-        self.outputGHumana=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 8),height=2)
+        self.outputGHumana=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2)
         self.outputGHumana.grid(row=3, column=0, sticky="nswe")
         
         self.framePrincipal.columnconfigure(0, weight=1)
@@ -1124,21 +1124,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(1, weight=1)
         self.framePrincipal.rowconfigure(2, weight=10)
         self.framePrincipal.rowconfigure(3, weight=2)
-    
-    def seleccionadorDespedidos(self):
-        valores=[self.cantidadADespedir]
-        criterios=["Cantidad de despedidos"]
-        for i in range(self.cantidadADespedir):
-            criterios.append(f"Nombre del despedido {i+1}")
-            valores.append("")
-        self.seleccionador=FieldFrame(self.frameCambianteGHumana, "Dato", criterios, "valor",valores=valores, ancho_entry=20, tamañoFuente=10,aceptar=True, borrar=True, callbackAceptar=self.despedir)
-        self.seleccionador.configurarCallBack("Cantidad de despedidos", "<Return>", lambda e:self.actualizarCantidadDespedidos())
-        self.seleccionador.grid(row=2, column=0,columnspan=1)
-    
-    def actualizarCantidadDespedidos(self):
-        self.cantidadADespedir=int(self.seleccionador.getValue("Cantidad de despedidos"))
-        self.seleccionador.destroy()
-        self.seleccionadorDespedidos()
     
     def anadirOtraPrenda(self):
         nombresADespedir=self.seleccionador.obtenerTodosLosValores()
@@ -1256,7 +1241,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.cantidadBolsaGrande=0
         self.cantidadBolsaMediana=0
         self.cantidadBolsaPequeña=0
-        self.descripcionF1.config(text="""Se encarga de surtir bolsas de ser necesario.""")
+        self.descripcionF1.config(text="""Se esncarga de Redimir y/o comprar tarjetas de regalo. \nIngrese -1 si no desea redimir ninguna tarjeta y No si no desea cmprar.""")
         self.frameCambianteGHumana.destroy()
         self.outputGHumana.config(state="normal")
         self.outputGHumana.delete("1.0", "end")
@@ -1265,12 +1250,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
         self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
         
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Targeta de regalo" ,["Código","Nueva tarjeta"],"", ["0","Si/No"],[True, True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
-        self.datosDespedido.grid(row=1, column=0, columnspan=2)
-        
-        
-        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
-        self.siguiente.grid(row=2, column=4)        
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Targeta de regalo" ,["Código","Nueva tarjeta","Monto nueva Tarjeta"],"", ["-1","Si/No","100000"],[True, True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer4Facturacion)
+        self.datosDespedido.grid(row=1, column=0, columnspan=2)     
         
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
         self.frameCambianteGHumana.rowconfigure(1, weight=10)
@@ -1278,6 +1259,24 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.columnconfigure(1, weight=2)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
+
+    def leer4Facturacion(self):
+        if self.datosDespedido.getValue("Código")!=None and self.datosDespedido.getValue("Nueva tarjeta")!=None and self.datosDespedido.getValue("Monto nueva Tarjeta")!=None:
+            respuesta="Si"
+            if self.datosDespedido.getValue("Código")=="-1":
+                respuesta="No"
+            codigo=int(self.datosDespedido.getValue("Código"))
+            compraTarjeta=self.datosDespedido.getValue("Nueva tarjeta")
+            valorNuevaTarjeta=int(self.datosDespedido.getValue("Monto nueva Tarjeta"))
+            resultado=Main.tarjetaRegalo(self.venta,codigo,respuesta,compraTarjeta, valorNuevaTarjeta)
+            self.outputGHumana.config(state="normal")
+            self.outputGHumana.delete("1.0", "end")
+            self.outputGHumana.insert("1.0",resultado)
+            self.outputGHumana.config(state="disabled")
+            self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion5Facturacion)
+            self.siguiente.grid(row=2, column=4)   
+        else:
+            tk.messagebox.showwarning("Faltan datos","Por favor llene todos los campos")
    
     def interaccion3Facturacion(self):
         self.cantidadBolsaGrande=0
@@ -1292,7 +1291,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
         self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
         
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Cantidad a Surtir", ["0","0", "0"],[False,False,False],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Cantidad a Surtir", ["0","0", "0"],[False,False,False],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer3Facturacion)
         self.datosDespedido.grid(row=1, column=0, columnspan=2)
         
         
@@ -1306,6 +1305,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
    
+    def leer3Facturacion(self):
+        pass
     def interaccion2Facturacion(self):
         self.cantidadBolsaGrande=0
         self.cantidadBolsaMediana=0
@@ -1318,9 +1319,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Bolsas Necesarias", ["0","0", "0"],[True,True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
         self.datosDespedido.grid(row=1, column=0, columnspan=2)
-        
-        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
-        self.siguiente.grid(row=2, column=2)
         
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
         self.frameCambianteGHumana.rowconfigure(1, weight=10)
@@ -1383,21 +1381,40 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         else:
             self.datosDespedido.habilitarEntry("sede", True)
             self.datosDespedido.habilitarEntry("Vendedor", False)
+            self.datosDespedido.habilitarEntry("Empleado caja", False)            
             tk.messagebox.showwarning("La sede no existe", "Intente otra vez, luego de verificar el nombre de la sede")
     #Este si
     def actualizarDatosAñadirVendedor(self):
-        if self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is None:
-            tk.messagebox.showwarning("El empleado no trabaja aquí", "Intente otra vez, luego de verificar el nombre del empleado")
+        try:
+            excepcion = False
+            if self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is None:
+                excepcion = True
+            if excepcion:
+                raise ExcepcionEmpleadoNoEncontrado()
+        except ExcepcionEmpleadoNoEncontrado as patoLucas:
+            messagebox.showwarning(title = "Alerta", message = patoLucas.mensaje_completo)
+            return excepcion
 
   #Este si
     def actualizarDatosAñadirCaja(self):
-        if self.sede.getEmpleado(self.datosDespedido.getValue("Empleado Caja")) is None:
-            tk.messagebox.showwarning("El empleado no trabaja aquí", "Intente otra vez, luego de verificar el nombre del empleado")
+        try:
+            excepcion = False
+            if self.sede.getEmpleado(self.datosDespedido.getValue("Empleado Caja")) is None:
+                excepcion = True
+            if excepcion:
+                raise ExcepcionEmpleadoNoEncontrado()
+        except ExcepcionEmpleadoNoEncontrado as sabandija:
+            messagebox.showwarning(title = "Alerta", message = sabandija.mensaje_completo)
+            return excepcion
 
     #Este si
     def leer1Facturacion(self):
-        #Acá va lo de la excepcion
-        excepcion=False
+        excepcion=True
+        try:
+          if excepcion:
+               raise ExcepcionAgregarOtraPrenda()
+        except ExcepcionAgregarOtraPrenda as e:
+            excepcion = messagebox.askyesno(title = "Confirmación", message= e.mensaje_completo)           
         cliente=None
         for persona in Persona.getListaPersonas():
             if persona.getNombre() == self.datosDespedido.getValue("Cliente"):
@@ -1413,6 +1430,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     break
                 elif (prenda == None):
                     continue
+        if self.datosDespedido.getValue("Prenda").lower() != "camisa" and self.datosDespedido.getValue("Prenda").lower() != "pantalon":
+            try: 
+                hayExcepcion = True
+                if hayExcepcion:
+                    raise ExcepcionPrendaNoExistente(self.datosDespedido.getValue("Prenda"))
+            except ExcepcionPrendaNoExistente as b:
+                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
+                return hayExcepcion
             if prenda not in self.listaPrendas:
                 self.listaPrendas.append(prenda)
                 self.cantidadPrendas.append(int(self.datosDespedido.getValue("Cantidad")))
@@ -1436,7 +1461,16 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def leer2Facturacion(self):
         self.cantidadBolsaGrande=int(self.datosDespedido.getValue("Grande"))
         +int(self.datosDespedido.getValue("Mediana"))+int(self.datosDespedido.getValue("Pequeña"))
+        revisionBolsa= self.verificarCantidadBolsa()
+        self.outputGHumana.config(state="normal")
+        self.outputGHumana.delete("1.0", "end")
+        self.outputGHumana.insert("1.0", revisionBolsa, "center")
+        self.outputGHumana.config(state="disabled")
+        if revisionBolsa=="Se tienen suficientes bolsas para empacar todos los artículos":
+            self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion4Facturacion)
+            self.siguiente.grid(row=4, column=3)
 
+            
 
     def revisarBolsasDisponibles(self):
         bp, bm, bg = Main.verificarBolsas(self.venta)
@@ -1448,15 +1482,18 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.datosDespedido.habilitarEntry("Pequeña", False)
 
     def verificarCantidadBolsa(self):
-        print("Verificando cantidad de bolsas")
         BolsasFaltantes=Main.cantidadActualBolsas(self.venta, self.cantidadBolsaGrande, self.cantidadBolsaMediana, self.cantidadBolsaPequeña)
         self.outputGHumana.config(state="normal")
         self.outputGHumana.delete("1.0", "end")
-        if BolsasFaltantes>=0:
-            self.outputGHumana.insert("1.0",f"Se necesitan {BolsasFaltantes} bolsas más para empacar todos los artículos")
+        if BolsasFaltantes>0:
+            bolasNecesarias=f"Se necesitan {BolsasFaltantes} bolsas más para empacar todos los artículos"
         else:
-            self.outputGHumana.insert("1.0","Se tienen suficientes bolsas para empacar todos los artículos")
+            bolasNecesarias="Se tienen suficientes bolsas para empacar todos los artículos"
+            self.datosDespedido.habilitarEntry("Grande", False)
+            self.datosDespedido.habilitarEntry("Mediana", False)
+            self.datosDespedido.habilitarEntry("Pequeña", False)
         self.outputGHumana.config(state="disabled")   
+        return bolasNecesarias
             
 def pasarAVentanaPrincipal():
     ventana = startFrame()
