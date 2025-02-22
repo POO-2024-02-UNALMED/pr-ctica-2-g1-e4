@@ -688,13 +688,15 @@ class Main:
             Main.manejarFaltantes(sede, cantidadPrenda, cantidadDisponible, prendaSeleccionada.getNombre(), costosEnvio)
             if 0 < cantidadPrenda < len(Sede.getPrendasInventadasTotal()):
                 eliminadas = 0
-                for i in range(len(Sede.getPrendasInventadasTotal())):
+                idxPrenda=0
+                while idxPrenda<len(Sede.getPrendasInventadasTotal()):
                     if eliminadas >= cantidadPrenda:
                         break
-                    if Sede.getPrendasInventadasTotal()[i] == prendaSeleccionada:
-                        eliminada = Sede.getPrendasInventadasTotal().pop(i)
+                    if Sede.getPrendasInventadasTotal()[idxPrenda] == prendaSeleccionada:
+                        eliminada = Sede.getPrendasInventadasTotal().pop(idxPrenda)
                         eliminadas += 1
                         i -= 1
+                    idxPrenda += 1
         sumaPreciosPrendas = 0
         cantidadCamisas = 0
         cantidadPantalon = 0
@@ -739,26 +741,19 @@ class Main:
         sede = Venta.getSede(venta)
         totalPrendas = len(productosSeleccionados)
         insumosBodega = Sede.getListaInsumosBodega(sede)
-        capacidadTotal = 0
         i=1
-        #while capacidadTotal < totalPrendas:
-        if i==1:
-            bp, bm, bg = False, False, False
-            for i in range(len(insumosBodega)):
-                bolsa = insumosBodega[i]
-                if isinstance(bolsa, Bolsa):
-                    capacidad = bolsa.getCapacidadMaxima()
-                    cantidad = Sede.getCantidadInsumosBodega(sede)[i]
-                    if capacidad == 1 and cantidad > 0:
-                        bp = True
-                        capacidadTotal += 1
-                    if capacidad == 3 and cantidad > 0:
-                        bm = True
-                        capacidadTotal += 1
-                    if capacidad == 8 and cantidad > 0:
-                        bg = True
-                        capacidadTotal += 1
-            i+=1
+        bp, bm, bg = False, False, False
+        for i in range(len(insumosBodega)):
+            bolsa = insumosBodega[i]
+            if isinstance(bolsa, Bolsa):
+                capacidad = bolsa.getCapacidadMaxima()
+                cantidad = Sede.getCantidadInsumosBodega(sede)[i]
+                if capacidad == 1 and cantidad > 0:
+                    bp = True
+                if capacidad == 3 and cantidad > 0:
+                    bm = True
+                if capacidad == 8 and cantidad > 0:
+                    bg = True
         return bp, bm, bg
         
 

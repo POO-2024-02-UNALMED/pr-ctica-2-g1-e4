@@ -7,7 +7,7 @@ class Insumo(GastoMensual):
         self.nombre = nombre
         self.proveedor = proveedor
         self.sede = sede
-        if cantidad is not None and proveedor is not None and sede is not None:
+        if (cantidad is not None) and (proveedor is not None) and (sede is not None):
             self.precioCompra = proveedor.getPrecio() * round(cantidad)
             self.precioXUnidad = round(self.precioCompra / cantidad)
             self.ultimoPrecio = self.precioXUnidad

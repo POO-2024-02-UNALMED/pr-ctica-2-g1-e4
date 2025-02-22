@@ -1428,6 +1428,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.outputGHumana.delete("1.0", "end")
                 self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
                 self.outputGHumana.config(state="disabled")
+        else:
+            print("datos invalidos")
 
     def leer2Facturacion(self):
         self.cantidadBolsaGrande=int(self.datosDespedido.getValue("Grande"))
