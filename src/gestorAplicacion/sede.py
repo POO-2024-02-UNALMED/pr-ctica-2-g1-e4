@@ -243,6 +243,8 @@ class Sede:
 
     def __str__(self):
         return self.nombre
+    def __repr__(self):
+        return self.__str__()
 
     # Usado para eliminar un Insumo limpiamente
     @classmethod
