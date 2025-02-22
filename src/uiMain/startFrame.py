@@ -645,6 +645,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.1, anchor="c")   
 
     def pasarAInteraccion2(self):
+        Main.prepararCoordinacionBodegas()
         self.listaA = Main.coordinarBodegas(self, self.retorno)
             
     # Interacción 2
@@ -658,89 +659,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.field2 = fieldFrame.FieldFrame(self.self.fidelidadclientes, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
         self.field2.pack(anchor="s",  expand=True, fill="both")
 
-
-
-#region facturacion
-#--------------------------------------------------------------------------- Facturación ------------------------------------------------------------------------------------------------
-
-    def Facturar(self):
-        from src.gestorAplicacion.administracion.area import Area
-        from src.gestorAplicacion.administracion.empleado import Empleado
-        from src.gestorAplicacion.persona import Persona
-        from src.gestorAplicacion.sede import Sede
-        from src.uiMain.fieldFrame import FieldFrame
-        from src.uiMain.main import Main
-        
-        def Interaccion1(self):
-            framePrincipal =  tk.Frame(self)
-            framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
-
-            frame1 = tk.Frame(framePrincipal, height=150)
-            frame1.pack(side="top", fill="x")
-
-            tituloF4 = tk.Label(frame1, text="Facturación", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-            tituloF4.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
-
-            descripcionF4 = tk.Label(frame1, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial",10), wraplength=800)
-            descripcionF4.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
-
-            frameGeneral= tk.Frame(framePrincipal)
-            frameGeneral.pack(expand=True, fill="both")
-
-            frame2 = tk.Frame(frameGeneral)
-            frame2.place(relx=0, rely=0, relwidth=1, relheight=0.6)
-
-            criterios = ["Cliente","Sede","Tipo de Prenda", "Cantidad Prenda"]
-            valores = ["","Sede Principal","camisa/pantalon","0"]
-            habilitado = [True, True,True,True]
-            # Creamos el FieldFrame con los botones
-            field_frame = FieldFrame(frame2, "Detalles Venta", criterios, "Campos", valores, habilitado, ancho_entry=20, crecer=False, tamañoFuente=12, aceptar=True,borrar=True, callbackAceptar=None)
-            field_frame.place(relx=1, rely=0.1, relwidth=1, relheight=1, anchor="e")
-
-            framec = tk.Frame(frameGeneral)
-            framec.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
-            labelCliente= tk.Frame(framec)
-            labelCliente.place(relx=0, rely=0, relwidth=1, relheight=1)
-            clientes=Main.imprimirNoEmpleados()
-            
-            tituloCliente=tk.Label(labelCliente, text="Clientes: ", font=("Arial", 12, "bold"), anchor="center")
-            
-            tituloCliente.grid(row=2, column=0, columnspan=3)
-            contador=1
-            rowbase=3
-            for cliente in clientes:
-                if contador<=(len(clientes)/3):
-                    nombre1 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                    nombre1.grid(row=rowbase, column=0)
-                    if contador==(len(clientes)/3):
-                        rowbase=3
-                    else:
-                        rowbase+=1
-                    contador+=1
-                
-                elif contador<=((len(clientes)/3)*2) and contador>(len(clientes)/3):
-                    nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                    nombre2.grid(row=rowbase, column=1)
-                    if contador==((len(clientes)/3)*2):
-                        rowbase=3
-                    else:
-                        rowbase+=1
-                    contador+=1
-                else:
-                    nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                    nombre2.grid(row=rowbase, column=2)
-                    rowbase+=1
-
-            labelCliente.columnconfigure(0, weight=1)
-            labelCliente.columnconfigure(1, weight=1)
-            labelCliente.columnconfigure(2, weight=1)
-            return framePrincipal
-
-        def Siguiente(event):
-            pass
-        
-        
-        return Interaccion1(self)
+#endregion
 
 
 #---------------------------------------------------------------------- Producción ----------------------------------------------------------------------------------------------------
@@ -1055,6 +974,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             texto.config(state="disabled")
             return framePrincipal
     
+    #region facturacion
 #--------------------------------------------------------- Facturación ----------------------------------------------------------------------------------------------------------------------------------
     
     def Facturar(self):
@@ -1488,7 +1408,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
     def leer2Facturacion(self):
         self.cantidadBolsaGrande=int(self.datosDespedido.getValue("Grande"))
-        +int(self.datosDespedido.getValue("Mediana"))+int(self.datosDespedido.getValue("Pequeña"))
+        self.cantidadBolsaMediana=int(self.datosDespedido.getValue("Mediana"))
+        self.cantidadBolsaPequeña=int(self.datosDespedido.getValue("Pequeña"))
         revisionBolsa= self.verificarCantidadBolsa()
         self.outputGHumana.config(state="normal")
         self.outputGHumana.delete("1.0", "end")

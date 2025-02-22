@@ -1,3 +1,4 @@
+#region imports
 import math
 import random
 from src.gestorAplicacion.administracion.banco import Banco
@@ -16,6 +17,7 @@ from src.gestorAplicacion.administracion.empleado import Empleado
 from src.baseDatos.serializador import serializar
 from src.baseDatos.deserializador import deserializar
 import threading
+#endregion
 
 class Main:
     fecha:Fecha=None
@@ -291,8 +293,11 @@ class Main:
 #region insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
+    planProduccion = []# Modificado por planificarProduccion
+
     # Interacción 1 
-    def planificarProduccion(self):
+    @classmethod
+    def planificarProduccion(cls):
         from src.uiMain.startFrame import startFrame
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
@@ -353,6 +358,13 @@ class Main:
         return Main.retorno
 
     coordinacionBodegas = []
+    indexSede=0
+
+    @classmethod
+    def prepararCoordinacionBodegas(cls):
+        cls.indexSede=0
+        cls.coordinacionBodegas.append(cls.coordinarBodega())
+        
 
     # Interacción 2 
     def coordinarBodegas(self, retorno):
@@ -360,61 +372,60 @@ class Main:
         insumoFieldFrame = []
         habilitado = []
         
-        for indexSede,sede in enumerate(retorno):
-            insumoFieldFrame.clear()
-            insumosAPedir = []
-            cantidadAPedir = []
-            listaSede = [] # generado en este metodo
-            listaXSede = sede # Extraido de retorno
-            listaInsumos = listaXSede[0]
-            listaCantidades = listaXSede[1]
+        insumoFieldFrame.clear()
+        insumosAPedir = []
+        cantidadAPedir = []
+        listaSede = [] # generado en este metodo
+        listaXSede = sede # Extraido de retorno
+        listaInsumos = listaXSede[0]
+        listaCantidades = listaXSede[1]
 
-            s=Sede.getListaSedes()[indexSede]
+        s=Sede.getListaSedes()[indexSede]
 
-            for i in listaInsumos:
-                insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
-                productoEnBodega = Sede.verificarProductoBodega(i, s)
-                idxInsumo = listaInsumos.index(i)
-                if productoEnBodega[0]:
-                    listaCantidades[idxInsumo] = max(listaCantidades[idxInsumo] - Sede.getCantidadInsumosBodega(s)[productoEnBodega.index], 0)
-                cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
-                productoEnOtraSede = Sede.verificarProductoOtraSede(i)
+        for i in listaInsumos:
+            insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
+            productoEnBodega = Sede.verificarProductoBodega(i, s)
+            idxInsumo = listaInsumos.index(i)
+            if productoEnBodega[0]:
+                listaCantidades[idxInsumo] = max(listaCantidades[idxInsumo] - Sede.getCantidadInsumosBodega(s)[productoEnBodega.index], 0)
+            cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
+            productoEnOtraSede = Sede.verificarProductoOtraSede(i)
 
-                if productoEnOtraSede[0]:
-                    habilitado.append(True)
-                    print(f"\nTenemos el insumo {Insumo.getNombre(i)} en nuestra {productoEnOtraSede[2]}.")
-                    print(f"El insumo tiene un costo de {productoEnOtraSede[3]}")
-                    print("\nSeleccione una de las siguientes opciones:")
-                    print(f"1. Deseo transferir el insumo desde la {productoEnOtraSede[2]}")
-                    print("2. Deseo comprar el insumo")
-                    opcion = int(input())
-                    if opcion == 1:
-                        restante = Sede.transferirInsumo(i, s, productoEnOtraSede[2], cantidadNecesaria)
-                        print(f"\n{i} transferido desde {s} con éxito")
-                        if restante != 0:
-                            insumosAPedir.append(i)
-                            cantidadAPedir.append(restante)
-                            if Empleado.getNombre(i)== "Tela":
-                                print(f"\nTenemos una cantidad de {restante} cm de tela restantes a pedir")
-                            elif Insumo.getNombre(i) == "Boton":
-                                print(f"\nTenemos una cantidad de {restante} botones restantes a pedir")
-                            elif Insumo.getNombre(i) == "Cremallera":
-                                print(f"\nTenemos una cantidad de {restante} cremalleras restantes a pedir")
-                            else:
-                                print(f"\nTenemos una cantidad de {restante} cm de hilo restantes a pedir")
-                        else:
-                            print("Insumo transferido en su totalidad")
-                    elif opcion == 2:
+            if productoEnOtraSede[0]:
+                habilitado.append(True)
+                print(f"\nTenemos el insumo {Insumo.getNombre(i)} en nuestra {productoEnOtraSede[2]}.")
+                print(f"El insumo tiene un costo de {productoEnOtraSede[3]}")
+                print("\nSeleccione una de las siguientes opciones:")
+                print(f"1. Deseo transferir el insumo desde la {productoEnOtraSede[2]}")
+                print("2. Deseo comprar el insumo")
+                opcion = int(input())
+                if opcion == 1:
+                    restante = Sede.transferirInsumo(i, s, productoEnOtraSede[2], cantidadNecesaria)
+                    print(f"\n{i} transferido desde {s} con éxito")
+                    if restante != 0:
                         insumosAPedir.append(i)
-                        cantidadAPedir.append(cantidadNecesaria)
+                        cantidadAPedir.append(restante)
+                        if Empleado.getNombre(i)== "Tela":
+                            print(f"\nTenemos una cantidad de {restante} cm de tela restantes a pedir")
+                        elif Insumo.getNombre(i) == "Boton":
+                            print(f"\nTenemos una cantidad de {restante} botones restantes a pedir")
+                        elif Insumo.getNombre(i) == "Cremallera":
+                            print(f"\nTenemos una cantidad de {restante} cremalleras restantes a pedir")
+                        else:
+                            print(f"\nTenemos una cantidad de {restante} cm de hilo restantes a pedir")
                     else:
-                        print("Esa opción no es valida.")
-
+                        print("Insumo transferido en su totalidad")
+                elif opcion == 2:
+                    insumosAPedir.append(i)
+                    cantidadAPedir.append(cantidadNecesaria)
                 else:
-                    habilitado.append(False)
+                    print("Esa opción no es valida.")
 
-     
-                startFrame.transferir(self, insumoFieldFrame, habilitado, s)    
+            else:
+                habilitado.append(False)
+
+    
+            startFrame.transferir(self, insumoFieldFrame, habilitado, s)    
                       
         listaSede.append(insumosAPedir)
         listaSede.append(cantidadAPedir)
@@ -630,7 +641,7 @@ class Main:
         sede = venta.getSede()
         totalPrendas = len(productosSeleccionados)
         insumosBodega = sede.getListaInsumosBodega()
-        cantidadInsumosBodega = sede.getCantidadInsumosBodega()
+        tamañoListaInsumos = sede.getCantidadInsumosBodega()
         bolsasSeleccionadas = []
         capacidadTotal = 0
         bolsasAPedir=cantidadBolsaGrande+cantidadBolsaMediana+cantidadBolsaPequeña
@@ -647,22 +658,21 @@ class Main:
                 capacidadBolsa = 1
                 cantidadBolsaPequeña -= 1
 
-            bolsaEncontrada = False
             cantidadDisponible = 0
             capacidadTotal += capacidadBolsa
-            for i in range(len(Sede.getListaInsumosBodega(sede))):
-                insumo = Sede.getListaInsumosBodega(sede)[i]
-                if isinstance(insumo, Bolsa) and insumo.getCapacidadMaxima() == capacidadBolsa:
-                    cantidadDisponible += cantidadInsumosBodega[i]
-                    if cantidadDisponible > 0:
-                        bolsasSeleccionadas.append(insumo)
-                        cantidadInsumosBodega[i] -= 1
-                        bolsaEncontrada = True
-                        break
-                totalPrendas -= cantidadDisponible
-                if capacidadTotal >= totalPrendas:
-                    break   
-        debeBolsas=totalPrendas-len(bolsasSeleccionadas)
+            tamañoListaInsumos=len(sede.getListaInsumosBodega())
+            for i in range(tamañoListaInsumos):
+                insumo = sede.getListaInsumosBodega()[i]
+                if isinstance(insumo, Bolsa):
+                    print("Bolsa encontrada!")
+                    if insumo.getCapacidadMaxima() == capacidadBolsa:
+                        cantidadInsumosBodega=sede.getCantidadInsumosBodega()
+                        cantidadDisponible += cantidadInsumosBodega[i]
+                        if cantidadDisponible > 0:
+                            cantidadInsumosBodega[i] -= 1
+                            break
+    
+        debeBolsas=max(totalPrendas-capacidadTotal,0)
         venta.getBolsas().append(bolsasSeleccionadas)
         totalVenta = venta.getMontoPagado() + len(bolsasSeleccionadas) * 2000
         venta.setMontoPagado(totalVenta)
