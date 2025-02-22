@@ -1484,12 +1484,16 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
     def revisarBolsasDisponibles(self):
         bp, bm, bg = Main.verificarBolsas(self.venta)
-        if not bg:
-            self.datosDespedido.habilitarEntry("Grande", False)
-        if not bm:
-            self.datosDespedido.habilitarEntry("Mediana", False)
-        if not bp:
-            self.datosDespedido.habilitarEntry("Pequeña", False)
+        if bg>0:
+            self.datosDespedido.habilitarEntry("Grande", True)
+        if bm>0:
+            self.datosDespedido.habilitarEntry("Mediana", True)
+        if bp>0:
+            self.datosDespedido.habilitarEntry("Pequeña", True)
+        self.outputGHumana.config(state="normal")
+        self.outputGHumana.delete("1.0", "end")
+        self.outputGHumana.insert("1.0", f"Hay máximo {bg} bolsas grandes, {bm} bolsas medianas y {bp} bolsas pequeñas,", "center")     
+        self.outputGHumana.config(state="disabled")
 
     def verificarCantidadBolsa(self):
         BolsasFaltantes=Main.cantidadActualBolsas(self.venta, self.cantidadBolsaGrande, self.cantidadBolsaMediana, self.cantidadBolsaPequeña)

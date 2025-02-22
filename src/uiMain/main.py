@@ -608,18 +608,18 @@ class Main:
         totalPrendas = len(productosSeleccionados)
         insumosBodega = sede.getListaInsumosBodega()
         i=1
-        bp, bm, bg = False, False, False
+        bp, bm, bg = 0,0,0
         for i in range(len(insumosBodega)):
             bolsa = insumosBodega[i]
             if isinstance(bolsa, Bolsa):
                 capacidad = bolsa.getCapacidadMaxima()
                 cantidad = sede.getCantidadInsumosBodega()[i]
                 if capacidad == 1 and cantidad > 0:
-                    bp = True
+                    bp += cantidad
                 if capacidad == 3 and cantidad > 0:
-                    bm = True
+                    bm += cantidad
                 if capacidad == 8 and cantidad > 0:
-                    bg = True
+                    bg += cantidad
         return bp, bm, bg
         
 
@@ -1255,20 +1255,20 @@ class Main:
         tm.actualizarDeuda(Deuda(Fecha(30, 9, 22), 150_000_000, "Inversiones Terramoda", "Banco", 18))
         tm.actualizarDeuda(Deuda(Fecha(20, 2, 23), 800_000, "Inversiones Terramoda", "Banco", 18))
 
-        i1 = Insumo("Tela", p5, 1 * 20, sedeP)
-        i2 = Insumo("Tela", p5, 1 * 20,  sede2)
-        i3 = Insumo("Boton", p3, 4 * 20, sedeP)
-        i4 = Insumo("Boton", p3, 4 * 20, sede2)
-        i5 = Insumo("Cremallera", p4, 1 * 20, sedeP)
-        i6 = Insumo("Cremallera", p4, 1 * 20, sede2)
-        i7 = Insumo("Hilo", p2, 100 * 20, sedeP)
-        i8 = Insumo("Hilo", p2, 100 * 20, sede2)
-        i9 = Bolsa("Bolsa", p10, 1 * 20, sedeP, 8)
-        i10 = Bolsa("Bolsa", p10, 1 * 20, sede2, 8)
-        i11 = Bolsa("Bolsa", p10, 1 * 20, sedeP, 3)
-        i12 = Bolsa("Bolsa", p10, 1 * 20, sede2, 3)
-        i13 = Bolsa("Bolsa", p10, 1 * 20, sedeP, 1)
-        i14 = Bolsa("Bolsa", p10, 1 * 20, sede2, 1)
+        i1 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20, sede= sedeP)
+        i2 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20,  sede=sede2)
+        i3 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20, sede=sedeP)
+        i4 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20, sede=sede2)
+        i5 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20, sede=sedeP)
+        i6 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20, sede=sede2)
+        i7 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20, sede=sedeP)
+        i8 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20, sede=sede2)
+        i9 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sedeP, capacidadMaxima=8)
+        i10 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sede2, capacidadMaxima=8)
+        i11 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sedeP, capacidadMaxima=3)
+        i12 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sede2, capacidadMaxima=3)
+        i13 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sedeP, capacidadMaxima=1)
+        i14 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sede2, capacidadMaxima=1)
 
         betty = Empleado(Area.DIRECCION, Fecha(1, 1, 23), sedeP, "Beatriz Pinzón", 4269292,Rol.PRESIDENTE, 10, Membresia.NULA, Computador)
         Armando = Empleado(Area.DIRECCION, Fecha(30, 11, 20), sedeP, "Armando Mendoza", 19121311,Rol.PRESIDENTE, 15, Membresia.PLATA, Computador.copiar())
