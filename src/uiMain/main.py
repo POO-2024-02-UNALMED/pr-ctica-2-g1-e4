@@ -92,7 +92,7 @@ class Main:
 
 
 
-    
+    # ANCHOR gestión humana
     #------------------------------------------- Gestión Humana --------------------------------------------------------------------
 
 
@@ -110,9 +110,9 @@ class Main:
 
         diferenciaSalarios = Persona.diferenciaSalarios()
         if diferenciaSalarios > 0:
-            print(f"Tus empleados estan {diferenciaSalarios:,} sobre el promedio de salarios")
+            print(f"Tus empleados estan {round(diferenciaSalarios)} sobre el promedio de salarios")
         elif diferenciaSalarios < 0:
-            print(f"Tus empleados estan {diferenciaSalarios:,} bajo el promedio de salarios")
+            print(f"Tus empleados estan {round(diferenciaSalarios)} bajo el promedio de salarios")
         else:
             print("Tus empleados estan en el promedio de salarios")
 
