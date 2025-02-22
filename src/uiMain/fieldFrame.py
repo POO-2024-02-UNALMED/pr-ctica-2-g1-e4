@@ -55,20 +55,24 @@ class FieldFrame(Frame):
     
     def aceptar(self):
         try:
-            entradas = self.obtenerTodosLosValores()
-            vacios = []
+            entradas = self.obtenerTodosLosValores()  
+            vacios = [] 
+            nombresCamposVacíos = []  
             hayExcepcion = False
-            for valor in entradas:
-               for i in range(len(self.valores)):
-                if self.valores[i].get() == "" and valor.strip() == "":
-                    vacios.append(self.valores[i]) 
-                    hayExcepcion = True
-            if hayExcepcion:
-                raise ExcepcionContenidoVacio(vacios)
-        except ExcepcionContenidoVacio as moscorrofio:
-            messagebox.showwarning(title="Alerta",message=moscorrofio.mensaje_completo)
-            return None
 
+            for i, valor in enumerate(entradas):
+                if valor.strip() == "":  
+                    vacios.append(self.valores[i])  
+                    nombresCamposVacíos.append(self.citerios[i])  
+                    hayExcepcion = True
+
+            if hayExcepcion:
+                raise ExcepcionContenidoVacio(nombresCamposVacíos) 
+
+        except ExcepcionContenidoVacio as cabezaHueca:
+            messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+            return hayExcepcion
+    
     def habilitarEntry(self, criterio, habilitar):
         entry = None
         for i, c in enumerate(self.citerios):
