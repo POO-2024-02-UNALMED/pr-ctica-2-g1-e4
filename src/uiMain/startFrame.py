@@ -1407,46 +1407,50 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         for persona in Persona.getListaPersonas():
             if persona.getNombre() == self.datosDespedido.getValue("Cliente"):
                 cliente=persona
-        if (cliente is not None) and (self.sede is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja")) is not None) and ((self.datosDespedido.getValue("Prenda").lower()=="camisa") or (self.datosDespedido.getValue("Prenda").lower()=="pantalon")) :
+        if (cliente is not None) and (self.sede is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja")) is not None) :
             self.cliente=cliente
             self.vendedor=self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor"))
             self.caja=self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja"))
             prenda=None
-            for prendai in Sede.getPrendasInventadasTotal():
-                if (prendai.getNombre().lower()==self.datosDespedido.getValue("Prenda").lower()):
-                    prenda = prendai
-                    break
-                elif (prenda == None):
-                    continue
-        if self.datosDespedido.getValue("Prenda").lower() != "camisa" and self.datosDespedido.getValue("Prenda").lower() != "pantalon":
+            
             try: 
-                hayExcepcion = True
-                if hayExcepcion:
+                if not (self.datosDespedido.getValue("Prenda").lower() == "camisa" or self.datosDespedido.getValue("Prenda").lower() == "pantalon"):
                     raise ExcepcionPrendaNoExistente(self.datosDespedido.getValue("Prenda"))
             except ExcepcionPrendaNoExistente as b:
-                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
-                return hayExcepcion
-            if prenda not in self.listaPrendas:
-                self.listaPrendas.append(prenda)
-                self.cantidadPrendas.append(int(self.datosDespedido.getValue("Cantidad")))
+                    messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
+                    self.interaccion1Facturacion()
             else:
-                self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosDespedido.getValue("Cantidad"))
-            if excepcion:
-                #self.pantallaBaseFacturacion(True)
-                self.datosDespedido.habilitarEntry("Cliente", False)
-                self.datosDespedido.habilitarEntry("sede", False)
-                self.datosDespedido.habilitarEntry("Vendedor", False)
-                self.datosDespedido.habilitarEntry("Empleado caja", False)
-            else: 
-                self.venta=Main.vender(self.cliente,self.sede,self.vendedor,self.caja,self.listaPrendas,self.cantidadPrendas)
-                self.outputGHumana.config(state="normal")
-                self.outputGHumana.delete("1.0", "end")
-                self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
-                self.outputGHumana.config(state="disabled")
-                self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
-                self.siguiente.grid(row=2, column=2)
+                for prendai in Sede.getPrendasInventadasTotal():
+                    if (prendai.getNombre().lower()==self.datosDespedido.getValue("Prenda").lower()):
+                        prenda = prendai
+                        break
+                    elif (prenda == None):
+                        continue
+                    
+                if prenda not in self.listaPrendas:
+                    self.listaPrendas.append(prenda)
+                    self.cantidadPrendas.append(int(self.datosDespedido.getValue("Cantidad")))
+                else:
+                    self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosDespedido.getValue("Cantidad"))
+                if excepcion:
+                    #self.pantallaBaseFacturacion(True)
+                    self.datosDespedido.habilitarEntry("Cliente", False)
+                    self.datosDespedido.habilitarEntry("sede", False)
+                    self.datosDespedido.habilitarEntry("Vendedor", False)
+                    self.datosDespedido.habilitarEntry("Empleado caja", False)
+                else: 
+                    self.venta=Main.vender(self.cliente,self.sede,self.vendedor,self.caja,self.listaPrendas,self.cantidadPrendas)
+                    self.outputGHumana.config(state="normal")
+                    self.outputGHumana.delete("1.0", "end")
+                    self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
+                    self.outputGHumana.config(state="disabled")
+                    self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+                    self.siguiente.grid(row=2, column=2)
         else:
-            print("datos invalidos")
+            self.outputGHumana.config(state="normal")
+            self.outputGHumana.delete("1.0", "end")
+            self.outputGHumana.insert("1.0", "Datos inválidos", "center")
+            self.outputGHumana.config(state="disabled")
 
     def leer2Facturacion(self):
         self.cantidadBolsaGrande=int(self.datosDespedido.getValue("Grande"))
