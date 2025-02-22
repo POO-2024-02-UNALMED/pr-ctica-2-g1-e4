@@ -72,6 +72,8 @@ class startFrame(tk.Tk):
         self.areaPrincipal.destroy()
         self.pagina="gestionHumana"
         self.cambiarFrame(self.crearGestionHumana())
+    # LINK src/uiMain/fieldFrame.py
+    # ANCHOR eliminar f2
 
     def eliminarF2(self):
         if not self.fechaValida:
@@ -611,7 +613,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame2 = tk.Frame(self.framePrincipal, bg="light gray")
         self.frame2.pack(anchor="s", fill="x")
             
-        self.field = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes...", criterios, "", valores, [True, True], 20, False, 10, True, False, lambda : self.prediccion(Main.texto, Main.retorno))
+        self.field = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes", criterios, "El porcentaje de pesimismo es de", valores, [True, True], 20, False, 10, True, False, lambda : self.prediccion(Main.texto, Main.retorno))
         self.field.pack(anchor="s",  expand=True, fill="both")
 
 
