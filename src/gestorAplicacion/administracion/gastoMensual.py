@@ -1,7 +1,7 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 
-class GastoMensual:
+class GastoMensual(ABC):
     
     @abstractmethod
     def calcularGastoMensual(self):
