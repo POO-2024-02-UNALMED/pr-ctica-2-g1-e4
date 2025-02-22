@@ -7,7 +7,7 @@ from src.gestorAplicacion.bodega.pantalon import Pantalon
 from src.gestorAplicacion.bodega.camisa import Camisa
 
 class Deuda:
-    listaDeudas: List['Deuda'] = []
+    listaDeudas= []
 
     def __init__(self, fecha: Fecha, valor: int, entidad: str, tipo: str, cuotas: int):
         self.fechaCreacion = fecha
@@ -128,13 +128,12 @@ class Deuda:
         mayorPrecioP = 1
         deudaP = None
         deudaB = None
-
-        for deuda in Deuda.listaDeudas:
+        for deuda in Deuda.getListaDeudas():
             for proveedor in Proveedor.getListaProveedores():
-                deudaA=Proveedor.getDeuda(proveedor)
+                deudaA=proveedor.getDeuda()
                 if deudaA is not None:
-                    valdeudaP = Deuda.deudaActual(deudaA,fecha.getAno())
-                    if valdeudaP != 0 and Deuda.getEstadoDePago(deudaA)!=True and valdeudaP > mayorPrecioP:
+                    valdeudaP = deudaA.deudaActual(fecha.getAno())
+                    if valdeudaP != 0 and deudaA.getEstadoDePago()!=True and valdeudaP > mayorPrecioP:
                         mayorPrecioP = valdeudaP
                         mayorProveedor = proveedor
                         deudaP = deudaA
@@ -142,15 +141,15 @@ class Deuda:
             for banco in Banco.getListaBancos():
                 for deudaA in banco.getDeuda():
                     if deudaA is not None:
-                        valdeudaB = Deuda.deudaActual(deudaA,fecha.getAno())
-                        if valdeudaB != 0 and Deuda.getEstadoDePago(deudaA)!=True and valdeudaB > mayorPrecioB:
+                        valdeudaB = deudaA.deudaActual(fecha.getAno())
+                        if valdeudaB != 0 and deudaA.getEstadoDePago()!=True and valdeudaB > mayorPrecioB:
                             mayorPrecioB = valdeudaB
                             mayorBanco = banco
                             deudaB = deudaA
 
-        pagoP = Deuda.pagarDeuda(deudaP,fecha)
+        pagoP = deudaP.pagarDeuda(fecha)
         deudaP.capitalPagado += deudaP.deudaActual(fecha.getAno()) - pagoP
-        pagoB = Deuda.pagarDeuda(deudaB,fecha)
+        pagoB = deudaB.pagarDeuda(fecha)
         deudaB.capitalPagado += deudaB.deudaActual(fecha.getAno()) - pagoB
         
         return "Se pagaron las deudas con el Banco: "+str(mayorBanco.getNombreCuenta())+" y con el Proveedor: "+str(mayorProveedor.getNombre())
