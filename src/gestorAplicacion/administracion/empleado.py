@@ -8,7 +8,6 @@ from ..fecha import Fecha
 from ..sede import Sede
 from .area import Area
 from typing import List
-from typing_extensions import override 
 
 class Empleado(Persona, GastoMensual):
     def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia=Membresia.NULA, maquinaria: Maquinaria=[]):
@@ -27,10 +26,12 @@ class Empleado(Persona, GastoMensual):
         sede.anadirEmpleado(self)
         Sede.getListaEmpleadosTotal().append(self)
 
-    @override
     def calcularGastoMensual(self):
-        gasto=super().calcularSalario()
+        gasto=self.calcularSalario()
         return gasto
+    
+    def calcularSalario(self):
+        return Persona.calcularSalario(self) + self.bonificacion
     
 
     def gastoMensualClase():

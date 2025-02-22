@@ -79,6 +79,7 @@ class Persona:
         trabajaString = "Trabaja" if self.trabaja else "No trabaja"
         membresiaString = str(self.membresia) if self.membresia is not None else "Sin membresía"
         return (f"Nombre: {self.nombre}, Documento: {self.documento}, Rol: {rolString}, "f"Experiencia: {self.experiencia}, Trabaja: {trabajaString}, "f"Membresía: {membresiaString}")
+    
     def calcularSalario(self) -> int:
         return round((self.rol.getSalarioInicial() * 0.05) * self.experiencia) + self.rol.getSalarioInicial()
 
