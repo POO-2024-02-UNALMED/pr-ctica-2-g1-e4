@@ -60,3 +60,9 @@ class Repuesto(Insumo):
 
     def usar(self, horas: int):
         self.horasDeUso += horas
+    
+    def __str__(self):
+        return f"{self.nombre}"
+    
+    def __repr__(self):
+        return self.__str__()

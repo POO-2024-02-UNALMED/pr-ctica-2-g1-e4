@@ -2,7 +2,7 @@ from typing import List
 from ..sede import Sede
 
 class Maquinaria:
-    def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos, sede: 'Sede', horasUso=0):
+    def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos=[], sede: 'Sede'=None, horasUso=0):
         
         self.nombre = nombre
         self.user = None
@@ -73,7 +73,7 @@ class Maquinaria:
         from src.gestorAplicacion.bodega.insumo import Insumo
         from src.uiMain.F5Produccion import receptor, recibeProveedorB, recibeMaqPaRevisar, recibeMaqDisp
         
-        
+        print(f"los repuestos mas actuales creados: {Repuesto.getListadoRepuestos()}\n y hay en total: {len(Repuesto.getListadoRepuestos())}")
         maqDisponibles = []
         todosProvBaratos = []
         encontrado = False
@@ -107,9 +107,18 @@ class Maquinaria:
                             for sedeCreada in Sede.getListaSedes():
                                 if sedeCreada.getCuentaSede().getAhorroBanco() >= proveedorBarato.getPrecio():
                                     #Main.dondeRetirar()
+                                    #print(f"\nla cantidad de repuestos que tiene {cadaMaquina.getNombre()} antes son: {len(cadaMaquina.getRepuestos())}")
+                                    #print(f"repuestos de {cadaMaquina.getNombre()} son: {cadaMaquina.getRepuestos()}")
+                                    #print(f"hay en total al iniciar {len(Repuesto.getListadoRepuestos())} repuestos creados")
+                                    #print(f"soy {cadaRepuesto.getNombre()} de la maquina: {cadaMaquina.getNombre()}, de la sede: {cadaMaquina.getSede().getNombre()}")
                                     cadaMaquina.setRepuestos(cadaRepuesto)
+                                    #print(f"\nla cantidad de repuestos que tiene {cadaMaquina.getNombre()} ahora mismo son: {len(cadaMaquina.getRepuestos())}")
+                                    #print(f"repuestos de {cadaMaquina.getNombre()} son: {cadaMaquina.getRepuestos()}")
                                     Repuesto.removeRepuesto(cadaRepuesto)
+                                    #print(f"\nahora hay {len(Repuesto.getListadoRepuestos())} repuestos creados\n")
                                     cadaMaquina.getRepuestos().append(cadaRepuesto.copiarConProveedor(proveedorBarato))
+                                    #print(f"repuestos de {cadaMaquina.getNombre()} son: {cadaMaquina.getRepuestos()}")
+                                    #print(f"los repuestos mas actuales creados: {Repuesto.getListadoRepuestos()}\n y hay en total: {len(Repuesto.getListadoRepuestos())}")
                                     cadaRepuesto.setPrecioCompra(proveedorBarato.getPrecio())
                                     cadaRepuesto.addFechaCompra(fecha)
                                     encontrado = True
