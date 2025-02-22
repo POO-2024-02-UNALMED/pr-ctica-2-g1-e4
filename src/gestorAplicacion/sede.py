@@ -243,6 +243,8 @@ class Sede:
 
     def __str__(self):
         return self.nombre
+    def __repr__(self):
+        return self.__str__()
 
     # Usado para eliminar un Insumo limpiamente
     @classmethod
@@ -446,11 +448,11 @@ class Sede:
     @classmethod
     def sedeExiste(cls,nombre):
         for sede in cls.listaSedes:
-            if sede.getNombre() == nombre:
+            if sede.getNombre().lower() == nombre.lower():
                 return True
         return False
     def getEmpleado(self, nombre):
         for empleado in self.listaEmpleado:
-            if empleado.getNombre() == nombre:
+            if empleado.getNombre().lower() == nombre.lower():
                 return empleado
         return None

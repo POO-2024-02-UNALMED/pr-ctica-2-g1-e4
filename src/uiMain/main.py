@@ -90,7 +90,7 @@ class Main:
 
 
 
-    # ANCHOR gestión humana
+    # region gestión humana
     #------------------------------------------- Gestión Humana --------------------------------------------------------------------
     
     # Lo que siguen son para la versión grafica, o metodos puente para ella, y no usan print.-------------------------------
@@ -111,7 +111,7 @@ class Main:
         for nombre in nombres:
             encontrado=False
             for emp in Sede.getListaEmpleadosTotal():
-                if emp.getNombre() == nombre:
+                if emp.getNombre().lower() == nombre.lower():
                     empleados.append(emp)
                     encontrado=True
             if not encontrado:
@@ -188,19 +188,15 @@ class Main:
     # Por cambio de sede.
     @classmethod
     def terminarTandaReemplazo(cls,reemplazos):
+        empleadosReemplazadores = []
         for nombre in reemplazos:
             encontrado=False
             for emp in cls.opcionesParaReemplazo:
-                if emp.getNombre() == nombre:
+                if emp.getNombre().lower() == nombre.lower():
                     encontrado=True
+                    empleadosReemplazadores.append(emp)
             if not encontrado:
                 return False
-
-        empleadosReemplazadores = []
-        for nombre in reemplazos:
-            for emp in cls.opcionesParaReemplazo:
-                if emp.getNombre() == nombre:
-                    empleadosReemplazadores.append(emp)
         
         if cls.estadoGestionHumana == "cambio-sede":
             reemplazados=Sede.reemplazarPorCambioSede(Main.despedidos, empleadosReemplazadores)
@@ -233,7 +229,7 @@ class Main:
                 cls.opcionesParaReemplazo.append(apto)
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
 
-    
+    # region financiera
     #----------------------------------------------Financiera------------------------------------------------------------
 
     #Directivos disponibles
@@ -290,7 +286,7 @@ class Main:
         Prenda.prevenciones(descuento, nuevoDescuento, Main.fecha)
         analisisFuturo = (f"{bfString}, sin embargo su desición fue aplicar un descuento de: {nuevoDescuento * 100}%.")
         return analisisFuturo
-
+# region insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
     # Interacción 1 
@@ -536,7 +532,7 @@ class Main:
             if Empleado.getAreaActual(empleado) == Area.VENTAS:
                 listaEmpleado.append(empleado)
         return listaEmpleado
-# ANCHOR facturacion
+# region facturacion
 #-----------------------------------------------------------------Facturación-----------------------------------------------------------------------------------
 
     def vender(cliente, sede, encargado, vendedor, productosSeleccionados, cantidadProductos):
@@ -612,18 +608,18 @@ class Main:
         totalPrendas = len(productosSeleccionados)
         insumosBodega = sede.getListaInsumosBodega()
         i=1
-        bp, bm, bg = False, False, False
+        bp, bm, bg = 0,0,0
         for i in range(len(insumosBodega)):
             bolsa = insumosBodega[i]
             if isinstance(bolsa, Bolsa):
                 capacidad = bolsa.getCapacidadMaxima()
                 cantidad = sede.getCantidadInsumosBodega()[i]
                 if capacidad == 1 and cantidad > 0:
-                    bp = True
+                    bp += cantidad
                 if capacidad == 3 and cantidad > 0:
-                    bm = True
+                    bm += cantidad
                 if capacidad == 8 and cantidad > 0:
-                    bg = True
+                    bg += cantidad
         return bp, bm, bg
         
 
@@ -684,7 +680,6 @@ class Main:
         cantidadInsumosBodega = sede.getCantidadInsumosBodega()     
         banco = sede.getCuentaSede()
         for i in range(len(listaBolsas)):
-            print("668")
             nombreBolsa = listaBolsas[i]
             for revisarSede in Sede.getListaSedes():
                 print("671")
@@ -694,11 +689,9 @@ class Main:
                     print("675")
                     insumo = listaInsumos[i]
                     if isinstance(insumo, Bolsa) and cantidadInsumos[i] < 10:
-                        print("if 678")
                         print(f"La sede {revisarSede.getNombre()} tiene menos de 10 bolsas en stock (Cantidad: {cantidadInsumos[i]}).")
                         print("Comprando al proveedor...")
                         for e in range(len(listaInsumos)):
-                            print("682")
                             insumo = listaInsumos[e]    
                             if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
                                 print(f"¿Cuántas bolsas de {insumo.getNombre()} desea comprar?")
@@ -829,9 +822,7 @@ class Main:
         banco = Sede.getCuentaSede(sede)
         nuevoIntento = 1
         retorno=""
-        print("813")
         while nuevoIntento == 1:
-            print("815")
             if respuesta.lower() == "si":
                 if codigoIngresado in Venta.getCodigosRegalo():
                     retorno+="Código válido. Procesando tarjeta de regalo..."
@@ -879,48 +870,45 @@ class Main:
             retorno+="\nMonto: $" + str(montoTarjeta)
         return retorno
             
-    def ingresoEmpresa(venta):
+    def ingresoEmpresa(venta,transferirFondos,porcentaje):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa        
         sede = Venta.getSede(venta)
         banco = Sede.getCuentaSede(sede)
         ingreso = Venta.getMontoPagado(venta)
-        print("Ingreso calculado: $" + str(ingreso))
+        mensaje="Ingreso calculado: $" + str(ingreso)
+        mensajeFinal=""
         Banco.setAhorroBanco(banco, Banco.getAhorroBanco(banco) + ingreso)
 
-        print("Monto total en la cuenta de la sede: $" + str(Banco.getAhorroBanco(banco)))
+        mensaje+="\nMonto total en la cuenta de la sede: $" + str(Banco.getAhorroBanco(banco))
         bancoRecibir = Banco.getCuentaPrincipal()
         bancoTransferir = Sede.getCuentaSede(sede)
         if bancoTransferir != bancoRecibir:
-            print("\n¿Desea transferir fondos a la cuenta principal? (si/no)")
-            transferirFondos = input().lower()
             if transferirFondos == "si":
-                print("¿Qué porcentaje desea transferir? (20% o 60%)")
-                porcentaje = Main.nextIntSeguro()
-                if porcentaje == 20 or porcentaje == 60:
+                if porcentaje >= 20 or porcentaje <= 60:
                     montoTransferencia = (Banco.getAhorroBanco(bancoTransferir) * porcentaje / 100) - 50000
                     if montoTransferencia > 0:
                         if bancoRecibir.getNombreCuenta() == "principal":
                             bancoRecibir.setAhorroBanco(Banco.getAhorroBanco(bancoTransferir) - (montoTransferencia + 50000))
                             bancoRecibir.setAhorroBanco(bancoRecibir.getAhorroBanco() + montoTransferencia)
-                            print("Transferencia exitosa.")
-                            print("Monto transferido: $" + str(montoTransferencia))
-                            print("Costo de transferencia: $50000")
+                            mensaje+="\nTransferencia exitosa. "
+                            mensaje+="Monto transferido: $" + str(montoTransferencia)
+                            mensaje+="\n Costo de transferencia: $50000"
                     else:
-                        print("Fondos insuficientes para cubrir la transferencia y el costo.")
+                        mensaje+="\nFondos insuficientes para cubrir la transferencia y el costo."
                 else:
-                    print("Porcentaje no válido. No se realizará la transferencia.")
+                    mensaje+="\nPorcentaje no válido. No se realizará la transferencia."
         if bancoTransferir is not None:
-            print("Estado final de la cuenta de la sede: $" + str(Banco.getAhorroBanco(bancoTransferir)))
+            mensaje+="\nEstado final de la cuenta de la sede: $" + str(Banco.getAhorroBanco(bancoTransferir))
         if bancoRecibir is not None:
-            print("Estado final de la cuenta principal: $" + str(bancoRecibir.getAhorroBanco()))
+            mensaje+="\nEstado final de la cuenta principal: $" + str(bancoRecibir.getAhorroBanco())
             productosSeleccionados = Venta.getArticulos(venta)
             montoPagar = Venta.getMontoPagado(venta)
             tasaIva = 0.19
             valorBase = int(montoPagar / (1 + tasaIva))
             iva = montoPagar - valorBase
-            print("\n---- FACTURA ----")
-            print("Prendas compradas:")
+            mensajeFinal+="\n---- FACTURA ----"
+            mensajeFinal+="\nPrendas compradas:"
             cantidadCamisas = 0
             cantidadPantalon = 0
             subtotalCamisas = 0
@@ -938,19 +926,20 @@ class Main:
             pantalonEncontrado = False
             for prenda in productosSeleccionados:
                 if isinstance(prenda, Camisa) and not camisaEncontrada:
-                    print(prenda.getNombre() + " - Cantidad: " + str(cantidadCamisas) + " - Subtotal: $" + str(subtotalCamisas))
+                    mensajeFinal+="\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadCamisas) + " - Subtotal: $" + str(subtotalCamisas)
                     camisaEncontrada = True
                 if isinstance(prenda, Pantalon) and not pantalonEncontrado:
-                    print(prenda.getNombre() + " - Cantidad: " + str(cantidadPantalon) + " - Subtotal: $" + str(subtotalPantalon))
+                    mensajeFinal+="\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadPantalon) + " - Subtotal: $" + str(subtotalPantalon)
                     pantalonEncontrado = True
 
-            print("Valor total a pagar: $" + str(montoPagar))
-            print("Subtotal prendas: $" + str(Venta.getSubtotal(venta)))
-            print("IVA: $" + str(iva))
-            print("Venta registrada por: " + Venta.getEncargado(venta))
-            print("Asesor de la compra: " + Venta.getAsesor(venta))
+            mensajeFinal+="\n"+"Valor total a pagar: $" + str(montoPagar)
+            mensajeFinal+="\n"+"Subtotal prendas: $" + str(Venta.getSubtotal(venta))
+            mensajeFinal+="\n"+"IVA: $" + str(iva)
+            mensajeFinal+="\n"+"Venta registrada por: " + Venta.getEncargado(venta).getNombre()
+            mensajeFinal+="\n"+"Asesor de la compra: " + Venta.getAsesor(venta).getNombre()
 
-            return "El monto total a pagar por parte del cliente es " + str(montoPagar) + " y el estado final de la cuenta de la sede es $" + str(Banco.getAhorroBanco(bancoTransferir))
+            mensajeFinal+="\n""El monto total a pagar por parte del cliente es " + str(montoPagar) + " y el estado final de la cuenta de la sede es $" + str(Banco.getAhorroBanco(bancoTransferir))
+            return mensajeFinal, mensaje
     
     def generarCodigoAleatorio():
         caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -1266,20 +1255,20 @@ class Main:
         tm.actualizarDeuda(Deuda(Fecha(30, 9, 22), 150_000_000, "Inversiones Terramoda", "Banco", 18))
         tm.actualizarDeuda(Deuda(Fecha(20, 2, 23), 800_000, "Inversiones Terramoda", "Banco", 18))
 
-        i1 = Insumo("Tela", p5, 1 * 20, sedeP)
-        i2 = Insumo("Tela", p5, 1 * 20,  sede2)
-        i3 = Insumo("Boton", p3, 4 * 20, sedeP)
-        i4 = Insumo("Boton", p3, 4 * 20, sede2)
-        i5 = Insumo("Cremallera", p4, 1 * 20, sedeP)
-        i6 = Insumo("Cremallera", p4, 1 * 20, sede2)
-        i7 = Insumo("Hilo", p2, 100 * 20, sedeP)
-        i8 = Insumo("Hilo", p2, 100 * 20, sede2)
-        i9 = Bolsa("Bolsa", p10, 1 * 20, sedeP, 8)
-        i10 = Bolsa("Bolsa", p10, 1 * 20, sede2, 8)
-        i11 = Bolsa("Bolsa", p10, 1 * 20, sedeP, 3)
-        i12 = Bolsa("Bolsa", p10, 1 * 20, sede2, 3)
-        i13 = Bolsa("Bolsa", p10, 1 * 20, sedeP, 1)
-        i14 = Bolsa("Bolsa", p10, 1 * 20, sede2, 1)
+        i1 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20, sede= sedeP)
+        i2 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20,  sede=sede2)
+        i3 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20, sede=sedeP)
+        i4 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20, sede=sede2)
+        i5 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20, sede=sedeP)
+        i6 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20, sede=sede2)
+        i7 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20, sede=sedeP)
+        i8 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20, sede=sede2)
+        i9 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sedeP, capacidadMaxima=8)
+        i10 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sede2, capacidadMaxima=8)
+        i11 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sedeP, capacidadMaxima=3)
+        i12 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sede2, capacidadMaxima=3)
+        i13 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sedeP, capacidadMaxima=1)
+        i14 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sede2, capacidadMaxima=1)
 
         betty = Empleado(Area.DIRECCION, Fecha(1, 1, 23), sedeP, "Beatriz Pinzón", 4269292,Rol.PRESIDENTE, 10, Membresia.NULA, Computador)
         Armando = Empleado(Area.DIRECCION, Fecha(30, 11, 20), sedeP, "Armando Mendoza", 19121311,Rol.PRESIDENTE, 15, Membresia.PLATA, Computador.copiar())
@@ -1437,7 +1426,7 @@ class Main:
         ps6 = []
         ps6.append(r15)
         ps6.append(r16)
-        v6 = Venta(sedeP, Fecha(25, 11, 24), c4, Wilson, Mario, ps6, 400000, 600_000)
+        v6 = Venta(sedeP, Fecha(20, 2, 25), c4, Wilson, Mario, ps6, 400000, 600_000)
         v6.setCostoEnvio(100000)
         b3.setAhorroBanco(b3.getAhorroBanco() + 600000)
         com6 = round(600_000 * 0.05)
@@ -1446,8 +1435,8 @@ class Main:
         minProductos = 1
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(10,11,24), Aura, Cata, 300, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(10,11,24), Aura, Mario, 300, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Cata, 600, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Mario, 600, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,24), Aura, Cata, 600, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,25), Aura, Mario, 600, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Cata, 700, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Mario, 700, sede2)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Cata, 700, sede2)

@@ -59,7 +59,10 @@ class Empleado(Persona, GastoMensual):
                 acumuladoVentasSede = len(Venta.filtrar(self.sede.historialVentas, fecha))
                 promedioVentasSede = acumuladoVentasSede / self.sede.cantidadPorArea(Area.OFICINA)
                 ventasEncargadas = Venta.cantidadVentasEncargadasEnMes(self, fecha)
-                rendimiento = (ventasEncargadas / promedioVentasSede) * 100
+                if promedioVentasSede!=0:
+                    rendimiento = (ventasEncargadas / promedioVentasSede) * 100
+                else:
+                    rendimiento = 0 # Ocurre con fechas sin ventas.
             case Area.DIRECCION:
                 balancesPositivos = sum(1.0 for evaluacion in self.evaluaciones if evaluacion.balance > 0)
                 balancesNegativos = sum(1.0 for evaluacion in self.evaluaciones if evaluacion.balance <= 0)

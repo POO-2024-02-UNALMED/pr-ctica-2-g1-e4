@@ -684,14 +684,14 @@ def inicioInt3():
     from src.uiMain.main import Main
     from src.gestorAplicacion.sede import Sede
     global aProducirPaEnviar, creadas
-    sedePrueba = Sede("sede")
     print("\nComienzo de la interacción 3...")
-    print(f"\n Lista de insumos actual: {sedePrueba.getListaInsumosBodega()}, su cantidad: {sedePrueba.getCantidadInsumosBodega()}")
+    print(f"\n Lista de insumos actual de la sede Principal: {Sede.getListaSedes()[0].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[0].getCantidadInsumosBodega()}")
+    print(f"\n Lista de insumos actual de la sede 2: {Sede.getListaSedes()[1].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[1].getCantidadInsumosBodega()}\n")
     threading.Thread(target=Prenda.producirPrendas, args=(aProducirPaEnviar, Main.fecha), daemon=True).start()
     evento_senalizador.wait()
     evento_senalizador.clear()
     if creadas:
         print(Prenda.getCantidadUltimaProduccion()," Prendas creadas con éxito")
     else:
-        print("No se pudo producir todo, los insumos no alcanzaron, producimos "+Prenda.getCantidadUltimaProduccion()+" prendas")
+        print("No se pudo producir todo, los insumos no alcanzaron, producimos",Prenda.getCantidadUltimaProduccion(),"prendas")
 
