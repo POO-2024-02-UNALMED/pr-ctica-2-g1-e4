@@ -20,3 +20,8 @@ class ExcepcionEmpleadoNoEncontrado(ExceptionC2):
     def __init__(self):
         self.mensajeEmpleado = f"Empleado no valido","Verifique que el empleado trabaja en la empresa."
         super().__init__(self.mensajeEmpleado)
+
+class ExcepcionAgregarOtraPrenda(ExceptionC2):
+    def __init__(self):
+        self.mensajeCompra = f"¿Desea agregar más prendas a la compra?"
+        super().__init__(self.mensajeCompra)
