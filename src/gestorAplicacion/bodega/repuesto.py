@@ -35,15 +35,11 @@ class Repuesto(Insumo):
     @classmethod
     def getListadoRepuestos(cls) -> List['Repuesto']:
         from src.gestorAplicacion.sede import Sede
-        repustosTotales=[]
+        cls.listadoRepuestos=[]
         for sede in Sede.getListaSedes():
-            for repuesto in sede.getListaRepuestos():
-                if repuesto not in cls.listadoRepuestos:
-                    cls.listadoRepuestos.append(repuesto)
+            for repuesto in sede.getTipoInsumo():
+                cls.listadoRepuestos.append(repuesto)
     
-    @classmethod
-    def reemplazarListadoRepuestos(cls,listadoRepuestos: List['Repuesto']):
-        cls.listadoRepuestos = listadoRepuestos
 
     @classmethod
     def removeRepuesto(cls,repuesto: 'Repuesto'):
