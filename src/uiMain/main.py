@@ -39,9 +39,7 @@ class Main:
             
             opcion = Main.nextIntSeguro()
             if opcion == 1:
-                despedidos = Main.despedirEmpleadosConsola(Main.fecha)
-                a_contratar = Main.reorganizarEmpleados(despedidos)
-                Main.contratarEmpleadosConsola(a_contratar,Main.fecha)
+                pass
             elif opcion == 2:
                 retorno = Main.planificarProduccion()
                 lista_a = Main.coordinarBodegas(retorno)
@@ -94,234 +92,15 @@ class Main:
 
     # ANCHOR gestión humana
     #------------------------------------------- Gestión Humana --------------------------------------------------------------------
-
-
-    def despedirEmpleadosConsola(fecha):
-        from ..gestorAplicacion.administracion.empleado import Empleado
-        print("Obteniendo lista sugerida de empleados")
-        info_despidos= Empleado.listaInicialDespedirEmpleado(fecha)
-        a_despedir = info_despidos[0]
-        mensajes = info_despidos[1]
-
-        for mensaje in mensajes:
-            print(mensaje)
-
-        print("\nEsta es una lista de empleados que no estan rindiendo correctamente, ¿que deseas hacer?")
-
-        diferenciaSalarios = Persona.diferenciaSalarios()
-        if diferenciaSalarios > 0:
-            print(f"Tus empleados estan {round(diferenciaSalarios)} sobre el promedio de salarios")
-        elif diferenciaSalarios < 0:
-            print(f"Tus empleados estan {round(diferenciaSalarios)} bajo el promedio de salarios")
-        else:
-            print("Tus empleados estan en el promedio de salarios")
-
-        for emp in a_despedir:
-            print(f"Nombre: {emp.getNombre()}, Área: {emp.getAreaActual()}, Documento: {emp.getDocumento()}")
-
-        opcion = 2
-        while opcion == 2:
-            print("1. Elegir a los despedidos")
-            print("2. Añadir a alguien más")
-            opcion = Main.nextIntSeguro()
-            if opcion == 2:
-                print("¿De que sede quieres añadir al empleado?")
-                for i , sede in Sede.getlistaSedes():
-                    print(f"{i}. {sede.getNombre()}")
-                sede = Main.nextIntSeguro()
-                print("¿Que empleado quieres despedir? Pon su nombre completo o documento, esto lo añadirá a la lista de despedibles.")
-                for emp in Sede.getlistaSedes().get(sede).getlistaEmpleados():
-                    print(f"{emp.getNombre()} {emp.getAreaActual()} {emp.getDocumento()}")
-                nombre = input().strip()
-                for emp in Sede.getlistaSedes().get(sede).getlistaEmpleados():
-                    if emp.getNombre() == nombre or (nombre.isdigit() and emp.getDocumento() == int(nombre)):
-                        a_despedir.append(emp)
-
-        seleccion = []
-        print("¿Que empleados quieres despedir? Pon su nombre completo, documento o FIN para terminar.")
-        for emp in a_despedir:
-            print(f"{emp.getNombre()} {emp.getAreaActual()} {emp.getDocumento()}")
-        nombre = input().strip()
-        while nombre.lower() != "fin":
-            for emp in a_despedir:
-                if emp.getNombre() == nombre or (nombre.isdigit() and emp.getDocumento() == int(nombre)):
-                    seleccion.append(emp)
-            nombre = input().strip()
-
-        print("Despidiendo empleados...")
-        Empleado.despedirEmpleados(seleccion, True, fecha)
-        print("Listo!")
-        return seleccion
-
-    def reorganizarEmpleados(despedidos):
-        print(f"Todavía nos quedan {len(despedidos)} empleados por reemplazar, revisamos la posibilidad de transferir empleados.")
-        necesidades = Sede.obtenerNecesidadTransferenciaEmpleados(despedidos)
-        # Desempacamos los datos dados por GestorAplicacion
-        roles_a_transferir = necesidades[0]
-        transferir_de = necesidades[1]
-        a_contratar = necesidades[2]
-        # Lista de empleados a transferir de sede, seleccionados por el usuario.
-        a_transferir = []
-        for rolidx in range(len(roles_a_transferir)):
-            rol = roles_a_transferir[rolidx]
-            sede = transferir_de[rolidx]
-            print(f"Se necesita transferir {rol} de {sede.getNombre()}, estos son los candidatos: Ingresa su getNombre completo para hacerlo.")
-            for emp in sede.getlistaEmpleados():
-                if emp.getRol() == rol:
-                    descripcion = f"Nombre: {emp.getNombre()}, Documento: {emp.getDocumento()}"
-                    if emp.getRol() == Rol.VENDEDOR:
-                        descripcion += f", Ventas asesoradas: {Venta.acumuladoVentasAsesoradas(emp)}"
-                    elif emp.getRol() == Rol.MODISTA:
-                        descripcion += f", Pericia: {emp.getPericia()}"
-                    else:
-                        descripcion += f", contratado en {emp.getFechaContratacion()}"
-                    print(descripcion)
-            # Obtenemos la cantidad de empleados a seleccionar
-            cantidad = sum(1 for emp in despedidos if emp.getRol() == rol)
-            for _ in range(cantidad):
-                getNombre = input().strip()
-                for emp in sede.getlistaEmpleados():
-                    if emp.getNombre()==getNombre:
-                        a_transferir.append(emp)
-        Sede.reemplazarPorCambioSede(despedidos, a_transferir)
-        return a_contratar
-
-    def reorganizarEmpleados(despedidos):
-        print(f"Todavía nos quedan {len(despedidos)} empleados por reemplazar, revisamos la posibilidad de transferir empleados.")
-        necesidades = Sede.obtenerNecesidadTransferenciaEmpleados(despedidos)
-        # Desempacamos los datos dados por GestorAplicacion
-        rolesATransferir = necesidades[0]
-        transferirDe = necesidades[1]
-        aContratar = necesidades[2]
-        # Lista de empleados a transferir de sede, seleccionados por el usuario.
-        aTransferir = []
     
-        for rolIdx in range(len(rolesATransferir)):
-            rol = rolesATransferir[rolIdx]
-            sede = transferirDe[rolIdx]
-            print(f"Se necesita transferir {rol} de {Sede.getNombre(sede)}, estos son los candidatos: Ingresa su getNombre completo para hacerlo.")
-            for emp in Sede.getListaEmpleados(sede):
-                if Empleado.getRol(emp) == rol:
-                    descripcion = f"Nombre: {emp.getNombre()}, Documento: {Empleado.getDocumento(emp)}"
-                    if Empleado.getRol(emp) == Rol.VENDEDOR:
-                        descripcion += f", Ventas asesoradas: {Venta.acumuladoVentasAsesoradas(emp)}"
-                    elif Empleado.getRol(emp) == Rol.MODISTA:
-                        descripcion += f", Pericia: {Empleado.getPericia(emp)}"
-                    else:
-                        descripcion += f", contratado en {Empleado.getFechaContratacion(emp)}"
-                    print(descripcion)
-            # Obtenemos la cantidad de empleados a seleccionar
-            cantidad = sum(1 for emp in despedidos if Empleado.getRol(emp) == rol)
-            reemplazados=0
-            while reemplazados<cantidad:
-                getNombre = input().strip()
-                encontrado=False
-                for emp in Sede.getListaEmpleados(sede):
-                    if Empleado.getNombre(emp) == getNombre or (getNombre.isdigit() and Empleado.getDocumento(emp) == int(getNombre)):
-                        aTransferir.append(emp)
-                        reemplazados+=1
-                        encontrado=True
-                if not encontrado:
-                    print("No se encontro el empleado, intente de nuevo")
-        Sede.reemplazarPorCambioSede(despedidos, aTransferir)
-        return aContratar
-    
-    def contratarEmpleadosConsola(aReemplazar, fecha):
-        elecciones = Persona.entrevistar(aReemplazar)
-        aptos = elecciones[0]
-        rolesAReemplazar = elecciones[1]
-        cantidad = elecciones[2]
-        aContratar = []
-        for i in range(len(rolesAReemplazar)):
-            rol = rolesAReemplazar[i]
-            cantidadNecesaria = cantidad[i]
-            print(f"Se necesitan {cantidadNecesaria} {rol}s, estos son los candidatos:")
-            for persona in aptos:
-                if Persona.getRol(persona) == rol:
-                    print(f"Nombre: {Persona.getNombre(persona)}, Documento: {Persona.getDocumento(persona)}, con {Persona.getExperiencia(persona)} años de experiencia.")
-            print("Ingresa el getNombre de los que quieres contratar.")
-            for cantidadContratada in range(cantidadNecesaria):
-                getNombre = input().strip()
-                for persona in aptos:
-                    if Persona.getNombre(persona) == getNombre:
-                        aContratar.append(persona)
-                        print(f"Seleccionaste a {persona.getNombre()} con {Persona.calcularSalario(persona) - Persona.valorEsperadoSalario()} de diferencia salarial sobre el promedio")
-                    
-        Persona.contratar(aContratar, aReemplazar, fecha)
-        
-    def errorDeReemplazo(persona):
-        print(f"No se pudo contratar a {Persona.getNombre(persona)}, no sabemos a quien reemplaza.")
-    
-    # Lo que siguen son para la versión grafica, o metodos puente para ella.
+    # Lo que siguen son para la versión grafica, o metodos puente para ella, y no usan print.-------------------------------
 
     despedidos=[] # Actualizado por la versión grafica de gestion humana
     porReemplazar=[]
     opcionesParaReemplazo=[] # Lista a elegir por cada rol
 
-    @classmethod
-    def prepararCambioSede(cls):
-        nececidad = Sede.obtenerNecesidadTransferenciaEmpleados(Main.despedidos)
-        cls.rolesAReemplazar = nececidad[0] if nececidad else []
-        cls.transferirDe = nececidad[1] if nececidad else []
-        cls.aContratar = nececidad[2] if nececidad else []
-        cls.seleccion = []
-        cls.idxRol = 0
-        return cls.getTandaReemplazo()
 
-    # Retorna una lista con : [Opciones para cambio, sede origen-> Solo aplica para cambio-sede, rol, cantidad a elegir]
-    @classmethod
-    def getTandaReemplazo(cls):
-        cls.opcionesParaReemplazo = []
-        if cls.idxRol < len(cls.rolesAReemplazar):
-            sede=None
-            cantidad=0
-            rol = cls.rolesAReemplazar[cls.idxRol]
-            if cls.estadoGestionHumana == "cambio-sede":
-                sede = cls.transferirDe[cls.idxRol]
-                for emp in sede.getListaEmpleados():
-                    if emp.getRol() == rol:
-                        cls.opcionesParaReemplazo.append(emp)
-                cantidad = sum(1 for emp in Main.despedidos if emp.getRol() == rol)
-                return cls.opcionesParaReemplazo, sede, rol, cantidad
-            else:
-                return cls.getTandaContratacion() # Hace lo mismo, pero no toma en cuenta la sede.
-
-        else:
-            return None
-        
-        
-            
-    @classmethod
-    def terminarTandaReemplazo(cls,reemplazos):
-        for nombre in reemplazos:
-            encontrado=False
-            for emp in cls.opcionesParaReemplazo:
-                if emp.getNombre() == nombre:
-                    encontrado=True
-            if not encontrado:
-                return False
-
-        empleadosReemplazadores = []
-        for nombre in reemplazos:
-            for emp in cls.opcionesParaReemplazo:
-                if emp.getNombre() == nombre:
-                    empleadosReemplazadores.append(emp)
-        
-        if cls.estadoGestionHumana == "cambio-sede":
-            reemplazados=Sede.reemplazarPorCambioSede(Main.despedidos, empleadosReemplazadores)
-            for emp in reemplazados:
-                cls.porReemplazar.remove(emp)
-        else:
-            Persona.contratar(empleadosReemplazadores, cls.porReemplazar, Main.fecha)
-            for emp in cls.porReemplazar:
-                if emp.getRol() == cls.rolesAReemplazar[cls.idxRol]:
-                    cls.porReemplazar.remove(emp)
-        cls.idxRol+=1
-        if cls.idxRol >= len(cls.rolesAReemplazar):
-            cls.estadoGestionHumana="contratacion"
-            cls.prepararContratacion()
-        return True
-
+    # Metodos asistentes a la versión grafica de la interacción 1.
     @classmethod
     def listaInicialDespedirEmpleado(cls):
         return Empleado.listaInicialDespedirEmpleado(Main.fecha)
@@ -360,19 +139,7 @@ class Main:
             if sede.getNombre()==getNombre:
                 return sede
     
-    @classmethod
-    def prepararContratacion(cls):
-        cls.aptosParaContratar, cls.rolesAReemplazar, cls.cantidadAContratar= Persona.entrevistar(cls.porReemplazar)
-        cls.idxRol = 0
-    
-    @classmethod
-    def getTandaContratacion(cls):
-        cls.opcionesParaReemplazo=[]
-        for apto in cls.aptosParaContratar:
-            if apto.getRol()==cls.rolesAReemplazar[cls.idxRol]:
-                cls.opcionesParaReemplazo.append(apto)
-        return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
-
+    # Usado para el recuadro de arriba de la interacción 1 grafica.
     @classmethod
     def mensajePromedioHumanas(cls):
         diferenciaSalarios = Persona.diferenciaSalarios()
@@ -382,6 +149,90 @@ class Main:
             return f"Tus empleados estan {-diferenciaSalarios:,} bajo el promedio de salarios"
         else:
             return "Tus empleados estan en el promedio de salarios"
+    
+    # Ejecutado al pasar a la interacción 2 grafica.
+    @classmethod
+    def prepararCambioSede(cls):
+        nececidad = Sede.obtenerNecesidadTransferenciaEmpleados(Main.despedidos)
+        cls.rolesAReemplazar = nececidad[0] if nececidad else []
+        cls.transferirDe = nececidad[1] if nececidad else []
+        cls.aContratar = nececidad[2] if nececidad else []
+        cls.seleccion = []
+        cls.idxRol = 0
+        return cls.getTandaReemplazo()
+
+    # Usado en interaccion 2 y 3 garicas, pero cambia de donde se sacan las opciones.
+    # Retorna una lista con : [Opciones para cambio, sede origen-> Solo aplica para cambio-sede, rol, cantidad a elegir]
+    @classmethod
+    def getTandaReemplazo(cls):
+        cls.opcionesParaReemplazo = []
+        if cls.idxRol < len(cls.rolesAReemplazar):
+            sede=None
+            cantidad=0
+            rol = cls.rolesAReemplazar[cls.idxRol]
+            if cls.estadoGestionHumana == "cambio-sede":
+                sede = cls.transferirDe[cls.idxRol]
+                for emp in sede.getListaEmpleados():
+                    if emp.getRol() == rol:
+                        cls.opcionesParaReemplazo.append(emp)
+                cantidad = sum(1 for emp in Main.despedidos if emp.getRol() == rol)
+                return cls.opcionesParaReemplazo, sede, rol, cantidad
+            else:
+                return cls.getTandaContratacion() # Hace lo mismo, pero no toma en cuenta la sede.
+
+        else:
+            return None
+        
+        
+    # Avanza la interacción 2 y 3, cambiando de 2 a 3 cuando se han reemplazado todos los empleados posibles
+    # Por cambio de sede.
+    @classmethod
+    def terminarTandaReemplazo(cls,reemplazos):
+        for nombre in reemplazos:
+            encontrado=False
+            for emp in cls.opcionesParaReemplazo:
+                if emp.getNombre() == nombre:
+                    encontrado=True
+            if not encontrado:
+                return False
+
+        empleadosReemplazadores = []
+        for nombre in reemplazos:
+            for emp in cls.opcionesParaReemplazo:
+                if emp.getNombre() == nombre:
+                    empleadosReemplazadores.append(emp)
+        
+        if cls.estadoGestionHumana == "cambio-sede":
+            reemplazados=Sede.reemplazarPorCambioSede(Main.despedidos, empleadosReemplazadores)
+            for emp in reemplazados:
+                cls.porReemplazar.remove(emp)
+        else:
+            Persona.contratar(empleadosReemplazadores, cls.porReemplazar, Main.fecha)
+            for emp in cls.porReemplazar:
+                if emp.getRol() == cls.rolesAReemplazar[cls.idxRol]:
+                    cls.porReemplazar.remove(emp)
+        cls.idxRol+=1
+        if cls.idxRol >= len(cls.rolesAReemplazar):
+            cls.estadoGestionHumana="contratacion"
+            cls.prepararContratacion()
+        return True
+
+    # Inicia interacción 3 grafica.
+    @classmethod
+    def prepararContratacion(cls):
+        cls.aptosParaContratar, cls.rolesAReemplazar, cls.cantidadAContratar= Persona.entrevistar(cls.porReemplazar)
+        cls.idxRol = 0
+
+    # Usado antes de dibujar cada Tanda en interacción 3 grafica.
+    
+    @classmethod
+    def getTandaContratacion(cls):
+        cls.opcionesParaReemplazo=[]
+        for apto in cls.aptosParaContratar:
+            if apto.getRol()==cls.rolesAReemplazar[cls.idxRol]:
+                cls.opcionesParaReemplazo.append(apto)
+        return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
+
     
     #----------------------------------------------Financiera------------------------------------------------------------
         
