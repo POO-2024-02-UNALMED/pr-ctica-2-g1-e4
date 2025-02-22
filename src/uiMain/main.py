@@ -680,7 +680,6 @@ class Main:
         cantidadInsumosBodega = sede.getCantidadInsumosBodega()     
         banco = sede.getCuentaSede()
         for i in range(len(listaBolsas)):
-            print("668")
             nombreBolsa = listaBolsas[i]
             for revisarSede in Sede.getListaSedes():
                 print("671")
@@ -690,11 +689,9 @@ class Main:
                     print("675")
                     insumo = listaInsumos[i]
                     if isinstance(insumo, Bolsa) and cantidadInsumos[i] < 10:
-                        print("if 678")
                         print(f"La sede {revisarSede.getNombre()} tiene menos de 10 bolsas en stock (Cantidad: {cantidadInsumos[i]}).")
                         print("Comprando al proveedor...")
                         for e in range(len(listaInsumos)):
-                            print("682")
                             insumo = listaInsumos[e]    
                             if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
                                 print(f"¿Cuántas bolsas de {insumo.getNombre()} desea comprar?")
@@ -825,9 +822,7 @@ class Main:
         banco = Sede.getCuentaSede(sede)
         nuevoIntento = 1
         retorno=""
-        print("813")
         while nuevoIntento == 1:
-            print("815")
             if respuesta.lower() == "si":
                 if codigoIngresado in Venta.getCodigosRegalo():
                     retorno+="Código válido. Procesando tarjeta de regalo..."
@@ -875,48 +870,45 @@ class Main:
             retorno+="\nMonto: $" + str(montoTarjeta)
         return retorno
             
-    def ingresoEmpresa(venta):
+    def ingresoEmpresa(venta,transferirFondos,porcentaje):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa        
         sede = Venta.getSede(venta)
         banco = Sede.getCuentaSede(sede)
         ingreso = Venta.getMontoPagado(venta)
-        print("Ingreso calculado: $" + str(ingreso))
+        mensaje="Ingreso calculado: $" + str(ingreso)
+        mensajeFinal=""
         Banco.setAhorroBanco(banco, Banco.getAhorroBanco(banco) + ingreso)
 
-        print("Monto total en la cuenta de la sede: $" + str(Banco.getAhorroBanco(banco)))
+        mensaje+="\nMonto total en la cuenta de la sede: $" + str(Banco.getAhorroBanco(banco))
         bancoRecibir = Banco.getCuentaPrincipal()
         bancoTransferir = Sede.getCuentaSede(sede)
         if bancoTransferir != bancoRecibir:
-            print("\n¿Desea transferir fondos a la cuenta principal? (si/no)")
-            transferirFondos = input().lower()
             if transferirFondos == "si":
-                print("¿Qué porcentaje desea transferir? (20% o 60%)")
-                porcentaje = Main.nextIntSeguro()
-                if porcentaje == 20 or porcentaje == 60:
+                if porcentaje >= 20 or porcentaje <= 60:
                     montoTransferencia = (Banco.getAhorroBanco(bancoTransferir) * porcentaje / 100) - 50000
                     if montoTransferencia > 0:
                         if bancoRecibir.getNombreCuenta() == "principal":
                             bancoRecibir.setAhorroBanco(Banco.getAhorroBanco(bancoTransferir) - (montoTransferencia + 50000))
                             bancoRecibir.setAhorroBanco(bancoRecibir.getAhorroBanco() + montoTransferencia)
-                            print("Transferencia exitosa.")
-                            print("Monto transferido: $" + str(montoTransferencia))
-                            print("Costo de transferencia: $50000")
+                            mensaje+="\nTransferencia exitosa. "
+                            mensaje+="Monto transferido: $" + str(montoTransferencia)
+                            mensaje+="\n Costo de transferencia: $50000"
                     else:
-                        print("Fondos insuficientes para cubrir la transferencia y el costo.")
+                        mensaje+="\nFondos insuficientes para cubrir la transferencia y el costo."
                 else:
-                    print("Porcentaje no válido. No se realizará la transferencia.")
+                    mensaje+="\nPorcentaje no válido. No se realizará la transferencia."
         if bancoTransferir is not None:
-            print("Estado final de la cuenta de la sede: $" + str(Banco.getAhorroBanco(bancoTransferir)))
+            mensaje+="\nEstado final de la cuenta de la sede: $" + str(Banco.getAhorroBanco(bancoTransferir))
         if bancoRecibir is not None:
-            print("Estado final de la cuenta principal: $" + str(bancoRecibir.getAhorroBanco()))
+            mensaje+="\nEstado final de la cuenta principal: $" + str(bancoRecibir.getAhorroBanco())
             productosSeleccionados = Venta.getArticulos(venta)
             montoPagar = Venta.getMontoPagado(venta)
             tasaIva = 0.19
             valorBase = int(montoPagar / (1 + tasaIva))
             iva = montoPagar - valorBase
-            print("\n---- FACTURA ----")
-            print("Prendas compradas:")
+            mensajeFinal+="\n---- FACTURA ----"
+            mensajeFinal+="\nPrendas compradas:"
             cantidadCamisas = 0
             cantidadPantalon = 0
             subtotalCamisas = 0
@@ -934,19 +926,20 @@ class Main:
             pantalonEncontrado = False
             for prenda in productosSeleccionados:
                 if isinstance(prenda, Camisa) and not camisaEncontrada:
-                    print(prenda.getNombre() + " - Cantidad: " + str(cantidadCamisas) + " - Subtotal: $" + str(subtotalCamisas))
+                    mensajeFinal+="\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadCamisas) + " - Subtotal: $" + str(subtotalCamisas)
                     camisaEncontrada = True
                 if isinstance(prenda, Pantalon) and not pantalonEncontrado:
-                    print(prenda.getNombre() + " - Cantidad: " + str(cantidadPantalon) + " - Subtotal: $" + str(subtotalPantalon))
+                    mensajeFinal+="\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadPantalon) + " - Subtotal: $" + str(subtotalPantalon)
                     pantalonEncontrado = True
 
-            print("Valor total a pagar: $" + str(montoPagar))
-            print("Subtotal prendas: $" + str(Venta.getSubtotal(venta)))
-            print("IVA: $" + str(iva))
-            print("Venta registrada por: " + Venta.getEncargado(venta))
-            print("Asesor de la compra: " + Venta.getAsesor(venta))
+            mensajeFinal+="\n"+"Valor total a pagar: $" + str(montoPagar)
+            mensajeFinal+="\n"+"Subtotal prendas: $" + str(Venta.getSubtotal(venta))
+            mensajeFinal+="\n"+"IVA: $" + str(iva)
+            mensajeFinal+="\n"+"Venta registrada por: " + Venta.getEncargado(venta).getNombre()
+            mensajeFinal+="\n"+"Asesor de la compra: " + Venta.getAsesor(venta).getNombre()
 
-            return "El monto total a pagar por parte del cliente es " + str(montoPagar) + " y el estado final de la cuenta de la sede es $" + str(Banco.getAhorroBanco(bancoTransferir))
+            mensajeFinal+="\n""El monto total a pagar por parte del cliente es " + str(montoPagar) + " y el estado final de la cuenta de la sede es $" + str(Banco.getAhorroBanco(bancoTransferir))
+            return mensajeFinal, mensaje
     
     def generarCodigoAleatorio():
         caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
