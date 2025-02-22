@@ -57,7 +57,10 @@ class Prenda(GastoMensual):
         cantidadPantalones = planProduccion[0]
         cantidadCamisas = planProduccion[1]
         prendas = []
-        insumosPantalon = sede.insumosPorNombre(Pantalon.getTipoInsumo())
+        insumosPantalon = sede.insumosPorNombre(Pantalon.getTipoInsumo())# Es posible que no se encuentren insumos de tal nombre en la bodega de la sede.
+        if not insumosPantalon:
+            Main.avisarFaltaDeInsumos(sede, fechaProduccion, "Pantalon")
+            return False
         for _ in range(cantidadPantalones):
             if sede.quitarInsumos(insumosPantalon, Pantalon.getCantidadInsumo()):
                 Prenda.cantidadTelaUltimaProduccion += Pantalon.getCantidadInsumo()[Pantalon.getTipoInsumo().index("Tela")]
@@ -67,7 +70,10 @@ class Prenda(GastoMensual):
                 alcanzaInsumos = False
                 Main.avisarFaltaDeInsumos(sede, fechaProduccion, "Pantalon")
                 break
-        insumosCamisa = sede.insumosPorNombre(Camisa.getTipoInsumo())
+        insumosCamisa = sede.insumosPorNombre(Camisa.getTipoInsumo()) # Es posible que no se encuentren insumos de tal nombre en la bodega de la sede.
+        if not insumosCamisa:
+            Main.avisarFaltaDeInsumos(sede, fechaProduccion, "Camisa")
+            return False
         for _ in range(cantidadCamisas):
             if sede.quitarInsumos(insumosCamisa, Camisa.getCantidadInsumo()):
                 Prenda.cantidadTelaUltimaProduccion += Camisa.getCantidadInsumo()[Camisa.getTipoInsumo().index("Tela")]

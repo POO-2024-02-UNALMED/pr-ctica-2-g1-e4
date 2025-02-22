@@ -90,7 +90,7 @@ class Main:
 
 
 
-    # ANCHOR gestión humana
+    # region gestión humana
     #------------------------------------------- Gestión Humana --------------------------------------------------------------------
     
     # Lo que siguen son para la versión grafica, o metodos puente para ella, y no usan print.-------------------------------
@@ -229,7 +229,7 @@ class Main:
                 cls.opcionesParaReemplazo.append(apto)
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
 
-    
+    # region financiera
     #----------------------------------------------Financiera------------------------------------------------------------
 
     #Directivos disponibles
@@ -286,7 +286,7 @@ class Main:
         Prenda.prevenciones(descuento, nuevoDescuento, Main.fecha)
         analisisFuturo = (f"{bfString}, sin embargo su desición fue aplicar un descuento de: {nuevoDescuento * 100}%.")
         return analisisFuturo
-
+# region insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
     # Interacción 1 
@@ -532,7 +532,7 @@ class Main:
             if Empleado.getAreaActual(empleado) == Area.VENTAS:
                 listaEmpleado.append(empleado)
         return listaEmpleado
-# ANCHOR facturacion
+# region facturacion
 #-----------------------------------------------------------------Facturación-----------------------------------------------------------------------------------
 
     def vender(cliente, sede, encargado, vendedor, productosSeleccionados, cantidadProductos):
@@ -1246,14 +1246,15 @@ class Main:
         tm.actualizarDeuda(Deuda(Fecha(30, 9, 22), 150_000_000, "Inversiones Terramoda", "Banco", 18))
         tm.actualizarDeuda(Deuda(Fecha(20, 2, 23), 800_000, "Inversiones Terramoda", "Banco", 18))
 
-        i1 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20, sede= sedeP)
-        i2 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20,  sede=sede2)
-        i3 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20, sede=sedeP)
-        i4 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20, sede=sede2)
-        i5 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20, sede=sedeP)
-        i6 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20, sede=sede2)
-        i7 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20, sede=sedeP)
-        i8 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20, sede=sede2)
+        # Insumos de sede
+        i1 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20_000, sede= sedeP)
+        i2 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20_000,  sede=sede2)
+        i3 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20_000, sede=sedeP)
+        i4 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20_000, sede=sede2)
+        i5 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20_000, sede=sedeP)
+        i6 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20_000, sede=sede2)
+        i7 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20_000, sede=sedeP)
+        i8 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20_000, sede=sede2)
         i9 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sedeP, capacidadMaxima=8)
         i10 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sede2, capacidadMaxima=8)
         i11 = Bolsa(nombre="Bolsa", proveedor=p10, cantidad=1 * 20, sede=sedeP, capacidadMaxima=3)
