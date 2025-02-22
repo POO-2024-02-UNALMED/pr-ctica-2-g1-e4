@@ -9,6 +9,7 @@ from src.gestorAplicacion.administracion.empleado import Empleado
 from src.uiMain import fieldFrame
 from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.Excepciones.exceptionC1 import *
+from src.uiMain.Excepciones.exceptionC2 import *
 from src.uiMain.main import Main
 from src.uiMain.F3Financiera import F3Financiera
 from src.uiMain.F5Produccion import producir
@@ -449,11 +450,20 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         nombresADespedir=self.seleccionador.obtenerTodosLosValores()
         del nombresADespedir[0]
         (existen,self.empleadosADespedir)=Main.despedirEmpleados(nombresADespedir)
-        if existen:
-            Main.estadoGestionHumana="cambio-sede"
-            self.reemplazarPorCambioSede()
-        else:
-            tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado trabaja en la empresa.")
+        try:
+            empleadoExcepcion = False
+            if existen:
+                Main.estadoGestionHumana="cambio-sede"
+                self.reemplazarPorCambioSede()
+                empleadoExcepcion = False
+            else:
+                    empleadoExcepcion = True
+            if empleadoExcepcion:
+                raise ExcepcionEmpleadoNoEncontrado()
+        except ExcepcionEmpleadoNoEncontrado as lol:
+            messagebox.showwarning(title="Alerta", message=lol.mensaje_completo)
+            return empleadoExcepcion
+        
 
     # Parte de la interacción 1
     def pantallaAñadirDespedido(self):
