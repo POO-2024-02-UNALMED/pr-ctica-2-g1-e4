@@ -73,6 +73,7 @@ class Prenda(GastoMensual):
         insumosCamisa = sede.insumosPorNombre(Camisa.getTipoInsumo()) # Es posible que no se encuentren insumos de tal nombre en la bodega de la sede.
         if not insumosCamisa:
             Main.avisarFaltaDeInsumos(sede, fechaProduccion, "Camisa")
+            return False
         for _ in range(cantidadCamisas):
             if sede.quitarInsumos(insumosCamisa, Camisa.getCantidadInsumo()):
                 Prenda.cantidadTelaUltimaProduccion += Camisa.getCantidadInsumo()[Camisa.getTipoInsumo().index("Tela")]
