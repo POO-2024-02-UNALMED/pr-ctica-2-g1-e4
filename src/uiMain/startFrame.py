@@ -1386,13 +1386,27 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             tk.messagebox.showwarning("La sede no existe", "Intente otra vez, luego de verificar el nombre de la sede")
     #Este si
     def actualizarDatosAñadirVendedor(self):
-        if self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is None:
-            tk.messagebox.showwarning("El empleado no trabaja aquí", "Intente otra vez, luego de verificar el nombre del empleado")
+        try:
+            excepcion = False
+            if self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is None:
+                excepcion = True
+            if excepcion:
+                raise ExcepcionEmpleadoNoEncontrado()
+        except ExcepcionEmpleadoNoEncontrado as patoLucas:
+            messagebox.showwarning(title = "Alerta", message = patoLucas.mensaje_completo)
+            return excepcion
 
   #Este si
     def actualizarDatosAñadirCaja(self):
-        if self.sede.getEmpleado(self.datosDespedido.getValue("Empleado Caja")) is None:
-            tk.messagebox.showwarning("El empleado no trabaja aquí", "Intente otra vez, luego de verificar el nombre del empleado")
+        try:
+            excepcion = False
+            if self.sede.getEmpleado(self.datosDespedido.getValue("Empleado Caja")) is None:
+                excepcion = True
+            if excepcion:
+                raise ExcepcionEmpleadoNoEncontrado()
+        except ExcepcionEmpleadoNoEncontrado as sabandija:
+            messagebox.showwarning(title = "Alerta", message = sabandija.mensaje_completo)
+            return excepcion
 
     #Este si
     def leer1Facturacion(self):
