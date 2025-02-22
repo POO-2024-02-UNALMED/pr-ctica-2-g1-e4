@@ -90,7 +90,7 @@ class Main:
 
 
 
-    # ANCHOR gestión humana
+    # region gestión humana
     #------------------------------------------- Gestión Humana --------------------------------------------------------------------
     
     # Lo que siguen son para la versión grafica, o metodos puente para ella, y no usan print.-------------------------------
@@ -229,7 +229,7 @@ class Main:
                 cls.opcionesParaReemplazo.append(apto)
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
 
-    
+    # region financiera
     #----------------------------------------------Financiera------------------------------------------------------------
 
     #Directivos disponibles
@@ -286,7 +286,7 @@ class Main:
         Prenda.prevenciones(descuento, nuevoDescuento, Main.fecha)
         analisisFuturo = (f"{bfString}, sin embargo su desición fue aplicar un descuento de: {nuevoDescuento * 100}%.")
         return analisisFuturo
-
+# region insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
     # Interacción 1 
@@ -532,7 +532,7 @@ class Main:
             if Empleado.getAreaActual(empleado) == Area.VENTAS:
                 listaEmpleado.append(empleado)
         return listaEmpleado
-# ANCHOR facturacion
+# region facturacion
 #-----------------------------------------------------------------Facturación-----------------------------------------------------------------------------------
 
     def vender(cliente, sede, encargado, vendedor, productosSeleccionados, cantidadProductos):

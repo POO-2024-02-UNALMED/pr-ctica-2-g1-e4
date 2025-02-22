@@ -79,12 +79,12 @@ class Camisa(Prenda):
     @staticmethod
     def getCantidadInsumo():
         return Camisa.cantidadInsumo
-    @staticmethod
-    def setTipoInsumo(tipos):
-        Camisa.tipoInsumo = tipos
-    @staticmethod
-    def setCantidadInsumo(cantidades):
-        Camisa.cantidadInsumo = cantidades
+    @classmethod
+    def setTipoInsumo(cls,tipos):
+        cls.tipoInsumo = tipos
+    @classmethod
+    def setCantidadInsumo(cls,cantidades):
+        cls.cantidadInsumo = cantidades
     @staticmethod
     def getMaquinariaNecesaria():
         return Camisa.maquinariaNecesaria
