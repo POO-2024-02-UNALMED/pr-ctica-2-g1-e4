@@ -35,6 +35,7 @@ class Prenda(GastoMensual):
 
     @staticmethod
     def producirPrendas(planProduccion, hoy):
+        from src.uiMain.F5Produccion import recibeCreadasOrNo
         Prenda.cantidadTelaUltimaProduccion = 0
         Prenda.cantidadUltimaProduccion = 0
         diaDeProduccion = hoy
@@ -44,6 +45,7 @@ class Prenda(GastoMensual):
                 if not Prenda.producirListaPrendas(dia[i], sede, diaDeProduccion):
                     alcanzaInsumos = False
             diaDeProduccion = diaDeProduccion.diaSiguiente()
+        recibeCreadasOrNo(alcanzaInsumos)
         return alcanzaInsumos
 
     @staticmethod
@@ -59,7 +61,7 @@ class Prenda(GastoMensual):
         for _ in range(cantidadPantalones):
             if sede.quitarInsumos(insumosPantalon, Pantalon.getCantidadInsumo()):
                 Prenda.cantidadTelaUltimaProduccion += Pantalon.getCantidadInsumo()[Pantalon.getTipoInsumo().index("Tela")]
-                pantalon = Pantalon(fechaProduccion, sede, insumosPantalon)
+                pantalon = Pantalon(fechaProduccion, None, False, False, sede, insumosPantalon)
                 prendas.append(pantalon)
             else:
                 alcanzaInsumos = False
@@ -69,7 +71,7 @@ class Prenda(GastoMensual):
         for _ in range(cantidadCamisas):
             if sede.quitarInsumos(insumosCamisa, Camisa.getCantidadInsumo()):
                 Prenda.cantidadTelaUltimaProduccion += Camisa.getCantidadInsumo()[Camisa.getTipoInsumo().index("Tela")]
-                camisa = Camisa(fechaProduccion, sede, insumosCamisa)
+                camisa = Camisa(fechaProduccion, None, False, False, sede, insumosCamisa)
                 prendas.append(camisa)
             else:
                 alcanzaInsumos = False

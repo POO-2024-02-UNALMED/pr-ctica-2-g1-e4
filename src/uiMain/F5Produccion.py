@@ -499,7 +499,7 @@ def planProduccionn(event, containerBig, contLyB, indicador):
         valores = [int(modificados.get()) for modificados in varEntries]
         list1 = [valores[0], valores[1]] ; list2 = [valores[4], valores[5]] ; listProdHoy = [list1, list2]
         list3 = [valores[2], valores[3]] ; list4 = [valores[6], valores[7]] ; listProdOWeek = [list3, list4]
-        aProducirPaEnviar = [listProdHoy, listProdOWeek]
+        aProducirPaEnviar.append(listProdHoy) ; aProducirPaEnviar.append(listProdOWeek)
         print(f"\nproduccion pa enviar: {aProducirPaEnviar}")
 
     def calcularSobreCostos():
@@ -673,6 +673,25 @@ def planProduccionn(event, containerBig, contLyB, indicador):
     cambiarEnlaceP()
 
 aProducirPaEnviar = []
+creadas = False
+def recibeCreadasOrNo(creadasss):
+    global creadas
+    creadas = creadasss
+    evento_senalizador.set()
 
 def inicioInt3():
+    from src.gestorAplicacion.bodega.prenda import Prenda
+    from src.uiMain.main import Main
+    from src.gestorAplicacion.sede import Sede
+    global aProducirPaEnviar, creadas
+    sedePrueba = Sede("sede")
     print("\nComienzo de la interacción 3...")
+    print(f"\n Lista de insumos actual: {sedePrueba.getListaInsumosBodega()}, su cantidad: {sedePrueba.getCantidadInsumosBodega()}")
+    threading.Thread(target=Prenda.producirPrendas, args=(aProducirPaEnviar, Main.fecha), daemon=True).start()
+    evento_senalizador.wait()
+    evento_senalizador.clear()
+    if creadas:
+        print(Prenda.getCantidadUltimaProduccion()," Prendas creadas con éxito")
+    else:
+        print("No se pudo producir todo, los insumos no alcanzaron, producimos "+Prenda.getCantidadUltimaProduccion()+" prendas")
+

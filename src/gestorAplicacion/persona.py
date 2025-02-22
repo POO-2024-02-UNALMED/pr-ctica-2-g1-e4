@@ -8,7 +8,7 @@ class Persona:
 
     def __init__(self, nombre: str, documento: int, rol: Rol, experiencia: int, trabaja: bool, membresia: Membresia):
         self.nombre = nombre
-        self.documento = documento
+        self.DOCUMENTO = documento
         self.rol = rol
         self.experiencia = experiencia
         self.trabaja = trabaja
