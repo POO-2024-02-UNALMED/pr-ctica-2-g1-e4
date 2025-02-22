@@ -568,13 +568,13 @@ class Main:
         cantidadPantalon = 0
         for prenda in productosSeleccionados:
             if isinstance(prenda, Camisa):
-                sumaPreciosPrendas += Camisa.precioVenta()
+                sumaPreciosPrendas += Camisa.precioVenta()*cantidadProductos[productosSeleccionados.index(prenda)]
                 cantidadCamisas += 1
                 if cantidadCamisas >= 10:
                     descuento = int(sumaPreciosPrendas * 0.05)
                     sumaPreciosPrendas -= descuento
             elif isinstance(prenda, Pantalon):
-                sumaPreciosPrendas += Pantalon.precioVenta()
+                sumaPreciosPrendas += Pantalon.precioVenta()*cantidadProductos[productosSeleccionados.index(prenda)]
                 cantidadPantalon += 1
                 if cantidadPantalon >= 10:
                     descuento = int(sumaPreciosPrendas * 0.05)
@@ -587,7 +587,6 @@ class Main:
         montoPagar = int(monto - (monto * Membresia.getPorcentajeDescuento(Persona.getMembresia(cliente))))
         venta.setMontoPagado(montoPagar)
         venta.setSubtotal(sumaPreciosPrendas)
-        print(f"Subtotal: {sumaPreciosPrendas}")
         comision = int(montoPagar * 0.05)
         Empleado.setRendimientoBonificacion(vendedor,comision)
         
@@ -657,52 +656,44 @@ class Main:
                         cantidadInsumosBodega[i] -= 1
                         bolsaEncontrada = True
                         break
-                    else:
-                        debeBolsas+=1
                 totalPrendas -= cantidadDisponible
                 if capacidadTotal >= totalPrendas:
                     break   
+        debeBolsas=totalPrendas-len(bolsasSeleccionadas)
         venta.getBolsas().append(bolsasSeleccionadas)
         totalVenta = venta.getMontoPagado() + len(bolsasSeleccionadas) * 2000
         venta.setMontoPagado(totalVenta)
         return debeBolsas        
 
-    def surtirBolsas(venta, cantidadBolsaGrande,cantidadBolsaMediana,cantidadBolsaPequeña):
+    def surtirBolsas(ventana, venta):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
+
+        nombreBolsa = "Bolsa"
+        for revisarSede in Sede.getListaSedes():
+            listaInsumos = revisarSede.getListaInsumosBodega()
+            cantidadInsumos = revisarSede.getCantidadInsumosBodega()
+            for i in range(len(listaInsumos)):
+                insumo = listaInsumos[i]
+                if isinstance(insumo, Bolsa) and cantidadInsumos[i] < 10:
+                    mensaje=f"La sede {revisarSede.getNombre()} tiene menos de 10 bolsas en stock (Cantidad: {cantidadInsumos[i]})."
+                    for e in range(len(listaInsumos)):
+                        insumo = listaInsumos[e]
+                        if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
+                            print("692")                        
+                            ventana.interaccion3Facturacion(insumo, mensaje)
+                            
+    def comprarBolsas(ventana, venta, insumo, cantidadComprar):
         listaBolsas=[]
-        if cantidadBolsaGrande != 0:
-            listaBolsas.append("Bolsa grande")
-        if cantidadBolsaMediana != 0:
-            listaBolsas.append("Bolsa mediana")
-        if cantidadBolsaPequeña != 0:
-            listaBolsas.append("Bolsa pequeña")
+        nombreBolsa=insumo.getNombre()
         sede = venta.getSede()   
         cantidadInsumosBodega = sede.getCantidadInsumosBodega()     
-        banco = sede.getCuentaSede()
-        for i in range(len(listaBolsas)):
-            nombreBolsa = listaBolsas[i]
-            for revisarSede in Sede.getListaSedes():
-                print("671")
-                listaInsumos = revisarSede.getListaInsumosBodega()
-                cantidadInsumos = revisarSede.getCantidadInsumosBodega()
-                for i in range(len(listaInsumos)):
-                    print("675")
-                    insumo = listaInsumos[i]
-                    if isinstance(insumo, Bolsa) and cantidadInsumos[i] < 10:
-                        print(f"La sede {revisarSede.getNombre()} tiene menos de 10 bolsas en stock (Cantidad: {cantidadInsumos[i]}).")
-                        print("Comprando al proveedor...")
-                        for e in range(len(listaInsumos)):
-                            insumo = listaInsumos[e]    
-                            if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
-                                print(f"¿Cuántas bolsas de {insumo.getNombre()} desea comprar?")
-                                cantidadComprar = Main.nextIntSeguro()
-                                costoCompra = Proveedor.costoDeLaCantidad(insumo, cantidadComprar)
-                                banco.setAhorroBanco(Banco.getAhorroBanco(banco) - costoCompra)
-                                cantidadInsumosBodega[e] += cantidadComprar
-                                insumo.setPrecioCompra(costoCompra)
-                                insumo.setPrecioCompra(costoCompra)
-                                print(f"Se compraron {cantidadComprar} {nombreBolsa} por un costo total de {costoCompra}")
-                                break
+        banco = sede.getCuentaSede()        
+        costoCompra = Proveedor.costoDeLaCantidad(insumo, cantidadComprar)
+        banco.setAhorroBanco(Banco.getAhorroBanco(banco) - costoCompra)
+        cantidadInsumosBodega[e] += cantidadComprar
+        insumo.setPrecioCompra(costoCompra)
+        insumo.setPrecioCompra(costoCompra)
+        return f"Se compraron {cantidadComprar} {nombreBolsa} por un costo total de {costoCompra}"
 
     def realizarVenta(venta):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
