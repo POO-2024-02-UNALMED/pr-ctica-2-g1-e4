@@ -25,14 +25,7 @@ class ExcepcionEnteroNoString(ExceptionC1):
         self.mensajeEntero=f" La entrada {entero} no es válida, debe llenar este campo solo con números enteros"
         super().__init__( self.mensajeEntero)
 
-    def enteroNoValido(self):
-       messagebox.showwarning("Alerta", f"{self}")
-       raise self
-    def contenidoVacio(self):
-        messagebox.showwarning("Alerta", f"{self}")
-        raise self
-    
-   # def stringNoEntero(self, string):
+
 
 
 

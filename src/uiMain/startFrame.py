@@ -1396,8 +1396,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
     #Este si
     def leer1Facturacion(self):
-        #Acá va lo de la excepcion
-        excepcion=False
+        excepcion=True
+        try:
+          if excepcion:
+               raise ExcepcionAgregarOtraPrenda()
+        except ExcepcionAgregarOtraPrenda as e:
+            excepcion = messagebox.askyesno(title = "Confirmación", message= e.mensaje_completo)           
         cliente=None
         for persona in Persona.getListaPersonas():
             if persona.getNombre() == self.datosDespedido.getValue("Cliente"):
