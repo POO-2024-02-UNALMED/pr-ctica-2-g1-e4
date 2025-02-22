@@ -60,8 +60,8 @@ class Pantalon(Prenda):
             retorno = "DESCARTAR"
         return retorno
 
-    cantidadInsumo = []
-    tipoInsumo = []
+    cantidadInsumo = [200,1,1,300]
+    tipoInsumo = ["Tela","Boton","Cremallera","Hilo"]
     pasoActual = 1
     maquinariaNecesaria = ["Maquina de Corte", "Maquina de Coser Industrial", "Maquina de Tijereado"]
 

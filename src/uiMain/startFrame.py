@@ -29,6 +29,7 @@ class startFrame(tk.Tk):
     diferencia_estimada=0
     analisis_futuro=0
     def __init__(self):
+        self.bolsas=0
         self.pagina="ninguna"
         Main.estadoGestionHumana="ninguno"
         numbre = ""
@@ -644,6 +645,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.2, anchor="c")   
 
     def pasarAInteraccion2(self):
+        Main.prepararCoordinacionBodegas()
         self.listaA = Main.coordinarBodegas(self, self.retorno)
             
     # Interacción 2
@@ -657,89 +659,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.field2 = fieldFrame.FieldFrame(self.self.fidelidadclientes, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
         self.field2.pack(anchor="s",  expand=True, fill="both")
 
-
-
-#region facturacion
-#--------------------------------------------------------------------------- Facturación ------------------------------------------------------------------------------------------------
-
-    def Facturar(self):
-        from src.gestorAplicacion.administracion.area import Area
-        from src.gestorAplicacion.administracion.empleado import Empleado
-        from src.gestorAplicacion.persona import Persona
-        from src.gestorAplicacion.sede import Sede
-        from src.uiMain.fieldFrame import FieldFrame
-        from src.uiMain.main import Main
-        
-        def Interaccion1(self):
-            framePrincipal =  tk.Frame(self)
-            framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
-
-            frame1 = tk.Frame(framePrincipal, height=150)
-            frame1.pack(side="top", fill="x")
-
-            tituloF4 = tk.Label(frame1, text="Facturación", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-            tituloF4.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
-
-            descripcionF4 = tk.Label(frame1, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial",10), wraplength=800)
-            descripcionF4.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
-
-            frameGeneral= tk.Frame(framePrincipal)
-            frameGeneral.pack(expand=True, fill="both")
-
-            frame2 = tk.Frame(frameGeneral)
-            frame2.place(relx=0, rely=0, relwidth=1, relheight=0.6)
-
-            criterios = ["Cliente","Sede","Tipo de Prenda", "Cantidad Prenda"]
-            valores = ["","Sede Principal","camisa/pantalon","0"]
-            habilitado = [True, True,True,True]
-            # Creamos el FieldFrame con los botones
-            field_frame = FieldFrame(frame2, "Detalles Venta", criterios, "Campos", valores, habilitado, ancho_entry=20, crecer=False, tamañoFuente=12, aceptar=True,borrar=True, callbackAceptar=None)
-            field_frame.place(relx=1, rely=0.1, relwidth=1, relheight=1, anchor="e")
-
-            framec = tk.Frame(frameGeneral)
-            framec.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
-            labelCliente= tk.Frame(framec)
-            labelCliente.place(relx=0, rely=0, relwidth=1, relheight=1)
-            clientes=Main.imprimirNoEmpleados()
-            
-            tituloCliente=tk.Label(labelCliente, text="Clientes: ", font=("Arial", 12, "bold"), anchor="center")
-            
-            tituloCliente.grid(row=2, column=0, columnspan=3)
-            contador=1
-            rowbase=3
-            for cliente in clientes:
-                if contador<=(len(clientes)/3):
-                    nombre1 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                    nombre1.grid(row=rowbase, column=0)
-                    if contador==(len(clientes)/3):
-                        rowbase=3
-                    else:
-                        rowbase+=1
-                    contador+=1
-                
-                elif contador<=((len(clientes)/3)*2) and contador>(len(clientes)/3):
-                    nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                    nombre2.grid(row=rowbase, column=1)
-                    if contador==((len(clientes)/3)*2):
-                        rowbase=3
-                    else:
-                        rowbase+=1
-                    contador+=1
-                else:
-                    nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                    nombre2.grid(row=rowbase, column=2)
-                    rowbase+=1
-
-            labelCliente.columnconfigure(0, weight=1)
-            labelCliente.columnconfigure(1, weight=1)
-            labelCliente.columnconfigure(2, weight=1)
-            return framePrincipal
-
-        def Siguiente(event):
-            pass
-        
-        
-        return Interaccion1(self)
+#endregion
 
 
 #---------------------------------------------------------------------- Producción ----------------------------------------------------------------------------------------------------
@@ -1055,6 +975,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             texto.config(state="disabled")
             return framePrincipal
     
+    #region facturacion
 #--------------------------------------------------------- Facturación ----------------------------------------------------------------------------------------------------------------------------------
     
     def Facturar(self):
@@ -1297,7 +1218,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         else:
             tk.messagebox.showwarning("Faltan datos","Por favor llene todos los campos")
    
-    def interaccion3Facturacion(self):
+    def interaccion3Facturacion(self,Bolsa, mensaje):
         self.cantidadBolsaGrande=0
         self.cantidadBolsaMediana=0
         self.cantidadBolsaPequeña=0
@@ -1307,9 +1228,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
         self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
         
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Cantidad a Surtir", ["0","0", "0"],[False,False,False],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer3Facturacion)
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Cantidad Bolsas" ,["Cantidad"],"Cantidad que desea Comprar", ["0"],[True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer3Facturacion(Bolsa))
         self.datosDespedido.grid(row=1, column=0, columnspan=2)      
-        
+        self.outputGHumana.config(state="normal")
+        self.outputGHumana.delete("1.0", "end")
+        self.outputGHumana.insert("1.0",mensaje)
+        self.outputGHumana.config(state="disabled")
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
         self.frameCambianteGHumana.rowconfigure(1, weight=10)
         self.frameCambianteGHumana.columnconfigure(0, weight=2)
@@ -1317,8 +1241,17 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
    
-    def leer3Facturacion(self):
-        pass
+    def leer3Facturacion(self,insumo):
+        if self.datosDespedido.getValue("Cantidad")!=None:
+            cantidad=int(self.datosDespedido.getValue("Cantidad"))
+            mensaje= Main.comprarBolsas(self, self.venta, insumo, cantidad)
+            self.outputGHumana.config(state="normal")
+            self.outputGHumana.delete("1.0", "end")
+            self.outputGHumana.insert("1.0",mensaje)
+            self.outputGHumana.config(state="disabled")
+            self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion5Facturacion)
+            self.siguiente.grid(row=4, column=3)
+            
     
     def interaccion2Facturacion(self):
         self.cantidadBolsaGrande=0
@@ -1478,44 +1411,53 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
     def leer2Facturacion(self):
         self.cantidadBolsaGrande=int(self.datosDespedido.getValue("Grande"))
-        +int(self.datosDespedido.getValue("Mediana"))+int(self.datosDespedido.getValue("Pequeña"))
+        self.cantidadBolsaMediana=int(self.datosDespedido.getValue("Mediana"))
+        self.cantidadBolsaPequeña=int(self.datosDespedido.getValue("Pequeña"))
         revisionBolsa= self.verificarCantidadBolsa()
         self.outputGHumana.config(state="normal")
         self.outputGHumana.delete("1.0", "end")
         self.outputGHumana.insert("1.0", revisionBolsa, "center")
         self.outputGHumana.config(state="disabled")
         if revisionBolsa=="Se tienen suficientes bolsas para empacar todos los artículos":
-            self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion4Facturacion)
+            self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=Main.surtirBolsas(self, self.venta))
             self.siguiente.grid(row=4, column=3)
 
             
 
     def revisarBolsasDisponibles(self):
-        bp, bm, bg = Main.verificarBolsas(self.venta)
-        if bg>0:
+        self.bp, self.bm, self.bg = Main.verificarBolsas(self.venta)
+        if self.bg>0:
             self.datosDespedido.habilitarEntry("Grande", True)
-        if bm>0:
+        if self.bm>0:
             self.datosDespedido.habilitarEntry("Mediana", True)
-        if bp>0:
+        if self.bp>0:
             self.datosDespedido.habilitarEntry("Pequeña", True)
         self.outputGHumana.config(state="normal")
         self.outputGHumana.delete("1.0", "end")
-        self.outputGHumana.insert("1.0", f"Hay máximo {bg} bolsas grandes, {bm} bolsas medianas y {bp} bolsas pequeñas,", "center")     
+        self.outputGHumana.insert("1.0", f"Hay máximo {self.bg} bolsas grandes, {self.bm} bolsas medianas y {self.bp} bolsas pequeñas,", "center")     
         self.outputGHumana.config(state="disabled")
 
     def verificarCantidadBolsa(self):
-        BolsasFaltantes=Main.cantidadActualBolsas(self.venta, self.cantidadBolsaGrande, self.cantidadBolsaMediana, self.cantidadBolsaPequeña)
-        self.outputGHumana.config(state="normal")
-        self.outputGHumana.delete("1.0", "end")
-        if BolsasFaltantes>0:
-            bolasNecesarias=f"Se necesitan {BolsasFaltantes} bolsas más para empacar todos los artículos"
+        
+        if self.cantidadBolsaGrande<=self.bg or self.cantidadBolsaMediana<=self.bm or self.cantidadBolsaPequeña<=self.bp:
+            BolsasFaltantes=Main.cantidadActualBolsas(self.venta, self.cantidadBolsaGrande, self.cantidadBolsaMediana, self.cantidadBolsaPequeña)
+            self.outputGHumana.config(state="normal")
+            self.outputGHumana.delete("1.0", "end")
+            self.bolsas+=self.cantidadBolsaGrande+ self.cantidadBolsaMediana+ self.cantidadBolsaPequeña
+            if BolsasFaltantes>0:
+                bolasNecesarias=f"Se necesitan {BolsasFaltantes} bolsas más para empacar todos los artículos"
+                self.datosDespedido.habilitarEntry("Grande", True)
+                self.datosDespedido.habilitarEntry("Mediana", True)
+                self.datosDespedido.habilitarEntry("Pequeña", True)                
+            else:
+                bolasNecesarias="Se tienen suficientes bolsas para empacar todos los artículos"
+                self.datosDespedido.habilitarEntry("Grande", False)
+                self.datosDespedido.habilitarEntry("Mediana", False)
+                self.datosDespedido.habilitarEntry("Pequeña", False)
+            self.outputGHumana.config(state="disabled")   
+            return bolasNecesarias
         else:
-            bolasNecesarias="Se tienen suficientes bolsas para empacar todos los artículos"
-            self.datosDespedido.habilitarEntry("Grande", False)
-            self.datosDespedido.habilitarEntry("Mediana", False)
-            self.datosDespedido.habilitarEntry("Pequeña", False)
-        self.outputGHumana.config(state="disabled")   
-        return bolasNecesarias
+            self.datosDespedido.borrar()
             
 def pasarAVentanaPrincipal():
     ventana = startFrame()

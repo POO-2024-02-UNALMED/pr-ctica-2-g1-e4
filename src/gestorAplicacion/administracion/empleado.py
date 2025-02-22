@@ -8,6 +8,7 @@ from ..fecha import Fecha
 from ..sede import Sede
 from .area import Area
 from typing import List
+import random
 
 class Empleado(Persona, GastoMensual):
     def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia=Membresia.NULA, maquinaria: Maquinaria=[]):
@@ -21,7 +22,7 @@ class Empleado(Persona, GastoMensual):
         self.fechaContratacion = fecha
         self.prendasDescartadas = 0
         self.prendasProducidas = 0
-        self.pericia = 0
+        self.pericia = random.uniform(0.8,1)
         self.evaluaciones = []; self.ventasEncargadas = []
         sede.anadirEmpleado(self)
         Sede.getListaEmpleadosTotal().append(self)
