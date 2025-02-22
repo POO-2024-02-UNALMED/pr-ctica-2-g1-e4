@@ -1430,6 +1430,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     break
                 elif (prenda == None):
                     continue
+        if self.datosDespedido.getValue("Prenda").lower() != "camisa" and self.datosDespedido.getValue("Prenda").lower() != "pantalon":
+            try: 
+                hayExcepcion = True
+                if hayExcepcion:
+                    raise ExcepcionPrendaNoExistente(self.datosDespedido.getValue("Prenda"))
+            except ExcepcionPrendaNoExistente as b:
+                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
+                return hayExcepcion
             if prenda not in self.listaPrendas:
                 self.listaPrendas.append(prenda)
                 self.cantidadPrendas.append(int(self.datosDespedido.getValue("Cantidad")))
