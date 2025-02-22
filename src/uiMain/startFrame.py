@@ -641,8 +641,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         label3 = tk.Label(self.frame3, text="Según dicha predicción se hará la compra de los insumos")
         label3.place(relx=0.4, rely=0.8, relwidth=1, relheight=0.1, anchor="c")    
-        aceptar = tk.Button(self.frame3, text="Aceptar", command=lambda: self.pasarAInteraccion2())
-        aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.1, anchor="c")   
+        aceptar = tk.Button(self.frame3, text="Siguiente", command=lambda: self.pasarAInteraccion2())
+        aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.2, anchor="c")   
 
     def pasarAInteraccion2(self):
         Main.prepararCoordinacionBodegas()
@@ -1066,7 +1066,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
         self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
 
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Detalles Venta" ,["Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", ["","Sede Principal", "","","Camisa/Pantalon","0"],[True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Detalles Venta" ,
+        ["Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", ["","Sede Principal", "",
+        "","Camisa/Pantalon","0"],[True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
         self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosEmpleadosFacturacion)
         self.datosDespedido.grid(row=1, column=0, columnspan=2)
         clientesPosibles="Clientes"
