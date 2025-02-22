@@ -13,7 +13,8 @@ class Sede:
         self.prendasProduccion = [];self.maqProduccion = []; self.maqOficina = []
         self.nombre = nombre
         self.cuentaSede = None
-        Sede.getListaSedes().append(self)
+        if self.nombre.lower() != "sede":
+            Sede.getListaSedes().append(self)
 
     @classmethod
     def verificarProductoBodega(cls, insumo, sede):
