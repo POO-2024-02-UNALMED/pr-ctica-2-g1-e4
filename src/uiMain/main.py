@@ -136,7 +136,7 @@ class Main:
     @classmethod    
     def sedePorNombre(cls,getNombre:str)->Sede:
         for sede in Sede.getListaSedes():
-            if sede.getNombre()==getNombre:
+            if sede.getNombre().lower()==getNombre.lower():
                 return sede
     
     # Usado para el recuadro de arriba de la interacción 1 grafica.
@@ -235,7 +235,19 @@ class Main:
 
     
     #----------------------------------------------Financiera------------------------------------------------------------
-        
+
+    #Directivos disponibles
+    def Directivos():
+        from src.gestorAplicacion.administracion.area import Area
+        from src.gestorAplicacion.sede import Sede
+                
+        elegible_empleados = []
+        for empleado_actual in Sede.getListaEmpleadosTotal():
+            if empleado_actual.getAreaActual() == Area.DIRECCION:
+                elegible_empleados.append(empleado_actual.getNombre())
+        return elegible_empleados
+    
+    #Interaccion 1    
     def calcularBalanceAnterior(empleado, eleccion):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         from src.gestorAplicacion.administracion.deuda import Deuda
@@ -589,17 +601,17 @@ class Main:
 
     def verificarBolsas(venta):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
-        productosSeleccionados = Venta.getArticulos(venta)
-        sede = Venta.getSede(venta)
+        productosSeleccionados = venta.getArticulos()
+        sede = venta.getSede()
         totalPrendas = len(productosSeleccionados)
-        insumosBodega = Sede.getListaInsumosBodega(sede)
+        insumosBodega = sede.getListaInsumosBodega()
         i=1
         bp, bm, bg = False, False, False
         for i in range(len(insumosBodega)):
             bolsa = insumosBodega[i]
             if isinstance(bolsa, Bolsa):
                 capacidad = bolsa.getCapacidadMaxima()
-                cantidad = Sede.getCantidadInsumosBodega(sede)[i]
+                cantidad = sede.getCantidadInsumosBodega()[i]
                 if capacidad == 1 and cantidad > 0:
                     bp = True
                 if capacidad == 3 and cantidad > 0:
@@ -610,12 +622,11 @@ class Main:
         
 
     def cantidadActualBolsas(venta, cantidadBolsaGrande,cantidadBolsaMediana,cantidadBolsaPequeña):
-        from src.gestorAplicacion.bodega.proveedor import Proveedor
-        productosSeleccionados = Venta.getArticulos(venta)
-        sede = Venta.getSede(venta)
+        productosSeleccionados = venta.getArticulos()
+        sede = venta.getSede()
         totalPrendas = len(productosSeleccionados)
-        insumosBodega = Sede.getListaInsumosBodega(sede)
-        cantidadInsumosBodega = Sede.getCantidadInsumosBodega(sede)
+        insumosBodega = sede.getListaInsumosBodega()
+        cantidadInsumosBodega = sede.getCantidadInsumosBodega()
         bolsasSeleccionadas = []
         capacidadTotal = 0
         bolsasAPedir=cantidadBolsaGrande+cantidadBolsaMediana+cantidadBolsaPequeña
@@ -647,12 +658,52 @@ class Main:
                     else:
                         debeBolsas+=1
                 totalPrendas -= cantidadDisponible
-                if capacidadTotal == totalPrendas:
+                if capacidadTotal >= totalPrendas:
                     break   
         venta.getBolsas().append(bolsasSeleccionadas)
-        totalVenta = Venta.getMontoPagado(venta) + len(bolsasSeleccionadas) * 2000
-        Venta.setMontoPagado(venta,totalVenta)
+        totalVenta = venta.getMontoPagado() + len(bolsasSeleccionadas) * 2000
+        venta.setMontoPagado(totalVenta)
         return debeBolsas        
+
+    def surtirBolsas(venta, cantidadBolsaGrande,cantidadBolsaMediana,cantidadBolsaPequeña):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        listaBolsas=[]
+        if cantidadBolsaGrande != 0:
+            listaBolsas.append("Bolsa grande")
+        if cantidadBolsaMediana != 0:
+            listaBolsas.append("Bolsa mediana")
+        if cantidadBolsaPequeña != 0:
+            listaBolsas.append("Bolsa pequeña")
+        sede = venta.getSede()   
+        cantidadInsumosBodega = sede.getCantidadInsumosBodega()     
+        banco = sede.getCuentaSede()
+        for i in range(len(listaBolsas)):
+            print("668")
+            nombreBolsa = listaBolsas[i]
+            for revisarSede in Sede.getListaSedes():
+                print("671")
+                listaInsumos = revisarSede.getListaInsumosBodega()
+                cantidadInsumos = revisarSede.getCantidadInsumosBodega()
+                for i in range(len(listaInsumos)):
+                    print("675")
+                    insumo = listaInsumos[i]
+                    if isinstance(insumo, Bolsa) and cantidadInsumos[i] < 10:
+                        print("if 678")
+                        print(f"La sede {revisarSede.getNombre()} tiene menos de 10 bolsas en stock (Cantidad: {cantidadInsumos[i]}).")
+                        print("Comprando al proveedor...")
+                        for e in range(len(listaInsumos)):
+                            print("682")
+                            insumo = listaInsumos[e]    
+                            if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
+                                print(f"¿Cuántas bolsas de {insumo.getNombre()} desea comprar?")
+                                cantidadComprar = Main.nextIntSeguro()
+                                costoCompra = Proveedor.costoDeLaCantidad(insumo, cantidadComprar)
+                                banco.setAhorroBanco(Banco.getAhorroBanco(banco) - costoCompra)
+                                cantidadInsumosBodega[e] += cantidadComprar
+                                insumo.setPrecioCompra(costoCompra)
+                                insumo.setPrecioCompra(costoCompra)
+                                print(f"Se compraron {cantidadComprar} {nombreBolsa} por un costo total de {costoCompra}")
+                                break
 
     def realizarVenta(venta):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
@@ -767,71 +818,66 @@ class Main:
             if prendasTransferidas < faltantes:
                 print("No se pudieron transferir todas las prendas faltantes. Faltan " + str(faltantes - prendasTransferidas) + " unidades.")
 
-    def tarjetaRegalo(venta):
-        from src.gestorAplicacion.bodega.pantalon import Pantalon
-        from src.gestorAplicacion.bodega.camisa import Camisa
+    def tarjetaRegalo(venta,codigoIngresado,respuesta,compraTarjeta,montoTarjeta):
         sede = Venta.getSede(venta)
         banco = Sede.getCuentaSede(sede)
-
-        print("\n¿Desea usar una tarjeta de regalo? (si/no)")
-        respuesta = input().lower()
         nuevoIntento = 1
+        retorno=""
+        print("813")
         while nuevoIntento == 1:
-            if respuesta == "si":
-                print("Ingrese el código de la tarjeta de regalo:")
-                codigoIngresado = int(input())
-
+            print("815")
+            if respuesta.lower() == "si":
                 if codigoIngresado in Venta.getCodigosRegalo():
-                    print("Código válido. Procesando tarjeta de regalo...")
+                    retorno+="Código válido. Procesando tarjeta de regalo..."
                     indice = Venta.getCodigosRegalo().index(codigoIngresado)
                     montoTarjeta = Venta.getMontosRegalo()[indice]
                     montoVenta = Venta.getMontoPagado(venta)
 
                     if montoTarjeta >= montoVenta:
-                        print("El monto de la tarjeta cubre la totalidad de la venta.")
+                        retorno+="\nEl monto de la tarjeta cubre la totalidad de la venta."
                         saldoRestante = montoTarjeta - montoVenta
                         Venta.getMontosRegalo()[indice] = saldoRestante
                         Venta.setMontoPagado(venta,0)
-
-                        print("Venta pagada con tarjeta de regalo.")
-                        print("Saldo restante en la tarjeta de regalo: $" + str(saldoRestante))
+                        retorno+="\nSaldo restante en la tarjeta de regalo: $" + str(saldoRestante)
                     else:
                         montoFaltante = montoVenta - montoTarjeta
                         Venta.getMontosRegalo()[indice] = 0
                         venta.setMontoPagado(montoFaltante)
-                        print("El monto de la tarjeta no es suficiente para cubrir la venta.")
-                        print("Monto restante a pagar: $" + str(montoFaltante))
+                        retorno+="\nEl monto de la tarjeta no es suficiente para cubrir la venta."
+                        retorno+="\nMonto restante a pagar: $" + str(montoFaltante)
 
                     if Venta.getMontosRegalo()[indice] == 0:
                         Venta.getCodigosRegalo().pop(indice)
                         Venta.getMontosRegalo().pop(indice)
-                        print("La tarjeta de regalo se ha agotado y ha sido desactivada.")
+                        retorno+="\nLa tarjeta de regalo se ha agotado y ha sido desactivada."
 
                     nuevoIntento = 2
                 else:
-                    print("El código ingresado no es válido. Por favor, intentar de nuevo o pagar el monto total")
-                    print("Ingresa 1 para intentar de nuevo.")
-                    print("Ingresa 2 para salir del intento")
-                    nuevoIntento = Main.nextIntSeguro()
-            elif respuesta == "no":
+                    retorno+="\nEl código ingresado no es válido. Por favor, intentar de nuevo o pagar el monto total"
+                    #print("Ingresa 1 para intentar de nuevo.")
+                    #print("Ingresa 2 para salir del intento")
+                    #nuevoIntento = Main.nextIntSeguro()
+                    
+            elif respuesta.lower() == "no":
                 nuevoIntento -= 1
                 break
 
-        print("\n¿Desea comprar una tarjeta de regalo? (si/no)")
-        compraTarjeta = input().lower()
-
-        if compraTarjeta == "si":
-            print("¿Por cuánto será la tarjeta de regalo? (monto en pesos)")
-            montoTarjeta = Main.nextIntSeguro()
+        if compraTarjeta.lower() == "si":
             codigoGenerado = Main.generarCodigoAleatorio()
             Venta.getCodigosRegalo().append(codigoGenerado)
             Venta.getMontosRegalo().append(montoTarjeta)
             Banco.setAhorroBanco(banco,Banco.getAhorroBanco(banco) + montoTarjeta)
 
-            print("Tarjeta de regalo generada exitosamente.")
-            print("Código: " + codigoGenerado)
-            print("Monto: $" + str(montoTarjeta))
-
+            retorno+="\nTarjeta de regalo generada exitosamente."
+            retorno+="\nCódigo: " + codigoGenerado
+            retorno+="\nMonto: $" + str(montoTarjeta)
+        return retorno
+            
+    def ingresoEmpresa(venta):
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        from src.gestorAplicacion.bodega.camisa import Camisa        
+        sede = Venta.getSede(venta)
+        banco = Sede.getCuentaSede(sede)
         ingreso = Venta.getMontoPagado(venta)
         print("Ingreso calculado: $" + str(ingreso))
         Banco.setAhorroBanco(banco, Banco.getAhorroBanco(banco) + ingreso)
