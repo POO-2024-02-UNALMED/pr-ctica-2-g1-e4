@@ -14,6 +14,7 @@ from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.baseDatos.serializador import serializar
+from src.baseDatos.deserializador import deserializar
 import threading
 
 class Main:
@@ -26,10 +27,7 @@ class Main:
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
         Main.fecha = Main.ingresarFechaConsola()
-        print("Ecomoda a la orden, presiona enter para continuar")
-        respuesta=input()
-        if respuesta!="moscorrofio":
-            Main.crearSedesMaquinasRepuestos()
+        print("Ecomoda a la orden")
         while True:
             print("\n¿Que operación desea realizar?")
             print("1. Despedir/Transferir/Contratar empleados")
@@ -1487,14 +1485,19 @@ class Main:
 if __name__ == "__main__":
     print("Para usar la interfaz grafica, 1. Para usar la consola, 2. Para reiniciar los datos, 3")
     opcion="3"
+    deserializarAlIniciar=True
     while opcion=="3":
         opcion = input()
         match opcion:
             case "1":
                 from src.uiMain.bienvenida.bienvenida import Aplication
+                if deserializarAlIniciar:
+                    deserializar()
                 Aplication.bienvenida()
             case "2":
+                if deserializarAlIniciar:
+                    deserializar()
                 Main.main()
             case "3":
                 Main.crearSedesMaquinasRepuestos()
-                serializar()
+                deserializarAlIniciar=False

@@ -7,34 +7,32 @@ from src.gestorAplicacion.bodega.pantalon import Pantalon
 from src.gestorAplicacion.bodega.proveedor import Proveedor
 from src.gestorAplicacion.bodega.repuesto import Repuesto
 from src.gestorAplicacion.venta import Venta
-
 def serializar():
-    archivoBodega = open("src/baseDatos/bodega", "wb")
+    archivoBodega = open("src/baseDatos/bodega.txt", "wb")
     pickle.dump(Camisa.getTipoInsumo(), archivoBodega)
     pickle.dump(Camisa.getCantidadInsumo(), archivoBodega)
     pickle.dump(Pantalon.getTipoInsumo(), archivoBodega)
     pickle.dump(Pantalon.getCantidadInsumo(), archivoBodega)
     pickle.dump(Proveedor.getListaProveedores(), archivoBodega)
-    pickle.dump(Repuesto.getListaRepuestos(), archivoBodega)
+    pickle.dump(Repuesto.getListadoRepuestos(), archivoBodega)
     archivoBodega.close()
 
-    archivoSede = open("src/baseDatos/sede", "wb")
-    pickle.dump(Sede.listaSedes, archivoSede)
+    archivoSede = open("src/baseDatos/sede.txt", "wb")
     pickle.dump(Sede.getListaEmpleadosTotal(), archivoSede)
-    pickle.dump(Sede.getListaClientesTotal(), archivoSede)
-    pickle.dump(Sede.getListaEmpleadosTotal(), archivoSede)
+    pickle.dump(Sede.getPrendasInventadasTotal(), archivoSede)
+    pickle.dump(Sede.getListaSedes(), archivoSede)
     archivoSede.close()
 
-    archivoAdministracion = open("src/baseDatos/administracion", "wb")
+    archivoAdministracion = open("src/baseDatos/administracion.txt", "wb")
     pickle.dump(Banco.getListaBancos(), archivoAdministracion)
     pickle.dump(Banco.getCuentaPrincipal(), archivoAdministracion)
     archivoAdministracion.close()
 
-    archivoPersona = open("src/baseDatos/persona", "wb")
+    archivoPersona = open("src/baseDatos/persona.txt", "wb")
     pickle.dump(Persona.getListaPersonas(), archivoPersona)
     archivoPersona.close()
 
-    archivoVenta = open("src/baseDatos/venta", "wb")
+    archivoVenta = open("src/baseDatos/venta.txt", "wb")
     pickle.dump(Venta.getCodigosRegalo(), archivoVenta)
-    pickle.dump(Venta.getListaVentas(), archivoVenta)
+    pickle.dump(Venta.getMontosRegalo(), archivoVenta)
     archivoVenta.close()

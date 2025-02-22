@@ -77,7 +77,7 @@ class Empleado(Persona, GastoMensual):
         listaATransferir = [[] for _ in Sede.getListaSedes()]
 
         for sede in Sede.getListaSedes():
-            for emp in Sede.getListaEmpleados(sede):
+            for emp in sede.getListaEmpleados():
                 rendimiento = Empleado.calcularRendimiento(emp,fecha)
                 seVaADespedir = False
                 rendimientoDeseado = emp.sede.getRendimientoDeseado(emp.areaActual, fecha)
@@ -89,12 +89,15 @@ class Empleado(Persona, GastoMensual):
                     rendimientoInsufuciencias.append(rendimiento)
                 if seVaADespedir and sede.cantidadPorArea(emp.areaActual) == 1:
                     for idxSede, sedeDestino in enumerate(Sede.getListaSedes()):
-                        if sedeDestino.getRendimientoDeseado(emp.areaActual, fecha) <= rendimiento + 20 and seVaADespedir:
-                            mensajes.append(f"El empleado {emp.nombre} ha sido transferido a la sede {sedeDestino.nombre}")
-                            listaADespedir.remove(emp)
-                            listaATransferir[idxSede].append(emp)
-                            seVaADespedir = False
-                            acciones.append("transferencia-sede")
+                        if isinstance(sedeDestino, Sede):
+                            if sedeDestino.getRendimientoDeseado(emp.areaActual, fecha) <= rendimiento + 20 and seVaADespedir:
+                                mensajes.append(f"El empleado {emp.nombre} ha sido transferido a la sede {sedeDestino.nombre}")
+                                listaADespedir.remove(emp)
+                                listaATransferir[idxSede].append(emp)
+                                seVaADespedir = False
+                                acciones.append("transferencia-sede")
+                        else:
+                            mensajes.append(f"Error al transferir empleado, elemento extraño en la lista de sedes {sedeDestino}")
                 if seVaADespedir and emp.areaActual != Area.CORTE and emp.traslados < 2 and sede.cantidadPorArea(emp.areaActual) != 1:
                     puedeCambiarArea = True
                     for areaPasada in emp.areas:
