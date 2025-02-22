@@ -124,7 +124,7 @@ class startFrame(tk.Tk):
     
     def acercaDe(self):
         tk.messagebox.showinfo("Acerca de", "Andres David Calderón Jiménez \nGelsy Jackelin Lozano Blanquiceth \nAndrea Merino Mesa \nLuis Rincon \nJuanita Valentina Rosero")
-
+# region frame Inicial
 #---------------------------------------------------------Frame Inicial------------------------------------------------------------------------
 
     def crearFrameInicial(self)->tk.Frame:
@@ -285,7 +285,8 @@ class startFrame(tk.Tk):
         Main.fecha=fecha
         self.fechaValida = True
         return fecha
-    
+
+# region gestion hunana
 #------------------------------------------------------------------------Gestión Humana---------------------------------------------------------------------------------------------
     def crearGestionHumana(self):
         self.gestionHumana=tk.Frame(self)
@@ -577,7 +578,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         else:
             tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado esta en la lista de candidatos.")
 
-
+# region insumos
 #---------------------------------------------------------------- Insumos ------------------------------------------------------------------------------------------------------------------
 
     def crearInsumos(self):
@@ -654,7 +655,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
 
 
-
+#region facturacion
 #--------------------------------------------------------------------------- Facturación ------------------------------------------------------------------------------------------------
 
     def Facturar(self):
@@ -740,6 +741,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 #---------------------------------------------------------------------- Producción ----------------------------------------------------------------------------------------------------
 
 
+#region sistema financiero
 #-------------------------------------------------------------------Sistema Financiero--------------------------------------------------------------------------------------------------------
 
     def SistemaFinanciero(self)->tk.Frame:

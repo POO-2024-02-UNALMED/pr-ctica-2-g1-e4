@@ -111,7 +111,7 @@ class Main:
         for nombre in nombres:
             encontrado=False
             for emp in Sede.getListaEmpleadosTotal():
-                if emp.getNombre() == nombre:
+                if emp.getNombre().lower() == nombre.lower():
                     empleados.append(emp)
                     encontrado=True
             if not encontrado:
@@ -188,19 +188,15 @@ class Main:
     # Por cambio de sede.
     @classmethod
     def terminarTandaReemplazo(cls,reemplazos):
+        empleadosReemplazadores = []
         for nombre in reemplazos:
             encontrado=False
             for emp in cls.opcionesParaReemplazo:
-                if emp.getNombre() == nombre:
+                if emp.getNombre().lower() == nombre.lower():
                     encontrado=True
+                    empleadosReemplazadores.append(emp)
             if not encontrado:
                 return False
-
-        empleadosReemplazadores = []
-        for nombre in reemplazos:
-            for emp in cls.opcionesParaReemplazo:
-                if emp.getNombre() == nombre:
-                    empleadosReemplazadores.append(emp)
         
         if cls.estadoGestionHumana == "cambio-sede":
             reemplazados=Sede.reemplazarPorCambioSede(Main.despedidos, empleadosReemplazadores)

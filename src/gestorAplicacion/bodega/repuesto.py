@@ -30,7 +30,6 @@ class Repuesto(Insumo):
         self.horasDeUso += horas
     def getHorasDeUso(self) -> int:
         return self.horasDeUso
-
     @classmethod
     def getListadoRepuestos(cls) -> List['Repuesto']:
         from src.gestorAplicacion.sede import Sede

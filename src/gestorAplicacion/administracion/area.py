@@ -33,7 +33,10 @@ class Area(Enum):
                     montoPagado = venta.getMontoPagado()
                     montoTotal += montoPagado
                 cantidadVentas = len(Venta.filtrar(sede.getHistorialVentas(), fecha))
-                area.rendimientoDeseado = (montoTotal / cantidadVentas) * 0.8
+                if cantidadVentas!=0:
+                    area.rendimientoDeseado = (montoTotal / cantidadVentas) * 0.8
+                else:
+                    area.rendimientoDeseado = 0 # Esto suele ocurrir con fechas invalidas
             elif area == Area.CORTE:
                 prendasDescartadas = 0
                 prendasProducidas = 0
