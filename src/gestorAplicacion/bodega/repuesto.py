@@ -36,9 +36,8 @@ class Repuesto(Insumo):
         from src.gestorAplicacion.sede import Sede
         cls.listadoRepuestos=[]
         for sede in Sede.getListaSedes():
-            for repuesto in sede.getListaInsumosBodega():
-                if isinstance(repuesto, Repuesto):
-                    cls.listadoRepuestos.append(repuesto)
+            for maquina in sede.getListaMaquinas():
+                cls.listadoRepuestos.extend(maquina.getRepuestos())
         return cls.listadoRepuestos
     
 
