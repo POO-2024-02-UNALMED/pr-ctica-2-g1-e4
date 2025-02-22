@@ -1171,10 +1171,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.cantidadBolsaPequeña=0
         self.descripcionF1.config(text="""Factura de la compra realizada.""")
         self.frameCambianteGHumana.destroy()
-        self.outputGHumana.config(state="normal")
-        self.outputGHumana.delete("1.0", "end")
-        self.outputGHumana.config(state="disabled")
-
+        self.outputGHumana.destroy()
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
         self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
 

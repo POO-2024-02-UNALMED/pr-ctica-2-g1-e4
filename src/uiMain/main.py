@@ -1430,7 +1430,7 @@ class Main:
         ps6 = []
         ps6.append(r15)
         ps6.append(r16)
-        v6 = Venta(sedeP, Fecha(25, 11, 24), c4, Wilson, Mario, ps6, 400000, 600_000)
+        v6 = Venta(sedeP, Fecha(20, 2, 25), c4, Wilson, Mario, ps6, 400000, 600_000)
         v6.setCostoEnvio(100000)
         b3.setAhorroBanco(b3.getAhorroBanco() + 600000)
         com6 = round(600_000 * 0.05)
@@ -1439,8 +1439,8 @@ class Main:
         minProductos = 1
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(10,11,24), Aura, Cata, 300, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(10,11,24), Aura, Mario, 300, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Cata, 600, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Mario, 600, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,24), Aura, Cata, 600, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,25), Aura, Mario, 600, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Cata, 700, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Mario, 700, sede2)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Cata, 700, sede2)
