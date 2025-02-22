@@ -1,4 +1,3 @@
-from src.gestorAplicacion.administracion.resultado import Resultado
 from src.gestorAplicacion.administracion.rol import Rol
 from src.gestorAplicacion.bodega.insumo import Insumo
 from .fecha import Fecha
@@ -25,8 +24,8 @@ class Sede:
                 index = x
                 retorno = True
                 break
-        resultado = Resultado(retorno, index)
-        return resultado
+        
+        return retorno, index
 
     @classmethod
     def transferirInsumo(cls, insumo, donadora, beneficiaria, cantidadSolicitada):
@@ -72,8 +71,8 @@ class Sede:
                             sedeATransferir = sede
                             precio = insumo.getPrecioCompra()
                             break
-        resultado = Resultado(retorno, index, sedeATransferir, precio)
-        return resultado
+        
+        return retorno, index, sedeATransferir, precio
 
     def actualizarHistorialVentas(self,venta):
         self.historialVentas.append(venta)

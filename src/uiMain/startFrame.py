@@ -642,14 +642,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.listaA = Main.coordinarBodegas(self, self.retorno)
             
     # Interacción 2
-    def transferir(self, criterios, sede):
+    def transferir(self, criterios, habilitado, sede):
         self.frame2.destroy()
         self.frame3.destroy()
             
-        self.frame4 = tk.Frame(self.framePrincipal)
-        self.frame4.pack(anchor="s", expand=True, fill="both")
+        self.self.fidelidadclientes = tk.Frame(self.framePrincipal)
+        self.self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
 
-        self.field2 = fieldFrame.FieldFrame(self.frame4, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
+        self.field2 = fieldFrame.FieldFrame(self.self.fidelidadclientes, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
         self.field2.pack(anchor="s",  expand=True, fill="both")
 
 
@@ -668,17 +668,22 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         def Interaccion1(self):
             framePrincipal =  tk.Frame(self)
             framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+
             frame1 = tk.Frame(framePrincipal, height=150)
             frame1.pack(side="top", fill="x")
+
             tituloF4 = tk.Label(frame1, text="Facturación", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
             tituloF4.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
-            ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
+
             descripcionF4 = tk.Label(frame1, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial",10), wraplength=800)
             descripcionF4.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
+
             frameGeneral= tk.Frame(framePrincipal)
             frameGeneral.pack(expand=True, fill="both")
+
             frame2 = tk.Frame(frameGeneral)
             frame2.place(relx=0, rely=0, relwidth=1, relheight=0.6)
+
             criterios = ["Cliente","Sede","Tipo de Prenda", "Cantidad Prenda"]
             valores = ["","Sede Principal","camisa/pantalon","0"]
             habilitado = [True, True,True,True]
@@ -758,33 +763,33 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     texto2.delete("1.0", "end")     # Eliminar texto actual
                     texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.diferencia_estimada), "center")  # Insertar nuevo texto
                     texto2.config(state="disabled") 
+                    boton2 = tk.Button(self.estimadoVentasDeudas, text="Siguiente", command=lambda: Interaccion3(self))
+                    boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
                     
             def Interaccion2(self):
                 frame2.destroy()
                 frame3.destroy()
                 
-                frame4 = tk.Frame(framePrincipal)
-                frame4.pack(anchor="s", expand=True, fill="both")
+                self.fidelidadclientes = tk.Frame(framePrincipal)
+                self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
                 
                 criterios = ["Descuento"]
                 valores = ["0% / 100%"]
                 habilitado = [True]
                 
                 # Creamos el FieldFrame con los botones
-                field_frame2 = FieldFrame(frame4, "Ingrese porcentaje a modificar para:", criterios, "fidelidad de los clientes sin membresía", valores, habilitado)
+                field_frame2 = FieldFrame(self.fidelidadclientes, "Ingrese porcentaje a modificar para:", criterios, "fidelidad de los clientes sin membresía", valores, habilitado)
                 field_frame2.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
                 
-                frame5 = tk.Frame(framePrincipal)
-                frame5.pack(anchor="s", expand=True, fill="both")
+                self.estimadoVentasDeudas = tk.Frame(framePrincipal)
+                self.estimadoVentasDeudas.pack(anchor="s", expand=True, fill="both")
                 
-                boton1 = tk.Button(frame5, text="Aceptar", command=lambda: LeerF2(self, field_frame2, texto2))
+                boton1 = tk.Button(self.estimadoVentasDeudas, text="Aceptar", command=lambda: LeerF2(self, field_frame2, texto2))
                 boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
-                borrar=tk.Button(frame5,text="Borrar", command = lambda: field_frame2.borrar())
+                borrar=tk.Button(self.estimadoVentasDeudas,text="Borrar", command = lambda: field_frame2.borrar())
                 borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-                boton2 = tk.Button(frame5, text="Siguiente", command=lambda: Interaccion3(self,frame4, frame5))
-                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
                 
-                confirmacion2 = tk.Label(frame5, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
+                confirmacion2 = tk.Label(self.estimadoVentasDeudas, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
                 confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
                 
                 texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
@@ -796,7 +801,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto2.insert("1.0", "Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", "center")  # Insertar nuevo texto
                 texto2.config(state="disabled") 
 
-            def LeerF3(self,field_frame3, texto3):
+            def LeerF3(self,field_frame3, texto3, frameb):
                 from src.uiMain.main import Main
                 seleccion = FieldFrame.getValue(field_frame3, "Bancos")
                 banco=None
@@ -809,6 +814,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto3.delete("1.0", "end")     # Eliminar texto actual
                 texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
                 texto3.config(state="disabled") 
+                boton2 = tk.Button(self.botonesI3, text="Siguiente", command=lambda: Interaccion4(self, frameb))
+                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
                     
                 return c
                 
@@ -846,17 +853,17 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 frameb.columnconfigure(2, weight=1)# rendimiento
                 frameb.columnconfigure(3, weight=1)# rendimiento esperado
         
-            def Interaccion3(self,frame4,frame5):
+            def Interaccion3(self):
                 from src.uiMain.main import Main
-                frame4.destroy()
-                frame5.destroy()
-                frame6 = tk.Frame(framePrincipal, bg="light gray")
-                frame6.pack(anchor="s",  expand=True, fill="both")
+                self.fidelidadclientes.destroy()
+                self.estimadoVentasDeudas.destroy()
+                self.bancoParaDeudas = tk.Frame(framePrincipal, bg="light gray")
+                self.bancoParaDeudas.pack(anchor="s",  expand=True, fill="both")
                 criterios = ["Bancos"]
                 valores = ["Ingrese nombre"]
                 habilitado = [True]
                 # Creamos el FieldFrame con los botones
-                field_frame3 = FieldFrame(frame6, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
+                field_frame3 = FieldFrame(self.bancoParaDeudas, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
                 field_frame3.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
 
                 frameb = tk.Frame(framePrincipal)
@@ -865,16 +872,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 labelBanco.place(relx=0, rely=0, relwidth=1, relheight=1)
                 listaBancos(self,labelBanco)
                 
-                frame7 = tk.Frame(framePrincipal)
-                frame7.pack(anchor="s", expand=True, fill="both")
-                boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(self, field_frame3,texto3))
+                self.botonesI3 = tk.Frame(framePrincipal)
+                self.botonesI3.pack(anchor="s", expand=True, fill="both")
+                boton1 = tk.Button(self.botonesI3, text="Aceptar", command=lambda: LeerF3(self, field_frame3,texto3,frameb))
                 boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
-                borrar=tk.Button(frame7,text="Borrar", command = lambda: field_frame3.borrar())
+                borrar=tk.Button(self.botonesI3,text="Borrar", command = lambda: field_frame3.borrar())
                 borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
-                boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion4(self, frame6, frameb, frame7))
-                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
                 
-                confirmacion3 = tk.Label(frame7, text="", anchor="center")
+                confirmacion3 = tk.Label(self.botonesI3, text="", anchor="center")
                 confirmacion3.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
                 texto3 = tk.Text(confirmacion3, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
                 texto3.pack(fill="both", expand=True)
@@ -902,16 +907,18 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     texto4.config(state="normal")   # Habilitar edición
                     texto4.delete("1.0", "end")     # Eliminar texto actual
                     texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro), "center")  # Insertar nuevo texto
-                    texto4.config(state="disabled") 
+                    texto4.config(state="disabled")
+                    boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
+                    boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
             
-            def Interaccion4(self,frame6,frameb, frame7):
+            def Interaccion4(self,frameb):
                 from src.uiMain.main import Main
-                frame6.destroy()
+                self.bancoParaDeudas.destroy()
                 frameb.destroy()
-                frame7.destroy()
+                self.botonesI3.destroy()
                 
-                frame8 = tk.Frame(framePrincipal)
-                frame8.pack(anchor="s", expand=True, fill="both")
+                self.evBlackFriday = tk.Frame(framePrincipal)
+                self.evBlackFriday.pack(anchor="s", expand=True, fill="both")
                 descuento = Venta.blackFriday(Main.fecha)
                 resultado="si"
                 if descuento <= 0.0:
@@ -922,20 +929,18 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 habilitado = [True]
                 
                 # Creamos el FieldFrame con los botones
-                field_frame4 = FieldFrame(frame8, ("Según las Ventas anteriores, aplicar descuentos"+resultado+" funcionará"), criterios, "¿Desea Cambiar el siguiente descuento:?", valores, habilitado)
+                field_frame4 = FieldFrame(self.evBlackFriday, ("Según las Ventas anteriores, aplicar descuentos"+resultado+" funcionará"), criterios, "¿Desea Cambiar el siguiente descuento:?", valores, habilitado)
                 field_frame4.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
                 
-                frame9 = tk.Frame(framePrincipal)
-                frame9.pack(anchor="s", expand=True, fill="both")
+                self.botonesF4 = tk.Frame(framePrincipal)
+                self.botonesF4.pack(anchor="s", expand=True, fill="both")
                 
-                boton1 = tk.Button(frame9, text="Aceptar", command=lambda: LeerF4(self, field_frame4, texto4, descuento))
+                boton1 = tk.Button(self.botonesF4, text="Aceptar", command=lambda: LeerF4(self, field_frame4, texto4, descuento))
                 boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
-                borrar4=tk.Button(frame9,text="Borrar", command = lambda: field_frame4.borrar())
+                borrar4=tk.Button(self.botonesF4,text="Borrar", command = lambda: field_frame4.borrar())
                 borrar4.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-                boton2 = tk.Button(frame9, text="Siguiente", command=lambda: Interaccion5(self, frame8, frame9))
-                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
                 
-                confirmacion4 = tk.Label(frame9, anchor="center")
+                confirmacion4 = tk.Label(self.botonesF4, anchor="center")
                 confirmacion4.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
                 texto4 = tk.Text(confirmacion4, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
                 texto4.pack(fill="both", expand=True)
@@ -946,10 +951,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto4.insert("1.0", "Analizando posibilidad de hacer descuentos para subir las ventas...", "center")  # Insertar nuevo texto
                 texto4.config(state="disabled") 
             
-            def Interaccion5(self,frame8, frame9):
+            def Interaccion5(self):
                 from src.uiMain.startFrame import startFrame
-                frame8.destroy()
-                frame9.destroy()
+                self.evBlackFriday.destroy()
+                self.botonesF4.destroy()
                 s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(startFrame.balance_anterior))
                 s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(startFrame.diferencia_estimada)
                 s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(startFrame.analisis_futuro)
@@ -992,6 +997,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     texto.delete("1.0", "end")     # Eliminar texto actual
                     texto.insert("1.0", EvaluacionFinanciera.informe(startFrame.balance_anterior), "center")  # Insertar nuevo texto
                     texto.config(state="disabled") 
+                    boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
+                    boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
                 else: #Excepcion
                     combo.delete(0,"end")
 
@@ -1025,8 +1032,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             boton1.place(relx=0.3, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
             borrar=tk.Button(frame3,text="Borrar", command = lambda: field_frame.borrar())
             borrar.place(relx=0.5, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
-            boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
-            boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
             confirmacion = tk.Frame(frame3)
             confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
 
@@ -1405,46 +1410,49 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         for persona in Persona.getListaPersonas():
             if persona.getNombre() == self.datosDespedido.getValue("Cliente"):
                 cliente=persona
-        if (cliente is not None) and (self.sede is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja")) is not None) and ((self.datosDespedido.getValue("Prenda").lower()=="camisa") or (self.datosDespedido.getValue("Prenda").lower()=="pantalon")) :
+        if (cliente is not None) and (self.sede is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja")) is not None) :
             self.cliente=cliente
             self.vendedor=self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor"))
             self.caja=self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja"))
             prenda=None
-            for prendai in Sede.getPrendasInventadasTotal():
-                if (prendai.getNombre().lower()==self.datosDespedido.getValue("Prenda").lower()):
-                    prenda = prendai
-                    break
-                elif (prenda == None):
-                    continue
-        if self.datosDespedido.getValue("Prenda").lower() != "camisa" and self.datosDespedido.getValue("Prenda").lower() != "pantalon":
+            
             try: 
-                hayExcepcion = True
-                if hayExcepcion:
+                if not (self.datosDespedido.getValue("Prenda").lower() == "camisa" or self.datosDespedido.getValue("Prenda").lower() == "pantalon"):
                     raise ExcepcionPrendaNoExistente(self.datosDespedido.getValue("Prenda"))
             except ExcepcionPrendaNoExistente as b:
-                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
-                return hayExcepcion
-            if prenda not in self.listaPrendas:
-                self.listaPrendas.append(prenda)
-                self.cantidadPrendas.append(int(self.datosDespedido.getValue("Cantidad")))
+                    messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
             else:
-                self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosDespedido.getValue("Cantidad"))
-            if excepcion:
-                #self.pantallaBaseFacturacion(True)
-                self.datosDespedido.habilitarEntry("Cliente", False)
-                self.datosDespedido.habilitarEntry("sede", False)
-                self.datosDespedido.habilitarEntry("Vendedor", False)
-                self.datosDespedido.habilitarEntry("Empleado caja", False)
-            else: 
-                self.venta=Main.vender(self.cliente,self.sede,self.vendedor,self.caja,self.listaPrendas,self.cantidadPrendas)
-                self.outputGHumana.config(state="normal")
-                self.outputGHumana.delete("1.0", "end")
-                self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
-                self.outputGHumana.config(state="disabled")
-                self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
-                self.siguiente.grid(row=2, column=2)
+                for prendai in Sede.getPrendasInventadasTotal():
+                    if (prendai.getNombre().lower()==self.datosDespedido.getValue("Prenda").lower()):
+                        prenda = prendai
+                        break
+                    elif (prenda == None):
+                        continue
+                    
+                if prenda not in self.listaPrendas:
+                    self.listaPrendas.append(prenda)
+                    self.cantidadPrendas.append(int(self.datosDespedido.getValue("Cantidad")))
+                else:
+                    self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosDespedido.getValue("Cantidad"))
+                if excepcion:
+                    #self.pantallaBaseFacturacion(True)
+                    self.datosDespedido.habilitarEntry("Cliente", False)
+                    self.datosDespedido.habilitarEntry("sede", False)
+                    self.datosDespedido.habilitarEntry("Vendedor", False)
+                    self.datosDespedido.habilitarEntry("Empleado caja", False)
+                else: 
+                    self.venta=Main.vender(self.cliente,self.sede,self.vendedor,self.caja,self.listaPrendas,self.cantidadPrendas)
+                    self.outputGHumana.config(state="normal")
+                    self.outputGHumana.delete("1.0", "end")
+                    self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
+                    self.outputGHumana.config(state="disabled")
+                    self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+                    self.siguiente.grid(row=2, column=2)
         else:
-            print("datos invalidos")
+            self.outputGHumana.config(state="normal")
+            self.outputGHumana.delete("1.0", "end")
+            self.outputGHumana.insert("1.0", "Datos inválidos", "center")
+            self.outputGHumana.config(state="disabled")
 
     def leer2Facturacion(self):
         self.cantidadBolsaGrande=int(self.datosDespedido.getValue("Grande"))
