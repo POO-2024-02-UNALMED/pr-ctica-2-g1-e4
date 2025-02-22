@@ -642,14 +642,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.listaA = Main.coordinarBodegas(self, self.retorno)
             
     # Interacción 2
-    def transferir(self, criterios, sede):
+    def transferir(self, criterios, habilitado, sede):
         self.frame2.destroy()
         self.frame3.destroy()
             
         self.frame4 = tk.Frame(self.framePrincipal)
         self.frame4.pack(anchor="s", expand=True, fill="both")
 
-        self.field2 = fieldFrame.FieldFrame(self.frame4, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
+        self.field2 = fieldFrame.FieldFrame(self.frame4, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], habilitado, 20, True, 10, lambda : self.otraSede())
         self.field2.pack(anchor="s",  expand=True, fill="both")
 
 
@@ -668,17 +668,22 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         def Interaccion1(self):
             framePrincipal =  tk.Frame(self)
             framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+
             frame1 = tk.Frame(framePrincipal, height=150)
             frame1.pack(side="top", fill="x")
+
             tituloF4 = tk.Label(frame1, text="Facturación", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
             tituloF4.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
-            ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
+
             descripcionF4 = tk.Label(frame1, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial",10), wraplength=800)
             descripcionF4.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
+
             frameGeneral= tk.Frame(framePrincipal)
             frameGeneral.pack(expand=True, fill="both")
+
             frame2 = tk.Frame(frameGeneral)
             frame2.place(relx=0, rely=0, relwidth=1, relheight=0.6)
+
             criterios = ["Cliente","Sede","Tipo de Prenda", "Cantidad Prenda"]
             valores = ["","Sede Principal","camisa/pantalon","0"]
             habilitado = [True, True,True,True]
