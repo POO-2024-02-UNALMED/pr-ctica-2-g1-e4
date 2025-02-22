@@ -1125,21 +1125,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(2, weight=10)
         self.framePrincipal.rowconfigure(3, weight=2)
     
-    def seleccionadorDespedidos(self):
-        valores=[self.cantidadADespedir]
-        criterios=["Cantidad de despedidos"]
-        for i in range(self.cantidadADespedir):
-            criterios.append(f"Nombre del despedido {i+1}")
-            valores.append("")
-        self.seleccionador=FieldFrame(self.frameCambianteGHumana, "Dato", criterios, "valor",valores=valores, ancho_entry=20, tamañoFuente=10,aceptar=True, borrar=True, callbackAceptar=self.despedir)
-        self.seleccionador.configurarCallBack("Cantidad de despedidos", "<Return>", lambda e:self.actualizarCantidadDespedidos())
-        self.seleccionador.grid(row=2, column=0,columnspan=1)
-    
-    def actualizarCantidadDespedidos(self):
-        self.cantidadADespedir=int(self.seleccionador.getValue("Cantidad de despedidos"))
-        self.seleccionador.destroy()
-        self.seleccionadorDespedidos()
-    
     def anadirOtraPrenda(self):
         nombresADespedir=self.seleccionador.obtenerTodosLosValores()
         del nombresADespedir[0]
@@ -1319,9 +1304,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Bolsas Necesarias", ["0","0", "0"],[True,True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
         self.datosDespedido.grid(row=1, column=0, columnspan=2)
         
-        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
-        self.siguiente.grid(row=2, column=2)
-        
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
         self.frameCambianteGHumana.rowconfigure(1, weight=10)
         self.frameCambianteGHumana.columnconfigure(0, weight=2)
@@ -1436,7 +1418,16 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def leer2Facturacion(self):
         self.cantidadBolsaGrande=int(self.datosDespedido.getValue("Grande"))
         +int(self.datosDespedido.getValue("Mediana"))+int(self.datosDespedido.getValue("Pequeña"))
+        revisionBolsa= self.verificarCantidadBolsa()
+        self.outputGHumana.config(state="normal")
+        self.outputGHumana.delete("1.0", "end")
+        self.outputGHumana.insert("1.0", revisionBolsa, "center")
+        self.outputGHumana.config(state="disabled")
+        if revisionBolsa=="Se tienen suficientes bolsas para empacar todos los artículos":
+            self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+            self.siguiente.grid(row=2, column=1)
 
+            
 
     def revisarBolsasDisponibles(self):
         bp, bm, bg = Main.verificarBolsas(self.venta)
@@ -1448,15 +1439,18 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.datosDespedido.habilitarEntry("Pequeña", False)
 
     def verificarCantidadBolsa(self):
-        print("Verificando cantidad de bolsas")
         BolsasFaltantes=Main.cantidadActualBolsas(self.venta, self.cantidadBolsaGrande, self.cantidadBolsaMediana, self.cantidadBolsaPequeña)
         self.outputGHumana.config(state="normal")
         self.outputGHumana.delete("1.0", "end")
-        if BolsasFaltantes>=0:
-            self.outputGHumana.insert("1.0",f"Se necesitan {BolsasFaltantes} bolsas más para empacar todos los artículos")
+        if BolsasFaltantes>0:
+            bolasNecesarias=f"Se necesitan {BolsasFaltantes} bolsas más para empacar todos los artículos"
         else:
-            self.outputGHumana.insert("1.0","Se tienen suficientes bolsas para empacar todos los artículos")
+            bolasNecesarias="Se tienen suficientes bolsas para empacar todos los artículos"
+            self.datosDespedido.habilitarEntry("Grande", False)
+            self.datosDespedido.habilitarEntry("Mediana", False)
+            self.datosDespedido.habilitarEntry("Pequeña", False)
         self.outputGHumana.config(state="disabled")   
+        return bolasNecesarias
             
 def pasarAVentanaPrincipal():
     ventana = startFrame()

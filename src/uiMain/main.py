@@ -648,7 +648,7 @@ class Main:
                 totalPrendas -= cantidadDisponible
                 if capacidadTotal == totalPrendas:
                     break   
-        venta.getBolsas.append(bolsasSeleccionadas)
+        venta.getBolsas().append(bolsasSeleccionadas)
         totalVenta = Venta.getMontoPagado(venta) + len(bolsasSeleccionadas) * 2000
         Venta.setMontoPagado(venta,totalVenta)
         return debeBolsas        
