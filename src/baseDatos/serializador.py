@@ -12,5 +12,6 @@ def serializar():
     pickle.dump((Sede.getListaEmpleadosTotal(), Sede.getPrendasInventadasTotal(), Sede.getListaSedes(),
                  Banco.getListaBancos(), Banco.getCuentaPrincipal(),
                  Persona.getListaPersonas(),
-                 Venta.getCodigosRegalo(), Venta.getMontosRegalo()), archivo)
+                 Venta.getCodigosRegalo(), Venta.getMontosRegalo(),
+                  Proveedor.getListaProveedores()), archivo)
     archivo.close()

@@ -14,7 +14,8 @@ def deserializar():
     (listaEmpleadosTotal, prendasInventadasTotal, listaSedes,
      listaBancos, cuentaPrincipal,
      listaPersonas,
-     codigosRegalo, montosRegalo) = pickle.load(archivo)
+     codigosRegalo, montosRegalo,
+     listaProveedores) = pickle.load(archivo)
     
     Sede.setListaEmpleadosTotal(listaEmpleadosTotal)
     Sede.setPrendasInventadasTotal(prendasInventadasTotal)
@@ -24,5 +25,6 @@ def deserializar():
     Persona.setListaPersonas(listaPersonas)
     Venta.setCodigosRegalo(codigosRegalo)
     Venta.setMontosRegalo(montosRegalo)
+    Proveedor.setListaProveedores(listaProveedores)
     
     archivo.close()
