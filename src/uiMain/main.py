@@ -740,8 +740,9 @@ class Main:
         totalPrendas = len(productosSeleccionados)
         insumosBodega = Sede.getListaInsumosBodega(sede)
         capacidadTotal = 0
-
-        while capacidadTotal < totalPrendas:
+        i=1
+        #while capacidadTotal < totalPrendas:
+        if i==1:
             bp, bm, bg = False, False, False
             for i in range(len(insumosBodega)):
                 bolsa = insumosBodega[i]
@@ -750,10 +751,14 @@ class Main:
                     cantidad = Sede.getCantidadInsumosBodega(sede)[i]
                     if capacidad == 1 and cantidad > 0:
                         bp = True
+                        capacidadTotal += 1
                     if capacidad == 3 and cantidad > 0:
                         bm = True
+                        capacidadTotal += 1
                     if capacidad == 8 and cantidad > 0:
                         bg = True
+                        capacidadTotal += 1
+            i+=1
         return bp, bm, bg
         
 
