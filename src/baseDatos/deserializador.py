@@ -23,6 +23,9 @@ def deserializar():
     Sede.setPrendasInventadasTotal(pickle.load(archivoSede))
     Sede.setListaSedes(pickle.load(archivoSede))
     archivoSede.close()
+    print("Deserializamos estas sedes:")
+    for sede in Sede.getListaSedes():
+        print(sede.getNombre())
 
     archivoAdministracion = open("src/baseDatos/administracion.txt", "rb")
     Banco.setListaBancos(pickle.load(archivoAdministracion))

@@ -13,7 +13,7 @@ class Sede:
         self.prendasProduccion = [];self.maqProduccion = []; self.maqOficina = []
         self.nombre = nombre
         self.cuentaSede = None
-        Sede.setListaSedes(self)
+        Sede.getListaSedes().append(self)
 
     @classmethod
     def verificarProductoBodega(cls, insumo, sede):
