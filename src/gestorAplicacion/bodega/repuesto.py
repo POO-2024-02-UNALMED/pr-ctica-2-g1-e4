@@ -31,15 +31,24 @@ class Repuesto(Insumo):
         self.horasDeUso += horas
     def getHorasDeUso(self) -> int:
         return self.horasDeUso
-    @staticmethod
-    def getListadoRepuestos() -> List['Repuesto']:
-        return Repuesto.listadoRepuestos
-    @staticmethod
-    def reemplazarListadoRepuestos(listadoRepuestos: List['Repuesto']):
-        Repuesto.listadoRepuestos = listadoRepuestos
-    @staticmethod
-    def removeRepuesto(repuesto: 'Repuesto'):
-        Repuesto.listadoRepuestos.remove(repuesto)
+
+    @classmethod
+    def getListadoRepuestos(cls) -> List['Repuesto']:
+        from src.gestorAplicacion.sede import Sede
+        repustosTotales=[]
+        for sede in Sede.getListaSedes():
+            for repuesto in sede.getListaRepuestos():
+                if repuesto not in cls.listadoRepuestos:
+                    cls.listadoRepuestos.append(repuesto)
+    
+    @classmethod
+    def reemplazarListadoRepuestos(cls,listadoRepuestos: List['Repuesto']):
+        cls.listadoRepuestos = listadoRepuestos
+
+    @classmethod
+    def removeRepuesto(cls,repuesto: 'Repuesto'):
+        cls.listadoRepuestos.remove(repuesto)
+
     def setEstado(self):
         self.estado = False
     def isEstado(self) -> bool:

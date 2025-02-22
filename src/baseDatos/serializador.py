@@ -14,7 +14,6 @@ def serializar():
     pickle.dump(Pantalon.getTipoInsumo(), archivoBodega)
     pickle.dump(Pantalon.getCantidadInsumo(), archivoBodega)
     pickle.dump(Proveedor.getListaProveedores(), archivoBodega)
-    pickle.dump(Repuesto.getListadoRepuestos(), archivoBodega)
     archivoBodega.close()
 
     archivoSede = open("src/baseDatos/sede.txt", "wb")
