@@ -646,10 +646,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame2.destroy()
         self.frame3.destroy()
             
-        self.frame4 = tk.Frame(self.framePrincipal)
-        self.frame4.pack(anchor="s", expand=True, fill="both")
+        self.self.fidelidadclientes = tk.Frame(self.framePrincipal)
+        self.self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
 
-        self.field2 = fieldFrame.FieldFrame(self.frame4, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
+        self.field2 = fieldFrame.FieldFrame(self.self.fidelidadclientes, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
         self.field2.pack(anchor="s",  expand=True, fill="both")
 
 
@@ -758,33 +758,33 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     texto2.delete("1.0", "end")     # Eliminar texto actual
                     texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.diferencia_estimada), "center")  # Insertar nuevo texto
                     texto2.config(state="disabled") 
+                    boton2 = tk.Button(self.estimadoVentasDeudas, text="Siguiente", command=lambda: Interaccion3(self))
+                    boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
                     
             def Interaccion2(self):
                 frame2.destroy()
                 frame3.destroy()
                 
-                frame4 = tk.Frame(framePrincipal)
-                frame4.pack(anchor="s", expand=True, fill="both")
+                self.fidelidadclientes = tk.Frame(framePrincipal)
+                self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
                 
                 criterios = ["Descuento"]
                 valores = ["0% / 100%"]
                 habilitado = [True]
                 
                 # Creamos el FieldFrame con los botones
-                field_frame2 = FieldFrame(frame4, "Ingrese porcentaje a modificar para:", criterios, "fidelidad de los clientes sin membresía", valores, habilitado)
+                field_frame2 = FieldFrame(self.fidelidadclientes, "Ingrese porcentaje a modificar para:", criterios, "fidelidad de los clientes sin membresía", valores, habilitado)
                 field_frame2.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
                 
-                frame5 = tk.Frame(framePrincipal)
-                frame5.pack(anchor="s", expand=True, fill="both")
+                self.estimadoVentasDeudas = tk.Frame(framePrincipal)
+                self.estimadoVentasDeudas.pack(anchor="s", expand=True, fill="both")
                 
-                boton1 = tk.Button(frame5, text="Aceptar", command=lambda: LeerF2(self, field_frame2, texto2))
+                boton1 = tk.Button(self.estimadoVentasDeudas, text="Aceptar", command=lambda: LeerF2(self, field_frame2, texto2))
                 boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
-                borrar=tk.Button(frame5,text="Borrar", command = lambda: field_frame2.borrar())
+                borrar=tk.Button(self.estimadoVentasDeudas,text="Borrar", command = lambda: field_frame2.borrar())
                 borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-                boton2 = tk.Button(frame5, text="Siguiente", command=lambda: Interaccion3(self,frame4, frame5))
-                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
                 
-                confirmacion2 = tk.Label(frame5, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
+                confirmacion2 = tk.Label(self.estimadoVentasDeudas, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
                 confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
                 
                 texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
@@ -796,7 +796,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto2.insert("1.0", "Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", "center")  # Insertar nuevo texto
                 texto2.config(state="disabled") 
 
-            def LeerF3(self,field_frame3, texto3):
+            def LeerF3(self,field_frame3, texto3, frameb):
                 from src.uiMain.main import Main
                 seleccion = FieldFrame.getValue(field_frame3, "Bancos")
                 banco=None
@@ -809,6 +809,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto3.delete("1.0", "end")     # Eliminar texto actual
                 texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
                 texto3.config(state="disabled") 
+                boton2 = tk.Button(self.botonesI3, text="Siguiente", command=lambda: Interaccion4(self, frameb))
+                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
                     
                 return c
                 
@@ -846,17 +848,17 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 frameb.columnconfigure(2, weight=1)# rendimiento
                 frameb.columnconfigure(3, weight=1)# rendimiento esperado
         
-            def Interaccion3(self,frame4,frame5):
+            def Interaccion3(self):
                 from src.uiMain.main import Main
-                frame4.destroy()
-                frame5.destroy()
-                frame6 = tk.Frame(framePrincipal, bg="light gray")
-                frame6.pack(anchor="s",  expand=True, fill="both")
+                self.fidelidadclientes.destroy()
+                self.estimadoVentasDeudas.destroy()
+                self.bancoParaDeudas = tk.Frame(framePrincipal, bg="light gray")
+                self.bancoParaDeudas.pack(anchor="s",  expand=True, fill="both")
                 criterios = ["Bancos"]
                 valores = ["Ingrese nombre"]
                 habilitado = [True]
                 # Creamos el FieldFrame con los botones
-                field_frame3 = FieldFrame(frame6, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
+                field_frame3 = FieldFrame(self.bancoParaDeudas, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
                 field_frame3.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
 
                 frameb = tk.Frame(framePrincipal)
@@ -865,16 +867,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 labelBanco.place(relx=0, rely=0, relwidth=1, relheight=1)
                 listaBancos(self,labelBanco)
                 
-                frame7 = tk.Frame(framePrincipal)
-                frame7.pack(anchor="s", expand=True, fill="both")
-                boton1 = tk.Button(frame7, text="Aceptar", command=lambda: LeerF3(self, field_frame3,texto3))
+                self.botonesI3 = tk.Frame(framePrincipal)
+                self.botonesI3.pack(anchor="s", expand=True, fill="both")
+                boton1 = tk.Button(self.botonesI3, text="Aceptar", command=lambda: LeerF3(self, field_frame3,texto3,frameb))
                 boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
-                borrar=tk.Button(frame7,text="Borrar", command = lambda: field_frame3.borrar())
+                borrar=tk.Button(self.botonesI3,text="Borrar", command = lambda: field_frame3.borrar())
                 borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
-                boton2 = tk.Button(frame7, text="Siguiente", command=lambda: Interaccion4(self, frame6, frameb, frame7))
-                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
                 
-                confirmacion3 = tk.Label(frame7, text="", anchor="center")
+                confirmacion3 = tk.Label(self.botonesI3, text="", anchor="center")
                 confirmacion3.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
                 texto3 = tk.Text(confirmacion3, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
                 texto3.pack(fill="both", expand=True)
@@ -902,16 +902,18 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     texto4.config(state="normal")   # Habilitar edición
                     texto4.delete("1.0", "end")     # Eliminar texto actual
                     texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro), "center")  # Insertar nuevo texto
-                    texto4.config(state="disabled") 
+                    texto4.config(state="disabled")
+                    boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
+                    boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
             
-            def Interaccion4(self,frame6,frameb, frame7):
+            def Interaccion4(self,frameb):
                 from src.uiMain.main import Main
-                frame6.destroy()
+                self.bancoParaDeudas.destroy()
                 frameb.destroy()
-                frame7.destroy()
+                self.botonesI3.destroy()
                 
-                frame8 = tk.Frame(framePrincipal)
-                frame8.pack(anchor="s", expand=True, fill="both")
+                self.evBlackFriday = tk.Frame(framePrincipal)
+                self.evBlackFriday.pack(anchor="s", expand=True, fill="both")
                 descuento = Venta.blackFriday(Main.fecha)
                 resultado="si"
                 if descuento <= 0.0:
@@ -922,20 +924,18 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 habilitado = [True]
                 
                 # Creamos el FieldFrame con los botones
-                field_frame4 = FieldFrame(frame8, ("Según las Ventas anteriores, aplicar descuentos"+resultado+" funcionará"), criterios, "¿Desea Cambiar el siguiente descuento:?", valores, habilitado)
+                field_frame4 = FieldFrame(self.evBlackFriday, ("Según las Ventas anteriores, aplicar descuentos"+resultado+" funcionará"), criterios, "¿Desea Cambiar el siguiente descuento:?", valores, habilitado)
                 field_frame4.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
                 
-                frame9 = tk.Frame(framePrincipal)
-                frame9.pack(anchor="s", expand=True, fill="both")
+                self.botonesF4 = tk.Frame(framePrincipal)
+                self.botonesF4.pack(anchor="s", expand=True, fill="both")
                 
-                boton1 = tk.Button(frame9, text="Aceptar", command=lambda: LeerF4(self, field_frame4, texto4, descuento))
+                boton1 = tk.Button(self.botonesF4, text="Aceptar", command=lambda: LeerF4(self, field_frame4, texto4, descuento))
                 boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
-                borrar4=tk.Button(frame9,text="Borrar", command = lambda: field_frame4.borrar())
+                borrar4=tk.Button(self.botonesF4,text="Borrar", command = lambda: field_frame4.borrar())
                 borrar4.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-                boton2 = tk.Button(frame9, text="Siguiente", command=lambda: Interaccion5(self, frame8, frame9))
-                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
                 
-                confirmacion4 = tk.Label(frame9, anchor="center")
+                confirmacion4 = tk.Label(self.botonesF4, anchor="center")
                 confirmacion4.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
                 texto4 = tk.Text(confirmacion4, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
                 texto4.pack(fill="both", expand=True)
@@ -946,10 +946,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto4.insert("1.0", "Analizando posibilidad de hacer descuentos para subir las ventas...", "center")  # Insertar nuevo texto
                 texto4.config(state="disabled") 
             
-            def Interaccion5(self,frame8, frame9):
+            def Interaccion5(self):
                 from src.uiMain.startFrame import startFrame
-                frame8.destroy()
-                frame9.destroy()
+                self.evBlackFriday.destroy()
+                self.botonesF4.destroy()
                 s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(startFrame.balance_anterior))
                 s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(startFrame.diferencia_estimada)
                 s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(startFrame.analisis_futuro)
@@ -992,6 +992,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     texto.delete("1.0", "end")     # Eliminar texto actual
                     texto.insert("1.0", EvaluacionFinanciera.informe(startFrame.balance_anterior), "center")  # Insertar nuevo texto
                     texto.config(state="disabled") 
+                    boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
+                    boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
                 else: #Excepcion
                     combo.delete(0,"end")
 
@@ -1025,8 +1027,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             boton1.place(relx=0.3, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
             borrar=tk.Button(frame3,text="Borrar", command = lambda: field_frame.borrar())
             borrar.place(relx=0.5, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
-            boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
-            boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
             confirmacion = tk.Frame(frame3)
             confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
 
