@@ -1175,7 +1175,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
-        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion3Facturacion)
         self.siguiente.grid(row=2, column=2)
         
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
@@ -1187,11 +1187,38 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
    
+    def interaccion3Facturacion(self):
+        self.cantidadBolsaGrande=0
+        self.cantidadBolsaMediana=0
+        self.cantidadBolsaPequeña=0
+        self.descripcionF1.config(text="""Se encarga de surtir bolsas de ser necesario.""")
+        self.frameCambianteGHumana.destroy()
+        self.outputGHumana.config(state="normal")
+        self.outputGHumana.delete("1.0", "end")
+        self.outputGHumana.config(state="disabled")
+
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
+        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+        
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Cantidad a Surtir", ["0","0", "0"],[False,False,False],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
+        self.datosDespedido.grid(row=1, column=0, columnspan=2)
+        
+        
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+        self.siguiente.grid(row=2, column=4)        
+        
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=2)
+        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+   
     def interaccion2Facturacion(self):
         self.cantidadBolsaGrande=0
         self.cantidadBolsaMediana=0
         self.cantidadBolsaPequeña=0
-        self.descripcionF1.config(text="""Se encarga de seleccionar bolsas para la compra y surtir de ser necesario.""")
+        self.descripcionF1.config(text="""Se encarga de seleccionar bolsas para la compra.""")
         self.frameCambianteGHumana.destroy()
 
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
