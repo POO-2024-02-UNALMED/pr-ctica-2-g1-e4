@@ -995,16 +995,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 else: #Excepcion
                     combo.delete(0,"end")
 
-            def Directivos():
-                from src.gestorAplicacion.administracion.area import Area
-                from src.gestorAplicacion.sede import Sede
-                
-                elegible_empleados = []
-                for empleado_actual in Sede.getListaEmpleadosTotal():
-                    if empleado_actual.getAreaActual() == Area.DIRECCION:
-                        elegible_empleados.append(empleado_actual.getNombre())
-                return elegible_empleados
-
             framePrincipal =  tk.Frame(ventana)
             framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
             frame1 = tk.Frame(framePrincipal, height=150)
@@ -1027,7 +1017,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             label7 = tk.Label(frame3, text="Directivos disponibles:",anchor="w", font=("Arial",12, "bold"))
             label7.place(relx=0.5, rely=0.6, relwidth=1, relheight=1, anchor="s")
             label7.config(padx=200)
-            Lista=Directivos()
+            Lista=Main.Directivos()
             placeholder = tk.StringVar(master=label7, value="Elije al directivo")
             combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
             combo.place(relx=0.5, rely=0.6, relwidth=0.5, relheight=0.2, anchor="s")
@@ -1160,8 +1150,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
-        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
-        self.siguiente.grid(row=2, column=2)
         
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
         self.frameCambianteGHumana.rowconfigure(1, weight=10)
@@ -1453,6 +1441,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.outputGHumana.delete("1.0", "end")
                 self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
                 self.outputGHumana.config(state="disabled")
+                self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+                self.siguiente.grid(row=2, column=2)
         else:
             print("datos invalidos")
 

@@ -235,7 +235,19 @@ class Main:
 
     
     #----------------------------------------------Financiera------------------------------------------------------------
-        
+
+    #Directivos disponibles
+    def Directivos():
+        from src.gestorAplicacion.administracion.area import Area
+        from src.gestorAplicacion.sede import Sede
+                
+        elegible_empleados = []
+        for empleado_actual in Sede.getListaEmpleadosTotal():
+            if empleado_actual.getAreaActual() == Area.DIRECCION:
+                elegible_empleados.append(empleado_actual.getNombre())
+        return elegible_empleados
+    
+    #Interaccion 1    
     def calcularBalanceAnterior(empleado, eleccion):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
         from src.gestorAplicacion.administracion.deuda import Deuda
