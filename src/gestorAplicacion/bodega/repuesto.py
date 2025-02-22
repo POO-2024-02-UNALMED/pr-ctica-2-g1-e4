@@ -4,16 +4,15 @@ from .insumo import Insumo
 from .proveedor import Proveedor
 
 class Repuesto(Insumo):
-    listadoRepuestos = []
+    listadoRepuestos = [] # Llenado en getListadoRepuestos, es la suma de las listas de repuestos especificas a sedes.
     def __init__(self, nombre: str, proveedor: Proveedor, horasDeVidaUtil: int, cantidad=None, sede=None, horasDeUso=0):
-        super().__init__(nombre, proveedor, cantidad, sede)
+        super().__init__(nombre=nombre, proveedor=proveedor, cantidad=cantidad, sede =sede)
         self.nombre = nombre
         self.horasDeVidaUtil = horasDeVidaUtil
         self.proveedor = proveedor
         self.fechasCompra = []; self.preciosCompra = []
         self.horasDeUso = horasDeUso
         self.estado = True
-        Repuesto.listadoRepuestos.append(self)
         
     def getFechasCompra(self) -> List[Fecha]:
         return self.fechasCompra
@@ -37,8 +36,10 @@ class Repuesto(Insumo):
         from src.gestorAplicacion.sede import Sede
         cls.listadoRepuestos=[]
         for sede in Sede.getListaSedes():
-            for repuesto in sede.getTipoInsumo():
-                cls.listadoRepuestos.append(repuesto)
+            for repuesto in sede.getListaInsumosBodega():
+                if isinstance(repuesto, Repuesto):
+                    cls.listadoRepuestos.append(repuesto)
+        return cls.listadoRepuestos
     
 
     @classmethod
