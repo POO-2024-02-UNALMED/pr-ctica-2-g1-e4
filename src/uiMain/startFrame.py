@@ -431,7 +431,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         for i in range(self.cantidadADespedir):
             criterios.append(f"Nombre del despedido {i+1}")
             valores.append("")
-        self.seleccionador=FieldFrame(self.frameCambianteGHumana, "Dato", criterios, "valor",valores=valores, ancho_entry=20, tamañoFuente=10,aceptar=True, borrar=True, callbackAceptar=self.despedir)
+        self.seleccionador=FieldFrame(self.frameCambianteGHumana, "Dato", 
+                                      criterios, "valor",valores=valores, ancho_entry=20, 
+                                      tamañoFuente=10,aceptar=True, borrar=True, callbackAceptar=self.despedir)
         self.seleccionador.configurarCallBack("Cantidad de despedidos", "<Return>", lambda e:self.actualizarCantidadDespedidos())
         self.seleccionador.grid(row=2, column=0,columnspan=1)
     
@@ -611,7 +613,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame2 = tk.Frame(self.framePrincipal, bg="light gray")
         self.frame2.pack(anchor="s", fill="x")
             
-        self.field = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes", criterios, "El porcentaje de pesimismo es de", valores, [True, True], 20, False, 10, True, False, lambda : self.prediccion(Main.texto, Main.retorno))
+        self.field = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
+                                           criterios,"El porcentaje de pesimismo es de", valores, [True, True], 20, 
+                                           False, 10, True, False, lambda : self.prediccion(Main.texto, Main.retorno))
         self.field.pack(anchor="s",  expand=True, fill="both")
 
 
@@ -1048,7 +1052,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             texto.config(state="disabled")
             return framePrincipal
     
-#-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------- Facturación ----------------------------------------------------------------------------------------------------------------------------------
+    
     def Facturar(self):
         self.Facturacion=tk.Frame(self)
         self.posiblesDespedidos=[]
