@@ -680,7 +680,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             def LeerF2(self, field_frame2, texto2):
                 from src.uiMain.startFrame import startFrame
                 from src.uiMain.main import Main
-                Porcentaje = FieldFrame.getValue(field_frame2, "Descuento")
+                Porcentaje = FieldFrame.getValue(field_frame2, "Fidelidad")
                 
                 if Porcentaje != "0% / 100%":
                     Porcentaje = Porcentaje.strip("%")
@@ -699,12 +699,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.fidelidadclientes = tk.Frame(framePrincipal)
                 self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
                 
-                criterios = ["Descuento"]
+                criterios = ["Fidelidad"]
                 valores = ["0% / 100%"]
                 habilitado = [True]
                 
                 # Creamos el FieldFrame con los botones
-                field_frame2 = FieldFrame(self.fidelidadclientes, "Ingrese porcentaje a modificar para:", criterios, "fidelidad de los clientes sin membresía", valores, habilitado)
+                field_frame2 = FieldFrame(self.fidelidadclientes, "Ingrese porcentaje a modificar para", criterios, "los clientes sin membresía", valores, habilitado)
                 field_frame2.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
                 
                 self.estimadoVentasDeudas = tk.Frame(framePrincipal)
@@ -715,10 +715,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 borrar=tk.Button(self.estimadoVentasDeudas,text="Borrar", command = lambda: field_frame2.borrar())
                 borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
                 
-                confirmacion2 = tk.Label(self.estimadoVentasDeudas, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center")
+                confirmacion2 = tk.Label(self.estimadoVentasDeudas, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center", wraplength=600)
                 confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
                 
-                texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+                texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
                 texto2.pack(fill="both", expand=True)
                 texto2.tag_configure("center", justify="center",spacing1=10, spacing3=10)
 
@@ -727,7 +727,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto2.insert("1.0", "Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", "center")  # Insertar nuevo texto
                 texto2.config(state="disabled") 
 
-            def LeerF3(self,field_frame3, texto3, frameb):
+            def LeerF3(self,field_frame3, frameb):
                 from src.uiMain.main import Main
                 seleccion = FieldFrame.getValue(field_frame3, "Bancos")
                 banco=None
@@ -736,10 +736,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                             banco = seleccion
                             break
                 c = Main.planRecuperacion(startFrame.diferencia_estimada,banco)  # Use float to handle percentage  
-                texto3.config(state="normal")   # Habilitar edición
-                texto3.delete("1.0", "end")     # Eliminar texto actual
-                texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
-                texto3.config(state="disabled") 
+                self.texto3.config(state="normal")   # Habilitar edición
+                self.texto3.delete("1.0", "end")     # Eliminar texto actual
+                self.texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
+                self.texto3.config(state="disabled") 
                 boton2 = tk.Button(self.botonesI3, text="Siguiente", command=lambda: Interaccion4(self, frameb))
                 boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
                     
@@ -800,26 +800,26 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 
                 self.botonesI3 = tk.Frame(framePrincipal)
                 self.botonesI3.pack(anchor="s", expand=True, fill="both")
-                boton1 = tk.Button(self.botonesI3, text="Aceptar", command=lambda: LeerF3(self, field_frame3,texto3,frameb))
+                boton1 = tk.Button(self.botonesI3, text="Aceptar", command=lambda: LeerF3(self, field_frame3,frameb))
                 boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
                 borrar=tk.Button(self.botonesI3,text="Borrar", command = lambda: field_frame3.borrar())
                 borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
                 
-                confirmacion3 = tk.Label(self.botonesI3, text="", anchor="center")
+                confirmacion3 = tk.Label(self.botonesI3, text="", anchor="center",wraplength=600)
                 confirmacion3.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
-                texto3 = tk.Text(confirmacion3, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
-                texto3.pack(fill="both", expand=True)
-                texto3.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-                texto3.config(state="normal")   # Habilitar edición
+                self.texto3 = tk.Text(confirmacion3, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
+                self.texto3.pack(fill="both", expand=True)
+                self.texto3.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+                self.texto3.config(state="normal")   # Habilitar edición
                 
                 if startFrame.diferencia_estimada > 0:
-                    texto3.delete("1.0", "end")     # Eliminar texto actual
-                    texto3.insert("1.0", "El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", "center")  # Insertar nuevo texto
-                    texto3.config(state="disabled") 
+                    self.texto3.delete("1.0", "end")     # Eliminar texto actual
+                    self.texto3.insert("1.0", "El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", "center")  # Insertar nuevo texto
+                    self.texto3.config(state="disabled") 
                 else:
-                    texto3.delete("1.0", "end")     # Eliminar texto actual
-                    texto3.insert("1.0", "El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo", "center")  # Insertar nuevo texto
-                    texto3.config(state="disabled") 
+                    self.texto3.delete("1.0", "end")     # Eliminar texto actual
+                    self.texto3.insert("1.0", "El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo", "center")  # Insertar nuevo texto
+                    self.texto3.config(state="disabled") 
 
             def LeerF4(self,field_frame4, texto4, descuento):
                 from src.uiMain.startFrame import startFrame
@@ -866,9 +866,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 borrar4=tk.Button(self.botonesF4,text="Borrar", command = lambda: field_frame4.borrar())
                 borrar4.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
                 
-                confirmacion4 = tk.Label(self.botonesF4, anchor="center")
+                confirmacion4 = tk.Label(self.botonesF4, anchor="center", wraplength=600)
                 confirmacion4.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
-                texto4 = tk.Text(confirmacion4, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+                texto4 = tk.Text(confirmacion4, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
                 texto4.pack(fill="both", expand=True)
                 texto4.tag_configure("center", justify="center",spacing1=10, spacing3=10)
 
@@ -885,7 +885,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(startFrame.diferencia_estimada)
                 s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(startFrame.analisis_futuro)
                 s4= "\n y por tanto el nuevo porcentaje de pesimismo de la producción es:\n" + str(Venta.getPesimismo())+ "."        
-                confirmacion5 = tk.Label(framePrincipal, anchor="center")
+                confirmacion5 = tk.Label(framePrincipal, anchor="center", wraplength=600)
                 confirmacion5.place(relx=0, rely=0.3, relwidth=1, relheight=0.4)
                 texto5 = tk.Text(confirmacion5, width=50, height=5,bg="plum3", font=("Arial", 10))  # Usa valores válidos
                 texto5.pack(fill="both", expand=True)
@@ -960,10 +960,11 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             borrar.place(relx=0.5, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
             confirmacion = tk.Frame(frame3)
             confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
-
+            espacio=tk.Label(confirmacion, text="", font=("Arial", 10), wraplength=600)
+            espacio.place(relx=0, rely=0, relwidth=1, relheight=1, anchor="c")
             confirmacion.update_idletasks()  # Asegura que el tamaño se actualice correctamente
 
-            texto = tk.Text(confirmacion, width=50, height=5, font=("Arial", 10))  # Usa valores válidos
+            texto = tk.Text(confirmacion, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
             texto.pack(fill="both", expand=True)
             texto.tag_configure("center", justify="center",spacing1=10, spacing3=10)
 

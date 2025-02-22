@@ -649,17 +649,21 @@ class Main:
         for i in range(bolsasAPedir):
             capacidadBolsa = 0
             if cantidadBolsaGrande > 0:
+                print("652")
                 capacidadBolsa = 8
                 cantidadBolsaGrande -= 1
             elif cantidadBolsaMediana > 0:
+                print("656")
                 cantidadBolsaMediana -= 1
                 capacidadBolsa = 3
             elif cantidadBolsaPequeña >0:
+                print("660")
                 capacidadBolsa = 1
                 cantidadBolsaPequeña -= 1
 
             cantidadDisponible = 0
             capacidadTotal += capacidadBolsa
+            print(capacidadTotal)
             tamañoListaInsumos=len(sede.getListaInsumosBodega())
             for i in range(tamañoListaInsumos):
                 insumo = sede.getListaInsumosBodega()[i]
@@ -1434,8 +1438,8 @@ class Main:
         Wilson.setRendimientoBonificacion(com6)
         maxProductos = 5
         minProductos = 1
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(10,11,24), Aura, Cata, 300, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(10,11,24), Aura, Mario, 300, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Cata, 300, sedeP)
+        Main.crearVentaAleatoria(minProductos,1, Fecha(24,11,24), Aura, Mario, 300, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,24), Aura, Cata, 600, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,25), Aura, Mario, 600, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Cata, 700, sedeP)

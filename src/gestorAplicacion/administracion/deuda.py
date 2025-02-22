@@ -130,10 +130,10 @@ class Deuda:
         deudaB = None
         for deuda in Deuda.getListaDeudas():
             for proveedor in Proveedor.getListaProveedores():
-                deudaA=proveedor.getDeuda()
+                deudaA=Proveedor.getDeuda(proveedor)
                 if deudaA is not None:
-                    valdeudaP = deudaA.deudaActual(fecha.getAno())
-                    if valdeudaP != 0 and deudaA.getEstadoDePago()!=True and valdeudaP > mayorPrecioP:
+                    valdeudaP = Deuda.deudaActual(deudaA,fecha.getAno())
+                    if valdeudaP != 0 and Deuda.getEstadoDePago(deudaA)!=True and valdeudaP > mayorPrecioP:
                         mayorPrecioP = valdeudaP
                         mayorProveedor = proveedor
                         deudaP = deudaA
@@ -141,15 +141,15 @@ class Deuda:
             for banco in Banco.getListaBancos():
                 for deudaA in banco.getDeuda():
                     if deudaA is not None:
-                        valdeudaB = deudaA.deudaActual(fecha.getAno())
-                        if valdeudaB != 0 and deudaA.getEstadoDePago()!=True and valdeudaB > mayorPrecioB:
+                        valdeudaB = Deuda.deudaActual(deudaA,fecha.getAno())
+                        if valdeudaB != 0 and Deuda.getEstadoDePago(deudaA)!=True and valdeudaB > mayorPrecioB:
                             mayorPrecioB = valdeudaB
                             mayorBanco = banco
                             deudaB = deudaA
-
-        pagoP = deudaP.pagarDeuda(fecha)
+    
+        pagoP = Deuda.pagarDeuda(deudaP,fecha)
         deudaP.capitalPagado += deudaP.deudaActual(fecha.getAno()) - pagoP
-        pagoB = deudaB.pagarDeuda(fecha)
+        pagoB = Deuda.pagarDeuda(deudaB,fecha)
         deudaB.capitalPagado += deudaB.deudaActual(fecha.getAno()) - pagoB
         
         return "Se pagaron las deudas con el Banco: "+str(mayorBanco.getNombreCuenta())+" y con el Proveedor: "+str(mayorProveedor.getNombre())
