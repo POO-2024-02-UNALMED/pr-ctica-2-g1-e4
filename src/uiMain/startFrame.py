@@ -1416,7 +1416,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     raise ExcepcionPrendaNoExistente(self.datosDespedido.getValue("Prenda"))
             except ExcepcionPrendaNoExistente as b:
                     messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
-                    self.interaccion1Facturacion()
             else:
                 for prendai in Sede.getPrendasInventadasTotal():
                     if (prendai.getNombre().lower()==self.datosDespedido.getValue("Prenda").lower()):
