@@ -31,6 +31,8 @@ def producir(ventana:tk.Frame):
 
     indicaRepMalo = tk.Label(frame2, text="", bg="light gray")
     indicaRepMalo.place(relx=0.5, rely=0.35, anchor="center")
+
+    return framePrincipal
     
 def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #creo que al poner varias variables en global no sirve para modificarlas globalmente, verificar
     from src.gestorAplicacion.bodega.maquinaria import Maquinaria

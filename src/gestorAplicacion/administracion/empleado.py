@@ -11,6 +11,7 @@ from typing import List
 
 class Empleado(Persona, GastoMensual):
     def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia=Membresia.NULA, maquinaria: Maquinaria=[]):
+        self.bonificacion = 0
         Persona.__init__(self,nombre, documento, rol, experiencia, True, membresia)
         self.areaActual = areaActual
         self.traslados = 0
@@ -21,7 +22,6 @@ class Empleado(Persona, GastoMensual):
         self.prendasDescartadas = 0
         self.prendasProducidas = 0
         self.pericia = 0
-        self.bonificacion = 0
         self.evaluaciones = []; self.ventasEncargadas = []
         sede.anadirEmpleado(self)
         Sede.getListaEmpleadosTotal().append(self)
