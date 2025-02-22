@@ -90,7 +90,7 @@ class Main:
 
 
 
-    # region gestión humana
+    #region gestión humana
     #------------------------------------------- Gestión Humana --------------------------------------------------------------------
     
     # Lo que siguen son para la versión grafica, o metodos puente para ella, y no usan print.-------------------------------
@@ -228,8 +228,8 @@ class Main:
             if apto.getRol()==cls.rolesAReemplazar[cls.idxRol]:
                 cls.opcionesParaReemplazo.append(apto)
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
-
-    # region financiera
+#endregion
+    #region financiera
     #----------------------------------------------Financiera------------------------------------------------------------
 
     #Directivos disponibles
@@ -286,7 +286,9 @@ class Main:
         Prenda.prevenciones(descuento, nuevoDescuento, Main.fecha)
         analisisFuturo = (f"{bfString}, sin embargo su desición fue aplicar un descuento de: {nuevoDescuento * 100}%.")
         return analisisFuturo
-# region insumos
+#endregion
+
+#region insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
     # Interacción 1 
@@ -473,7 +475,8 @@ class Main:
                             deudas.append(deuda)
 
         return f"Ahora nuestras deudas con los proveedores lucen asi:\n{deudas}"
-        
+    
+    #endregion
 
     def nextIntSeguro():
         while True:
@@ -516,6 +519,7 @@ class Main:
     @classmethod
     def retornaProveedorB(cls):
         return cls.proveedorBdelmain
+#region facturacion
 
     def listaVendedores(sede):
         from src.gestorAplicacion.administracion.area import Area
@@ -532,7 +536,6 @@ class Main:
             if Empleado.getAreaActual(empleado) == Area.VENTAS:
                 listaEmpleado.append(empleado)
         return listaEmpleado
-# region facturacion
 #-----------------------------------------------------------------Facturación-----------------------------------------------------------------------------------
 
     def vender(cliente, sede, encargado, vendedor, productosSeleccionados, cantidadProductos):
@@ -949,7 +952,7 @@ class Main:
                 random.shuffle(nuevos)
                 for i, prov in enumerate(compatibles):
                     prov.setPrecio(nuevos[i].getPrecio())
-
+    # endregion
     def pedirModista(cantidadPrendas, sede, idxTanda):
         print(f"Seleccione el modista que se encargará de la tanda #{idxTanda} de producción de {cantidadPrendas} prendas en {sede.getNombre()}:")
         modistas = [empleado for empleado in sede.getListaEmpleados() if empleado.getRol() == Rol.MODISTA]
