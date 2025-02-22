@@ -72,8 +72,6 @@ class startFrame(tk.Tk):
         self.areaPrincipal.destroy()
         self.pagina="gestionHumana"
         self.cambiarFrame(self.crearGestionHumana())
-    # LINK src/uiMain/fieldFrame.py
-    # ANCHOR eliminar f2
 
     def eliminarF2(self):
         if not self.fechaValida:

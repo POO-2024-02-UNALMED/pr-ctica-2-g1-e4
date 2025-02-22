@@ -15,7 +15,6 @@ def deserializar():
     Pantalon.setTipoInsumo(pickle.load(archivoBodega))
     Pantalon.setCantidadInsumo(pickle.load(archivoBodega))
     Proveedor.setListaProveedores(pickle.load(archivoBodega))
-    Repuesto.reemplazarListadoRepuestos(pickle.load(archivoBodega))
     archivoBodega.close()
 
     archivoSede = open("src/baseDatos/sede.txt", "rb")
