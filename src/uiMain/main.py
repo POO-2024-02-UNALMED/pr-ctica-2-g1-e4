@@ -733,6 +733,75 @@ class Main:
                 noEmpleados.append(persona)
         return noEmpleados
 
+    def verificarBolsas(venta):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        productosSeleccionados = Venta.getArticulos(venta)
+        sede = Venta.getSede(venta)
+        totalPrendas = len(productosSeleccionados)
+        insumosBodega = Sede.getListaInsumosBodega(sede)
+        capacidadTotal = 0
+
+        while capacidadTotal < totalPrendas:
+            bp, bm, bg = False, False, False
+            for i in range(len(insumosBodega)):
+                bolsa = insumosBodega[i]
+                if isinstance(bolsa, Bolsa):
+                    capacidad = bolsa.getCapacidadMaxima()
+                    cantidad = Sede.getCantidadInsumosBodega(sede)[i]
+                    if capacidad == 1 and cantidad > 0:
+                        bp = True
+                    if capacidad == 3 and cantidad > 0:
+                        bm = True
+                    if capacidad == 8 and cantidad > 0:
+                        bg = True
+        return bp, bm, bg
+        
+
+    def cantidadActualBolsas(venta, cantidadBolsaGrande,cantidadBolsaMediana,cantidadBolsaPequeña):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        productosSeleccionados = Venta.getArticulos(venta)
+        sede = Venta.getSede(venta)
+        totalPrendas = len(productosSeleccionados)
+        insumosBodega = Sede.getListaInsumosBodega(sede)
+        cantidadInsumosBodega = Sede.getCantidadInsumosBodega(sede)
+        bolsasSeleccionadas = []
+        capacidadTotal = 0
+        bolsasAPedir=cantidadBolsaGrande+cantidadBolsaMediana+cantidadBolsaPequeña
+        debeBolsas=0
+        for i in range(bolsasAPedir):
+            capacidadBolsa = 0
+            if cantidadBolsaGrande > 0:
+                capacidadBolsa = 8
+                cantidadBolsaGrande -= 1
+            elif cantidadBolsaMediana > 0:
+                cantidadBolsaMediana -= 1
+                capacidadBolsa = 3
+            elif cantidadBolsaPequeña >0:
+                capacidadBolsa = 1
+                cantidadBolsaPequeña -= 1
+
+            bolsaEncontrada = False
+            cantidadDisponible = 0
+            capacidadTotal += capacidadBolsa
+            for i in range(len(Sede.getListaInsumosBodega(sede))):
+                insumo = Sede.getListaInsumosBodega(sede)[i]
+                if isinstance(insumo, Bolsa) and insumo.getCapacidadMaxima() == capacidadBolsa:
+                    cantidadDisponible += cantidadInsumosBodega[i]
+                    if cantidadDisponible > 0:
+                        bolsasSeleccionadas.append(insumo)
+                        cantidadInsumosBodega[i] -= 1
+                        bolsaEncontrada = True
+                        break
+                    else:
+                        debeBolsas+=1
+                totalPrendas -= cantidadDisponible
+                if capacidadTotal == totalPrendas:
+                    break   
+        venta.getBolsas.append(bolsasSeleccionadas)
+        totalVenta = Venta.getMontoPagado(venta) + len(bolsasSeleccionadas) * 2000
+        Venta.setMontoPagado(venta,totalVenta)
+        return debeBolsas        
+
     def realizarVenta(venta):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         productosSeleccionados = Venta.getArticulos(venta)

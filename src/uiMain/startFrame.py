@@ -1190,30 +1190,19 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(1, weight=10)
    
     def interaccion2Facturacion(self):
+        self.cantidadBolsaGrande=0
+        self.cantidadBolsaMediana=0
+        self.cantidadBolsaPequeña=0
         self.descripcionF1.config(text="""Se encarga de seleccionar bolsas para la compra y surtir de ser necesario.""")
         self.frameCambianteGHumana.destroy()
 
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
         self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
 
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Bolsas Necesarias", ["0","0", "0"],[True,True,True],ancho_entry=25, tamañoFuente=10)
-        self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosEmpleadosFacturacion)
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Bolsas Necesarias", ["0","0", "0"],[True,True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
+        self.revisarBolsasDisponibles()
         self.datosDespedido.grid(row=1, column=0, columnspan=2)
-        clientesPosibles="Clientes"
-        self.Clientes=tk.Label(self.frameCambianteGHumana, text=clientesPosibles, font=("Arial", 10))
-        self.Clientes.grid(row=1, column=3)
-        clientes= Main.imprimirNoEmpleados()
-        for cliente in clientes:
-            if isinstance(cliente,Persona):
-                clientesPosibles+="\n"+cliente.getNombre()        
-        self.Clientes.config(text=clientesPosibles)
-        self.pistas=tk.Label(self.frameCambianteGHumana, text=Main.posiblesSedes(), font=("Arial", 10))
-        self.pistas.grid(row=1, column=4)
-        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.leer1Facturacion)
-        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
-
-        self.aceptar.grid(row=2, column=0)
-        self.botonBorrarSeleccion.grid(row=2, column=1)
+        
         self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
         self.siguiente.grid(row=2, column=2)
         
@@ -1224,7 +1213,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.columnconfigure(3, weight=3)
         self.frameCambianteGHumana.columnconfigure(4, weight=3)
         self.framePrincipal.rowconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(1, weight=10)
+        self.framePrincipal.rowconfigure(1, weight=1)
         
     def anadirPrenda(self):
         self.frameCambianteGHumana.destroy()
@@ -1327,7 +1316,30 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
                 self.outputGHumana.config(state="disabled")
 
+    def leer2Facturacion(self):
+        self.cantidadBolsaGrande=int(self.datosDespedido.getValue("Grande"))
+        +int(self.datosDespedido.getValue("Mediana"))+int(self.datosDespedido.getValue("Pequeña"))
 
+
+    def revisarBolsasDisponibles(self):
+        bp, bm, bg = Main.cantidadActualBolsas(self.venta)
+        if not bg:
+            self.datosDespedido.habilitarEntry("Grande", False)
+        if not bm:
+            self.datosDespedido.habilitarEntry("Mediana", False)
+        if not bp:
+            self.datosDespedido.habilitarEntry("Pequeña", False)
+
+    def verificarCantidadBolsa(self):
+        BolsasFaltantes=Main.cantidadActualBolsas(self.venta, self.cantidadBolsaGrande, self.cantidadBolsaMediana, self.cantidadBolsaPequeña)
+        self.outputGHumana.config(state="normal")
+        self.outputGHumana.delete("1.0", "end")
+        if BolsasFaltantes>=0:
+            self.outputGHumana.insert("1.0",f"Se necesitan {BolsasFaltantes} bolsas más para empacar todos los artículos")
+        else:
+            self.outputGHumana.insert("1.0","Se tienen suficientes bolsas para empacar todos los artículos")
+        self.outputGHumana.config(state="disabled")   
+            
 def pasarAVentanaPrincipal():
     ventana = startFrame()
     ventana.mainloop()
