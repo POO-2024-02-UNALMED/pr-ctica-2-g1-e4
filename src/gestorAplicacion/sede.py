@@ -82,8 +82,8 @@ class Sede:
         Area.rendimientoDeseadoActual(self, fecha)
         return area.rendimientoDeseado
     @classmethod
-    def setListaSedes(cls, sede):
-        cls.listaSedes.append(sede)
+    def setListaSedes(cls, sedes):
+        cls.listaSedes=sedes
     @staticmethod
     def getListaSedes():
         return Sede.listaSedes
