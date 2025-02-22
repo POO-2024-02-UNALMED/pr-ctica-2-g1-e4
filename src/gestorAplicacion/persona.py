@@ -23,7 +23,7 @@ class Persona:
     def getMembresia(self):
         return self.membresia
     def getDocumento(self):
-        return self.documento
+        return self.DOCUMENTO
     def getNombre(self):
         return self.nombre
     def getExperiencia(self):

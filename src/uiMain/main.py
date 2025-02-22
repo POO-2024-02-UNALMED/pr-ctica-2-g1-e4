@@ -360,6 +360,7 @@ class Main:
     def coordinarBodegas(self, retorno):
         from src.uiMain.startFrame import startFrame
         insumoFieldFrame = []
+        habilitado = []
         
         for indexSede,sede in enumerate(retorno):
             insumoFieldFrame.clear()
@@ -372,7 +373,7 @@ class Main:
 
             s=Sede.getListaSedes()[indexSede]
 
-        for i in listaInsumos:
+            for i in listaInsumos:
                 insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
                 productoEnBodega = Sede.verificarProductoBodega(i, s)
                 idxInsumo = listaInsumos.index(i)
@@ -380,7 +381,9 @@ class Main:
                     listaCantidades[idxInsumo] = max(listaCantidades[idxInsumo] - Sede.getCantidadInsumosBodega(s)[productoEnBodega.index], 0)
                 cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
                 productoEnOtraSede = Sede.verificarProductoOtraSede(i)
+
                 if productoEnOtraSede[0]:
+                    habilitado.append(True)
                     print(f"\nTenemos el insumo {Insumo.getNombre(i)} en nuestra {productoEnOtraSede[2]}.")
                     print(f"El insumo tiene un costo de {productoEnOtraSede[3]}")
                     print("\nSeleccione una de las siguientes opciones:")
@@ -409,8 +412,11 @@ class Main:
                     else:
                         print("Esa opción no es valida.")
 
+                else:
+                    habilitado.append(False)
+
      
-                startFrame.transferir(self, insumoFieldFrame, s)    
+                startFrame.transferir(self, insumoFieldFrame, habilitado, s)    
                       
         listaSede.append(insumosAPedir)
         listaSede.append(cantidadAPedir)
@@ -423,7 +429,7 @@ class Main:
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
         deudas = []
-        for sede in listaA:
+        for sede in Main.coordinarBodegas:
             insumos = sede[0]
             cantidad = sede[1]
             for sedee in Sede.getListaSedes():
