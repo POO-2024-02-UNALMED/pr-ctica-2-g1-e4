@@ -374,7 +374,7 @@ class Main:
                 productoEnBodega = Sede.verificarProductoBodega(i, s)
                 idxInsumo = listaInsumos.index(i)
                 if productoEnBodega[0]:
-                    listaCantidades[idxInsumo] = max(listaCantidades[idxInsumo] - Sede.getCantidadInsumosBodega(s)[productoEnBodega.index], 0)
+                    listaCantidades[idxInsumo] = max(listaCantidades[idxInsumo] - Sede.getCantidadInsumosBodega(s)[productoEnBodega[1]], 0)
                 cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
                 productoEnOtraSede = Sede.verificarProductoOtraSede(i)
 
