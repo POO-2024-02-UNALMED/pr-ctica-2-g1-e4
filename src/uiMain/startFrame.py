@@ -1177,7 +1177,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
-        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion3Facturacion)
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
         self.siguiente.grid(row=2, column=2)
         
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
@@ -1188,6 +1188,96 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.columnconfigure(4, weight=3)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
+        
+    def interaccion6Facturacion(self):
+        self.cantidadBolsaGrande=0
+        self.cantidadBolsaMediana=0
+        self.cantidadBolsaPequeña=0
+        self.descripcionF1.config(text="""Factura de la compra realizada.""")
+        self.frameCambianteGHumana.destroy()
+        self.outputGHumana.config(state="normal")
+        self.outputGHumana.delete("1.0", "end")
+        self.outputGHumana.config(state="disabled")
+
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
+        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+
+        confirmacion=tk.Label(self.frameCambianteGHumana, anchor="center")
+        confirmacion.grid(row=0, column=0, sticky="nswe")
+        self.impresionFinal= tk.Text(confirmacion, font=("Arial", 10), height=10)
+        self.impresionFinal.pack(fill="both", expand=True)
+        self.impresionFinal.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+        self.impresionFinal.insert(1.0,"Factura")
+        
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Salir", bg="medium orchid",command=lambda: startFrame.abrirFrameInicial(self))
+        self.siguiente.grid(row=2, column=4)       
+          
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=2)
+        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+
+
+    def interaccion5Facturacion(self):
+        self.cantidadBolsaGrande=0
+        self.cantidadBolsaMediana=0
+        self.cantidadBolsaPequeña=0
+        self.descripcionF1.config(text="""Se encarga de tranferir los fondos a la cuenta principal.""")
+        self.frameCambianteGHumana.destroy()
+        self.outputGHumana.config(state="normal")
+        self.outputGHumana.delete("1.0", "end")
+        self.outputGHumana.config(state="disabled")
+
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
+        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+        
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Fondos" ,["Transferir fondos a la cuenta principal","¿Qué porcentaje desea transferir?"],"", ["Si/No","20% o 60%"],[True,False],ancho_entry=25, tamañoFuente=10)
+        self.datosDespedido.configurarCallBack("Transferir fondos a la cuenta principal", "<Return>", self.actualizarDatosEmpleadosFacturacion)
+        self.datosDespedido.grid(row=1, column=0, columnspan=2)
+        
+        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.leer1Facturacion)
+        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
+
+        self.aceptar.grid(row=2, column=0)
+        self.botonBorrarSeleccion.grid(row=2, column=1)        
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+        self.siguiente.grid(row=2, column=4)        
+        
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=2)
+        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+
+    def interaccion4Facturacion(self):
+        self.cantidadBolsaGrande=0
+        self.cantidadBolsaMediana=0
+        self.cantidadBolsaPequeña=0
+        self.descripcionF1.config(text="""Se encarga de surtir bolsas de ser necesario.""")
+        self.frameCambianteGHumana.destroy()
+        self.outputGHumana.config(state="normal")
+        self.outputGHumana.delete("1.0", "end")
+        self.outputGHumana.config(state="disabled")
+
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
+        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+        
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Targeta de regalo" ,["Código","Nueva tarjeta"],"", ["0","Si/No"],[True, True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
+        self.datosDespedido.grid(row=1, column=0, columnspan=2)
+        
+        
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+        self.siguiente.grid(row=2, column=4)        
+        
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=2)
+        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
    
     def interaccion3Facturacion(self):
         self.cantidadBolsaGrande=0
@@ -1340,6 +1430,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.outputGHumana.delete("1.0", "end")
                 self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
                 self.outputGHumana.config(state="disabled")
+        else:
+            print("datos invalidos")
 
     def leer2Facturacion(self):
         self.cantidadBolsaGrande=int(self.datosDespedido.getValue("Grande"))
@@ -1356,6 +1448,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.datosDespedido.habilitarEntry("Pequeña", False)
 
     def verificarCantidadBolsa(self):
+        print("Verificando cantidad de bolsas")
         BolsasFaltantes=Main.cantidadActualBolsas(self.venta, self.cantidadBolsaGrande, self.cantidadBolsaMediana, self.cantidadBolsaPequeña)
         self.outputGHumana.config(state="normal")
         self.outputGHumana.delete("1.0", "end")
