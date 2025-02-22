@@ -7,7 +7,7 @@ from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.venta import Venta
 
-class Prenda(ABC, GastoMensual):
+class Prenda(GastoMensual):
     porcentajeGanancia = 0.40
     cantidadUltimaProduccion = 0
     cantidadTelaUltimaProduccion = 0
