@@ -35,7 +35,7 @@ class Camisa(Prenda):
                 cantidades += 1
         if cantidades > 0:
             precioVenta = round(precios / cantidades) # Se promedian todos los "precios por los que se deberían vender las prendas para que todas las camisas se vendan al mismo"
-        return precioVenta
+        return precioVenta # El sobrecosto de producción hace parte de el costo de producción, por ende no se añade aquí y hace parte de calcularPrecio()
 
     def siguientePaso(self) -> List[Optional[int]]:
         retorno = []

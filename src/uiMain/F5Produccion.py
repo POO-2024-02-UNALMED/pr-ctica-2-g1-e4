@@ -349,24 +349,25 @@ def inicioInt2(event, containerBig, cont, field_frame, labelTG, cont2, field_fra
     cont2.destroy()
     field_frame2.destroy()
     event.widget.destroy()
+    frameDeTrabajo.config(bg="white")
     threading.Thread(target=Sede.planProduccion, args=(maqDisponibless, Main.fecha), daemon=True).start()
 
     criterios = nomMaqProdDispSedeP
     valores = horasUsoMaqProdDispSedeP
     habilitado = [False for _ in range(len(nomMaqProdDispSedeP))]
 
-    containerBig = tk.Frame(frameDeTrabajo, bg="light gray")
-    containerBig.pack(pady=4)
+    containerBig = tk.Frame(frameDeTrabajo, bg="white")
+    containerBig.pack(pady=2)
 
     evento_senalizador.wait()
     evento_senalizador.clear()
     #print(f"\nsenalizador = {senalizador}")
-    if senalizador == 2:
+    if senalizador == 2 or senalizador == 4:
         cont = tk.Frame(containerBig, bg="gray")
-        cont.pack(side="left", padx=5, pady=20)
+        cont.pack(side="left", padx=5, pady=10)
     else:
         cont = tk.Frame(containerBig, bg="medium orchid")
-        cont.pack(side="left", padx=5, pady=20)
+        cont.pack(side="left", padx=5, pady=10)
     
     field_frame = FieldFrame(cont, "Sede Principal", criterios, "", valores, habilitado)
     field_frame.pack(padx=10, pady=10)
@@ -375,25 +376,43 @@ def inicioInt2(event, containerBig, cont, field_frame, labelTG, cont2, field_fra
     valores2 = horasUsoMaqProdDispSede2
     habilitado2 = [False for _ in range(len(nomMaqProdDispSede2))]
 
-    if senalizador == 1:
+    if senalizador == 1 or senalizador == 4:
         cont2 = tk.Frame(containerBig, bg="gray")
-        cont2.pack(side="left", padx=5,pady=20)
+        cont2.pack(side="left", padx=5,pady=10)
     else:
         cont2 = tk.Frame(containerBig, bg="medium orchid")
-        cont2.pack(side="left", padx=5,pady=20)
+        cont2.pack(side="left", padx=5,pady=10)
     
     field_frame2 = FieldFrame(cont2, "Sede 2", criterios2, "", valores2, habilitado2)
     field_frame2.pack(padx=10, pady=10)
 
-    contLabelYBoton = tk.Frame(frameDeTrabajo, bg="light gray")
-    contLabelYBoton.pack(pady=0)
+    contLabelYBoton = tk.Frame(frameDeTrabajo, bg="white")
+    contLabelYBoton.pack(pady=1)
 
-    labelTextIndicador = tk.Label(contLabelYBoton, text=textIndicador, font=("Arial", 14, "bold"), bg="light gray")
-    labelTextIndicador.pack(side="left", pady=5 ,padx=5)
+    labelTextIndicador = tk.Label(contLabelYBoton, text=textIndicador, font=("Arial", 14, "bold"), bg="white", wraplength=600)
+    labelTextIndicador.pack(pady=0)
 
-    btnPlanificarProd = tk.Button(contLabelYBoton, text="Planificar Produccion", font=("Arial", 12, "bold italic"))
-    btnPlanificarProd.pack(side="left", pady=5, padx=15)
-    btnPlanificarProd.bind("<Button-1>", lambda event: planProduccionn(event, containerBig, cont, field_frame, cont2, field_frame2, contLabelYBoton, labelTextIndicador))
+    btnPlanificarProd = tk.Button(frameDeTrabajo, text="Planificar Produccion", font=("Arial", 12, "bold italic"))
+    
+    if senalizador == 2:
+        btnPlanificarProd.bind("<Button-1>", lambda event: planProduccionn(event, containerBig, contLabelYBoton, 1))
+    elif senalizador == 1:
+        btnPlanificarProd.bind("<Button-1>", lambda event: planProduccionn(event, containerBig, contLabelYBoton, 2))
+    elif senalizador == 3:
+        btnPlanificarProd.bind("<Button-1>", lambda event: planProduccionn(event, containerBig, contLabelYBoton, 3))
+    elif senalizador == 4:
+        # Cuando ninguna sede esta disponible, entonces aqui se debe crear un boton pa volver
+        btnPlanificarProd.config(text="Volver al inicio")
+        btnPlanificarProd.bind("<Button-1>", volverMenu)
+    
+    btnPlanificarProd.pack(pady=5)
+
+def volverMenu(event):
+    from src.uiMain.startFrame import startFrame
+    stf = startFrame()
+    ventana = event.widget.winfo_toplevel()
+    ventana.destroy()
+    stf.cambiarFrame(stf.areaPrincipal)
 
 aProdFinal = []
 def recibeProdFinal(aProdF):
@@ -409,29 +428,26 @@ def recibeProdFinal(aProdF):
     print("\n",len(aProdFinal) , f"- la produccion cruzada en una sola lista es: {aProdFinal}\n")
     evento_senalizador.set()
 
-enlacesP = [(0, 2), (0, 4), (0, 6)]  
-enlacesC = [(1, 3), (1, 5), (1, 7)]
+enlacesP = [(0, 2), (0, 4), (0, 6)] ; enlacesPSede2 = [(4, 6)]
+enlacesC = [(1, 3), (1, 5), (1, 7)] ; enlacesCSede2 = [(5, 7)]
 indiceEnlaceP = 0
 indiceEnlaceC = 0
 direccion = False
 modoP = True
 idx1, idx2 = enlacesP[indiceEnlaceP]
-def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLyB, labelTextInd):
+idx3, idx4 = enlacesPSede2[0]
+def planProduccionn(event, containerBig, contLyB, indicador):
     from src.uiMain.main import Main
     global descripcionF5, aProdFinal
     containerBig.destroy()
-    cont.destroy()
-    field_f1.destroy()
-    cont2.destroy()
-    field_f2.destroy()
     contLyB.destroy()
-    labelTextInd.destroy()
     descripcionF5.destroy()
     event.widget.destroy()
     frameDeTrabajo.config(bg="white")
     contBigRecor = tk.Frame(frameDeTrabajo)
     contBigRecor.pack(fill="x")
 
+    
     contRe1 = tk.Frame(contBigRecor)
     contRe1.pack(pady=3)
     recorderis = tk.Label(contRe1, text="Si en la produccion de hoy\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"))
@@ -504,39 +520,55 @@ def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLy
         return sedesSC
 
     def actualizarValores(event=None):
-        global direccion, idx1, idx2
+        global direccion, idx1, idx2, idx3, idx4
         try:
             valorIntermedio = int(varIntermedio.get()) if varIntermedio.get() else 0
-            val1 = int(varEntries[idx1].get())
-            val2 = int(varEntries[idx2].get())
+            if indicador == 3 or indicador == 2:
+                val1 = int(varEntries[idx1].get())
+                val2 = int(varEntries[idx2].get())
+            elif indicador == 1:
+                val1 = int(varEntries[idx3].get())
+                val2 = int(varEntries[idx4].get())
 
             if direccion: 
                 if val2 - valorIntermedio < 0:
                     valorIntermedio = val2
-                varEntries[idx1].set(str(val1 + valorIntermedio))
-                varEntries[idx2].set(str(val2 - valorIntermedio))
+                if indicador == 3 or indicador == 2:
+                    varEntries[idx1].set(str(val1 + valorIntermedio))
+                    varEntries[idx2].set(str(val2 - valorIntermedio))
+                elif indicador == 1:
+                    varEntries[idx3].set(str(val1 + valorIntermedio))
+                    varEntries[idx4].set(str(val2 - valorIntermedio))
             else:  
                 if val1 - valorIntermedio < 0:
                     valorIntermedio = val1
-                varEntries[idx1].set(str(val1 - valorIntermedio))
-                varEntries[idx2].set(str(val2 + valorIntermedio))
+                if indicador == 3 or indicador == 2:
+                    varEntries[idx1].set(str(val1 - valorIntermedio))
+                    varEntries[idx2].set(str(val2 + valorIntermedio))
+                elif indicador == 1:
+                    varEntries[idx3].set(str(val1 - valorIntermedio))
+                    varEntries[idx4].set(str(val2 + valorIntermedio))
 
             varIntermedio.set("")  # Limpiar Entry intermedio
         except ValueError:
             pass  # Ignorar valores no numéricos
 
     def cambiarEnlaceP():
-        global indiceEnlaceP, modoP, idx1, idx2
+        global indiceEnlaceP, modoP, idx1, idx2, idx3, idx4
         modoP = True  # Activar modo "cambiarP"
         idx1, idx2 = enlacesP[indiceEnlaceP]  # Actualizar índices
-        indiceEnlaceP = (indiceEnlaceP + 1) % len(enlacesP)
+        idx3, idx4 = enlacesPSede2[0]
+        if indicador == 3:
+            indiceEnlaceP = (indiceEnlaceP + 1) % len(enlacesP)
         actualizarFlechas()
 
     def cambiarEnlaceC():
-        global indiceEnlaceC, modoP, idx1, idx2
+        global indiceEnlaceC, modoP, idx1, idx2, idx3, idx4
         modoP = False  # Activar modo "cambiarC"
         idx1, idx2 = enlacesC[indiceEnlaceC]  # Actualizar índices
-        indiceEnlaceC = (indiceEnlaceC + 1) % len(enlacesC)
+        idx3, idx4 = enlacesCSede2[0]
+        if indicador == 3:
+            indiceEnlaceC = (indiceEnlaceC + 1) % len(enlacesC)
         actualizarFlechas()
 
     def cambiarDireccion():
@@ -547,8 +579,12 @@ def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLy
     def actualizarFlechas():
         for label in flechas:
             label.config(text="")
-        flechas[idx1].config(text="⬅" if direccion else "➡")
-        flechas[idx2].config(text="➡" if not direccion else "⬅")
+        if indicador == 3 or indicador == 2:
+            flechas[idx1].config(text="⬅" if direccion else "➡")
+            flechas[idx2].config(text="➡" if not direccion else "⬅")
+        elif indicador == 1:
+            flechas[idx3].config(text="⬅" if direccion else "➡")
+            flechas[idx4].config(text="➡" if not direccion else "⬅")
 
     def onFocusIn(event):
         if event.widget.get() == "Modifica aquí...":
@@ -563,8 +599,19 @@ def planProduccionn(event, containerBig, cont, field_f1, cont2, field_f2, contLy
     frameGeneral = tk.Frame(frameDeTrabajo, bg="white")
     frameGeneral.pack(pady=10)
 
-    frameIzq = tk.LabelFrame(frameGeneral, text="Sede Principal", padx=17, pady=3, bg="#E0A8F2", font=("Arial", 14, "bold italic"))
-    frameDer = tk.LabelFrame(frameGeneral, text="Sede 2", padx=17, pady=3, bg="#E0A8F2", font=("Arial", 14, "bold italic"))
+    if indicador == 1: # Sede Principal no disponible
+        frameIzq = tk.LabelFrame(frameGeneral, text="Sede Principal", padx=17, pady=3, bg="light gray", font=("Arial", 14, "bold italic"))
+    elif indicador != 1 and indicador != 4:
+        frameIzq = tk.LabelFrame(frameGeneral, text="Sede Principal", padx=17, pady=3, bg="#E0A8F2", font=("Arial", 14, "bold italic"))
+    else:   # Para cuando es 4 el indicador ( es decir, ninguna sede esta disponible )
+        frameIzq = tk.LabelFrame(frameGeneral, text="Sede Principal", padx=17, pady=3, bg="light gray", font=("Arial", 14, "bold italic"))
+
+    if indicador == 2: # Sede 2 no disponible
+        frameDer = tk.LabelFrame(frameGeneral, text="Sede 2", padx=17, pady=3, bg="light gray", font=("Arial", 14, "bold italic"))
+    elif indicador != 2 and indicador != 4:
+        frameDer = tk.LabelFrame(frameGeneral, text="Sede 2", padx=17, pady=3, bg="#E0A8F2", font=("Arial", 14, "bold italic"))
+    else:   # Para cuando es 4 el indicador ( es decir, ninguna sede esta disponible )
+        frameDer = tk.LabelFrame(frameGeneral, text="Sede 2", padx=17, pady=3, bg="light gray", font=("Arial", 14, "bold italic"))
     frameIzq.pack(side=tk.LEFT, padx=10)
     frameDer.pack(side=tk.RIGHT, padx=10)
 

@@ -73,7 +73,6 @@ class Maquinaria:
         from src.gestorAplicacion.bodega.insumo import Insumo
         from src.uiMain.F5Produccion import receptor, recibeProveedorB, recibeMaqPaRevisar, recibeMaqDisp
         
-        print("ENTRÉ")
         
         maqDisponibles = []
         todosProvBaratos = []
@@ -83,7 +82,8 @@ class Maquinaria:
         for cadaSede in Sede.getListaSedes():
             for cadaMaquina in cadaSede.getListaMaquinas():
                 if (cadaMaquina.getHoraRevision() - cadaMaquina.getHorasUso()) > 0:
-                    cadaMaquina.mantenimiento = False
+                    if not cadaMaquina.mantenimiento:
+                        cadaMaquina.mantenimiento = False
                     for cadaRepuesto in cadaMaquina.getRepuestos():
                         if (cadaRepuesto.getHorasDeVidaUtil() - cadaRepuesto.getHorasDeUso()) <= 0:
                             receptor(Main.printsInt1(1, cadaRepuesto, cadaMaquina, cadaSede))
@@ -132,11 +132,11 @@ class Maquinaria:
                     cadaMaquina.estado = True
                 else:
                     cadaMaquina.estado = False
-                if not cadaMaquina.mantenimiento and cadaMaquina.estado:
+                if cadaMaquina.mantenimiento is False and cadaMaquina.estado is True:
                     maqDisponibles.append(cadaMaquina)
                 else:
                     maquinasPaRevisar.append(cadaMaquina)
-                #cadaMaquina.mantenimiento = False
+                
         recibeProveedorB(None)
         recibeMaqPaRevisar(maquinasPaRevisar)
         recibeMaqDisp(maqDisponibles)

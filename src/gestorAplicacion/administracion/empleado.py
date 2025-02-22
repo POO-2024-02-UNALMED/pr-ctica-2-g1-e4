@@ -140,6 +140,13 @@ class Empleado(Persona, GastoMensual):
                 cesantias:int = empleado.salario*(empleado.fechaContratacion.getAno()-fecha.getAno())/360
                 Banco.getCuentaPrincipal().transaccion(aPagar-cesantias)
             Maquinaria.liberarMaquinariaDe(empleado)
+    
+    @classmethod
+    def valorEsperadoSalario(cls) -> int:
+        acumulado = 0
+        for emp in Sede.getListaEmpleadosTotal():
+            acumulado += emp.salario
+        return acumulado / len(Sede.getListaEmpleadosTotal())
 
     def __str__(self):
         return f"{super().__str__()}\nArea: {self.areaActual} - Sede: {self.sede} - Traslados: {self.traslados}"

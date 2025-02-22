@@ -64,9 +64,7 @@ class Main:
                 sede = venta.getSede()
                 Sede.getHistorialVentas().append(venta)
             elif opcion == 5:
-                maquina = Maquinaria()
-                sedePrueba = Sede() 
-                plan = sedePrueba.planProduccion(maquina.agruparMaquinasDisponibles(Main.fecha), Main.fecha)
+                plan = Sede.planProduccion(Maquinaria.agruparMaquinasDisponibles(Main.fecha), Main.fecha)
                 creadas = Prenda.producirPrendas(plan,Main.fecha)
                 if (creadas):
                     print(Prenda.getCantidadUltimaProduccion()+" Prendas creadas con éxito")
@@ -375,6 +373,16 @@ class Main:
             if apto.getRol()==cls.rolesAReemplazar[cls.idxRol]:
                 cls.opcionesParaReemplazo.append(apto)
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
+
+    @classmethod
+    def mensajePromedioHumanas(cls):
+        diferenciaSalarios = Persona.diferenciaSalarios()
+        if diferenciaSalarios > 0:
+            return f"Tus empleados estan {diferenciaSalarios:,} sobre el promedio de salarios"
+        elif diferenciaSalarios < 0:
+            return f"Tus empleados estan {-diferenciaSalarios:,} bajo el promedio de salarios"
+        else:
+            return "Tus empleados estan en el promedio de salarios"
     
     #----------------------------------------------Financiera------------------------------------------------------------
         
@@ -421,7 +429,7 @@ class Main:
         analisisFuturo = (f"{bfString}, sin embargo su desición fue aplicar un descuento de: {nuevoDescuento * 100}%.")
         return analisisFuturo
 
-#----------------------------------------------------Insumos------------------------------------------------------------------------------------
+#-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
     # Interacción 1 
     def planificarProduccion(self):
@@ -429,10 +437,10 @@ class Main:
         fecha=Main.fecha
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
-        retorno = []
+        Main.retorno = []
         criterios = []
         valores = []
-        texto = []
+        Main.texto = []
 
         for sede in Sede.getListaSedes():
             #prediccionC = None
@@ -453,9 +461,9 @@ class Main:
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
-                    texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionP)} para la sede {sede}")
+                    Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionP)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
-                    print(texto)
+                    print(Main.texto)
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
                     for cantidad in Pantalon.getCantidadInsumo():
@@ -465,9 +473,9 @@ class Main:
                 if isinstance(prenda, Camisa) and not camisasPredichas:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
                     prediccionC = proyeccion * (1 - Venta.getPesimismo())
-                    texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionC)} para la sede {sede}")
+                    Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionC)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
-                    print(texto)
+                    print(Main.texto)
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
                         if insumo in insumoXSede:
@@ -478,16 +486,18 @@ class Main:
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
 
-            retorno.append(listaXSede)
+            Main.retorno.append(listaXSede)
 
-        startFrame.prediccion(self, texto, retorno)
-        return retorno
+        #startFrame.prediccion(self, Main.texto, Main.retorno)
+        return Main.retorno
+
+    coordinacionBodegas = []
 
     # Interacción 2 
-    def coordinarBodegas(self,retorno):
+    def coordinarBodegas(self, retorno):
         from src.uiMain.startFrame import startFrame
-        listaA = []
         insumoFieldFrame = []
+        
         for indexSede,sede in enumerate(retorno):
             insumoFieldFrame.clear()
             insumosAPedir = []
@@ -498,7 +508,8 @@ class Main:
             listaCantidades = listaXSede[1]
 
             s=Sede.getListaSedes()[indexSede]
-            for i in listaInsumos:
+
+        for i in listaInsumos:
                 insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
                 productoEnBodega = Sede.verificarProductoBodega(i, s)
                 idxInsumo = listaInsumos.index(i)
@@ -535,17 +546,17 @@ class Main:
                     else:
                         print("Esa opción no es valida.")
 
-            startFrame.transferir(self, insumoFieldFrame,s)    
-                       
-            listaSede.append(insumosAPedir)
-            listaSede.append(cantidadAPedir)
-            listaA.append(listaSede)
+     
+                startFrame.transferir(self, insumoFieldFrame, s)    
+                      
+        listaSede.append(insumosAPedir)
+        listaSede.append(cantidadAPedir)
+        Main.coordinarBodegas.append(listaSede)
 
-            
-        return listaA
+        return Main.coordinarBodegas
 
     # Interacción 3
-    def comprarInsumos(fecha, listaA):
+    def comprarInsumos(fecha):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
         deudas = []
@@ -656,68 +667,26 @@ class Main:
             if Empleado.getAreaActual(empleado) == Area.VENTAS:
                 listaEmpleado.append(empleado)
         return listaEmpleado
-    
-    def vender():
+# ANCHOR facturacion
+#-----------------------------------------------------------------Facturación-----------------------------------------------------------------------------------
+
+    def vender(cliente, sede, encargado, vendedor, productosSeleccionados, cantidadProductos):
         from ..gestorAplicacion.administracion.empleado import Empleado
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         from src.gestorAplicacion.administracion.area import Area
         venta = None
-        productosSeleccionados = []; cantidadProductos = []
-        print("\nIngrese la fecha de la venta:")
         fechaVenta = Main.fecha
-        print("\nSeleccione el cliente al que se le realizará la venta:")
-        Main.imprimirNoEmpleados()  # Muestra la lista de clientes con índices
-        clienteSeleccionado = Main.nextIntSeguro()
-        noEmpleados = [persona for persona in Persona.getListaPersonas() if not isinstance(persona, Empleado)]
-        cliente = noEmpleados[clienteSeleccionado]
-        print("\nSeleccione el número de la sede en la que se encuentra el cliente:")
-        for i, sede in enumerate(Sede.getListaSedes()):
-            print(f"{i}. {Sede.getNombre(sede)}")
-        sedeSeleccionada = Main.nextIntSeguro()
-        sede = Sede.getListaSedes()[sedeSeleccionada]
-        print("\nSeleccione el número del empleado que se hará cargo del registro de la venta:")
-        for i, empleado in enumerate(sede.getListaEmpleados()):
-            if Empleado.getAreaActual(empleado) == Area.OFICINA:
-                print(f"{i}. {Empleado.getNombre(empleado)}")
-        encargadoSeleccionado = Main.nextIntSeguro()
-        encargado = Sede.getListaEmpleados(sede)[encargadoSeleccionado]
-        print("\nSeleccione el número del empleado que se hará cargo de asesorar la venta:")
-        for i, empleado in enumerate(Sede.getListaEmpleados(sede)):
-            if empleado.getAreaActual() == Area.VENTAS:
-                print(f"{i}. {Empleado.getNombre(empleado)}")
-        vendedorSeleccionado = Main.nextIntSeguro()
-        vendedor = Sede.getListaEmpleados(sede)[vendedorSeleccionado]
         costosEnvio = 0
-        while True:
-            print("\nSeleccione el getNombre del producto que venderá:")
-            print(f"0. Camisa - Precio {Camisa.precioVenta()}")
-            print(f"1. Pantalon - Precio {Pantalon.precioVenta()}")
-            productoSeleccionado = input()
-            prenda="pantalon"
-            if productoSeleccionado==0:
-                prenda="camisa"
-            prendaSeleccionada = None
-            for prenda in Sede.getPrendasInventadasTotal():
-                if (Prenda.getNombre(prenda).lower()==prenda):
-                    prendaSeleccionada = prenda
-                    break
-            if (prendaSeleccionada == None):
-                print("Producto no encontrado. Intente nuevamente.")
-                continue
-
-            nombrePrendaSeleccionada = Prenda.getNombre(prendaSeleccionada)
-            print("Ingrese la cantidad de unidades que se desea del producto elegido:")
-            cantidadPrenda = Main.nextIntSeguro()
+        for i in range(len(productosSeleccionados)):
+            cantidadPrenda= cantidadProductos[i]
+            prendaSeleccionada = productosSeleccionados[i]
             #cantidadDisponible = sum(1 for prenda in Sede.getPrendasInventadasTotal() if Prenda.getNombre(prenda) == Prenda.getNombre(prendaSeleccionada))
             cantidadDisponible = 0
-            for i in range(len(cantidadPrenda)):
-                productosSeleccionados.append(prendaSeleccionada)
-                cantidadProductos.append(cantidadPrenda)
             for prenda in Sede.getPrendasInventadasTotal():
                 if(Prenda.getNombre(prenda)==Prenda.getNombre(prendaSeleccionada)):
                     cantidadDisponible+=1
-            Main.manejarFaltantes(sede, cantidadPrenda, cantidadDisponible, nombrePrendaSeleccionada, costosEnvio)
+            Main.manejarFaltantes(sede, cantidadPrenda, cantidadDisponible, prendaSeleccionada.getNombre(), costosEnvio)
             if 0 < cantidadPrenda < len(Sede.getPrendasInventadasTotal()):
                 eliminadas = 0
                 for i in range(len(Sede.getPrendasInventadasTotal())):
@@ -725,16 +694,8 @@ class Main:
                         break
                     if Sede.getPrendasInventadasTotal()[i] == prendaSeleccionada:
                         eliminada = Sede.getPrendasInventadasTotal().pop(i)
-                        Sede.getPrendasInventadas(sede).remove(eliminada)
                         eliminadas += 1
                         i -= 1
-            print("\n¿Deseas agregar otro producto a la venta?: (si/no)")
-            decision = input().lower()
-            if decision == "no":
-                print("Selección finalizada")
-                break
-            if decision != "si":
-                break
         sumaPreciosPrendas = 0
         cantidadCamisas = 0
         cantidadPantalon = 0
@@ -871,7 +832,6 @@ class Main:
 
         if faltantes > 0:
             costosEnvio += 3000 + (faltantes * 1000)
-            print("Valor de costos de envío: " + str(costosEnvio))
             prendasTransferidas = 0
             for otraSede in Sede.getListaSedes():
                 if otraSede != sede:
@@ -1054,13 +1014,13 @@ class Main:
     def printsInt2(cls, senall):
         mensajes = {
             1: "Sede Principal disponible\nLa Sede 2 no puede trabajar por falta de maquinaria...",
-            2: "\n Marque una opcion correcta entre 1 o 2...\n",
+            #2: "\n Marque una opcion correcta entre 1 o 2...\n",
             3: "Sede 2 disponible\nLa Sede Principal no puede trabajar por falta de maquinaria...",
             4: "\n Marque una opcion correcta entre 1 o 2...\n",
             5: "La Sede Principal esta sobrecargada, ¿Que desea hacer? \n1. Enviar parte de la produccion a la Sede 2, para producir por partes iguales.\n2. Ejecutar produccion, asumiendo todo el costo por sobrecarga en la Sede Principal.",
-            6: "Coloca una opcion indicada entre 1 o 2...",
+            #6: "Coloca una opcion indicada entre 1 o 2...",
             7: "La Sede 2 esta sobrecargada, ¿Que desea hacer? \n1. Enviar parte de la produccion a la Sede Principal, para producir por partes iguales.\n2. Ejecutar produccion, asumiendo todo el costo por sobrecarga en la Sede 2.",
-            8: "Coloca una opcion indicada entre 1 o 2...",
+            #8: "Coloca una opcion indicada entre 1 o 2...",
             #9: "Las dos sedes estan sobrecargadas, ¿Que quieres hacer?...\n1. Producir mañana las prendas que generan sobrecarga.\n2. Producir todo hoy, asumiendo el costo por sobrecarga.",
             10: "Seleccione una opcion indicada entre 1 o 2...",
             11: "\n Lo sentimos, se debe arreglar la maquinaria en alguna de las dos sedes para comenzar a producir...\n",
@@ -1294,8 +1254,8 @@ class Main:
         # sedeP
         MaquinaDeCoser = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC, sedeP)
         MaquinaDeCorte = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte, sedeP)
-        PlanchaIndustrial = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI, sedeP, 901)
-        BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP)
+        PlanchaIndustrial = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI, sedeP)
+        BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP, 501)
         MaquinaDeTermofijado = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado, sedeP, 1001)
         MaquinaDeTijereado = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado,sedeP)
         Impresora = Maquinaria("Impresora", 800000, 2000, repuestosImp, sedeP)
@@ -1305,8 +1265,8 @@ class Main:
         # sede2
         MaquinaDeCoser2 = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC2, sede2)
         MaquinaDeCorte2 = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte2, sede2)
-        PlanchaIndustrial2 = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI2, sede2)
-        BordadoraIndustrial2 = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI2, sede2, 501)
+        PlanchaIndustrial2 = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI2, sede2, 901)
+        BordadoraIndustrial2 = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI2, sede2)
         MaquinaDeTermofijado2 = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado2, sede2)
         MaquinaDeTijereado2 = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado2,sede2)
         Impresora2 = Maquinaria("Impresora", 800000, 2000, repuestosImp2, sede2)
