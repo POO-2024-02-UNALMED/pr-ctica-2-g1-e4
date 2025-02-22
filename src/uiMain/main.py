@@ -1481,6 +1481,10 @@ class Main:
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Mario, 700, sede2)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia , 300, sede2)
         pass
+    
+    @classmethod # Wrapper para uso de StartFrame
+    def guardar(cls):
+        serializar()
 
 if __name__ == "__main__":
     print("Para usar la interfaz grafica, 1. Para usar la consola, 2. Para reiniciar los datos, 3")
@@ -1500,4 +1504,5 @@ if __name__ == "__main__":
                 Main.main()
             case "3":
                 Main.crearSedesMaquinasRepuestos()
+                serializar()
                 deserializarAlIniciar=False

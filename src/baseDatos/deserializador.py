@@ -22,7 +22,6 @@ def deserializar():
     Sede.setListaEmpleadosTotal(pickle.load(archivoSede))
     Sede.setPrendasInventadasTotal(pickle.load(archivoSede))
     Sede.setListaSedes(pickle.load(archivoSede))
-    print(Sede.getListaSedes())
     archivoSede.close()
 
     archivoAdministracion = open("src/baseDatos/administracion.txt", "rb")

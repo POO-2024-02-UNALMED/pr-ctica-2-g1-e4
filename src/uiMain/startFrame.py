@@ -114,12 +114,15 @@ class startFrame(tk.Tk):
         self.cambiarFrame(self.crearFrameInicial())
 
     def pasarABienvenida(self):
+        Main.guardar()
         if self.pagina=="inicial":
             import src.uiMain.bienvenida.bienvenida as bienvenida
             self.destroy()
             bienvenida.pasarAVentanaBienvenida()
         else:
             self.abrirFrameInicial()
+        
+
     
     def acercaDe(self):
         tk.messagebox.showinfo("Acerca de", "Andres David Calderón Jiménez \nGelsy Jackelin Lozano Blanquiceth \nAndrea Merino Mesa \nLuis Rincon \nJuanita Valentina Rosero")
