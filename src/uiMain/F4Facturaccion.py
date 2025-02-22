@@ -4,7 +4,6 @@ from tkinter.font import Font
 
 from src.uiMain.fieldFrame import FieldFrame
 
-    
 def Facturar(ventana:tk.Frame):
     framePrincipal =  tk.Frame(ventana)
     framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)

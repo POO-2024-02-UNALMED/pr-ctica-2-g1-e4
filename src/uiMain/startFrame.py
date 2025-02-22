@@ -1087,7 +1087,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(1, weight=1)
         self.framePrincipal.rowconfigure(2, weight=10)
         self.framePrincipal.rowconfigure(3, weight=2)
-        self.pantallaDatosFactura()
+        self.interaccion1Facturacion()
 
     def pantallaBaseFacturacion(self, limpiarFrame=False):
         if limpiarFrame:
@@ -1109,7 +1109,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.malRendidos=tk.Label(self.frameCambianteGHumana, text=nombres, font=("Arial", 10))
         self.malRendidos.grid(row=2, column=1,sticky="nswe")
 
-        self.opcionAñadir=tk.Button(self.frameCambianteGHumana, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", font=("Arial", 12, "bold"), command=self.pantallaDatosFactura)
+        self.opcionAñadir=tk.Button(self.frameCambianteGHumana, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", font=("Arial", 12, "bold"), command=self.interaccion1Facturacion)
         self.opcionAñadir.grid(row=3, column=0,columnspan=2)
 
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
@@ -1152,7 +1152,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     
     #Este si
     # Parte de la interacción 1
-    def pantallaDatosFactura(self):
+    def interaccion1Facturacion(self):
         self.descripcionF1.config(text="""Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.\nInserte los datos de la sede y presione Enter para ver los empleados""")
         self.frameCambianteGHumana.destroy()
 
@@ -1160,7 +1160,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
 
         self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Detalles Venta" ,["Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", ["","Sede Principal", "","","Camisa/Pantalon","0"],[True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
-        self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosVendedores)
+        self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosEmpleadosFacturacion)
         self.datosDespedido.grid(row=1, column=0, columnspan=2)
         clientesPosibles="Clientes"
         self.Clientes=tk.Label(self.frameCambianteGHumana, text=clientesPosibles, font=("Arial", 10))
@@ -1172,13 +1172,13 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.Clientes.config(text=clientesPosibles)
         self.pistas=tk.Label(self.frameCambianteGHumana, text=Main.posiblesSedes(), font=("Arial", 10))
         self.pistas.grid(row=1, column=4)
-        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.enviarVenta)
+        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.leer1Facturacion)
         self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
-        self.opcionAñadir=tk.Button(self.frameCambianteGHumana, text="Añadir otra Prenda", font=("Arial", 12, "bold"), command=self.anadirPrenda)
-        self.opcionAñadir.grid(row=2, column=2)
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+        self.siguiente.grid(row=2, column=2)
         
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
         self.frameCambianteGHumana.rowconfigure(1, weight=10)
@@ -1189,6 +1189,43 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
    
+    def interaccion2Facturacion(self):
+        self.descripcionF1.config(text="""Se encarga de seleccionar bolsas para la compra y surtir de ser necesario.""")
+        self.frameCambianteGHumana.destroy()
+
+        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
+        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+
+        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Bolsas Necesarias", ["0","0", "0"],[True,True,True],ancho_entry=25, tamañoFuente=10)
+        self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosEmpleadosFacturacion)
+        self.datosDespedido.grid(row=1, column=0, columnspan=2)
+        clientesPosibles="Clientes"
+        self.Clientes=tk.Label(self.frameCambianteGHumana, text=clientesPosibles, font=("Arial", 10))
+        self.Clientes.grid(row=1, column=3)
+        clientes= Main.imprimirNoEmpleados()
+        for cliente in clientes:
+            if isinstance(cliente,Persona):
+                clientesPosibles+="\n"+cliente.getNombre()        
+        self.Clientes.config(text=clientesPosibles)
+        self.pistas=tk.Label(self.frameCambianteGHumana, text=Main.posiblesSedes(), font=("Arial", 10))
+        self.pistas.grid(row=1, column=4)
+        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.leer1Facturacion)
+        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
+
+        self.aceptar.grid(row=2, column=0)
+        self.botonBorrarSeleccion.grid(row=2, column=1)
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+        self.siguiente.grid(row=2, column=2)
+        
+        self.frameCambianteGHumana.rowconfigure(0, weight=1)
+        self.frameCambianteGHumana.rowconfigure(1, weight=10)
+        self.frameCambianteGHumana.columnconfigure(0, weight=2)
+        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.frameCambianteGHumana.columnconfigure(3, weight=3)
+        self.frameCambianteGHumana.columnconfigure(4, weight=3)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=10)
+        
     def anadirPrenda(self):
         self.frameCambianteGHumana.destroy()
 
@@ -1218,7 +1255,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(1, weight=10)
 
 #Este si
-    def actualizarDatosVendedores(self, evento):
+    def actualizarDatosEmpleadosFacturacion(self, evento):
         if Main.verificarSedeExiste(self.datosDespedido.getValue("sede")):
             self.datosDespedido.habilitarEntry("Vendedor", True)
             self.datosDespedido.configurarCallBack("Vendedor", "<Return>", lambda e: self.actualizarDatosAñadirVendedor())
@@ -1254,7 +1291,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             tk.messagebox.showwarning("El empleado no trabaja aquí", "Intente otra vez, luego de verificar el nombre del empleado")
 
     #Este si
-    def enviarVenta(self):
+    def leer1Facturacion(self):
         #Acá va lo de la excepcion
         excepcion=False
         cliente=None
@@ -1284,118 +1321,13 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.datosDespedido.habilitarEntry("Vendedor", False)
                 self.datosDespedido.habilitarEntry("Empleado caja", False)
             else: 
-                venta=Main.vender(self.cliente,self.sede,self.vendedor,self.caja,self.listaPrendas,self.cantidadPrendas)
+                self.venta=Main.vender(self.cliente,self.sede,self.vendedor,self.caja,self.listaPrendas,self.cantidadPrendas)
                 self.outputGHumana.config(state="normal")
                 self.outputGHumana.delete("1.0", "end")
-                self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {venta.getSubtotal()}", "center", Font=("Arial", 10))
+                self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
                 self.outputGHumana.config(state="disabled")
 
-    def reemplazarPorCambioFactura(self):
-        self.frameCambianteGHumana.destroy()
-        self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
-        self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
-        self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text="Se han añadido las prenda a su compra", relief="ridge", font=("Arial", 10))
-        self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
-        self.listaPrendas=[]
-        self.frameCambianteGHumana.columnconfigure(0, weight=3)
-    
-    def dibujarTandaDePrendas(self, tanda):
-        candidatos,sedeDonadora,rol,cantidad = tanda
 
-        if self.contenedorTandaTransferencia is not None:
-            self.contenedorTandaTransferencia.destroy()
-
-        self.contenedorTandaTransferencia=tk.Frame(self.frameCambianteGHumana)
-        self.contenedorTandaTransferencia.grid(row=1, column=0, sticky="nswe")
-        textoReemplazo=f"""Nececitamos reemplazar {cantidad} de {rol.name}\n"""
-        if Main.estadoGestionHumana=="contratacion":
-            textoReemplazo+="""Por medio de contratación"""
-        else:
-            textoReemplazo+=f"""Por medio de transferencia desde la sede {sedeDonadora.getNombre()}."""
-        
-        textoReemplazo+="""\n He aquí los candidatos, escriba el nombre del seleccionado en cada casilla:"""
-        for candidato in candidatos:
-            textoReemplazo+=f"\n{candidato.getNombre()} con {candidato.experiencia} años de experiencia"
-            if rol==Rol.MODISTA:
-                textoReemplazo+=f" y {candidato.pericia} de pericia"
-
-        self.tituloTanda=tk.Label(self.contenedorTandaTransferencia, text=textoReemplazo, font=("Arial", 10))
-        self.tituloTanda.grid(row=0, column=0, sticky="nswe", columnspan=4)
-
-        self.seleccionadorReemplazo=FieldFrame(self.contenedorTandaTransferencia,"Reemplazo numero", [f"Reemplazo {i}" for i in range(1,cantidad+1)], "Nombre", aceptar=True, borrar=True,callbackAceptar=self.terminarTandaPrendas)
-        self.seleccionadorReemplazo.grid(row=1, column=0, sticky="nswe", columnspan=4)
-
-        self.contenedorTandaTransferencia.rowconfigure(0, weight=1)
-        self.contenedorTandaTransferencia.rowconfigure(1, weight=3)
-        self.contenedorTandaTransferencia.columnconfigure(0, weight=1)
-    
-    def terminarTandaPrendas(self):
-        reemplazos=[]
-        for i in range(1, len(self.seleccionadorReemplazo.valores)+1):
-            reemplazos.append(self.seleccionadorReemplazo.getValue(f"Reemplazo {i}"))
-        (existen)=Main.terminarTandaReemplazo(reemplazos)
-        if existen:
-            tanda=Main.getTandaReemplazo()
-            if tanda is None:
-                self.frameCambianteGHumana.destroy()
-                self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
-                self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
-                self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text=f"""Se ha completado el reemplazo de los empleados, tenga buen día.""", relief="ridge", font=("Arial", 10))
-                self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
-                self.frameCambianteGHumana.columnconfigure(0, weight=3)
-                self.frameCambianteGHumana.rowconfigure(0, weight=3)
-            else:
-                self.dibujarTandaDePrendas(Main.getTandaReemplazo())
-        else:
-            tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado esta en la lista de candidatos.")
-
-    def cosa(self):
-        criterios = ["Cliente","Sede","Tipo de Prenda", "Cantidad Prenda"]
-        valores = ["","Sede Principal","camisa/pantalon","0"]
-        habilitado = [True, True,True,True]
-        # Creamos el FieldFrame con los botones
-        field_frame = FieldFrame(self.frameGeneral, "Detalles Venta", criterios, "Campos", valores, habilitado, ancho_entry=20, crecer=False, tamañoFuente=12, aceptar=True,borrar=True, callbackAceptar=None)
-        field_frame.place(relx=1, rely=0.1, relwidth=1, relheight=1, anchor="e")
-
-        framec = tk.Frame(self.frameGeneral)
-        framec.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
-        labelCliente= tk.Frame(framec)
-        labelCliente.place(relx=0, rely=0, relwidth=1, relheight=1)
-        clientes=Main.imprimirNoEmpleados()
-            
-        tituloCliente=tk.Label(labelCliente, text="Clientes: ", font=("Arial", 12, "bold"), anchor="center")
-            
-        tituloCliente.grid(row=2, column=0, columnspan=3)
-        contador=1
-        rowbase=3
-        for cliente in clientes:
-            if contador<=(len(clientes)/3):
-                nombre1 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                nombre1.grid(row=rowbase, column=0)
-                if contador==(len(clientes)/3):
-                    rowbase=3
-                else:
-                    rowbase+=1
-                contador+=1
-                
-            elif contador<=((len(clientes)/3)*2) and contador>(len(clientes)/3):
-                nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                nombre2.grid(row=rowbase, column=1)
-                if contador==((len(clientes)/3)*2):
-                    rowbase=3
-                else:
-                    rowbase+=1
-                contador+=1
-            else:
-                nombre2 = tk.Label(labelCliente, text=str(Persona.getNombre(cliente)), font=("Arial", 10))
-                nombre2.grid(row=rowbase, column=2)
-                rowbase+=1
-
-            labelCliente.columnconfigure(0, weight=1)
-            labelCliente.columnconfigure(1, weight=1)
-            labelCliente.columnconfigure(2, weight=1)
-            return self.framePrincipal
-        
 def pasarAVentanaPrincipal():
     ventana = startFrame()
     ventana.mainloop()
