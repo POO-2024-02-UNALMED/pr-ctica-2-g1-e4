@@ -13,6 +13,7 @@ from src.gestorAplicacion.administracion.empleado import Empleado
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.empleado import Empleado
+from src.baseDatos.serializador import serializar
 import threading
 
 class Main:
@@ -1484,12 +1485,16 @@ class Main:
         pass
 
 if __name__ == "__main__":
-    print("Para usar la interfaz grafica, 1. Para usar la consola, 2")
-    opcion = input()
-    match opcion:
-        case "1":
-            from src.uiMain.bienvenida.bienvenida import Aplication
-            Main.crearSedesMaquinasRepuestos()
-            Aplication.bienvenida()
-        case "2":
-            Main.main()
+    print("Para usar la interfaz grafica, 1. Para usar la consola, 2. Para reiniciar los datos, 3")
+    opcion="3"
+    while opcion=="3":
+        opcion = input()
+        match opcion:
+            case "1":
+                from src.uiMain.bienvenida.bienvenida import Aplication
+                Aplication.bienvenida()
+            case "2":
+                Main.main()
+            case "3":
+                Main.crearSedesMaquinasRepuestos()
+                serializar()
