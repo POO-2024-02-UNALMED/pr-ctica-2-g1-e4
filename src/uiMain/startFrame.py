@@ -1198,7 +1198,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
 
         self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Bolsas Necesarias", ["0","0", "0"],[True,True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
-        self.revisarBolsasDisponibles()
         self.datosDespedido.grid(row=1, column=0, columnspan=2)
         
         self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
@@ -1208,10 +1207,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.rowconfigure(1, weight=10)
         self.frameCambianteGHumana.columnconfigure(0, weight=2)
         self.frameCambianteGHumana.columnconfigure(1, weight=2)
-        self.frameCambianteGHumana.columnconfigure(3, weight=3)
-        self.frameCambianteGHumana.columnconfigure(4, weight=3)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
+        self.revisarBolsasDisponibles()
         
     def anadirPrenda(self):
         self.frameCambianteGHumana.destroy()
@@ -1320,7 +1318,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
 
     def revisarBolsasDisponibles(self):
-        bp, bm, bg = Main.cantidadActualBolsas(self.venta)
+        bp, bm, bg = Main.verificarBolsas(self.venta)
         if not bg:
             self.datosDespedido.habilitarEntry("Grande", False)
         if not bm:
