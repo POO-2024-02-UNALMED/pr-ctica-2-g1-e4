@@ -9,19 +9,19 @@ class ExceptionC2(ErrorAplicacion):
 class ExcepcionCodigoTarjetaregalo(ExceptionC2):
     def __init__(self, codigo):
         self.mensajeCodigo = f" El código {codigo} no se encuentra habilitado. ¿Desea intentar nuevamente?"
-        super().__init__(self.mensajeCodigo)
+        super().__init__(self.mensajeCodigo) #Falta aplicarla
 
 class ExcepcionPrendaNoExistente(ExceptionC2):
     def __init__(self, prenda):
-        self.mensajePrenda = f" La prenda {prenda} no es vendida en nuestra empresa. ¿Desea elegir una prenda nuevamente?"
-        super().__init__(self.mensajePrenda)
+        self.mensajePrenda = f" La prenda {prenda} no es vendida en nuestra empresa. Intente nuevamente"
+        super().__init__(self.mensajePrenda) #Ya
 
 class ExcepcionEmpleadoNoEncontrado(ExceptionC2):
     def __init__(self):
         self.mensajeEmpleado = f"Empleado no valido","Verifique que el empleado trabaja en la empresa."
-        super().__init__(self.mensajeEmpleado)
+        super().__init__(self.mensajeEmpleado) #Puede que falten algunas
 
 class ExcepcionAgregarOtraPrenda(ExceptionC2):
     def __init__(self):
         self.mensajeCompra = f"¿Desea agregar más prendas a la compra?"
-        super().__init__(self.mensajeCompra)
+        super().__init__(self.mensajeCompra) #Ya

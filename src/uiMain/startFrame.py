@@ -1413,7 +1413,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     break
                 elif (prenda == None):
                     continue
-        if self.datosDespedido.getValue("Prenda") != "Camisa" and self.datosDespedido.getValue("Prenda") != "Pantalon":
+        if self.datosDespedido.getValue("Prenda").lower() != "camisa" and self.datosDespedido.getValue("Prenda").lower() != "pantalon":
             try: 
                 hayExcepcion = True
                 if hayExcepcion:
