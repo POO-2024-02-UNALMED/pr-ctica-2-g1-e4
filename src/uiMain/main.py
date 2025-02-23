@@ -295,18 +295,17 @@ class Main:
 #region insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
-    planProduccion = []# Modificado por planificarProduccion
+    insumosAConseguir = []# Modificado por planificarProduccion
 
     # Interacción 1 
     @classmethod
-    def planificarProduccion(cls):
-        from src.uiMain.startFrame import startFrame
+    def planificarProduccion(cls,ventanaPrincipal):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         fecha=Main.fecha
         criterios = []
         valores = []        
-        Main.retorno = []
+        retorno = []
         Main.texto = []
 
         for sede in Sede.getListaSedes():
@@ -315,14 +314,14 @@ class Main:
             valores.append(round(Venta.getPesimismo()*100))
             
         
-        startFrame.pesimismo(cls, criterios, valores)
+        ventanaPrincipal.pesimismo(criterios, valores)
 
         for sede in Sede.getListaSedes():
             pantalonesPredichos = False
             camisasPredichas = False
             insumoXSede = []
             cantidadAPedir = []
-            listaXSede = [insumoXSede, cantidadAPedir]
+            listaSede = [insumoXSede, cantidadAPedir]
 
             for prenda in Sede.getPrendasInventadas(sede):
 
@@ -354,10 +353,11 @@ class Main:
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
 
-            Main.retorno.append(listaXSede)
+            retorno.append(listaSede)
 
         #startFrame.prediccion(self, Main.texto, Main.retorno)
-        return Main.retorno
+        cls.planificarProduccion = retorno
+        return retorno
 
     coordinacionBodegas = []
     indexSede=0
@@ -369,7 +369,8 @@ class Main:
         
 
     # Interacción 2 
-    def coordinarBodegas(self, retorno):
+    @classmethod
+    def coordinarBodega(cls): # Antes coordinarBodegas
         from src.uiMain.startFrame import startFrame
         insumoFieldFrame = []
         habilitado = []
@@ -377,20 +378,19 @@ class Main:
         insumoFieldFrame.clear()
         insumosAPedir = []
         cantidadAPedir = []
+        insumosNecesarios = cls.planificarProduccion[cls.indexSede][0]
+        cantidadesNecesarias = cls.planificarProduccion[cls.indexSede][1]
         listaSede = [] # generado en este metodo
-        listaXSede = sede # Extraido de retorno
-        listaInsumos = listaXSede[0]
-        listaCantidades = listaXSede[1]
 
-        s=Sede.getListaSedes()[indexSede]
+        s=Sede.getListaSedes()[cls.indexSede]
 
-        for i in listaInsumos:
+        for i in insumosNecesarios:
             insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
-            productoEnBodega = Sede.verificarProductoBodega(i, s)
-            idxInsumo = listaInsumos.index(i)
-            if productoEnBodega[0]:
-                listaCantidades[idxInsumo] = max(listaCantidades[idxInsumo] - Sede.getCantidadInsumosBodega(s)[productoEnBodega.index], 0)
-            cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
+            (hayEnBodega,indiceEnBodega) = Sede.verificarProductoBodega(i, s)
+            idxInsumo = insumosNecesarios.index(i)
+            if hayEnBodega:
+                cantidadesNecesarias[idxInsumo] = max(cantidadesNecesarias[idxInsumo] - Sede.getCantidadInsumosBodega(s)[indiceEnBodega], 0)
+            cantidadNecesaria = cantidadesNecesarias[insumosNecesarios.index(i)]
             productoEnOtraSede = Sede.verificarProductoOtraSede(i)
 
             if productoEnOtraSede[0]:
@@ -427,7 +427,7 @@ class Main:
                 habilitado.append(False)
 
     
-            startFrame.transferir(self, insumoFieldFrame, habilitado, s)    
+            startFrame.transferir(insumoFieldFrame, habilitado, s)    
                       
         listaSede.append(insumosAPedir)
         listaSede.append(cantidadAPedir)
@@ -651,17 +651,21 @@ class Main:
         for i in range(bolsasAPedir):
             capacidadBolsa = 0
             if cantidadBolsaGrande > 0:
+                print("652")
                 capacidadBolsa = 8
                 cantidadBolsaGrande -= 1
             elif cantidadBolsaMediana > 0:
+                print("656")
                 cantidadBolsaMediana -= 1
                 capacidadBolsa = 3
             elif cantidadBolsaPequeña >0:
+                print("660")
                 capacidadBolsa = 1
                 cantidadBolsaPequeña -= 1
 
             cantidadDisponible = 0
             capacidadTotal += capacidadBolsa
+            print(capacidadTotal)
             tamañoListaInsumos=len(sede.getListaInsumosBodega())
             for i in range(tamañoListaInsumos):
                 insumo = sede.getListaInsumosBodega()[i]
@@ -682,7 +686,7 @@ class Main:
 
     def surtirBolsas(ventana, venta):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
-
+        ventana.interaccion3Facturacion(insumo, mensaje)
         nombreBolsa = "Bolsa"
         for revisarSede in Sede.getListaSedes():
             listaInsumos = revisarSede.getListaInsumosBodega()
@@ -695,7 +699,7 @@ class Main:
                         insumo = listaInsumos[e]
                         if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
                             print("692")                        
-                            ventana.interaccion3Facturacion(insumo, mensaje)
+                            ventana.modifInteraccion3Facturacion(insumo, mensaje)
                             
     def comprarBolsas(ventana, venta, insumo, cantidadComprar):
         listaBolsas=[]
@@ -964,7 +968,7 @@ class Main:
                 random.shuffle(nuevos)
                 for i, prov in enumerate(compatibles):
                     prov.setPrecio(nuevos[i].getPrecio())
-    # endregion
+    #endregion
     def pedirModista(cantidadPrendas, sede, idxTanda):
         print(f"Seleccione el modista que se encargará de la tanda #{idxTanda} de producción de {cantidadPrendas} prendas en {sede.getNombre()}:")
         modistas = [empleado for empleado in sede.getListaEmpleados() if empleado.getRol() == Rol.MODISTA]
@@ -1436,8 +1440,8 @@ class Main:
         Wilson.setRendimientoBonificacion(com6)
         maxProductos = 5
         minProductos = 1
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(10,11,24), Aura, Cata, 300, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(10,11,24), Aura, Mario, 300, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Cata, 300, sedeP)
+        Main.crearVentaAleatoria(minProductos,1, Fecha(24,11,24), Aura, Mario, 300, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,24), Aura, Cata, 600, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,25), Aura, Mario, 600, sedeP)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Cata, 700, sedeP)
