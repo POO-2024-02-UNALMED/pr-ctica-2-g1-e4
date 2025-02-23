@@ -73,6 +73,6 @@ class Insumo(GastoMensual):
     def getUltimoPrecio(self):
         return self.ultimoPrecio
     def __str__(self):
-        return f"Insumo: {self.nombre}"
+        return f"{self.nombre}"
     def __repr__(self):
         return self.__str__()

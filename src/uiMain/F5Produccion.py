@@ -5,7 +5,8 @@ from tkinter import ttk
 import threading
 
 def producir(ventana:tk.Frame):
-    global indicaRepMalo, frameDeTrabajo, descripcionF5
+    global indicaRepMalo, frameDeTrabajo, descripcionF5, ventanaPrincipal
+    ventanaPrincipal = ventana
     framePrincipal =  tk.Frame(ventana, bg="blue")
     framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
 
@@ -44,6 +45,7 @@ def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #cr
     global nomMaqProdDispSede2, sedeMaqProdDispSede2, horasUsoMaqProdDispSede2
     global textIndicador, senalizador
     global aProdFinal, aProducirPaEnviar
+    global num3
     proveedoresQueLlegan = []
     preciosProvQueLlegan = []
     totalGastado = 0
@@ -60,6 +62,7 @@ def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #cr
     textIndicador = None
     senalizador = 0
     aProdFinal = [] ; aProducirPaEnviar = []
+    num3 = 0
     buscarProveedor(ventana, descrip1, botonContinuar)
     #Maquinaria.agruparMaquinasDisponibles(10)
 
@@ -82,6 +85,7 @@ frameDeTrabajo = None
 proveedorB = None
 botonProveedorB = None
 descripcionF5 = None
+ventanaPrincipal = None
 
 senal2 = 0
 def buscarProveedor(ventana:tk.Frame, descrip1: tk.Label, botonContinuar:tk.Button):
@@ -440,7 +444,7 @@ idx1, idx2 = enlacesP[indiceEnlaceP]
 idx3, idx4 = enlacesPSede2[0]
 def planProduccionn(event, containerBig, contLyB, indicador):
     from src.uiMain.main import Main
-    global descripcionF5, aProdFinal
+    global descripcionF5, aProdFinal, ventanaPrincipal
     containerBig.destroy()
     contLyB.destroy()
     descripcionF5.destroy()
@@ -477,20 +481,26 @@ def planProduccionn(event, containerBig, contLyB, indicador):
     varIntermedio = tk.StringVar()
 
     def confirmarProduccion(event):
+        global ventanaPrincipal
         from tkinter import messagebox
+        from src.gestorAplicacion.sede import Sede
+        from src.uiMain.fieldFrame import FieldFrame
+        from src.gestorAplicacion.bodega.prenda import Prenda
         listSobreCostos = calcularSobreCostos()
         produccionPaEnviar()
         respuesta = messagebox.askyesno("Confirmación", f"¿Deseas continuar?\n\n* Sobre Costo de la Sede Principal = {listSobreCostos[0]}\n* Sobre Costo de la Sede 2 = {listSobreCostos[1]}")
         
         if respuesta:
-            messagebox.showinfo("Continuar", "¡Listo, vamos a producir las prendas!")
+            #messagebox.showinfo("Continuar", "¡Listo, vamos a producir las prendas!")
+            
             print("El usuario eligió continuar.")
             contBigRecor.destroy() ; contRe1.destroy() ; recorderis.destroy() ; textRecorderis.destroy() ; separador.destroy()
             contRe2.destroy() ; recorderis2.destroy() ; textRecorderis2.destroy() ; frameGeneral.destroy() ; frameIzq.destroy() ; frameDer.destroy()
             for subf in subframes:
                 subf.destroy()
             frameBotones.destroy() ; frameEntry.destroy()
-            inicioInt3()
+            ventanaPrincipal.after(100, inicioInt3)
+
         else:
             print("El usuario canceló la acción.")
 
@@ -673,25 +683,170 @@ def planProduccionn(event, containerBig, contLyB, indicador):
     cambiarEnlaceP()
 
 aProducirPaEnviar = []
-creadas = False
+creadas = None
 def recibeCreadasOrNo(creadasss):
-    global creadas
+    global creadas, contenedorGrande
+    from src.gestorAplicacion.bodega.prenda import Prenda
     creadas = creadasss
-    evento_senalizador.set()
+    contenedorGrande.destroy()
+    resultado = None
+    if creadasss:
+        resultado = f"{Prenda.getCantidadUltimaProduccion()} Prendas creadas con éxito"
+    else:
+        resultado = f"No se pudo producir todo porque los insumos no alcanzaron, producimos {Prenda.getCantidadUltimaProduccion()} prendas"
+    
+    labelResultado = tk.Label(frameDeTrabajo, text=resultado, bg="white", font=("Arial", 18, "bold italic"), wraplength=500, justify="center")
+    labelResultado.pack(pady=15)
 
+
+    
+contenedorGrande = None
 def inicioInt3():
     from src.gestorAplicacion.bodega.prenda import Prenda
     from src.uiMain.main import Main
     from src.gestorAplicacion.sede import Sede
-    global aProducirPaEnviar, creadas
+    from src.uiMain.fieldFrame import FieldFrame
+    global frameDeTrabajo, aProducirPaEnviar, creadas, printModistaGlobal, listModistas, ventanaPrincipal, labelPrueba, even, contSeleccionModista, contenedorGrande
+    criterios1 = [] ; criterios2 = [] ; valores1 = [] ; valores2 = []
     print("\nComienzo de la interacción 3...")
     print(f"\n Lista de insumos actual de la sede Principal: {Sede.getListaSedes()[0].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[0].getCantidadInsumosBodega()}")
     print(f"\n Lista de insumos actual de la sede 2: {Sede.getListaSedes()[1].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[1].getCantidadInsumosBodega()}\n")
+    #contenedorGrande = tk.Frame(frameDeTrabajo, bg="light gray")
+    #contenedorGrande.pack(pady=5)
+
+    contenedorGrande = tk.Frame(frameDeTrabajo, bg="light gray")
+    contenedorGrande.pack(pady=5)
+
+        # CONTENEDOR IZQUIERDA ------------------------------------------------------------------------
+    contenedorInsumos = tk.Frame(contenedorGrande, bg="white")
+    contenedorInsumos.pack(side="left", padx=5, pady=5)
+        #field Frame de los insumos disponibles en sede Principal
+    for insumosProd in Sede.getListaSedes()[0].getListaInsumosBodega():
+        if insumosProd.getNombre() != "Bolsa":
+            criterios1.append(insumosProd)
+    for index1, valor1 in enumerate(criterios1):
+        valores1.append(Sede.getListaSedes()[0].getCantidadInsumosBodega()[index1])
+    habilitado1 = [False for _ in range(len(criterios1))]
+
+    ffInsumosSedeP = FieldFrame(contenedorInsumos, "Insumos que hay en\nla Sede Principal", criterios1, "", valores1, habilitado1)
+    ffInsumosSedeP.pack(pady=2)
+    
+        #field Frame de los insumos disponibles en sede 2
+    for insumosProd2 in Sede.getListaSedes()[1].getListaInsumosBodega():
+        if insumosProd2.getNombre() != "Bolsa":
+            criterios2.append(insumosProd2)
+    for index2, valor2 in enumerate(criterios2):
+        valores2.append(Sede.getListaSedes()[1].getCantidadInsumosBodega()[index2])
+    habilitado2 = [False for _ in range(len(criterios2))]
+
+    ffInsumosSede2 = FieldFrame(contenedorInsumos, "Insumos que hay en\nla Sede 2", criterios2, "", valores2, habilitado2)
+    ffInsumosSede2.pack(pady=2)
+    frameDeTrabajo.update_idletasks()
+        #CONTENEDOR DERECHA ----------------------------------------------------------------------------
+    contSeleccionModista = tk.Frame(contenedorGrande, bg="white")
+    contSeleccionModista.pack(side="left", padx=5, pady=5)
+    frameDeTrabajo.update_idletasks()
+    labelPrueba = tk.Label(contSeleccionModista, text="No hay insumos:(", font=("Arial", 10, "bold italic"), wraplength=300, justify="center")
+    labelPrueba.pack(pady=5)
+    frameDeTrabajo.update_idletasks()
     threading.Thread(target=Prenda.producirPrendas, args=(aProducirPaEnviar, Main.fecha), daemon=True).start()
+    #print("\nsigo después del hilo")
+    
     evento_senalizador.wait()
     evento_senalizador.clear()
-    if creadas:
-        print(Prenda.getCantidadUltimaProduccion()," Prendas creadas con éxito")
-    else:
-        print("No se pudo producir todo, los insumos no alcanzaron, producimos",Prenda.getCantidadUltimaProduccion(),"prendas")
 
+    
+    verificarEvento()
+    contBotonesModistas = tk.Frame(contSeleccionModista, bg="white")
+    contBotonesModistas.pack(pady=3)
+
+    for modista in listModistas:
+        contInternoBotones = tk.Frame(contBotonesModistas, bg="white")
+        contInternoBotones.pack(pady=4)
+        boton = tk.Button(contInternoBotones, text=modista.getNombre(), font=("Arial", 9, "italic"))
+        boton.pack(side="left", padx=2)
+        labelFlecha = tk.Label(contInternoBotones, text="------>", bg="white", font=("Arial", 9, "italic"))
+        labelFlecha.pack(side="left", padx=2)
+        labelPericia = tk.Label(contInternoBotones, text=f"Pericia: {round(modista.getPericia(), 2)}", bg="white", font=("Arial", 9, "italic"))
+        labelPericia.pack(side="left", padx=2)
+        boton.bind("<Button-1>", lambda event : botonesModistas(event, contBotonesModistas))
+
+even = threading.Event()
+printModistaGlobal = None
+listModistas = []
+labelPrueba = None
+numero = 0
+contSeleccionModista = None
+def recibePrintModista(printModista, modistas):
+    global printModistaGlobal, listModistas, indexx, evento_senalizador, numero, ventanaPrincipal
+    
+    listModistas = modistas
+    printModistaGlobal = printModista
+    indexx = 10
+    evento_senalizador.set()
+    if numero >= 1:
+        verificarEvento()
+    numero = numero + 1
+    
+
+num3 = 0
+def verificarEvento():
+    from src.uiMain.main import Main
+    global printModistaGlobal, labelPrueba, num3
+
+    #colocar a esperar dos segundos si no funciona
+    if printModistaGlobal is not None:
+        labelPrueba.config(text=printModistaGlobal)
+        frameDeTrabajo.update_idletasks()
+        print("\nVOLVI A ENTRARRRRR")
+        Main.evento_ui.set()
+    else:
+        ventanaPrincipal.after(100, verificarEvento)
+    
+    if num3 >= 1:
+        crearBotones()
+    num3 = num3 + 1
+
+
+indexx = 10
+num2 = 0
+def botonesModistas(event, contPaEliminar):
+    global listModistas, indexx, num2
+    from src.uiMain.main import Main
+    nombreElegido = event.widget.cget("text")
+    if num2 == 0:
+        for modista in listModistas:
+            if modista.getNombre().lower() == nombreElegido.lower():
+                indexx = listModistas.index(modista)
+        print(f"\nnumero de indice: {indexx}")
+        contPaEliminar.destroy()
+        Main.evento_ui2.set()
+    else:
+        for modista in listModistas:
+            if modista.getNombre().lower() == nombreElegido.lower():
+                indexx = listModistas.index(modista)
+        print(f"\nnumero de indice: {indexx}")
+        contPaEliminar.pack_forget()
+        Main.evento_ui2.set()
+    
+    num2 = num2 + 1
+
+def getIndexx():
+    global indexx
+    if indexx != 10:
+        return indexx
+    
+def crearBotones():
+    contBotonesModistas = tk.Frame(contSeleccionModista, bg="white")
+    contBotonesModistas.pack(pady=3)
+
+    for modista in listModistas:
+        contInternoBotones = tk.Frame(contBotonesModistas, bg="white")
+        contInternoBotones.pack(pady=4)
+        boton = tk.Button(contInternoBotones, text=modista.getNombre(), font=("Arial", 9, "italic"))
+        boton.pack(side="left", padx=2)
+        labelFlecha = tk.Label(contInternoBotones, text="------>", bg="white", font=("Arial", 9, "italic"))
+        labelFlecha.pack(side="left", padx=2)
+        labelPericia = tk.Label(contInternoBotones, text=f"Pericia: {round(modista.getPericia(), 2)}", bg="white", font=("Arial", 9, "italic"))
+        labelPericia.pack(side="left", padx=2)
+        boton.bind("<Button-1>", lambda event : botonesModistas(event, contBotonesModistas))

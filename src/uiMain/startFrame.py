@@ -881,7 +881,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             def LeerF4(self,field_frame4, texto4, descuento):
                 from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
-                Porcentaje = FieldFrame.getValue(field_frame4, "Descuento entre 0% y 5%")
+                Porcentaje = FieldFrame.getValue(field_frame4, "Descuento a futuro")
                 
                 if Porcentaje != str(descuento):
                     Porcentaje = Porcentaje.strip("%")
@@ -889,7 +889,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
                     texto4.config(state="normal")   # Habilitar edición
                     texto4.delete("1.0", "end")     # Eliminar texto actual
-                    texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.analisis_futuro), "center")  # Insertar nuevo texto
+                    texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro), "center")  # Insertar nuevo texto
                     texto4.config(state="disabled")
                     boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
                     boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
@@ -907,7 +907,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 if descuento <= 0.0:
                     resultado="no"
                     
-                criterios = ["Descuento entre 0% y 5%"]
+                criterios = ["Descuento a futuro"]
                 valores = [str(descuento*100)]
                 habilitado = [True]
                 
@@ -938,9 +938,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 from src.uiMain.startFrame import StartFrame
                 self.evBlackFriday.destroy()
                 self.botonesF4.destroy()
-                s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(StartFrame.balance_anterior))
-                s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(StartFrame.diferencia_estimada)
-                s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(StartFrame.analisis_futuro)
+                s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(startFrame.balance_anterior))
+                s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(startFrame.diferencia_estimada)
+                s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(self.diferencia_estimada)+"\n"+str(startFrame.analisis_futuro)
                 s4= "\n y por tanto el nuevo porcentaje de pesimismo de la producción es:\n" + str(Venta.getPesimismo())+ "."        
                 confirmacion5 = tk.Label(framePrincipal, anchor="center", wraplength=600)
                 confirmacion5.place(relx=0, rely=0.3, relwidth=1, relheight=0.4)
