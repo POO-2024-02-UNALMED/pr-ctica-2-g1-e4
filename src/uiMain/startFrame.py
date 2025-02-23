@@ -1,5 +1,6 @@
 # Dibuja la ventana y la parte externa, y la parte interna la saca de las clases F.
 # O en el caso respectivo, no dibuja una funcionalidad, sino frameInicial.
+#region imports
 import os
 import tkinter as tk
 from tkinter import ttk
@@ -18,6 +19,7 @@ from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.rol import Rol
 import math
+#endregion
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -288,6 +290,7 @@ class StartFrame(tk.Tk):
         Main.fecha=fecha
         self.fechaValida = True
         return fecha
+#endregion
 
 # region gestion hunana
 #------------------------------------------------------------------------Gestión Humana---------------------------------------------------------------------------------------------
@@ -582,6 +585,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.dibujarTandaDeReemplazo(Main.getTandaReemplazo())
         else:
             tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado esta en la lista de candidatos.")
+#endregion
 
 # region insumos
 #---------------------------------------------------------------- Insumos ------------------------------------------------------------------------------------------------------------------
@@ -621,17 +625,16 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
             
         self.fieldPesimismo = fieldFrame.FieldFrame(self.frameCambianteInsumos, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
-                                           criterios,"El porcentaje de pesimismo es de", valores, [True, True], 20, 
-                                           False, 10, True, False, lambda : self.prediccion())
+                                           criterios,"El porcentaje de pesimismo es de", valores, habilitado=[True, True], ancho_entry= 10, aceptar=True, borrar=True,callbackAceptar= lambda : self.dibujarPrediccion())
         self.fieldPesimismo.grid(column=0, row=0, sticky="nswe")
         self.frameCambianteInsumos.columnconfigure(0, weight=1)
         self.frameCambianteInsumos.rowconfigure(0, weight=1)
 
 
-    def prediccion(self):
+    def dibujarPrediccion(self):
         
         pesimismos=self.fieldPesimismo.obtenerTodosLosValores()
-        self.retorno = Main.planificarProduccion(self,pesimismos)
+        self.retorno = Main.planificarProduccion(pesimismos)
         self.textoPrediccion = Main.texto
         self.framePrediccion = tk.Frame(self.frameCambianteInsumos, bg="#f0f0f0")
         self.framePrediccion.grid(row=1, column=0, sticky="nswe")
@@ -709,12 +712,56 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def otraSede(self):
         existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
         if existeOtraSede:
-            self.criterios = Main.coordinarBodega(self)
+            self.criterios = Main.coordinarBodega()
             self.tablaInsumos(Main.infoTablaInsumos)
         else:
             self.frameCambianteInsumos.destroy()
             self.contenedorFieldTransferencia.destroy()
-
+            self.dibujarTablaCompraExtra(Main.comprarInsumos())
+    
+    def dibujarTablaCompraExtra(self, criterios)->None:
+        self.frameCambianteInsumos=tk.Frame(self.framePrincipal)
+        self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
+        if len(criterios)>0:
+            self.descripcionF2.config(text="Algunos proveedores a veces bajan sus precios, en tal caso, puede que quiera comprar insumos adicionales. Si es así, inserte la cantidad adicional a comprar, y aceptar para proceder con la compra.")
+            self.fieldCompraExtra=fieldFrame.FieldFrame(self.frameCambianteInsumos, "Insumo", criterios=criterios, tituloValores= "Cantidad extra", valores=["0" for i in range(len(criterios))],aceptar=True, borrar=True, callbackAceptar=self.comprarExtra)
+            self.fieldCompraExtra.grid(row=0, column=0, sticky="nswe")
+            self.frameCambianteInsumos.rowconfigure(0, weight=1)
+            self.frameCambianteInsumos.columnconfigure(0, weight=1)
+        else:
+            self.explicacion=tk.Label(self.frameCambianteInsumos, text="No se deben comprar insumos adicionales, los precios están estables o subiendo, ya compramos todo.", font=("Arial", 10))
+            self.explicacion.grid(row=0, column=0)
+            self.seguirADeudas=tk.Button(self.frameCambianteInsumos, text="Ver deudas", command=self.dibujarDeudas)
+            self.seguirADeudas.grid(row=1, column=0)
+            self.frameCambianteInsumos.rowconfigure(0, weight=1)
+            self.frameCambianteInsumos.columnconfigure(0, weight=1)
+    
+    def comprarExtra(self):
+        Main.terminarCompraDeInsumos(self.fieldCompraExtra.obtenerTodosLosValores())
+        self.dibujarDeudas()
+    
+    def dibujarDeudas(self):
+        self.descripcionF2.config(text="""A continuación se muestra la deuda con los proveedores, y el estado de la misma, comprar insumos aumenta la deuda.
+Ya terminamos, tenga buen día.""")
+        self.frameCambianteInsumos.destroy()
+        self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
+        self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
+        infoTablaDeudas = Main.infoTablaDeudas()
+        encabezados = ["Proveedor", "Capital inicial", "Capital pagado", "Interes","Cuotas meta","¿Pagado?"]
+        for i in encabezados:
+            encabezado = tk.Label(self.frameCambianteInsumos, text=i, font=("Arial", 10))
+            encabezado.grid(row=0, column=encabezados.index(i))
+        self.frameCambianteInsumos.rowconfigure(0, weight=1)
+        for fila , columnas in enumerate(infoTablaDeudas,start=1):
+            for i in columnas:
+                elemento = tk.Label(self.frameCambianteInsumos, text=i, font=("Arial", 10))
+                elemento.grid(row=fila, column=columnas.index(i))
+                self.frameCambianteInsumos.rowconfigure(fila, weight=1)
+        self.frameCambianteInsumos.columnconfigure(0, weight=1)
+        self.frameCambianteInsumos.columnconfigure(1, weight=1)
+        self.frameCambianteInsumos.columnconfigure(2, weight=1)
+        self.frameCambianteInsumos.columnconfigure(3, weight=1)
+        self.frameCambianteInsumos.columnconfigure(4, weight=1)        
 
 #endregion
 
@@ -1092,7 +1139,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             # Deshabilitar edición si solo quieres mostrar el texto
             texto.config(state="disabled")
             return framePrincipal
-    
+    #endregion
     #region facturacion
 #--------------------------------------------------------- Facturación ----------------------------------------------------------------------------------------------------------------------------------
     
@@ -1586,7 +1633,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             return bolasNecesarias
         else:
             self.datosEntradasFacturacion.borrar()
-            
+#endregion
+
 def pasarAVentanaPrincipal():
     ventana = StartFrame()
     ventana.mainloop()

@@ -31,6 +31,12 @@ class Proveedor:
                 precioTotal = (proveedor.precio - round(proveedor.precio * proveedor.descuento * bolsa.getCapacidadMaxima())) * cantidad
         return precioTotal
 
+    def costoPorCantidadInsumo(self, cantidad: int) -> int:
+         return self.precio * cantidad * (1 - self.descuento)
+
+    def costoDeLaCantidadNoBolsa(self, cantidad: int) -> int:
+        return self.precio * cantidad
+
     def unificarDeudasXProveedor(self, fecha: Fecha, montoDeuda: int):
         cuotas = Deuda.calcularCuotas(montoDeuda + self.deuda.getValorInicialDeuda() - self.deuda.getCapitalPagado())
         if self.deuda.getEntidad() == self.getNombre() and not self.deuda.getEstadoDePago():

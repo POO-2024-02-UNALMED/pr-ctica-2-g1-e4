@@ -27,10 +27,16 @@ class Sede:
         
         return retorno, index
 
+    def encontrarInsumoEnBodega(self,insumo:Insumo):
+        for idxInsumo in range(len(self.listaInsumosBodega)):
+            if insumo.getNombre() == self.listaInsumosBodega[idxInsumo].getNombre():
+                return idxInsumo
+        return
+
     @classmethod
     def transferirInsumo(cls, insumo, donadora, beneficiaria, cantidadSolicitada):
         restante = 0
-        idxInsumo = donadora.listaInsumosBodega.index(insumo)
+        idxInsumo = donadora.encontrarInsumoEnBodega(insumo)
         if idxInsumo == -1:
             return cantidadSolicitada  # Skip the rest of the method, because there is nothing to transfer.
         cantidadDisponible = min(donadora.cantidadInsumosBodega[idxInsumo], cantidadSolicitada)
@@ -65,14 +71,13 @@ class Sede:
             if sede == excluirSede:
                 continue
             for x in range(len(sede.getListaInsumosBodega())):
-                if insumo == sede.getListaInsumosBodega()[x]:
-                    for cantidad in sede.cantidadInsumosBodega:
-                        if sede.getCantidadInsumosBodega()[x] != 0:
-                            index = x
-                            retorno = True
-                            sedeATransferir = sede
-                            precio = insumo.getPrecioCompra()
-                            break
+                if insumo.getNombre() == sede.getListaInsumosBodega()[x].getNombre():
+                    if sede.getCantidadInsumosBodega()[x] > 0:
+                        index = x
+                        retorno = True
+                        sedeATransferir = sede
+                        precio = sede.getListaInsumosBodega()[x].getPrecioIndividual()
+                        break
         
         return retorno, index, sedeATransferir, precio
 

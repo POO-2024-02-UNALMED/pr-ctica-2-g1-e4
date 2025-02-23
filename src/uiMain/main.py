@@ -301,7 +301,6 @@ class Main:
 #region insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
-    insumosAConseguir = []# Modificado por planificarProduccion
 
     @classmethod
     def datosParaFieldPesimismo(cls):
@@ -313,10 +312,11 @@ class Main:
             valores.append(round(Venta.getPesimismo()*100))
         return (criterios,valores)
 
+    nececidadInsumos=[]# Modificado por planificarProduccion
 
     # Interacción 1 
     @classmethod
-    def planificarProduccion(cls,ventanaPrincipal,pesimismos): # pesimismos van de 0 a 100,y cambia la predicción en ese porcentaje
+    def planificarProduccion(cls,pesimismos): # pesimismos van de 0 a 100,y cambia la predicción en ese porcentaje
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         fecha=Main.fecha
@@ -367,7 +367,7 @@ class Main:
             retorno.append(listaSede)
 
         #startFrame.prediccion(self, Main.texto, Main.retorno)
-        cls.planificarProduccion = retorno
+        cls.nececidadInsumos = retorno
         return retorno
 
     indexSedeCoordinarBodegas=0
@@ -398,8 +398,8 @@ class Main:
         insumoFieldFrame = []
         
         insumoFieldFrame.clear()
-        insumosNecesarios = cls.planificarProduccion[cls.indexSedeCoordinarBodegas][0]
-        cantidadesNecesarias = cls.planificarProduccion[cls.indexSedeCoordinarBodegas][1]
+        insumosNecesarios = cls.nececidadInsumos[cls.indexSedeCoordinarBodegas][0]
+        cantidadesNecesarias = cls.nececidadInsumos[cls.indexSedeCoordinarBodegas][1]
 
         s=Sede.getListaSedes()[cls.indexSedeCoordinarBodegas]
 
@@ -453,6 +453,8 @@ class Main:
                 if restante>0:
                     cls.planDeCompra[cls.indexSedeCoordinarBodegas][0].append(insumoTransferible)
                     cls.planDeCompra[cls.indexSedeCoordinarBodegas][1].append(restante)
+            else:
+                pass #EXCEPCION
         cls.infoTablaInsumos.clear()
         cls.productosOpcionTransferencia.clear()
         if cls.indexSedeCoordinarBodegas>=len(Sede.getListaSedes())-1:
@@ -461,50 +463,79 @@ class Main:
             cls.indexSedeCoordinarBodegas+=1
             return True
 
-    opcionesCompraExtra=[] # Generado en comprarInsumos. 1 lista por insumo
-    # Cada 1 con indice 0 el insumo, indice 1 proveedor, indice 3 diferencial de precio, indice 4 sede compradora.
+    opcionesCompraExtra=[] # Generado en comprarInsumos. 1 lista por insumo. Insumos que no se compraron inmediatamante por una rebaja de precio.
+    # Cada 1 con indice 0 el insumo, indice 1 proveedor, indice 2 diferencial de precio, indice 3 sede compradora.
+
+    extraPorComprar=[]
 
     # Interacción 3
     @classmethod
     def comprarInsumos(cls):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
-        for sede in cls.planDeCompra:
+        cls.extraPorComprar = []
+        criterios=[]
+        for idxSede,sede in enumerate(cls.planDeCompra):
             insumos = sede[0]
             cantidad = sede[1]
+            insumosPorComprarExtra=[]
+            cantidadPorComprarExtra=[]
+            quedanPorComprarSede=[insumosPorComprarExtra,cantidadPorComprarExtra]
             for idxInsumo in range(len(insumos)):
-                proveedores = []
-                precios = []
                 mejorProveedor = None
-                mejorPrecio = float('inf')
-                cantidadAñadir = 0
+                mejorPrecio = 0
+                insumo:Insumo=insumos[idxInsumo]
+                instanciaSede:Sede=Sede.getListaSedes()[idxSede]
                 for proveedor in Proveedor.getListaProveedores():
-                    if Proveedor.getInsumo(proveedor) == insumos[idxInsumo]:
-                        proveedores.append(proveedor)
-                        precios.append(Proveedor.costoDeLaCantidad(proveedor,insumos[idxInsumo], cantidad[idxInsumo]))
-                for x in proveedores:
-                    precio = Proveedor.costoDeLaCantidad(x,insumos[idxInsumo], cantidad[idxInsumo])
-                    if precio != 0 and precio < mejorPrecio:
-                        mejorPrecio = precio
-                        mejorProveedor = x
-                        Insumo.setProveedor(insumos[idxInsumo],x)
-                if Insumo.getPrecioIndividual(insumos[idxInsumo]) < Insumo.getUltimoPrecio(insumos[idxInsumo]):
-                    diferencial = Insumo.getPrecioIndividual(insumos[idxInsumo]) - Insumo.getUltimoPrecio(insumos[idxInsumo])
-                    cls.opcionesCompraExtra.append([insumos[idxInsumo], mejorProveedor, diferencial, sede])
+                    if Proveedor.getInsumo(proveedor).getNombre() == insumos[idxInsumo].getNombre():
+                        if proveedor.getPrecio() < mejorPrecio or mejorPrecio==0:
+                            mejorProveedor = proveedor
+                            mejorPrecio = proveedor.getPrecio()
+                insumo.setProveedor(mejorProveedor)
+                
+                insumoEnBodega=instanciaSede.getListaInsumosBodega()[instanciaSede.encontrarInsumoEnBodega(insumo)]
+
+                ultimoPrecio=insumoEnBodega.getUltimoPrecio()
+                if mejorPrecio < ultimoPrecio:
+                    diferencial =ultimoPrecio-mejorPrecio
+                    criterios.append(f"{insumos[idxInsumo].getNombre()} para {instanciaSede.getNombre()} por ${diferencial} menos")
+                    insumosPorComprarExtra.append(insumos[idxInsumo])
+                    cantidadPorComprarExtra.append(cantidad[idxInsumo])
                 else:
-                    cls.comprarInsumo(cantidad[idxInsumo], insumos[idxInsumo], mejorProveedor, sede)
-        return cls.opcionesCompraExtra
+                    cls.comprarInsumo(cantidad[idxInsumo], insumos[idxInsumo], mejorProveedor, Sede.getListaSedes()[idxSede])
+            cls.extraPorComprar.append(quedanPorComprarSede)
+        return criterios
+
+    @classmethod
+    def getNombresCompraExtra(cls):
+        nombres=[]
+        for opcion in cls.opcionesCompraExtra:
+            nombres.append(opcion[0].getNombre())
+        return nombres
     
     @classmethod
     def comprarInsumo(cls,cantidad:int,insumo:Insumo,proveedor:Proveedor,sede:Sede)->None:
         Sede.anadirInsumo(insumo, sede, cantidad)
-        aEndeudarse=insumo.getPrecioIndividual() * cantidad
+        aEndeudarse=proveedor.costoPorCantidadInsumo(cantidad)
         if proveedor.getDeuda() is None:
             deuda = Deuda(cls.fecha, aEndeudarse, proveedor.getNombre, "Proveedor", Deuda.calcularCuotas(aEndeudarse))
         elif not proveedor.getDeuda().getEstadoDePago():
             proveedor.unificarDeudasXProveedor(cls.fecha, aEndeudarse)
             deuda = proveedor.getDeuda()
-        cls.deudas.append(deuda)
+        insumoEnBodega:Insumo=sede.getListaInsumosBodega()[sede.encontrarInsumoEnBodega(insumo)]
+        insumoEnBodega.setUltimoPrecio(Insumo.getPrecioIndividual(insumo))
+        insumoEnBodega.setProveedor(proveedor)
+
+    @classmethod
+    def infoTablaDeudas(cls):
+        from src.gestorAplicacion.administracion.deuda import Deuda
+        filas=[] # proveedor, capital inicial, capital pagado, interes, cuotas meta, estado de pago
+        for proveedor in Proveedor.getListaProveedores():
+            deuda:Deuda=proveedor.getDeuda()
+            if deuda is not None and deuda.getValorInicialDeuda()>0:
+                filas.append([proveedor.getNombre(),str(deuda.getValorInicialDeuda()),str(deuda.getCapitalPagado()),str(deuda.getInteres()),str(deuda.cuotas),"si" if deuda.getEstadoDePago() else "no"])
+        return filas
+    
     #endregion
 
     def nextIntSeguro():
@@ -548,6 +579,23 @@ class Main:
     @classmethod
     def retornaProveedorB(cls):
         return cls.proveedorBdelmain
+    
+    @classmethod
+    def terminarCompraDeInsumos(cls,extra): # Extra es una lista de enteros con la cantidad extra de insumos a comprar
+        cantidadesExtra=[]
+        for string in extra:
+            if string.isdigit():
+                cantidadesExtra.append(int(string))
+            else:
+               # EXCEPCION
+               pass
+
+        idxInsumoExtra=0
+        for idxSede ,sede in enumerate(cls.extraPorComprar):
+            for idxInsumo, insumo in enumerate(sede[0]):
+                cantidadExtra=cantidadesExtra[idxInsumoExtra]
+                cls.comprarInsumo(sede[1][idxInsumo]+cantidadExtra, insumo, insumo.getProveedor(), Sede.getListaSedes()[cls.extraPorComprar.index(sede)])
+
 #region facturacion
 
     def listaVendedores(sede):
@@ -1167,7 +1215,12 @@ class Main:
         MaquinaDeCorte = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte, sedeP)
         PlanchaIndustrial = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI, sedeP)
         BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP, 501)
+        #BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP)
+        #BordadoraIndustrial.setHorasUso(501)
+        
         MaquinaDeTermofijado = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado, sedeP, 1001)
+        #MaquinaDeTermofijado = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado, sedeP)
+        #MaquinaDeTermofijado.setHorasUso(101)
         MaquinaDeTijereado = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado,sedeP)
         Impresora = Maquinaria("Impresora", 800000, 2000, repuestosImp, sedeP)
         Registradora = Maquinaria("Caja Registradora", 700000, 17000, repuestosRe, sedeP)
@@ -1177,6 +1230,8 @@ class Main:
         MaquinaDeCoser2 = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC2, sede2)
         MaquinaDeCorte2 = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte2, sede2)
         PlanchaIndustrial2 = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI2, sede2, 901)
+        #PlanchaIndustrial2 = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI2, sede2)
+        #PlanchaIndustrial2.setHorasUso(901)
         BordadoraIndustrial2 = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI2, sede2)
         MaquinaDeTermofijado2 = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado2, sede2)
         MaquinaDeTijereado2 = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado2,sede2)
@@ -1206,11 +1261,11 @@ class Main:
         tm.actualizarDeuda(Deuda(Fecha(20, 2, 23), 800_000, "Inversiones Terramoda", "Banco", 18))
 
         # Insumos de sede
-        i1 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20_000, sede= sedeP)
+        i1 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 2_000, sede= sedeP)
         i2 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20_000,  sede=sede2)
         i3 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20_000, sede=sedeP)
-        i4 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20_000, sede=sede2)
-        i5 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20_000, sede=sedeP)
+        i4 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 100, sede=sede2)
+        i5 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20, sede=sedeP)
         i6 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20_000, sede=sede2)
         i7 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20_000, sede=sedeP)
         i8 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20_000, sede=sede2)
@@ -1389,7 +1444,14 @@ class Main:
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Cata, 700, sede2)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Mario, 700, sede2)
         Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia , 300, sede2)
-        pass
+        
+        Main.fijarUltimoPrecioInicial()
+
+    @classmethod
+    def fijarUltimoPrecioInicial(cls):
+        for sede in Sede.getListaSedes():
+            for insumo in sede.getListaInsumosBodega():
+                insumo.setUltimoPrecio(Proveedor.buscarPorNombreInsumo(insumo.getNombre()).getPrecio())
     
     @classmethod # Wrapper para uso de StartFrame
     def guardar(cls):
