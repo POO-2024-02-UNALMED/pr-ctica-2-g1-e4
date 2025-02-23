@@ -366,17 +366,23 @@ class Main:
         cls.planificarProduccion = retorno
         return retorno
 
-    indexSede=0
+    indexSedeCoordinarBodegas=0
 
     @classmethod
     def prepararCoordinacionBodegas(cls,ventanaPrincipal):
-        cls.indexSede=0
-        cls.coordinacionBodegas.append(cls.coordinarBodega(ventanaPrincipal))
+        cls.indexSedeCoordinarBodegas=0
+        cls.productosAComprar=[]
+        cls.cantidadesAComprar=[]
+        cls.productosOpcionTransferencia=[]
         
     productosOpcionTransferencia=[] # Generado en coordinarBodega
-    # contine listas con indice 0 el insumo, indice 1 indice del insumo en la bodega, indice 2 sede donadora, indice 3 precio
+    # contine listas con indice 0 el insumo, indice 1 indice del insumo en la bodega, indice 2 sede donadora, indice 3 precio indice 4 cantidad faltante
     productosAComprar=[] # Generado en coordinarBodega
     cantidadesAComprar=[] # Generado en coordinarBodega
+
+    @classmethod
+    def getSedeActualCoordinacion(cls):
+        return Sede.getNombre(Sede.getListaSedes()[cls.indexSedeCoordinarBodegas])
 
     # Interacción 2 
     @classmethod
@@ -386,10 +392,10 @@ class Main:
         habilitado = []
         
         insumoFieldFrame.clear()
-        insumosNecesarios = cls.planificarProduccion[cls.indexSede][0]
-        cantidadesNecesarias = cls.planificarProduccion[cls.indexSede][1]
+        insumosNecesarios = cls.planificarProduccion[cls.indexSedeCoordinarBodegas][0]
+        cantidadesNecesarias = cls.planificarProduccion[cls.indexSedeCoordinarBodegas][1]
 
-        s=Sede.getListaSedes()[cls.indexSede]
+        s=Sede.getListaSedes()[cls.indexSedeCoordinarBodegas]
 
         cls.productosOpcionTransferencia.clear()
 
@@ -397,20 +403,22 @@ class Main:
             insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
             (hayEnBodega,indiceEnBodega) = Sede.verificarProductoBodega(i, s)
             idxInsumo = insumosNecesarios.index(i)
+            cantidadAConseguir=cantidadesNecesarias[idxInsumo]
             if hayEnBodega:
-                cantidadesNecesarias[idxInsumo] = max(cantidadesNecesarias[idxInsumo] - Sede.getCantidadInsumosBodega(s)[indiceEnBodega], 0)
-            cantidadNecesaria = cantidadesNecesarias[insumosNecesarios.index(i)]
-            productoEnOtraSede = Sede.verificarProductoOtraSede(i)
+                 cantidadAConseguir= max(cantidadesNecesarias[idxInsumo] - Sede.getCantidadInsumosBodega(s)[indiceEnBodega], 0)
+            if cantidadAConseguir>0:
+                productoEnOtraSede = Sede.verificarProductoOtraSede(i)
 
-            if productoEnOtraSede[0]:
-                cls.productosOpcionTransferencia.append([i, productoEnOtraSede[1], productoEnOtraSede[2], productoEnOtraSede[3]])
-            else:
-                cls.productosAComprar.append(i)
-                cls.cantidadesAComprar.append(cantidadNecesaria)
-    
-            ventanaPrincipal.transferir(insumoFieldFrame, habilitado, s)    
-                      
-        return cls.productosOpcionTransferencia
+                if productoEnOtraSede[0]:
+                    cls.productosOpcionTransferencia.append([i, productoEnOtraSede[1], productoEnOtraSede[2], productoEnOtraSede[3],cantidadAConseguir])
+                else:
+                    cls.productosAComprar.append(i)
+                    cls.cantidadesAComprar.append(cantidadAConseguir)
+        
+        criterios=[]
+        for producto in cls.productosOpcionTransferencia:
+            criterios.append(f"Transferir {producto[4]} {producto[0].getNombre()} de {Sede.getNombre(producto[2])}, o comprar por ${producto[3]}")
+        return criterios
 
     # Interacción 3
     @classmethod

@@ -35,7 +35,6 @@ class startFrame(tk.Tk):
         self.pagina="ninguna"
         Main.estadoGestionHumana="ninguno"
         self.framePrediccion=None # Contiene los texts bajo el pesimismo. Usado en Insumos
-        numbre = ""
         super().__init__()
         self.title("Ecomoda")
         self.geometry("800x500")
@@ -653,12 +652,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
     def pasarAInteraccion2(self):
         Main.prepararCoordinacionBodegas(self)
-        self.criterios = Main.coordinarBodega(self,self.retorno)
-        self.transferir(self.criterios)
+        self.criterios = Main.coordinarBodega(self)
+        self.transferir(self.criterios,Main.getSedeActualCoordinacion())
 
 
     # Interacción 2
-    def transferir(self, criterios,habilitado, sede):
+    def transferir(self, criterios, sede):
         self.frame2.destroy()
         self.framePrediccion.destroy()
             
