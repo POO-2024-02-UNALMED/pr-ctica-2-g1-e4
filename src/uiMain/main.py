@@ -299,7 +299,7 @@ class Main:
 
     # Interacción 1 
     @classmethod
-    def planificarProduccion(cls,ventanaPrincipal):
+    def planificarProduccion(cls,ventanaPrincipal,pesimismo): # pesimismo va de 0 a 100,y cambia la predicción en ese porcentaje
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         fecha=Main.fecha
@@ -330,7 +330,6 @@ class Main:
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
                     Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionP)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
-                    print(Main.texto)
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
                     for cantidad in Pantalon.getCantidadInsumo():

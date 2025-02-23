@@ -609,8 +609,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                             text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", 
                             relief="ridge", wraplength=600)
         self.descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
-        
-        self.retorno = Main.planificarProduccion(self)
 
     # Interacción 1
     def pesimismo(self, c, v):
@@ -623,15 +621,15 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             
         self.fieldPesimismo = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
                                            criterios,"El porcentaje de pesimismo es de", valores, [True, True], 20, 
-                                           False, 10, True, False, lambda : self.prediccion(Main.texto, Main.insumosAConseguir))
+                                           False, 10, True, False, lambda : self.prediccion())
         self.fieldPesimismo.pack(anchor="s",  expand=True, fill="both")
 
 
-    def prediccion(self, texto, retorno):
+    def prediccion(self):
         if self.framePrediccion!=None:
             self.framePrediccion.destroy()
-        self.retorno = retorno
-        self.texto = texto
+        self.retorno = Main.planificarProduccion(self)
+        self.texto = Main.texto
         self.framePrediccion = tk.Frame(self.framePrincipal, bg="#f0f0f0")
         self.framePrediccion.pack(anchor="s",  expand=True, fill="both",pady=5)
         prediccion = tk.Text(self.framePrediccion, font=("Arial", 10), bg="#f0f0f0", relief="flat")
