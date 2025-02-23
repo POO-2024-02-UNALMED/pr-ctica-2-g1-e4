@@ -94,7 +94,7 @@ class Main:
 
 
     #region gestión humana
-    #------------------------------------------- Gestión Humana --------------------------------------------------------------------
+#------------------------------------------- Gestión Humana --------------------------------------------------------------------
     
     # Lo que siguen son para la versión grafica, o metodos puente para ella, y no usan print.-------------------------------
 
@@ -163,8 +163,8 @@ class Main:
         cls.seleccion = []
         cls.idxRol = 0
         return cls.getTandaReemplazo()
-
-    # Usado en interaccion 2 y 3 garicas, pero cambia de donde se sacan las opciones.
+    
+    # Usado en interaccion 2 y 3 gráficas, pero cambia de donde se sacan las opciones.
     # Retorna una lista con : [Opciones para cambio, sede origen-> Solo aplica para cambio-sede, rol, cantidad a elegir]
     @classmethod
     def getTandaReemplazo(cls):
@@ -182,7 +182,6 @@ class Main:
                 return cls.opcionesParaReemplazo, sede, rol, cantidad
             else:
                 return cls.getTandaContratacion() # Hace lo mismo, pero no toma en cuenta la sede.
-
         else:
             return None
         
@@ -232,8 +231,9 @@ class Main:
                 cls.opcionesParaReemplazo.append(apto)
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
 #endregion
+
     #region financiera
-    #----------------------------------------------Financiera------------------------------------------------------------
+#---------------------------------------------- Financiera ------------------------------------------------------------
 
     #Directivos disponibles
     def Directivos():
@@ -257,6 +257,7 @@ class Main:
         nuevoBalance = EvaluacionFinanciera(balanceTotal, empleado)
         Main.nuevoBalance=nuevoBalance
         return nuevoBalance
+    
     # Interaccion 2 
     def calcularEstimado(porcentaje):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
@@ -265,6 +266,7 @@ class Main:
         # cubiertos por las ventas predichas
         Main.diferenciaEstimado=diferenciaEstimado
         return diferenciaEstimado
+    
     # Interacción 3
     def planRecuperacion(diferenciaEstimada, banco):
         from src.gestorAplicacion.bodega.prenda import Prenda
@@ -294,17 +296,17 @@ class Main:
 #region insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
-    planProduccion = []# Modificado por planificarProduccion
+    insumosAConseguir = []# Modificado por planificarProduccion
 
     # Interacción 1 
     @classmethod
-    def planificarProduccion(cls,ventanaPrincipal):
+    def planificarProduccion(cls,ventanaPrincipal,pesimismo): # pesimismo va de 0 a 100,y cambia la predicción en ese porcentaje
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         fecha=Main.fecha
         criterios = []
         valores = []        
-        Main.retorno = []
+        retorno = []
         Main.texto = []
 
         for sede in Sede.getListaSedes():
@@ -329,7 +331,6 @@ class Main:
                     prediccionP = proyeccion * (1 - Venta.getPesimismo())
                     Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionP)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
-                    print(Main.texto)
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
                     for cantidad in Pantalon.getCantidadInsumo():
@@ -352,23 +353,24 @@ class Main:
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
 
-            Main.retorno.append(listaSede)
+            retorno.append(listaSede)
 
         #startFrame.prediccion(self, Main.texto, Main.retorno)
-        return Main.retorno
+        cls.planificarProduccion = retorno
+        return retorno
 
     coordinacionBodegas = []
     indexSede=0
 
     @classmethod
-    def prepararCoordinacionBodegas(cls):
+    def prepararCoordinacionBodegas(cls,ventanaPrincipal):
         cls.indexSede=0
-        cls.coordinacionBodegas.append(cls.coordinarBodega())
+        cls.coordinacionBodegas.append(cls.coordinarBodega(ventanaPrincipal))
         
 
     # Interacción 2 
     @classmethod
-    def coordinarBodegas(cls, retorno):
+    def coordinarBodega(cls, ventanaPrincipal): # Antes coordinarBodegas
         from src.uiMain.startFrame import startFrame
         insumoFieldFrame = []
         habilitado = []
@@ -376,19 +378,19 @@ class Main:
         insumoFieldFrame.clear()
         insumosAPedir = []
         cantidadAPedir = []
+        insumosNecesarios = cls.planificarProduccion[cls.indexSede][0]
+        cantidadesNecesarias = cls.planificarProduccion[cls.indexSede][1]
         listaSede = [] # generado en este metodo
-        listaInsumos = listaSede[0]
-        listaCantidades = listaSede[1]
 
         s=Sede.getListaSedes()[cls.indexSede]
 
-        for i in listaInsumos:
+        for i in insumosNecesarios:
             insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
-            productoEnBodega = Sede.verificarProductoBodega(i, s)
-            idxInsumo = listaInsumos.index(i)
-            if productoEnBodega[0]:
-                listaCantidades[idxInsumo] = max(listaCantidades[idxInsumo] - Sede.getCantidadInsumosBodega(s)[productoEnBodega.index], 0)
-            cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
+            (hayEnBodega,indiceEnBodega) = Sede.verificarProductoBodega(i, s)
+            idxInsumo = insumosNecesarios.index(i)
+            if hayEnBodega:
+                cantidadesNecesarias[idxInsumo] = max(cantidadesNecesarias[idxInsumo] - Sede.getCantidadInsumosBodega(s)[indiceEnBodega], 0)
+            cantidadNecesaria = cantidadesNecesarias[insumosNecesarios.index(i)]
             productoEnOtraSede = Sede.verificarProductoOtraSede(i)
 
             if productoEnOtraSede[0]:
@@ -425,20 +427,21 @@ class Main:
                 habilitado.append(False)
 
     
-            startFrame.transferir(insumoFieldFrame, habilitado, s)    
+            ventanaPrincipal.transferir(insumoFieldFrame, habilitado, s)    
                       
         listaSede.append(insumosAPedir)
         listaSede.append(cantidadAPedir)
-        Main.coordinarBodegas.append(listaSede)
+        cls.coordinacionBodegas.append(listaSede)
 
-        return Main.coordinarBodegas
+        return cls.coordinacionBodegas
 
     # Interacción 3
-    def comprarInsumos(fecha):
+    @classmethod
+    def comprarInsumos(cls,fecha):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
         deudas = []
-        for sede in Main.coordinarBodegas:
+        for sede in cls.coordinacionBodegas:
             insumos = sede[0]
             cantidad = sede[1]
             for sedee in Sede.getListaSedes():

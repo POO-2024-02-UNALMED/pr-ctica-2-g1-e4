@@ -34,6 +34,7 @@ class startFrame(tk.Tk):
         self.insumo=None
         self.pagina="ninguna"
         Main.estadoGestionHumana="ninguno"
+        self.framePrediccion=None # Contiene los texts bajo el pesimismo. Usado en Insumos
         numbre = ""
         super().__init__()
         self.title("Ecomoda")
@@ -586,6 +587,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 # region insumos
 #---------------------------------------------------------------- Insumos ------------------------------------------------------------------------------------------------------------------
 
+
     def crearInsumos(self):
         self.insumos=tk.Frame(self)
         self.inicialInsumos()
@@ -603,10 +605,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.tituloF2.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
 
             ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-        self.descripcionF2 = tk.Label(self.frame1, text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", relief="ridge",wraplength=600)
+        self.descripcionF2 = tk.Label(self.frame1, 
+                            text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", 
+                            relief="ridge", wraplength=600)
         self.descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
-        
-        self.retorno = Main.planificarProduccion(self)
 
     # Interacción 1
     def pesimismo(self, c, v):
@@ -617,19 +619,20 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frame2 = tk.Frame(self.framePrincipal, bg="light gray")
         self.frame2.pack(anchor="s", fill="x")
             
-        self.field = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
+        self.fieldPesimismo = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
                                            criterios,"El porcentaje de pesimismo es de", valores, [True, True], 20, 
-                                           False, 10, True, False, lambda : self.prediccion(Main.texto, Main.retorno))
-        self.field.pack(anchor="s",  expand=True, fill="both")
+                                           False, 10, True, False, lambda : self.prediccion())
+        self.fieldPesimismo.pack(anchor="s",  expand=True, fill="both")
 
 
-    def prediccion(self, texto, retorno):
-
-        self.retorno = retorno
-        self.texto = texto
-        self.frame3 = tk.Frame(self.framePrincipal, bg="#f0f0f0")
-        self.frame3.pack(anchor="s",  expand=True, fill="both",pady=5)
-        prediccion = tk.Text(self.frame3, font=("Arial", 10), bg="#f0f0f0", relief="flat")
+    def prediccion(self):
+        if self.framePrediccion!=None:
+            self.framePrediccion.destroy()
+        self.retorno = Main.planificarProduccion(self)
+        self.texto = Main.texto
+        self.framePrediccion = tk.Frame(self.framePrincipal, bg="#f0f0f0")
+        self.framePrediccion.pack(anchor="s",  expand=True, fill="both",pady=5)
+        prediccion = tk.Text(self.framePrediccion, font=("Arial", 10), bg="#f0f0f0", relief="flat")
         mensaje = ""
 
         for caso in texto:
@@ -641,24 +644,25 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         prediccion.place(relx=0.5, rely=0.5, relwidth=1, relheight=0.7,anchor="c")
         prediccion.config(state="disabled")
 
-        label3 = tk.Label(self.frame3, text="Según dicha predicción se hará la compra de los insumos")
+        label3 = tk.Label(self.framePrediccion, text="Según dicha predicción se hará la compra de los insumos")
         label3.place(relx=0.4, rely=0.8, relwidth=1, relheight=0.1, anchor="c")    
-        aceptar = tk.Button(self.frame3, text="Siguiente", command=lambda: self.pasarAInteraccion2())
+        aceptar = tk.Button(self.framePrediccion, text="Siguiente", command=lambda: self.pasarAInteraccion2())
         aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.2, anchor="c")   
 
     def pasarAInteraccion2(self):
-        Main.prepararCoordinacionBodegas()
-        self.listaA = Main.coordinarBodegas(self, self.retorno)
-            
-    # Interacción 2
-    def transferir(self, criterios, habilitado, sede):
-        self.frame2.destroy()
-        self.frame3.destroy()
-            
-        self.self.fidelidadclientes = tk.Frame(self.framePrincipal)
-        self.self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
+        Main.prepararCoordinacionBodegas(self)
+        self.listaA = Main.coordinarBodega(self, self.retorno)
 
-        self.field2 = fieldFrame.FieldFrame(self.self.fidelidadclientes, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
+
+    # Interacción 2
+    def transferir(self, criterios,habilitado, sede):
+        self.frame2.destroy()
+        self.framePrediccion.destroy()
+            
+        self.fidelidadclientes = tk.Frame(self.framePrincipal)
+        self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
+
+        self.field2 = fieldFrame.FieldFrame(self.fidelidadclientes, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
         self.field2.pack(anchor="s",  expand=True, fill="both")
 
 #endregion
