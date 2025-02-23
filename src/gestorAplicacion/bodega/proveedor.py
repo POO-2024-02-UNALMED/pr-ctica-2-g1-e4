@@ -31,6 +31,9 @@ class Proveedor:
                 precioTotal = (proveedor.precio - round(proveedor.precio * proveedor.descuento * bolsa.getCapacidadMaxima())) * cantidad
         return precioTotal
 
+    def costoPorCantidadInsumo(self, cantidad: int) -> int:
+         return self.precio * cantidad * (1 - self.descuento)
+
     def costoDeLaCantidadNoBolsa(self, cantidad: int) -> int:
         return self.precio * cantidad
 

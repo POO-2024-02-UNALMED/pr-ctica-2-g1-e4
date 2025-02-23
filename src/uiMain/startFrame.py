@@ -713,7 +713,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def otraSede(self):
         existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
         if existeOtraSede:
-            self.criterios = Main.coordinarBodega(self)
+            self.criterios = Main.coordinarBodega()
             self.tablaInsumos(Main.infoTablaInsumos)
         else:
             self.frameCambianteInsumos.destroy()
@@ -727,17 +727,22 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.elementosTabla=[]
         for titulo in encabezados:
             encabezado=tk.Label(self.frameCambianteInsumos, text=titulo, font=("Arial", 10))
-            encabezado.grid(row=0, column=encabezados.index(titulo))
-            self.elementosTabla.apend(encabezado)
+            encabezado.grid(row=0, column=encabezados.index(titulo)+2)
+            self.elementosTabla.append(encabezado)
         idxFila=1
         for fila in infoTabla:
             for i in range(len(fila)-1): #debemos saltarnos el espacio del insumo 
                 elemento=tk.Label(self.frameCambianteInsumos, text=fila[i+1], font=("Arial", 10))
                 self.elementosTabla.append(elemento)
                 elemento.grid(row=idxFila, column=i+2)
+                self.frameCambianteInsumos.rowconfigure(idxFila, weight=1)
+                self.frameCambianteInsumos.columnconfigure(i+2, weight=1)
             idxFila+=1
-        self.fieldCompraExtra=fieldFrame.FieldFrame(self.frameCambianteInsumos, "Insumo", Main.getNombresCompraExtra, "Cantidad extra", ["0" for i in range(len(infoTabla))],aceptar=True, borrar=True)
-        self.fieldCompraExtra.grid(row=0, column=0,columnspan=2,rowspan=idxFila)    
+        self.fieldCompraExtra=fieldFrame.FieldFrame(self.frameCambianteInsumos, "Insumo", Main.getNombresCompraExtra(), "Cantidad extra", ["0" for i in range(len(infoTabla))],aceptar=True, borrar=True)
+        self.fieldCompraExtra.grid(row=0, column=0,columnspan=2,rowspan=idxFila)
+        self.frameCambianteInsumos.rowconfigure(0, weight=1)
+        self.frameCambianteInsumos.columnconfigure(0, weight=1)
+        self.frameCambianteInsumos.columnconfigure(1, weight=1)
 
 #endregion
 

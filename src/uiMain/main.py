@@ -464,6 +464,7 @@ class Main:
 
     opcionesCompraExtra=[] # Generado en comprarInsumos. 1 lista por insumo
     # Cada 1 con indice 0 el insumo, indice 1 proveedor, indice 2 diferencial de precio, indice 3 sede compradora.
+    deudas=[] # Generado en comprarInsumo
 
     # Interacción 3
     @classmethod
@@ -474,22 +475,17 @@ class Main:
             insumos = sede[0]
             cantidad = sede[1]
             for idxInsumo in range(len(insumos)):
-                proveedores = []
-                precios = []
                 mejorProveedor = None
                 mejorPrecio = 0
-                cantidadAñadir = 0
+                insumo:Insumo=insumos[idxInsumo]
                 for proveedor in Proveedor.getListaProveedores():
-                    if Proveedor.getInsumo(proveedor) == insumos[idxInsumo]:
-                        proveedores.append(proveedor)
-                        precios.append(Proveedor.costoDeLaCantidad(proveedor,insumos[idxInsumo], cantidad[idxInsumo]))
-                for x in proveedores:
-                    precio = x.costoDeLaCantidad(insumos[idxInsumo], cantidad[idxInsumo])
-                    if precio != 0 and (precio < mejorPrecio or mejorPrecio == 0):
-                        mejorPrecio = precio
-                        mejorProveedor = x
-                        Insumo.setProveedor(insumos[idxInsumo],x)
-                if Insumo.getPrecioIndividual(insumos[idxInsumo]) < Insumo.getUltimoPrecio(insumos[idxInsumo]):
+                    if Proveedor.getInsumo(proveedor).getNombre() == insumos[idxInsumo].getNombre():
+                        if proveedor.costoPorCantidadInsumo(cantidad[idxInsumo]) < mejorPrecio or mejorPrecio==0:
+                            mejorProveedor = proveedor
+                            mejorPrecio = proveedor.costoPorCantidadInsumo(cantidad[idxInsumo])
+                insumo.setProveedor(mejorProveedor)
+
+                if mejorPrecio < Insumo.getUltimoPrecio(insumos[idxInsumo]):
                     diferencial = Insumo.getPrecioIndividual(insumos[idxInsumo]) - Insumo.getUltimoPrecio(insumos[idxInsumo])
                     cls.opcionesCompraExtra.append([insumos[idxInsumo], mejorProveedor.getNombre(), diferencial, sede.getNombre()])
                 else:
@@ -506,12 +502,13 @@ class Main:
     @classmethod
     def comprarInsumo(cls,cantidad:int,insumo:Insumo,proveedor:Proveedor,sede:Sede)->None:
         Sede.anadirInsumo(insumo, sede, cantidad)
-        aEndeudarse=insumo.getPrecioIndividual() * cantidad
+        aEndeudarse=proveedor.costoPorCantidadInsumo(cantidad)
         if proveedor.getDeuda() is None:
             deuda = Deuda(cls.fecha, aEndeudarse, proveedor.getNombre, "Proveedor", Deuda.calcularCuotas(aEndeudarse))
         elif not proveedor.getDeuda().getEstadoDePago():
             proveedor.unificarDeudasXProveedor(cls.fecha, aEndeudarse)
             deuda = proveedor.getDeuda()
+        insumo.setUltimoPrecio(proveedor.getPrecio())
         cls.deudas.append(deuda)
     #endregion
 
@@ -1214,11 +1211,11 @@ class Main:
         tm.actualizarDeuda(Deuda(Fecha(20, 2, 23), 800_000, "Inversiones Terramoda", "Banco", 18))
 
         # Insumos de sede
-        i1 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20_000, sede= sedeP)
+        i1 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 2_000, sede= sedeP)
         i2 = Insumo(nombre="Tela", proveedor=p5, cantidad=1 * 20_000,  sede=sede2)
         i3 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20_000, sede=sedeP)
-        i4 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 20_000, sede=sede2)
-        i5 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20_000, sede=sedeP)
+        i4 = Insumo(nombre="Boton", proveedor=p3, cantidad=4 * 100, sede=sede2)
+        i5 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20, sede=sedeP)
         i6 = Insumo(nombre="Cremallera", proveedor=p4, cantidad=1 * 20_000, sede=sede2)
         i7 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20_000, sede=sedeP)
         i8 = Insumo(nombre="Hilo", proveedor=p2, cantidad=100 * 20_000, sede=sede2)
