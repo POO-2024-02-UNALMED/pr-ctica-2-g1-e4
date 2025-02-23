@@ -43,7 +43,7 @@ class FieldFrame(Frame):
             self.valores.append(entry)
         
         if aceptar:
-            self.aceptar=Button(self,text="Aceptar",font=("Arial", self.tamañoFuente, "bold"),command=self.callbackAceptar)
+            self.aceptar=Button(self,text="Aceptar",font=("Arial", self.tamañoFuente, "bold"),command=self.aceptar)
             self.aceptar.grid(row=i+1,column=1)
         if borrar:
             self.borrar=Button(self,text="Borrar",font=("Arial", self.tamañoFuente, "bold"),command=self.borrar)
@@ -76,6 +76,10 @@ class FieldFrame(Frame):
         except ExcepcionContenidoVacio as cabezaHueca:
             messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
             return hayExcepcion
+        else:
+            if self.callbackAceptar is not None:
+                self.callbackAceptar()
+            return
     
     def habilitarEntry(self, criterio, habilitar):
         entry = None
