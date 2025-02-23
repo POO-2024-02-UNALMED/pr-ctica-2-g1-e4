@@ -412,7 +412,7 @@ class Main:
             if hayEnBodega:
                 cantidadEnBodega= Sede.getCantidadInsumosBodega(s)[indiceEnBodega]
                 cantidadAConseguir= max(cantidadesNecesarias[idxInsumo] -cantidadEnBodega, 0)
-                filaTabla[3]=cantidadEnBodega
+                filaTabla[3]=cantidadAConseguir
                 filaTabla[1]=cantidadEnBodega
             if cantidadAConseguir>0:
                 productoEnOtraSede = Sede.verificarProductoOtraSede(i,cls.getSedeActualCoordinarBodegas())
