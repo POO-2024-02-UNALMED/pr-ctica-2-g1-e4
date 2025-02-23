@@ -13,7 +13,7 @@ class ExcepcionValorNoValido(ExceptionC1):
 class ExcepcionContenidoVacio(ExceptionC1):
     def __init__(self, entradas):
         self.mensajeEntradas=f" Necesita llenar la(s) entrada(s) {entradas} para continuar"
-        super().__init__( self.mensajeEntradas) #Aún no funciona en las funcionalidades
+        super().__init__( self.mensajeEntradas) #Ya funcionAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 class ExcepcionStringNoNumero(ExceptionC1):
     def __init__(self, entero):
