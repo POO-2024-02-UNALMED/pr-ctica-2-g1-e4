@@ -1017,14 +1017,15 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                         if Empleado.getNombre(empleado_actual) == seleccion:
                             empleado = empleado_actual
                     StartFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
-
+                   
                     texto.config(state="normal")   # Habilitar edición
                     texto.delete("1.0", "end")     # Eliminar texto actual
                     texto.insert("1.0", EvaluacionFinanciera.informe(StartFrame.balance_anterior), "center")  # Insertar nuevo texto
                     texto.config(state="disabled") 
                     boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
                     boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
-                
+                else: #Excepcion
+                    combo.delete(0,"end")
                 try:
                     error = []
                     if not isinstance(resultadosP, str):
@@ -1041,8 +1042,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 except ExcepcionValorNoValido as cornal:
                     messagebox.showwarning(title="Alerta", message=cornal.mensaje_completo)
                     return True
-                else: #Excepcion
-                    combo.delete(0,"end")
 
             framePrincipal =  tk.Frame(ventana)
             framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
@@ -1182,7 +1181,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.impresionFinal.tag_configure("center", justify="center",spacing1=10, spacing3=10)
         self.impresionFinal.insert(1.0,mensaje)
         
-        self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Salir", bg="medium orchid",command=lambda: StartFrame.abrirFrameInicial(self))
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Salir", bg="medium orchid",command=lambda: StartFrame.abrirFrameInicial(self))
         self.siguiente.grid(row=1, column=0)       
           
         self.freameCambianteFacturacion.rowconfigure(0, weight=10)
@@ -1464,17 +1463,13 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                         prenda = prendai
                         break
                     elif (prenda == None):
-                        continue 
-                if len(self.listaPrendas)!=0:
-                    for prendal in self.listaPrendas:
-                        if (prendal.getNombre().lower()!=prenda.getNombre().lower()):
-                            self.listaPrendas.append(prenda)
-                            self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))
-                        else: 
-                            self.cantidadPrendas[self.listaPrendas.index(prendal)]+=int(self.datosEntradasFacturacion.getValue("Cantidad"))
-                else:
+                        continue
+                    
+                if prenda not in self.listaPrendas:
                     self.listaPrendas.append(prenda)
-                    self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))   
+                    self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))
+                else:
+                    self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosEntradasFacturacion.getValue("Cantidad"))
                 if excepcion:
                     #self.pantallaBaseFacturacion(True)
                     self.datosEntradasFacturacion.habilitarEntry("Cliente", False)
