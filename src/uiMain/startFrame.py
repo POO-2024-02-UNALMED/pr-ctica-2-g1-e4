@@ -1017,6 +1017,13 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                         if Empleado.getNombre(empleado_actual) == seleccion:
                             empleado = empleado_actual
                     StartFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
+
+                    texto.config(state="normal")   # Habilitar edición
+                    texto.delete("1.0", "end")     # Eliminar texto actual
+                    texto.insert("1.0", EvaluacionFinanciera.informe(StartFrame.balance_anterior), "center")  # Insertar nuevo texto
+                    texto.config(state="disabled") 
+                    boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
+                    boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
                 
                 try:
                     error = []
@@ -1034,13 +1041,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 except ExcepcionValorNoValido as cornal:
                     messagebox.showwarning(title="Alerta", message=cornal.mensaje_completo)
                     return True
-
-                    texto.config(state="normal")   # Habilitar edición
-                    texto.delete("1.0", "end")     # Eliminar texto actual
-                    texto.insert("1.0", EvaluacionFinanciera.informe(StartFrame.balance_anterior), "center")  # Insertar nuevo texto
-                    texto.config(state="disabled") 
-                    boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
-                    boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
                 else: #Excepcion
                     combo.delete(0,"end")
 
