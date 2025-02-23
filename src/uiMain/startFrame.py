@@ -758,8 +758,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     return True     
                 Porcentaje = float(Porcentaje)
                 try:
-                    if Porcentaje < 0 or Porcentaje > 100:
-                        raise ExcepcionValorNoValido(Porcentaje)
+                    if Porcentaje != "":
+                        if Porcentaje < 0 or Porcentaje > 100:
+                            raise ExcepcionValorNoValido(Porcentaje)
                 except ExcepcionValorNoValido as pochoclo:
                     messagebox.showwarning(title="Alerta", message=pochoclo.mensaje_completo)
                     Porcentaje.delete(0, "end")
@@ -819,8 +820,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     else:
                         try:
                             bancos_disponibles = [Banco.getNombreEntidad(banco) for banco in Banco.getListaBancos()]
-                            if seleccion not in bancos_disponibles:
-                                raise ExcepcionValorNoValido(seleccion)
+                            if seleccion != "":
+                                if seleccion not in bancos_disponibles:
+                                 raise ExcepcionValorNoValido(seleccion)
                         except ExcepcionValorNoValido as ch:
                             messagebox.showwarning(title="Alerta", message = ch.mensaje_completo)
                             seleccion.delete(0, "end")
@@ -1037,8 +1039,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 except ExcepcionStringNoNumero as obleas:
                     messagebox.showwarning(title="Alerta", message=obleas.mensaje_completo)
                 try:
-                   if resultadosP.lower() not in ["si", "no"] or resultadosB.lower() not in ["si", "no"]:
-                    raise ExcepcionValorNoValido(resultadosP.lower())
+                   if resultadosP != "" and resultadosB != "":
+                    if resultadosP.lower() not in ["si", "no"] or resultadosB.lower() not in ["si", "no"]:
+                        raise ExcepcionValorNoValido(resultadosP.lower())
                 except ExcepcionValorNoValido as cornal:
                     messagebox.showwarning(title="Alerta", message=cornal.mensaje_completo)
                     return True
