@@ -24,6 +24,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 # Inicializar pygame para el audio
 #pygame.mixer.init() Función para reproducir el audio #def reproducir_audio(): #ruta_audio = os.path.join("src", "uiMain", "imagenes", "EcomodaALaOrden.mp3") #pygame.mixer.music.load(ruta_audio)  # Cambia la ruta del archivo de audio #pygame.mixer.music.play()
 
+
 class startFrame(tk.Tk):
     balance_anterior=0
     diferencia_estimada=0
