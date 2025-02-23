@@ -465,7 +465,6 @@ class Main:
 
     opcionesCompraExtra=[] # Generado en comprarInsumos. 1 lista por insumo. Insumos que no se compraron inmediatamante por una rebaja de precio.
     # Cada 1 con indice 0 el insumo, indice 1 proveedor, indice 2 diferencial de precio, indice 3 sede compradora.
-    deudas=[] # Generado en comprarInsumo
 
     extraPorComprar=[]
 
@@ -526,7 +525,17 @@ class Main:
         insumoEnBodega:Insumo=sede.getListaInsumosBodega()[sede.encontrarInsumoEnBodega(insumo)]
         insumoEnBodega.setUltimoPrecio(Insumo.getPrecioIndividual(insumo))
         insumoEnBodega.setProveedor(proveedor)
-        cls.deudas.append(deuda)
+
+    @classmethod
+    def infoTablaDeudas(cls):
+        from src.gestorAplicacion.administracion.deuda import Deuda
+        filas=[] # proveedor, capital inicial, capital pagado, interes, cuotas meta, estado de pago
+        for proveedor in Proveedor.getListaProveedores():
+            deuda:Deuda=proveedor.getDeuda()
+            if deuda is not None and deuda.getValorInicialDeuda()>0:
+                filas.append([proveedor.getNombre(),str(deuda.getValorInicialDeuda()),str(deuda.getCapitalPagado()),str(deuda.getInteres()),str(deuda.cuotas),"si" if deuda.getEstadoDePago() else "no"])
+        return filas
+    
     #endregion
 
     def nextIntSeguro():

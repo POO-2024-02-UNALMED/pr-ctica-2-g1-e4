@@ -723,7 +723,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteInsumos=tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
         if len(criterios)>0:
-
+            self.descripcionF2.config(text="Algunos proveedores a veces bajan sus precios, en tal caso, puede que quiera comprar insumos adicionales. Si es así, inserte la cantidad adicional a comprar, y aceptar para proceder con la compra.")
             self.fieldCompraExtra=fieldFrame.FieldFrame(self.frameCambianteInsumos, "Insumo", criterios=criterios, tituloValores= "Cantidad extra", valores=["0" for i in range(len(criterios))],aceptar=True, borrar=True, callbackAceptar=self.comprarExtra)
             self.fieldCompraExtra.grid(row=0, column=0, sticky="nswe")
             self.frameCambianteInsumos.rowconfigure(0, weight=1)
@@ -731,12 +731,37 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         else:
             self.explicacion=tk.Label(self.frameCambianteInsumos, text="No se deben comprar insumos adicionales, los precios están estables o subiendo, ya compramos todo.", font=("Arial", 10))
             self.explicacion.grid(row=0, column=0)
+            self.seguirADeudas=tk.Button(self.frameCambianteInsumos, text="Ver deudas", command=self.dibujarDeudas)
+            self.seguirADeudas.grid(row=1, column=0)
             self.frameCambianteInsumos.rowconfigure(0, weight=1)
             self.frameCambianteInsumos.columnconfigure(0, weight=1)
     
     def comprarExtra(self):
         Main.terminarCompraDeInsumos(self.fieldCompraExtra.obtenerTodosLosValores())
+        self.dibujarDeudas()
+    
+    def dibujarDeudas(self):
+        self.descripcionF2.config(text="""A continuación se muestra la deuda con los proveedores, y el estado de la misma, comprar insumos aumenta la deuda.
+Ya terminamos, tenga buen día.""")
         self.frameCambianteInsumos.destroy()
+        self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
+        self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
+        infoTablaDeudas = Main.infoTablaDeudas()
+        encabezados = ["Proveedor", "Capital inicial", "Capital pagado", "Interes","Cuotas meta","¿Pagado?"]
+        for i in encabezados:
+            encabezado = tk.Label(self.frameCambianteInsumos, text=i, font=("Arial", 10))
+            encabezado.grid(row=0, column=encabezados.index(i))
+        self.frameCambianteInsumos.rowconfigure(0, weight=1)
+        for fila , columnas in enumerate(infoTablaDeudas,start=1):
+            for i in columnas:
+                elemento = tk.Label(self.frameCambianteInsumos, text=i, font=("Arial", 10))
+                elemento.grid(row=fila, column=columnas.index(i))
+                self.frameCambianteInsumos.rowconfigure(fila, weight=1)
+        self.frameCambianteInsumos.columnconfigure(0, weight=1)
+        self.frameCambianteInsumos.columnconfigure(1, weight=1)
+        self.frameCambianteInsumos.columnconfigure(2, weight=1)
+        self.frameCambianteInsumos.columnconfigure(3, weight=1)
+        self.frameCambianteInsumos.columnconfigure(4, weight=1)        
 
 #endregion
 
