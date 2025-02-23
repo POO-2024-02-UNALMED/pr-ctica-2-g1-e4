@@ -9,7 +9,7 @@ from src.uiMain.bienvenida.infoDesarrolladores import infoDesarrolladores
 # Si vscode o python marcan esta linea como error, presionar windows+R, escribir cmd, click en ok, en la ventana negra escribir
 # pip install pillow y dar enter. Al terminar el proceso volver a ejecutar el programa
 
-class Bienvenida(tk.Frame):
+class Aplication(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
