@@ -93,7 +93,7 @@ class Main:
 
 
     #region gestión humana
-    #------------------------------------------- Gestión Humana --------------------------------------------------------------------
+#------------------------------------------- Gestión Humana --------------------------------------------------------------------
     
     # Lo que siguen son para la versión grafica, o metodos puente para ella, y no usan print.-------------------------------
 
@@ -162,8 +162,8 @@ class Main:
         cls.seleccion = []
         cls.idxRol = 0
         return cls.getTandaReemplazo()
-
-    # Usado en interaccion 2 y 3 garicas, pero cambia de donde se sacan las opciones.
+    
+    # Usado en interaccion 2 y 3 gráficas, pero cambia de donde se sacan las opciones.
     # Retorna una lista con : [Opciones para cambio, sede origen-> Solo aplica para cambio-sede, rol, cantidad a elegir]
     @classmethod
     def getTandaReemplazo(cls):
@@ -181,7 +181,6 @@ class Main:
                 return cls.opcionesParaReemplazo, sede, rol, cantidad
             else:
                 return cls.getTandaContratacion() # Hace lo mismo, pero no toma en cuenta la sede.
-
         else:
             return None
         
@@ -231,8 +230,9 @@ class Main:
                 cls.opcionesParaReemplazo.append(apto)
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
 #endregion
+
     #region financiera
-    #----------------------------------------------Financiera------------------------------------------------------------
+#---------------------------------------------- Financiera ------------------------------------------------------------
 
     #Directivos disponibles
     def Directivos():
@@ -256,6 +256,7 @@ class Main:
         nuevoBalance = EvaluacionFinanciera(balanceTotal, empleado)
         Main.nuevoBalance=nuevoBalance
         return nuevoBalance
+    
     # Interaccion 2 
     def calcularEstimado(porcentaje):
         from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
@@ -264,6 +265,7 @@ class Main:
         # cubiertos por las ventas predichas
         Main.diferenciaEstimado=diferenciaEstimado
         return diferenciaEstimado
+    
     # Interacción 3
     def planRecuperacion(diferenciaEstimada, banco):
         from src.gestorAplicacion.bodega.prenda import Prenda
@@ -313,7 +315,7 @@ class Main:
             valores.append(round(Venta.getPesimismo()*100))
             
         
-        startFrame.pesimismo(self, criterios, valores)
+        startFrame.pesimismo(cls, criterios, valores)
 
         for sede in Sede.getListaSedes():
             pantalonesPredichos = False
