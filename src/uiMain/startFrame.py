@@ -653,7 +653,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
     def pasarAInteraccion2(self):
         Main.prepararCoordinacionBodegas(self)
-        self.listaA = Main.coordinarBodega(self, self.retorno)
+        self.criterios = Main.coordinarBodega(self,self.retorno)
+        self.transferir(self.criterios)
 
 
     # Interacción 2

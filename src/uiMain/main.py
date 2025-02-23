@@ -366,7 +366,6 @@ class Main:
         cls.planificarProduccion = retorno
         return retorno
 
-    coordinacionBodegas = []
     indexSede=0
 
     @classmethod
@@ -374,6 +373,10 @@ class Main:
         cls.indexSede=0
         cls.coordinacionBodegas.append(cls.coordinarBodega(ventanaPrincipal))
         
+    productosOpcionTransferencia=[] # Generado en coordinarBodega
+    # contine listas con indice 0 el insumo, indice 1 indice del insumo en la bodega, indice 2 sede donadora, indice 3 precio
+    productosAComprar=[] # Generado en coordinarBodega
+    cantidadesAComprar=[] # Generado en coordinarBodega
 
     # Interacción 2 
     @classmethod
@@ -383,13 +386,12 @@ class Main:
         habilitado = []
         
         insumoFieldFrame.clear()
-        insumosAPedir = []
-        cantidadAPedir = []
         insumosNecesarios = cls.planificarProduccion[cls.indexSede][0]
         cantidadesNecesarias = cls.planificarProduccion[cls.indexSede][1]
-        listaSede = [] # generado en este metodo
 
         s=Sede.getListaSedes()[cls.indexSede]
+
+        cls.productosOpcionTransferencia.clear()
 
         for i in insumosNecesarios:
             insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
@@ -401,46 +403,14 @@ class Main:
             productoEnOtraSede = Sede.verificarProductoOtraSede(i)
 
             if productoEnOtraSede[0]:
-                habilitado.append(True)
-                print(f"\nTenemos el insumo {Insumo.getNombre(i)} en nuestra {productoEnOtraSede[2]}.")
-                print(f"El insumo tiene un costo de {productoEnOtraSede[3]}")
-                print("\nSeleccione una de las siguientes opciones:")
-                print(f"1. Deseo transferir el insumo desde la {productoEnOtraSede[2]}")
-                print("2. Deseo comprar el insumo")
-                opcion = int(input())
-                if opcion == 1:
-                    restante = Sede.transferirInsumo(i, s, productoEnOtraSede[2], cantidadNecesaria)
-                    print(f"\n{i} transferido desde {s} con éxito")
-                    if restante != 0:
-                        insumosAPedir.append(i)
-                        cantidadAPedir.append(restante)
-                        if Empleado.getNombre(i)== "Tela":
-                            print(f"\nTenemos una cantidad de {restante} cm de tela restantes a pedir")
-                        elif Insumo.getNombre(i) == "Boton":
-                            print(f"\nTenemos una cantidad de {restante} botones restantes a pedir")
-                        elif Insumo.getNombre(i) == "Cremallera":
-                            print(f"\nTenemos una cantidad de {restante} cremalleras restantes a pedir")
-                        else:
-                            print(f"\nTenemos una cantidad de {restante} cm de hilo restantes a pedir")
-                    else:
-                        print("Insumo transferido en su totalidad")
-                elif opcion == 2:
-                    insumosAPedir.append(i)
-                    cantidadAPedir.append(cantidadNecesaria)
-                else:
-                    print("Esa opción no es valida.")
-
+                cls.productosOpcionTransferencia.append([i, productoEnOtraSede[1], productoEnOtraSede[2], productoEnOtraSede[3]])
             else:
-                habilitado.append(False)
-
+                cls.productosAComprar.append(i)
+                cls.cantidadesAComprar.append(cantidadNecesaria)
     
             ventanaPrincipal.transferir(insumoFieldFrame, habilitado, s)    
                       
-        listaSede.append(insumosAPedir)
-        listaSede.append(cantidadAPedir)
-        cls.coordinacionBodegas.append(listaSede)
-
-        return cls.coordinacionBodegas
+        return cls.productosOpcionTransferencia
 
     # Interacción 3
     @classmethod
