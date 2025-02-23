@@ -684,7 +684,7 @@ class Main:
 
     def surtirBolsas(ventana, venta):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
-
+        ventana.interaccion3Facturacion(insumo, mensaje)
         nombreBolsa = "Bolsa"
         for revisarSede in Sede.getListaSedes():
             listaInsumos = revisarSede.getListaInsumosBodega()
@@ -697,7 +697,7 @@ class Main:
                         insumo = listaInsumos[e]
                         if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
                             print("692")                        
-                            ventana.interaccion3Facturacion(insumo, mensaje)
+                            ventana.modifInteraccion3Facturacion(insumo, mensaje)
                             
     def comprarBolsas(ventana, venta, insumo, cantidadComprar):
         listaBolsas=[]
