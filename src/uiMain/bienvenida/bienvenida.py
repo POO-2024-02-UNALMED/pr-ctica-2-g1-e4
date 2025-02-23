@@ -4,6 +4,7 @@ import os
 import random
 import math
 from PIL import Image, ImageTk, ImageOps
+from src.uiMain.bienvenida import Bienvenida
 from src.uiMain.bienvenida.infoSistema import InfoSistema
 from src.uiMain.bienvenida.infoDesarrolladores import InfoDesarrolladores
 # Si vscode o python marcan esta linea como error, presionar windows+R, escribir cmd, click en ok, en la ventana negra escribir
