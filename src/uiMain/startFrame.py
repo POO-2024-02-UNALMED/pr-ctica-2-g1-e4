@@ -24,10 +24,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 #pygame.mixer.init() Función para reproducir el audio #def reproducir_audio(): #ruta_audio = os.path.join("src", "uiMain", "imagenes", "EcomodaALaOrden.mp3") #pygame.mixer.music.load(ruta_audio)  # Cambia la ruta del archivo de audio #pygame.mixer.music.play()
 
 
-class startFrame(tk.Tk):
+class StartFrame(tk.Tk):
     balance_anterior=0
     diferencia_estimada=0
     analisis_futuro=0
+    
     def __init__(self):
         self.bolsas=0
         self.insumo=None
@@ -329,7 +330,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.procesoListaInicial = infoMalos[1]
 
         self.empleadosInsuficientes = infoMalos[2]
-        self.rendimientoInsufuciencias = infoMalos[3]
+        self.rendimientoInsuficiencias = infoMalos[3]
         self.acciones=infoMalos[4]
 
         self.tituloNombre=tk.Label(self.frameCambianteGHumana, text="Nombre", font=("Arial", 10))
@@ -348,7 +349,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         for i, empleado in enumerate(self.empleadosInsuficientes):
             nombre = tk.Label(self.frameCambianteGHumana, text=Empleado.getNombre(empleado), font=("Arial", 10))
             area = tk.Label(self.frameCambianteGHumana, text=Empleado.getNombre(Empleado.getAreaActual(empleado)), font=("Arial", 10))
-            rendimiento = tk.Label(self.frameCambianteGHumana, text=f"{int(self.rendimientoInsufuciencias[i])}", font=("Arial", 10))
+            rendimiento = tk.Label(self.frameCambianteGHumana, text=f"{int(self.rendimientoInsuficiencias[i])}", font=("Arial", 10))
             rendimientoDeseado = tk.Label(self.frameCambianteGHumana, text=f"{int(Sede.getRendimientoDeseado(Empleado.getSede(empleado),Empleado.getAreaActual(empleado), Main.fecha))}", font=("Arial", 10))
             textoAccion = ""
             match self.acciones[i]:
@@ -595,44 +596,46 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         from src.uiMain.main import Main
         self.framePrincipal =  tk.Frame(self.insumos)
         self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
-        
-        self.frame1 = tk.Frame(self.framePrincipal, height=150)
-        self.frame1.pack(side="top", fill="x")
 
-        self.tituloF2 = tk.Label(self.frame1, text="Surtir Insumos", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-        self.tituloF2.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+        self.tituloF2 = tk.Label(self.framePrincipal, text="Surtir Insumos", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+        self.tituloF2.grid(row=0, column=0, sticky="nswe")
 
             ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-        self.descripcionF2 = tk.Label(self.frame1, 
+        self.descripcionF2 = tk.Label(self.framePrincipal, 
                             text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", 
                             relief="ridge", wraplength=600)
-        self.descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
+        self.descripcionF2.grid(row=1, column=0, sticky="nswe")
 
         self.pesimismo(Main.datosParaFieldPesimismo())
+
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=3)
+        self.framePrincipal.rowconfigure(2, weight=10)
+        self.framePrincipal.columnconfigure(0, weight=1)
 
     # Interacción 1
     def pesimismo(self, paraField):
         from src.uiMain import fieldFrame
         (criterios, valores) = paraField
-        self.frame2 = tk.Frame(self.framePrincipal, bg="light gray")
-        self.frame2.pack(anchor="s", fill="x")
+        self.frameCambianteInsumos = tk.Frame(self.framePrincipal, bg="light gray")
+        self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
             
-        self.fieldPesimismo = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
+        self.fieldPesimismo = fieldFrame.FieldFrame(self.frameCambianteInsumos, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
                                            criterios,"El porcentaje de pesimismo es de", valores, [True, True], 20, 
                                            False, 10, True, False, lambda : self.prediccion())
-        self.fieldPesimismo.pack(anchor="s",  expand=True, fill="both")
+        self.fieldPesimismo.grid(column=0, row=0, sticky="nswe")
+        self.frameCambianteInsumos.columnconfigure(0, weight=1)
+        self.frameCambianteInsumos.rowconfigure(0, weight=1)
 
 
     def prediccion(self):
-        if self.framePrediccion!=None:
-            self.framePrediccion.destroy()
         
         pesimismos=self.fieldPesimismo.obtenerTodosLosValores()
         self.retorno = Main.planificarProduccion(self,pesimismos)
         self.textoPrediccion = Main.texto
-        self.framePrediccion = tk.Frame(self.framePrincipal, bg="#f0f0f0")
-        self.framePrediccion.pack(anchor="s",  expand=True, fill="both",pady=5)
-        prediccion = tk.Text(self.framePrediccion, font=("Arial", 10), bg="#f0f0f0", relief="flat")
+        self.framePrediccion = tk.Frame(self.frameCambianteInsumos, bg="#f0f0f0")
+        self.framePrediccion.grid(row=1, column=0, sticky="nswe")
+        prediccion = tk.Text(self.framePrediccion, font=("Arial", 10), bg="#f0f0f0", relief="flat",height=7)
         mensaje = ""
 
         for caso in self.textoPrediccion:
@@ -641,30 +644,77 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         prediccion.tag_add("center", "1.0", "end")
         prediccion.tag_config("center", justify="center")
         prediccion.insert("1.0", mensaje,"center")
-        prediccion.place(relx=0.5, rely=0.5, relwidth=1, relheight=0.7,anchor="c")
+        prediccion.grid(row=0, column=0, sticky="nswe",columnspan=2)
         prediccion.config(state="disabled")
 
         label3 = tk.Label(self.framePrediccion, text="Según dicha predicción se hará la compra de los insumos")
-        label3.place(relx=0.4, rely=0.8, relwidth=1, relheight=0.1, anchor="c")    
+        label3.grid(row=1, column=0, sticky="nswe")    
         aceptar = tk.Button(self.framePrediccion, text="Siguiente", command=lambda: self.pasarAInteraccion2())
-        aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.2, anchor="c")   
+        aceptar.grid(row=1, column=1, sticky="nswe")
+        self.framePrediccion.rowconfigure(0, weight=1)
+        self.framePrediccion.columnconfigure(0, weight=1)
+        self.frameCambianteInsumos.rowconfigure(0, weight=1)
+        self.frameCambianteInsumos.rowconfigure(1, weight=1)
 
     def pasarAInteraccion2(self):
+        self.contenedorFieldTransferencia=None
         Main.prepararCoordinacionBodegas(self)
-        self.criterios = Main.coordinarBodega(self)
-        self.transferir(self.criterios,Main.getSedeActualCoordinacion())
+        Main.coordinarBodega()
+        self.tablaInsumos(Main.infoTablaInsumos)
 
+    def tablaInsumos(self,infoTabla):
+        if self.frameCambianteInsumos is not None:
+            self.frameCambianteInsumos.destroy()
+        self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
+        self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
+        self.elementosTabla = []
+        idxFila = 1
+        encabezados=["Insumo", "Cantidad en bodega", "Cantidad necesaria", "Cantidad a conseguir", "Modo para conseguir"]
+        self.encabezadosTabla = []
+        for i in range(len(encabezados)):
+            encabezado = tk.Label(self.frameCambianteInsumos, text=encabezados[i], font=("Arial", 10))
+            self.encabezadosTabla.append(encabezado)
+            encabezado.grid(row=0, column=i)
+        
+        for fila in infoTabla:
+            for i in range(len(fila)):
+                elemento=tk.Label(self.frameCambianteInsumos, text=fila[i], font=("Arial", 10))
+                self.elementosTabla.append(elemento)
+                elemento.grid(row=idxFila, column=i)
+            self.frameCambianteInsumos.rowconfigure(idxFila, weight=1)
+            idxFila += 1
+        
+        self.seguirDeTabla=tk.Button(self.frameCambianteInsumos, text="Elegir sobre transferencias", command=lambda: self.transferir(Main.getCriteriosCoordinarBodegas(), Main.getNombreSedeActualCoordinacion()))
+        self.seguirDeTabla.grid(row=idxFila+1, column=0)
+        self.frameCambianteInsumos.rowconfigure(idxFila+1, weight=1)
+        self.frameCambianteInsumos.columnconfigure(0, weight=1) #insumo
+        self.frameCambianteInsumos.columnconfigure(1, weight=1) # cantidad en bodega
+        self.frameCambianteInsumos.columnconfigure(2, weight=1) # cantidad necesaria
+        self.frameCambianteInsumos.columnconfigure(3, weight=1) # cantidad a conseguir
+        self.frameCambianteInsumos.columnconfigure(4, weight=1) # modo para conseguir
 
     # Interacción 2
     def transferir(self, criterios, sede):
-        self.frame2.destroy()
-        self.framePrediccion.destroy()
-            
-        self.fidelidadclientes = tk.Frame(self.framePrincipal)
-        self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
+        if self.frameCambianteInsumos is not None:
+            self.frameCambianteInsumos.destroy()
+        self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
+        self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
 
-        self.field2 = fieldFrame.FieldFrame(self.fidelidadclientes, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
-        self.field2.pack(anchor="s",  expand=True, fill="both")
+        self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
+        self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
+
+        self.fieldTransferencia = fieldFrame.FieldFrame(self.contenedorFieldTransferencia, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, callbackAceptar=lambda : self.otraSede(),aceptar=True, borrar=True)
+        self.fieldTransferencia.pack(anchor="s",  expand=True, fill="both")
+    
+    def otraSede(self):
+        existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
+        if existeOtraSede:
+            self.criterios = Main.coordinarBodega(self)
+            self.tablaInsumos(Main.infoTablaInsumos)
+        else:
+            self.frameCambianteInsumos.destroy()
+            self.contenedorFieldTransferencia.destroy()
+
 
 #endregion
 
@@ -685,16 +735,16 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             ventana=self      
                         
             def LeerF2(self, field_frame2, texto2):
-                from src.uiMain.startFrame import startFrame
+                from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame2, "Fidelidad")
                 
                 if Porcentaje != "0% / 100%":
                     Porcentaje = Porcentaje.strip("%")
-                    startFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
+                    StartFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
                     texto2.config(state="normal")   # Habilitar edición
                     texto2.delete("1.0", "end")     # Eliminar texto actual
-                    texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.diferencia_estimada), "center")  # Insertar nuevo texto
+                    texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.diferencia_estimada), "center")  # Insertar nuevo texto
                     texto2.config(state="disabled") 
                     boton2 = tk.Button(self.estimadoVentasDeudas, text="Siguiente", command=lambda: Interaccion3(self))
                     boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
@@ -742,7 +792,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     if Banco.getNombreEntidad(banco_actual) == seleccion:
                             banco = seleccion
                             break
-                c = Main.planRecuperacion(startFrame.diferencia_estimada,banco)  # Use float to handle percentage  
+                c = Main.planRecuperacion(StartFrame.diferencia_estimada,banco)  # Use float to handle percentage  
                 self.texto3.config(state="normal")   # Habilitar edición
                 self.texto3.delete("1.0", "end")     # Eliminar texto actual
                 self.texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
@@ -819,7 +869,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.texto3.tag_configure("center", justify="center",spacing1=10, spacing3=10)
                 self.texto3.config(state="normal")   # Habilitar edición
                 
-                if startFrame.diferencia_estimada > 0:
+                if StartFrame.diferencia_estimada > 0:
                     self.texto3.delete("1.0", "end")     # Eliminar texto actual
                     self.texto3.insert("1.0", "El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", "center")  # Insertar nuevo texto
                     self.texto3.config(state="disabled") 
@@ -829,17 +879,17 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     self.texto3.config(state="disabled") 
 
             def LeerF4(self,field_frame4, texto4, descuento):
-                from src.uiMain.startFrame import startFrame
+                from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame4, "Descuento a futuro")
                 
                 if Porcentaje != str(descuento):
                     Porcentaje = Porcentaje.strip("%")
-                    startFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
+                    StartFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
 
                     texto4.config(state="normal")   # Habilitar edición
                     texto4.delete("1.0", "end")     # Eliminar texto actual
-                    texto4.insert ("1.0", f"La diferencia entre ventas y deudas futuras, fue de: ${self.diferencia_estimada} - {startFrame.analisis_futuro}", "center")  # Insertar nuevo texto
+                    texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro), "center")  # Insertar nuevo texto
                     texto4.config(state="disabled")
                     boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
                     boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
@@ -885,7 +935,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto4.config(state="disabled") 
             
             def Interaccion5(self):
-                from src.uiMain.startFrame import startFrame
+                from src.uiMain.startFrame import StartFrame
                 self.evBlackFriday.destroy()
                 self.botonesF4.destroy()
                 s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(startFrame.balance_anterior))
@@ -899,13 +949,13 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto5.tag_configure("center", justify="center",spacing1=10, spacing3=10)
                 texto5.insert(1.0,s1+s2+s3+s4)
                 
-                boton2 = tk.Button(framePrincipal, text="Salir", bg="medium orchid",command=lambda: startFrame.abrirFrameInicial(self))
+                boton2 = tk.Button(framePrincipal, text="Salir", bg="medium orchid",command=lambda: StartFrame.abrirFrameInicial(self))
                 boton2.place(relx=0.5, rely=0.9, relwidth=0.1, relheight=0.1, anchor="s")  
             
             
             def LeerF1(self):
                 from src.uiMain.main import Main
-                from src.uiMain.startFrame import startFrame
+                from src.uiMain.startFrame import StartFrame
                 eleccionDeuda=0
                 resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
                 resultadosB=FieldFrame.getValue(field_frame,"Banco")
@@ -924,11 +974,11 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                         seleccion=combo.get()
                         if Empleado.getNombre(empleado_actual) == seleccion:
                             empleado = empleado_actual
-                    startFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
+                    StartFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
                     
                     texto.config(state="normal")   # Habilitar edición
                     texto.delete("1.0", "end")     # Eliminar texto actual
-                    texto.insert("1.0", EvaluacionFinanciera.informe(startFrame.balance_anterior), "center")  # Insertar nuevo texto
+                    texto.insert("1.0", EvaluacionFinanciera.informe(StartFrame.balance_anterior), "center")  # Insertar nuevo texto
                     texto.config(state="disabled") 
                     boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
                     boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
@@ -1073,7 +1123,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.impresionFinal.tag_configure("center", justify="center",spacing1=10, spacing3=10)
         self.impresionFinal.insert(1.0,mensaje)
         
-        self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Salir", bg="medium orchid",command=lambda: startFrame.abrirFrameInicial(self))
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Salir", bg="medium orchid",command=lambda: StartFrame.abrirFrameInicial(self))
         self.siguiente.grid(row=1, column=0)       
           
         self.freameCambianteFacturacion.rowconfigure(0, weight=10)
@@ -1433,6 +1483,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.datosEntradasFacturacion.borrar()
             
 def pasarAVentanaPrincipal():
-    ventana = startFrame()
+    ventana = StartFrame()
     ventana.mainloop()
     

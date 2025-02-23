@@ -4,12 +4,12 @@ import os
 import random
 import math
 from PIL import Image, ImageTk, ImageOps
-from src.uiMain.bienvenida.infoSistema import infoSistema
-from src.uiMain.bienvenida.infoDesarrolladores import infoDesarrolladores
+from src.uiMain.bienvenida.infoSistema import InfoSistema
+from src.uiMain.bienvenida.infoDesarrolladores import InfoDesarrolladores
 # Si vscode o python marcan esta linea como error, presionar windows+R, escribir cmd, click en ok, en la ventana negra escribir
 # pip install pillow y dar enter. Al terminar el proceso volver a ejecutar el programa
 
-class Aplication(tk.Frame):
+class Bienvenida(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
@@ -30,11 +30,11 @@ class Aplication(tk.Frame):
         self.inicioMenu.add_separator()
         self.inicioMenu.add_command(label="Descripción", command=lambda: self.infoSistema.ponerDescripcion())
 
-        self.infoSistema = infoSistema(window = self.master, master = self)
+        self.infoSistema = InfoSistema(window = self.master, master = self)
         self.infoSistema.grid(row = 1, column = 1, sticky="sewn")
 
 
-        self.infoDesarrolladores = infoDesarrolladores(self.master, master = self)
+        self.infoDesarrolladores = InfoDesarrolladores(self.master, master = self)
         self.infoDesarrolladores.grid(row = 1, column = 3,sticky="sewn")
 
         self.columnconfigure(0,weight=1)
@@ -60,8 +60,8 @@ class Aplication(tk.Frame):
     def bienvenida():
         window = tk.Tk()
         window.geometry("800x600")
-        app = Aplication(window)
+        app = Bienvenida(window)
         window.mainloop()
 
 def pasarAVentanaBienvenida():
-    window = Aplication.bienvenida()
+    window = Bienvenida.bienvenida()
