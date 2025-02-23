@@ -11,6 +11,7 @@ from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.membresia import Membresia
 from src.gestorAplicacion.venta import Venta
 from src.gestorAplicacion.administracion.empleado import Empleado
+from src.gestorAplicacion.administracion.deuda import Deuda
 from ..gestorAplicacion.persona import Persona
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.empleado import Empleado
@@ -460,61 +461,50 @@ class Main:
             cls.indexSedeCoordinarBodegas+=1
             return True
 
+    opcionesCompraExtra=[] # Generado en comprarInsumos. 1 lista por insumo
+    # Cada 1 con indice 0 el insumo, indice 1 proveedor, indice 3 diferencial de precio, indice 4 sede compradora.
+
     # Interacción 3
     @classmethod
-    def comprarInsumos(cls,fecha):
+    def comprarInsumos(cls):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
-        deudas = []
-        for sede in cls.coordinacionBodegas:
+        for sede in cls.planDeCompra:
             insumos = sede[0]
             cantidad = sede[1]
-            for sedee in Sede.getListaSedes():
-                for idxInsumo in range(len(insumos)):
-                    proveedores = []
-                    precios = []
-                    mejorProveedor = None
-                    mejorPrecio = float('inf')
-                    cantidadAñadir = 0
-                    for proveedor in Proveedor.getListaProveedores():
-                        if Proveedor.getInsumo(proveedor) == insumos[idxInsumo]:
-                            proveedores.append(proveedor)
-                            precios.append(Proveedor.costoDeLaCantidad(proveedor,insumos[idxInsumo], cantidad[idxInsumo]))
-                    for x in proveedores:
-                        precio = Proveedor.costoDeLaCantidad(x,insumos[idxInsumo], cantidad[idxInsumo])
-                        if precio != 0 and precio < mejorPrecio:
-                            mejorPrecio = precio
-                            mejorProveedor = x
-                            Insumo.setProveedor(insumos[idxInsumo],x)
-                    print(f"\nTenemos el insumo {Insumo.getNombre(insumos[idxInsumo])} con nuestro proveedor {Proveedor.getNombre((Insumo.getProveedor(insumos[idxInsumo])))}.")
-                    if Insumo.getPrecioIndividual(insumos[idxInsumo]) < Insumo.getUltimoPrecio(insumos[idxInsumo]):
-                        print("\nDado que el costo de la venta por unidad es menor al ultimo precio por el que compramos el insumo")
-                        print(f"\nDesea pedir mas de la cantidad necesaria para la producción? \nCantidad: {cantidad[idxInsumo]}")
-                        print("1. Si")
-                        print("2. No")
-                        opcion = int(input())
-                        if opcion == 1:
-                            cantidadAñadir = int(input(f"\nCuanta cantidad más desea pedir del insumo {insumos[idxInsumo].getNombre()}"))
-                        elif opcion != 2:
-                            print("Esa opción no es valida.")
-                    cantidad[idxInsumo] += cantidadAñadir
-                    Sede.anadirInsumo(insumos[idxInsumo], sedee, cantidad[idxInsumo])
-                    print(f"\nInsumo {insumos[idxInsumo]} comprado con éxito")
-
-                    for proveedor in Proveedor.getListaProveedores():
-                        montoDeuda = 0
-                        if Proveedor.getNombre(Insumo.getProveedor(insumos[idxInsumo])) == Proveedor.getNombre(proveedor):
-                            montoDeuda += Insumo.getPrecioIndividual(insumos[idxInsumo]) * cantidad[idxInsumo]
-                        if montoDeuda > 0:
-                            if Proveedor.getDeuda(proveedor) is None:
-                                deuda = Deuda(fecha, montoDeuda, proveedor.getNombre, "Proveedor", Deuda.calcularCuotas(montoDeuda))
-                            elif not Deuda.getEstadoDePago(Proveedor.getDeuda(proveedor)):
-                                Proveedor.unificarDeudasXProveedor(proveedor,fecha, montoDeuda)
-                                deuda = Proveedor.getDeuda(proveedor)
-                            deudas.append(deuda)
-
-        return f"Ahora nuestras deudas con los proveedores lucen asi:\n{deudas}"
+            for idxInsumo in range(len(insumos)):
+                proveedores = []
+                precios = []
+                mejorProveedor = None
+                mejorPrecio = float('inf')
+                cantidadAñadir = 0
+                for proveedor in Proveedor.getListaProveedores():
+                    if Proveedor.getInsumo(proveedor) == insumos[idxInsumo]:
+                        proveedores.append(proveedor)
+                        precios.append(Proveedor.costoDeLaCantidad(proveedor,insumos[idxInsumo], cantidad[idxInsumo]))
+                for x in proveedores:
+                    precio = Proveedor.costoDeLaCantidad(x,insumos[idxInsumo], cantidad[idxInsumo])
+                    if precio != 0 and precio < mejorPrecio:
+                        mejorPrecio = precio
+                        mejorProveedor = x
+                        Insumo.setProveedor(insumos[idxInsumo],x)
+                if Insumo.getPrecioIndividual(insumos[idxInsumo]) < Insumo.getUltimoPrecio(insumos[idxInsumo]):
+                    diferencial = Insumo.getPrecioIndividual(insumos[idxInsumo]) - Insumo.getUltimoPrecio(insumos[idxInsumo])
+                    cls.opcionesCompraExtra.append([insumos[idxInsumo], mejorProveedor, diferencial, sede])
+                else:
+                    cls.comprarInsumo(cantidad[idxInsumo], insumos[idxInsumo], mejorProveedor, sede)
+        return cls.opcionesCompraExtra
     
+    @classmethod
+    def comprarInsumo(cls,cantidad:int,insumo:Insumo,proveedor:Proveedor,sede:Sede)->None:
+        Sede.anadirInsumo(insumo, sede, cantidad)
+        aEndeudarse=insumo.getPrecioIndividual() * cantidad
+        if proveedor.getDeuda() is None:
+            deuda = Deuda(cls.fecha, aEndeudarse, proveedor.getNombre, "Proveedor", Deuda.calcularCuotas(aEndeudarse))
+        elif not proveedor.getDeuda().getEstadoDePago():
+            proveedor.unificarDeudasXProveedor(cls.fecha, aEndeudarse)
+            deuda = proveedor.getDeuda()
+        cls.deudas.append(deuda)
     #endregion
 
     def nextIntSeguro():

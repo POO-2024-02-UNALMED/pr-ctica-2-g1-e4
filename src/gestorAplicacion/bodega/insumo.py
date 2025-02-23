@@ -66,7 +66,7 @@ class Insumo(GastoMensual):
         return self.precioCompra
     def setPrecioCompra(self, precio):
         self.precioCompra = precio
-    def getPrecioIndividual(self):
+    def getPrecioIndividual(self)->float:
         return self.precioXUnidad
     def setUltimoPrecio(self, precio):
         self.ultimoPrecio = precio
