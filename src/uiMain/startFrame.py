@@ -793,6 +793,14 @@ Ya terminamos, tenga buen día.""")
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame2, "Fidelidad")
                 
+                
+                try:
+                    if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
+                      raise ExcepcionNumeroNoString(Porcentaje)
+                except ExcepcionNumeroNoString as uwu:
+                    messagebox.showwarning(title="Alerta", message=uwu.mensaje_completo)
+                    return True 
+                
                 if Porcentaje != "0% / 100%":
                     Porcentaje = Porcentaje.strip("%")
                     StartFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
@@ -803,21 +811,12 @@ Ya terminamos, tenga buen día.""")
                     boton2 = tk.Button(self.estimadoVentasDeudas, text="Siguiente", command=lambda: Interaccion3(self))
                     boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
 
-                try:
-                    if isinstance(Porcentaje, str) and not Porcentaje.replace(".", "", 1).isdigit():
-                      raise ExcepcionNumeroNoString(Porcentaje)
-                except ExcepcionNumeroNoString as uwu:
-                    messagebox.showwarning(title="Alerta", message=uwu.mensaje_completo)
-                    Porcentaje.delete(0, "end")
-                    return True     
                 Porcentaje = float(Porcentaje)
                 try:
-                    if Porcentaje != "":
-                        if Porcentaje < 0 or Porcentaje > 100:
-                            raise ExcepcionValorNoValido(Porcentaje)
+                    if Porcentaje < 0 or Porcentaje > 100:
+                        raise ExcepcionValorNoValido(Porcentaje)
                 except ExcepcionValorNoValido as pochoclo:
                     messagebox.showwarning(title="Alerta", message=pochoclo.mensaje_completo)
-                    Porcentaje.delete(0, "end")
                     return True
                 
             def Interaccion2(self):
@@ -865,21 +864,18 @@ Ya terminamos, tenga buen día.""")
                             break
                 if banco == None:
                     try:
-                         if isinstance(seleccion, str) and not seleccion.replace(".", "", 1).isdigit():
+                         if not isinstance(seleccion, str):
                             raise ExcepcionStringNoNumero(seleccion)
                     except ExcepcionStringNoNumero as p:
                         messagebox.showwarning(title="Alerta", message=p.mensaje_completo)
-                        seleccion.delete(0, "end")
                         return True
                     else:
                         try:
                             bancos_disponibles = [Banco.getNombreEntidad(banco) for banco in Banco.getListaBancos()]
-                            if seleccion != "":
-                                if seleccion not in bancos_disponibles:
+                            if seleccion not in bancos_disponibles:
                                  raise ExcepcionValorNoValido(seleccion)
                         except ExcepcionValorNoValido as ch:
                             messagebox.showwarning(title="Alerta", message = ch.mensaje_completo)
-                            seleccion.delete(0, "end")
                             return True
                         
                 c = Main.planRecuperacion(StartFrame.diferencia_estimada,banco)  # Use float to handle percentage  
@@ -1093,7 +1089,6 @@ Ya terminamos, tenga buen día.""")
                 except ExcepcionStringNoNumero as obleas:
                     messagebox.showwarning(title="Alerta", message=obleas.mensaje_completo)
                 try:
-                   if resultadosP != "" and resultadosB != "":
                     if resultadosP.lower() not in ["si", "no"] or resultadosB.lower() not in ["si", "no"]:
                         raise ExcepcionValorNoValido(resultadosP.lower())
                 except ExcepcionValorNoValido as cornal:
@@ -1294,9 +1289,8 @@ Ya terminamos, tenga buen día.""")
                 return True
             else:
                 try:
-                    if valor !="":
-                        if valor not in ["si", "no"]:
-                            raise ExcepcionValorNoValido((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()))
+                    if valor not in ["si", "no"]:
+                        raise ExcepcionValorNoValido((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()))
                 except ExcepcionValorNoValido as cacahuate:
                     messagebox.showwarning(title="Alerta", message=cacahuate.mensaje_completo)
                     return True
@@ -1313,7 +1307,7 @@ Ya terminamos, tenga buen día.""")
         elif self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?") != "":
             if  self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%") < 0:
                 try:
-                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%"))  
+                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
                 except ExcepcionValorNoValido as mon:
                     messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
                     return True
