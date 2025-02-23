@@ -68,9 +68,7 @@ class FieldFrame(Frame):
                 if valor.strip() == "":  
                     hayExcepcion = True
                     vacios.append(self.valores[i])  
-                    nombresCamposVacíos.append(criterios[i])  
-                   
-
+                    nombresCamposVacíos.append(criterios[i])                     
             if hayExcepcion:
                 raise ExcepcionContenidoVacio(nombresCamposVacíos) 
 
