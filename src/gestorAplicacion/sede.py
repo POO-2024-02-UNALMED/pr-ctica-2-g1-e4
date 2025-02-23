@@ -464,3 +464,16 @@ class Sede:
             if empleado.getNombre().lower() == nombre.lower():
                 return empleado
         return None
+    @classmethod
+    def getHistoialTotalVentas(cls):
+        historial = []
+        for sede in cls.listaSedes:
+            for venta in sede.getHistorialVentas():
+                historial.append(venta)
+        return historial 
+    @classmethod
+    def setHistoialTotalVentas(cls,lista):
+        for sede in cls.listaSedes:
+            for venta in lista:
+                if venta.getSede()==sede:
+                    sede.getHistorialVentas().append(venta)
