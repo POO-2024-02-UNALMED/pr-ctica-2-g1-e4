@@ -45,6 +45,7 @@ def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #cr
     global nomMaqProdDispSede2, sedeMaqProdDispSede2, horasUsoMaqProdDispSede2
     global textIndicador, senalizador
     global aProdFinal, aProducirPaEnviar
+    global num3
     proveedoresQueLlegan = []
     preciosProvQueLlegan = []
     totalGastado = 0
@@ -61,6 +62,7 @@ def activar(ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #cr
     textIndicador = None
     senalizador = 0
     aProdFinal = [] ; aProducirPaEnviar = []
+    num3 = 0
     buscarProveedor(ventana, descrip1, botonContinuar)
     #Maquinaria.agruparMaquinasDisponibles(10)
 
@@ -696,6 +698,7 @@ def recibeCreadasOrNo(creadasss):
     labelResultado = tk.Label(frameDeTrabajo, text=resultado, bg="white", font=("Arial", 18, "bold italic"), wraplength=500, justify="center")
     labelResultado.pack(pady=15)
 
+
     
 contenedorGrande = None
 def inicioInt3():
@@ -743,7 +746,7 @@ def inicioInt3():
     contSeleccionModista = tk.Frame(contenedorGrande, bg="white")
     contSeleccionModista.pack(side="left", padx=5, pady=5)
     frameDeTrabajo.update_idletasks()
-    labelPrueba = tk.Label(contSeleccionModista, text="Hola", font=("Arial", 10, "bold italic"), wraplength=300, justify="center")
+    labelPrueba = tk.Label(contSeleccionModista, text="No hay insumos:(", font=("Arial", 10, "bold italic"), wraplength=300, justify="center")
     labelPrueba.pack(pady=5)
     frameDeTrabajo.update_idletasks()
     threading.Thread(target=Prenda.producirPrendas, args=(aProducirPaEnviar, Main.fecha), daemon=True).start()

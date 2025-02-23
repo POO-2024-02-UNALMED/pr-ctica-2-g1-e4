@@ -89,9 +89,11 @@ class Main:
         return fecha
     
     def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
+        from src.uiMain.F5Produccion import evento_senalizador
         from src.gestorAplicacion.bodega.prenda import Prenda
         print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
         print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
+        #evento_senalizador.set()
 
 
 
