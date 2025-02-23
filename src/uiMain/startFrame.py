@@ -709,6 +709,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
             self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
 
+        if len(criterios)>0:
+            self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
+            self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
+
             self.fieldTransferencia = fieldFrame.FieldFrame(self.contenedorFieldTransferencia, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, callbackAceptar=lambda : self.otraSede(),aceptar=True, borrar=True)
             self.fieldTransferencia.pack(anchor="s",  expand=True, fill="both")
         else:
@@ -717,17 +721,13 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.siguiente.pack(anchor="s", expand=True, fill="both")
             self.fieldTransferencia=None
 
-        self.fieldTransferencia = fieldFrame.FieldFrame(self.contenedorFieldTransferencia, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, callbackAceptar=lambda : self.otraSede(),aceptar=True, borrar=True)
-        self.fieldTransferencia.pack(anchor="s",  expand=True, fill="both")
-    
     def otraSede(self):
-        existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
+        existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores() if self.fieldTransferencia is not None else [])
         if existeOtraSede:
             self.criterios = Main.coordinarBodega()
             self.tablaInsumos(Main.infoTablaInsumos)
         else:
             self.frameCambianteInsumos.destroy()
-            self.contenedorFieldTransferencia.destroy()
             self.dibujarTablaCompraExtra(Main.comprarInsumos())
     
     def dibujarTablaCompraExtra(self, criterios)->None:
@@ -796,7 +796,8 @@ Ya terminamos, tenga buen día.""")
                 from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame2, "Fidelidad")
-                               
+                
+                
                 try:
                     if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
                       raise ExcepcionNumeroNoString(Porcentaje)
@@ -816,9 +817,8 @@ Ya terminamos, tenga buen día.""")
 
                 Porcentaje = float(Porcentaje)
                 try:
-                    if Porcentaje != "":
-                        if Porcentaje < 0 or Porcentaje > 100:
-                            raise ExcepcionValorNoValido(Porcentaje)
+                    if Porcentaje < 0 or Porcentaje > 100:
+                        raise ExcepcionValorNoValido(Porcentaje)
                 except ExcepcionValorNoValido as pochoclo:
                     messagebox.showwarning(title="Alerta", message=pochoclo.mensaje_completo)
                     return True
@@ -876,9 +876,8 @@ Ya terminamos, tenga buen día.""")
                     else:
                         try:
                             bancos_disponibles = [Banco.getNombreEntidad(banco) for banco in Banco.getListaBancos()]
-                            if seleccion != "":
-                                if seleccion not in bancos_disponibles:
-                                    raise ExcepcionValorNoValido(seleccion)
+                            if seleccion not in bancos_disponibles:
+                                 raise ExcepcionValorNoValido(seleccion)
                         except ExcepcionValorNoValido as ch:
                             messagebox.showwarning(title="Alerta", message = ch.mensaje_completo)
                             return True
@@ -1059,14 +1058,14 @@ Ya terminamos, tenga buen día.""")
                 resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
                 resultadosB=FieldFrame.getValue(field_frame,"Banco")
                 if resultadosP.lower()!="si/no" and resultadosB.lower()!="si/no" and combo.get()!="":
-
+                    from src.uiMain.main import Main
                     cosa=combo.get()
                     if resultadosP.lower() == "si" and resultadosB.lower()=="no":
-                        eleccionDeuda = 1
+                        elecionDeuda = 1
                     elif resultadosP.lower() == "no" and resultadosB.lower()=="si":
-                        eleccionDeuda = 2
+                        elecionDeuda = 2
                     elif resultadosP.lower() == "si" and resultadosB.lower()=="si":
-                        eleccionDeuda = 3
+                        elecionDeuda = 3
                     from src.gestorAplicacion.sede import Sede
                     empleado=None
                     for empleado_actual in Sede.getListaEmpleadosTotal():
@@ -1094,9 +1093,8 @@ Ya terminamos, tenga buen día.""")
                 except ExcepcionStringNoNumero as obleas:
                     messagebox.showwarning(title="Alerta", message=obleas.mensaje_completo)
                 try:
-                    if resultadosP != "" and resultadosB != "":
-                        if resultadosP.lower() not in ["si", "no"] or resultadosB.lower() not in ["si", "no"]:
-                            raise ExcepcionValorNoValido(resultadosP.lower())
+                    if resultadosP.lower() not in ["si", "no"] or resultadosB.lower() not in ["si", "no"]:
+                        raise ExcepcionValorNoValido(resultadosP.lower())
                 except ExcepcionValorNoValido as cornal:
                     messagebox.showwarning(title="Alerta", message=cornal.mensaje_completo)
                     return True
@@ -1295,9 +1293,8 @@ Ya terminamos, tenga buen día.""")
                 return True
             else:
                 try:
-                    if valor !="":
-                      if valor not in ["si", "no"]:
-                         raise ExcepcionValorNoValido((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()))
+                    if valor not in ["si", "no"]:
+                        raise ExcepcionValorNoValido((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()))
                 except ExcepcionValorNoValido as cacahuate:
                     messagebox.showwarning(title="Alerta", message=cacahuate.mensaje_completo)
                     return True

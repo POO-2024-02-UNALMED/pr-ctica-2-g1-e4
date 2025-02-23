@@ -33,7 +33,7 @@ class Deuda:
 
     def deudaMensual(self, ano: int) -> int:
         deudaActual = self.deudaActual(ano)
-        deudaMensual = round(deudaActual / (self.cuotas - (ano - self.fechaCreacion.ano)))
+        deudaMensual = round(deudaActual / (self.cuotas - (ano - self.fechaCreacion.year)))
         return deudaMensual
 
     @staticmethod
@@ -47,11 +47,11 @@ class Deuda:
                 listaInsumos.extend(Camisa.getTipoInsumo())
                 if deudaP is not None:
                     if proveedor.getInsumo().getNombre() in listaInsumos:
-                        deudaCalculada += deudaP.deudaMensual(fecha.ano)
+                        deudaCalculada += deudaP.deudaMensual(fecha.year)
         elif eleccion == 2:
             for banco in Banco.getListaBancos():
                 for deudaB in banco.getDeuda():
-                    deudaCalculada += deudaB.deudaMensual(fecha.ano)
+                    deudaCalculada += deudaB.deudaMensual(fecha.year)
         elif eleccion == 3:
             for proveedor in Proveedor.getListaProveedores():
                 deudaP = proveedor.getDeuda()
@@ -59,10 +59,10 @@ class Deuda:
                 listaInsumos.extend(Camisa.getTipoInsumo())
                 if deudaP is not None:
                     if proveedor.getInsumo().getNombre() in listaInsumos:
-                        deudaCalculada += deudaP.deudaMensual(fecha.ano)
+                        deudaCalculada += deudaP.deudaMensual(fecha.year)
             for banco in Banco.getListaBancos():
                 for deudaB in banco.getDeuda():
-                    deudaCalculada += deudaB.deudaMensual(fecha.ano)
+                    deudaCalculada += deudaB.deudaMensual(fecha.year)
         return deudaCalculada
 
     @staticmethod
