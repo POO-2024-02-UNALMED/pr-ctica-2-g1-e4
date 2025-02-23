@@ -23,7 +23,7 @@ class FieldFrame(Frame):
         self.columnconfigure(1,weight=1)
         self.columnconfigure(2,weight=1)
         self.columnconfigure(3,weight=3)
-
+        i=0 # Para evitarse problemas con criterios vacíos
         for i, criterio in enumerate(criterios, start=1):
             Label(self, text=criterio, font=("Arial", self.tamañoFuente, "bold")).grid(
                 row=i, column=1, pady=5, sticky="n")

@@ -20,11 +20,13 @@ import threading
 #endregion
 
 class Main:
+    contadorBolsas=100
     fecha:Fecha=None
     proveedorBdelmain=None
     evento_ui = threading.Event()
     nuevoBalance=None
     diferenciaEstimado=0
+    pesimismoPorSede = [2,2]
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
@@ -297,9 +299,20 @@ class Main:
    
     insumosAConseguir = []# Modificado por planificarProduccion
 
+    @classmethod
+    def datosParaFieldPesimismo(cls):
+        criterios=[]
+        valores=[]
+        for sede in Sede.getListaSedes():
+            #prediccionC = None
+            criterios.append(sede)
+            valores.append(round(Venta.getPesimismo()*100))
+        return (criterios,valores)
+
+
     # Interacción 1 
     @classmethod
-    def planificarProduccion(cls,ventanaPrincipal):
+    def planificarProduccion(cls,ventanaPrincipal,pesimismos): # pesimismos van de 0 a 100,y cambia la predicción en ese porcentaje
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         fecha=Main.fecha
@@ -307,16 +320,11 @@ class Main:
         valores = []        
         retorno = []
         Main.texto = []
+        cls.pesimismoPorSede = []
+        for i in range(len(Sede.getListaSedes())):
+            cls.pesimismoPorSede.append(float(pesimismos[i])/100)
 
-        for sede in Sede.getListaSedes():
-            #prediccionC = None
-            criterios.append(sede)
-            valores.append(round(Venta.getPesimismo()*100))
-            
-        
-        ventanaPrincipal.pesimismo(criterios, valores)
-
-        for sede in Sede.getListaSedes():
+        for idxSede,sede in enumerate(Sede.getListaSedes()):
             pantalonesPredichos = False
             camisasPredichas = False
             insumoXSede = []
@@ -327,10 +335,9 @@ class Main:
 
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
-                    prediccionP = proyeccion * (1 - Venta.getPesimismo())
+                    prediccionP = proyeccion * (1 - cls.pesimismoPorSede[idxSede])
                     Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionP)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
-                    print(Main.texto)
                     for insumo in prenda.getInsumo():
                         insumoXSede.append(insumo)
                     for cantidad in Pantalon.getCantidadInsumo():
@@ -339,7 +346,7 @@ class Main:
 
                 if isinstance(prenda, Camisa) and not camisasPredichas:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
-                    prediccionC = proyeccion * (1 - Venta.getPesimismo())
+                    prediccionC = proyeccion * (1 - cls.pesimismoPorSede[idxSede])
                     Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionC)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
                     print(Main.texto)
@@ -359,88 +366,93 @@ class Main:
         cls.planificarProduccion = retorno
         return retorno
 
-    coordinacionBodegas = []
-    indexSede=0
+    indexSedeCoordinarBodegas=0
 
     @classmethod
-    def prepararCoordinacionBodegas(cls):
-        cls.indexSede=0
-        cls.coordinacionBodegas.append(cls.coordinarBodega())
+    def prepararCoordinacionBodegas(cls,ventanaPrincipal)->None:
+        cls.indexSedeCoordinarBodegas=0
+        cls.planDeCompra=[]
+        cls.productosOpcionTransferencia=[]
         
+    productosOpcionTransferencia=[] # Generado en coordinarBodega
+    # contine listas con indice 0 el insumo, indice 1 indice del insumo en la bodega, indice 2 sede donadora, indice 3 precio indice 4 cantidad faltante
+    planDeCompra=[] # Generado en coordinarBodega
+
+    @classmethod
+    def getSedeActualCoordinarBodegas(cls)->Sede:
+        return Sede.getListaSedes()[cls.indexSedeCoordinarBodegas]
+
+    @classmethod
+    def getNombreSedeActualCoordinacion(cls)->str:
+        return cls.getSedeActualCoordinarBodegas().getNombre()
 
     # Interacción 2 
     @classmethod
-    def coordinarBodega(cls): # Antes coordinarBodegas
+    def coordinarBodega(cls, ventanaPrincipal): # Antes coordinarBodegas
         from src.uiMain.startFrame import StartFrame
         insumoFieldFrame = []
         habilitado = []
         
         insumoFieldFrame.clear()
-        insumosAPedir = []
-        cantidadAPedir = []
-        insumosNecesarios = cls.planificarProduccion[cls.indexSede][0]
-        cantidadesNecesarias = cls.planificarProduccion[cls.indexSede][1]
-        listaSede = [] # generado en este metodo
+        insumosNecesarios = cls.planificarProduccion[cls.indexSedeCoordinarBodegas][0]
+        cantidadesNecesarias = cls.planificarProduccion[cls.indexSedeCoordinarBodegas][1]
 
-        s=Sede.getListaSedes()[cls.indexSede]
+        s=Sede.getListaSedes()[cls.indexSedeCoordinarBodegas]
 
+        cls.productosOpcionTransferencia.clear()
+
+        productosAComprar = []
+        cantidadesAComprar = []
         for i in insumosNecesarios:
             insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
             (hayEnBodega,indiceEnBodega) = Sede.verificarProductoBodega(i, s)
             idxInsumo = insumosNecesarios.index(i)
+            cantidadAConseguir=cantidadesNecesarias[idxInsumo]
             if hayEnBodega:
-                cantidadesNecesarias[idxInsumo] = max(cantidadesNecesarias[idxInsumo] - Sede.getCantidadInsumosBodega(s)[indiceEnBodega], 0)
-            cantidadNecesaria = cantidadesNecesarias[insumosNecesarios.index(i)]
-            productoEnOtraSede = Sede.verificarProductoOtraSede(i)
+                 cantidadAConseguir= max(cantidadesNecesarias[idxInsumo] - Sede.getCantidadInsumosBodega(s)[indiceEnBodega], 0)
+            if cantidadAConseguir>0:
+                productoEnOtraSede = Sede.verificarProductoOtraSede(i,cls.getSedeActualCoordinarBodegas())
 
-            if productoEnOtraSede[0]:
-                habilitado.append(True)
-                print(f"\nTenemos el insumo {Insumo.getNombre(i)} en nuestra {productoEnOtraSede[2]}.")
-                print(f"El insumo tiene un costo de {productoEnOtraSede[3]}")
-                print("\nSeleccione una de las siguientes opciones:")
-                print(f"1. Deseo transferir el insumo desde la {productoEnOtraSede[2]}")
-                print("2. Deseo comprar el insumo")
-                opcion = int(input())
-                if opcion == 1:
-                    restante = Sede.transferirInsumo(i, s, productoEnOtraSede[2], cantidadNecesaria)
-                    print(f"\n{i} transferido desde {s} con éxito")
-                    if restante != 0:
-                        insumosAPedir.append(i)
-                        cantidadAPedir.append(restante)
-                        if Empleado.getNombre(i)== "Tela":
-                            print(f"\nTenemos una cantidad de {restante} cm de tela restantes a pedir")
-                        elif Insumo.getNombre(i) == "Boton":
-                            print(f"\nTenemos una cantidad de {restante} botones restantes a pedir")
-                        elif Insumo.getNombre(i) == "Cremallera":
-                            print(f"\nTenemos una cantidad de {restante} cremalleras restantes a pedir")
-                        else:
-                            print(f"\nTenemos una cantidad de {restante} cm de hilo restantes a pedir")
-                    else:
-                        print("Insumo transferido en su totalidad")
-                elif opcion == 2:
-                    insumosAPedir.append(i)
-                    cantidadAPedir.append(cantidadNecesaria)
+                if productoEnOtraSede[0]:
+                    cls.productosOpcionTransferencia.append([i, productoEnOtraSede[1], productoEnOtraSede[2], productoEnOtraSede[3],cantidadAConseguir])
                 else:
-                    print("Esa opción no es valida.")
+                    productosAComprar.append(i)
+                    cantidadesAComprar.append(cantidadAConseguir)
+        cls.planDeCompra.append([productosAComprar, cantidadesAComprar])
+        
+        criterios=[]
+        for producto in cls.productosOpcionTransferencia:
+            criterios.append(f"Transferir {producto[4]} {producto[0].getNombre()} de {Sede.getNombre(producto[2])}, o comprar por ${producto[3]}")
+        return criterios
 
-            else:
-                habilitado.append(False)
+    @classmethod
+    def siguienteSedeCoordinarBodegas(cls,respuestas)->bool:
+        for idxRespuesta,respuesta in enumerate(respuestas):
+            insumoTransferible:Insumo=cls.productosOpcionTransferencia[idxRespuesta][0]
+            cantidad=cls.productosOpcionTransferencia[idxRespuesta][4]
+            if respuesta.lower()=="c":
+                cls.planDeCompra[cls.indexSedeCoordinarBodegas][0].append(insumoTransferible)
+                cls.planDeCompra[cls.indexSedeCoordinarBodegas][1].append(cantidad)
+            elif respuesta.lower()=="t":
+                restante=Sede.transferirInsumo(insumoTransferible,cls.productosOpcionTransferencia[idxRespuesta][2],Sede.getListaSedes()[cls.indexSedeCoordinarBodegas],cantidad)
+                if restante>0:
+                    cls.planDeCompra[cls.indexSedeCoordinarBodegas][0].append(insumoTransferible)
+                    cls.planDeCompra[cls.indexSedeCoordinarBodegas][1].append(restante)
 
-    
-            StartFrame.transferir(insumoFieldFrame, habilitado, s)    
-                      
-        listaSede.append(insumosAPedir)
-        listaSede.append(cantidadAPedir)
-        Main.coordinarBodegas.append(listaSede)
-
-        return Main.coordinarBodegas
+        cls.productosOpcionTransferencia.clear()
+        if cls.indexSedeCoordinarBodegas>=len(Sede.getListaSedes())-1:
+            return False
+        else:
+            cls.indexSedeCoordinarBodegas+=1
+            return True
 
     # Interacción 3
-    def comprarInsumos(fecha):
+    @classmethod
+    def comprarInsumos(cls,fecha):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
         deudas = []
-        for sede in Main.coordinarBodegas:
+        for sede in cls.coordinacionBodegas:
             insumos = sede[0]
             cantidad = sede[1]
             for sedee in Sede.getListaSedes():
@@ -651,26 +663,21 @@ class Main:
         for i in range(bolsasAPedir):
             capacidadBolsa = 0
             if cantidadBolsaGrande > 0:
-                print("652")
                 capacidadBolsa = 8
                 cantidadBolsaGrande -= 1
             elif cantidadBolsaMediana > 0:
-                print("656")
                 cantidadBolsaMediana -= 1
                 capacidadBolsa = 3
             elif cantidadBolsaPequeña >0:
-                print("660")
                 capacidadBolsa = 1
                 cantidadBolsaPequeña -= 1
 
             cantidadDisponible = 0
             capacidadTotal += capacidadBolsa
-            print(capacidadTotal)
             tamañoListaInsumos=len(sede.getListaInsumosBodega())
             for i in range(tamañoListaInsumos):
                 insumo = sede.getListaInsumosBodega()[i]
                 if isinstance(insumo, Bolsa):
-                    print("Bolsa encontrada!")
                     if insumo.getCapacidadMaxima() == capacidadBolsa:
                         cantidadInsumosBodega=sede.getCantidadInsumosBodega()
                         cantidadDisponible += cantidadInsumosBodega[i]
@@ -684,128 +691,49 @@ class Main:
         venta.setMontoPagado(totalVenta)
         return debeBolsas        
 
-    def surtirBolsas(ventana, venta):
+    def surtirBolsas(ventana, venta,intento):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
-        ventana.interaccion3Facturacion(insumo, mensaje)
         nombreBolsa = "Bolsa"
-        for revisarSede in Sede.getListaSedes():
-            listaInsumos = revisarSede.getListaInsumosBodega()
-            cantidadInsumos = revisarSede.getCantidadInsumosBodega()
-            for i in range(len(listaInsumos)):
-                insumo = listaInsumos[i]
-                if isinstance(insumo, Bolsa) and cantidadInsumos[i] < 10:
-                    mensaje=f"La sede {revisarSede.getNombre()} tiene menos de 10 bolsas en stock (Cantidad: {cantidadInsumos[i]})."
-                    for e in range(len(listaInsumos)):
-                        insumo = listaInsumos[e]
-                        if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
-                            print("692")                        
-                            ventana.modifInteraccion3Facturacion(insumo, mensaje)
+        bolsaMenor=0
+        revisarSede=venta.getSede()
+        for i in range(len(revisarSede.getListaInsumosBodega())):
+            insumo=revisarSede.getListaInsumosBodega()[i]
+            if isinstance(insumo, Bolsa):
+                if bolsaMenor==0:
+                    bolsaMenor=revisarSede.getCantidadInsumosBodega()[i]
+                elif  revisarSede.getCantidadInsumosBodega()[i]<=bolsaMenor:
+                    bolsaMenor=revisarSede.getCantidadInsumosBodega()[i]
+                    break
+        listaInsumos = Sede.getListaInsumosBodega(insumo.getSede())
+        if bolsaMenor < 10:
+            mensaje=f"La sede {revisarSede.getNombre()} tiene menos de 10 bolsas en stock (Cantidad: {bolsaMenor})."
+            for e in range(len(listaInsumos)):
+                insumo = listaInsumos[e]
+                if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:                   
+                    ventana.modifInteraccion3Facturacion(insumo, mensaje)
+        else:
+            ventana.modifInteraccion3Facturacion(insumo, "No hay necesidad de comprar")
                             
-    def comprarBolsas(ventana, venta, insumo, cantidadComprar):
+    def comprarBolsas(ventana, venta, insumo, cantidadComprar):                      
         listaBolsas=[]
+        mensaje=""
         nombreBolsa=insumo.getNombre()
         sede = venta.getSede()   
         cantidadInsumosBodega = sede.getCantidadInsumosBodega()     
-        banco = sede.getCuentaSede()        
-        costoCompra = Proveedor.costoDeLaCantidad(insumo, cantidadComprar)
-        banco.setAhorroBanco(Banco.getAhorroBanco(banco) - costoCompra)
-        cantidadInsumosBodega[e] += cantidadComprar
-        insumo.setPrecioCompra(costoCompra)
-        insumo.setPrecioCompra(costoCompra)
-        return f"Se compraron {cantidadComprar} {nombreBolsa} por un costo total de {costoCompra}"
+        banco = sede.getCuentaSede()
+        for revisarSede in Sede.getListaSedes():
+            listaInsumos = Sede.getListaInsumosBodega(insumo.getSede())
+            for e in range(len(listaInsumos)):
+                    insumo = listaInsumos[e]    
+                    if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
+                        costoCompra = Proveedor.costoDeLaCantidad(insumo, cantidadComprar)
+                        banco.setAhorroBanco(Banco.getAhorroBanco(banco) - costoCompra)
+                        cantidadInsumosBodega[e] += cantidadComprar
+                        insumo.setPrecioCompra(costoCompra)
+                        insumo.setPrecioCompra(costoCompra)
+                        mensaje= (f"Se compraron {cantidadComprar} {nombreBolsa} por un costo total de {costoCompra}")
+        return mensaje
 
-    def realizarVenta(venta):
-        from src.gestorAplicacion.bodega.proveedor import Proveedor
-        productosSeleccionados = Venta.getArticulos(venta)
-        sede = Venta.getSede(venta)
-        banco = Sede.getCuentaSede(sede)
-        totalPrendas = len(productosSeleccionados)
-
-        insumosBodega = Sede.getListaInsumosBodega(sede)
-        cantidadInsumosBodega = Sede.getCantidadInsumosBodega(sede)
-
-        bolsasSeleccionadas = []
-        capacidadTotal = 0
-
-        while capacidadTotal < totalPrendas:
-            print("\nSeleccione el tamaño de bolsa:")
-            bp, bm, bg = False, False, False
-            for i in range(len(insumosBodega)):
-                bolsa = insumosBodega[i]
-                if isinstance(bolsa, Bolsa):
-                    capacidad = bolsa.getCapacidadMaxima()
-                    cantidad = Sede.getCantidadInsumosBodega(sede)[i]
-                    if capacidad == 1 and cantidad > 0:
-                        bp = True
-                    if capacidad == 3 and cantidad > 0:
-                        bm = True
-                    if capacidad == 8 and cantidad > 0:
-                        bg = True
-
-            if bp: print("1. Bolsa pequeña (1 producto)")
-            if bm: print("2. Bolsa mediana (3 productos)")
-            if bg: print("3. Bolsa grande (8 productos)")
-
-            opcionBolsa = Main.nextIntSeguro()
-
-            capacidadBolsa = 0
-            nombreBolsa = None
-            if opcionBolsa == 1:
-                capacidadBolsa = 1
-                nombreBolsa = "Bolsa pequeña"
-            elif opcionBolsa == 2:
-                capacidadBolsa = 3
-                nombreBolsa = "Bolsa mediana"
-            elif opcionBolsa == 3:
-                capacidadBolsa = 8
-                nombreBolsa = "Bolsa grande"
-            else:
-                print("Opción inválida. Intente nuevamente.")
-                continue
-
-            bolsaEncontrada = False
-            cantidadDisponible = 0
-            capacidadTotal += capacidadBolsa
-            for i in range(len(Sede.getListaInsumosBodega(sede))):
-                insumo = Sede.getListaInsumosBodega(sede)[i]
-                if isinstance(insumo, Bolsa) and insumo.getCapacidadMaxima() == capacidadBolsa:
-                    cantidadDisponible += cantidadInsumosBodega[i]
-                    if cantidadDisponible > 0:
-                        bolsasSeleccionadas.append(insumo)
-                        cantidadInsumosBodega[i] -= 1
-                        bolsaEncontrada = True
-                        break
-                totalPrendas -= cantidadDisponible
-                if capacidadTotal == totalPrendas:
-                    break
-
-            for revisarSede in Sede.getListaSedes():
-                listaInsumos = Sede.getListaInsumosBodega(revisarSede)
-                cantidadInsumos = Sede.getCantidadInsumosBodega(revisarSede)
-                for i in range(len(listaInsumos)):
-                    insumo = listaInsumos[i]
-                    if isinstance(insumo, Bolsa) and cantidadInsumos[i] < 10:
-                        print(f"La sede {Sede.getNombre(revisarSede)} tiene menos de 10 bolsas en stock (Cantidad: {cantidadInsumos[i]}).")
-                        print("Comprando al proveedor...")
-                        for e in range(len(listaInsumos)):
-                            insumo = listaInsumos[e]    
-                            if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
-                                print(f"¿Cuántas bolsas de {insumo.getNombre()} desea comprar?")
-                                cantidadComprar = Main.nextIntSeguro()
-                                costoCompra = Proveedor.costoDeLaCantidad(insumo, cantidadComprar)
-                                banco.setAhorroBanco(Banco.getAhorroBanco(banco) - costoCompra)
-                                cantidadInsumosBodega[e] += cantidadComprar
-                                insumo.setPrecioCompra(costoCompra)
-                                insumo.setPrecioCompra(costoCompra)
-                                print(f"Se compraron {cantidadComprar} {nombreBolsa} por un costo total de {costoCompra}")
-                                break
-
-        Venta.setBolsas(venta,bolsasSeleccionadas)
-        totalVenta = Venta.getMontoPagado(venta) + len(bolsasSeleccionadas) * 2000
-        Venta.setMontoPagado(venta,totalVenta)
-
-        print(f"\nVenta realizada. Total de la venta con bolsas: {totalVenta}")
-        return venta
 
     def manejarFaltantes(sede, cantidadPrenda, disponibles, tipoPrenda, costosEnvio):
         faltantes = cantidadPrenda - disponibles
@@ -908,48 +836,50 @@ class Main:
                         mensaje+="\nFondos insuficientes para cubrir la transferencia y el costo."
                 else:
                     mensaje+="\nPorcentaje no válido. No se realizará la transferencia."
+            else:
+                mensaje+="\nNo se realizará la transferencia de fondos."
         if bancoTransferir is not None:
             mensaje+="\nEstado final de la cuenta de la sede: $" + str(Banco.getAhorroBanco(bancoTransferir))
         if bancoRecibir is not None:
             mensaje+="\nEstado final de la cuenta principal: $" + str(bancoRecibir.getAhorroBanco())
-            productosSeleccionados = Venta.getArticulos(venta)
-            montoPagar = Venta.getMontoPagado(venta)
-            tasaIva = 0.19
-            valorBase = int(montoPagar / (1 + tasaIva))
-            iva = montoPagar - valorBase
-            mensajeFinal+="\n---- FACTURA ----"
-            mensajeFinal+="\nPrendas compradas:"
-            cantidadCamisas = 0
-            cantidadPantalon = 0
-            subtotalCamisas = 0
-            subtotalPantalon = 0
+        productosSeleccionados = Venta.getArticulos(venta)
+        montoPagar = Venta.getMontoPagado(venta)
+        tasaIva = 0.19
+        valorBase = int(montoPagar / (1 + tasaIva))
+        iva = montoPagar - valorBase
+        mensajeFinal+="\n---- FACTURA ----"
+        mensajeFinal+="\nPrendas compradas:"
+        cantidadCamisas = 0
+        cantidadPantalon = 0
+        subtotalCamisas = 0
+        subtotalPantalon = 0
 
-            for prenda in productosSeleccionados:
-                if isinstance(prenda, Camisa):
-                    cantidadCamisas += 1
-                    subtotalCamisas += Camisa.precioVenta()
-                if isinstance(prenda, Pantalon):
-                    cantidadPantalon += 1
-                    subtotalPantalon += Pantalon.precioVenta()
+        for prenda in productosSeleccionados:
+            if isinstance(prenda, Camisa):
+                cantidadCamisas += 1
+                subtotalCamisas += Camisa.precioVenta()
+            if isinstance(prenda, Pantalon):
+                cantidadPantalon += 1
+                subtotalPantalon += Pantalon.precioVenta()
 
-            camisaEncontrada = False
-            pantalonEncontrado = False
-            for prenda in productosSeleccionados:
-                if isinstance(prenda, Camisa) and not camisaEncontrada:
-                    mensajeFinal+="\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadCamisas) + " - Subtotal: $" + str(subtotalCamisas)
-                    camisaEncontrada = True
-                if isinstance(prenda, Pantalon) and not pantalonEncontrado:
-                    mensajeFinal+="\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadPantalon) + " - Subtotal: $" + str(subtotalPantalon)
-                    pantalonEncontrado = True
+        camisaEncontrada = False
+        pantalonEncontrado = False
+        for prenda in productosSeleccionados:
+            if isinstance(prenda, Camisa) and not camisaEncontrada:
+                mensajeFinal+="\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadCamisas) + " - Subtotal: $" + str(subtotalCamisas)
+                camisaEncontrada = True
+            if isinstance(prenda, Pantalon) and not pantalonEncontrado:
+                mensajeFinal+="\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadPantalon) + " - Subtotal: $" + str(subtotalPantalon)
+                pantalonEncontrado = True
 
-            mensajeFinal+="\n"+"Valor total a pagar: $" + str(montoPagar)
-            mensajeFinal+="\n"+"Subtotal prendas: $" + str(Venta.getSubtotal(venta))
-            mensajeFinal+="\n"+"IVA: $" + str(iva)
-            mensajeFinal+="\n"+"Venta registrada por: " + Venta.getEncargado(venta).getNombre()
-            mensajeFinal+="\n"+"Asesor de la compra: " + Venta.getAsesor(venta).getNombre()
+        mensajeFinal+="\n"+"Valor total a pagar: $" + str(montoPagar)
+        mensajeFinal+="\n"+"Subtotal prendas: $" + str(Venta.getSubtotal(venta))
+        mensajeFinal+="\n"+"IVA: $" + str(iva)
+        mensajeFinal+="\n"+"Venta registrada por: " + Venta.getEncargado(venta).getNombre()
+        mensajeFinal+="\n"+"Asesor de la compra: " + Venta.getAsesor(venta).getNombre()
 
-            mensajeFinal+="\n""El monto total a pagar por parte del cliente es " + str(montoPagar) + " y el estado final de la cuenta de la sede es $" + str(Banco.getAhorroBanco(bancoTransferir))
-            return mensajeFinal, mensaje
+        mensajeFinal+="\n""El monto total a pagar por parte del cliente es " + str(montoPagar) + " y el estado final de la cuenta de la sede es $" + str(Banco.getAhorroBanco(bancoTransferir))
+        return mensajeFinal, mensaje
     
     def generarCodigoAleatorio():
         caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"

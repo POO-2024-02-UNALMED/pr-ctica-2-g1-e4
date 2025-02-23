@@ -33,7 +33,7 @@ class Sede:
         idxInsumo = donadora.listaInsumosBodega.index(insumo)
         if idxInsumo == -1:
             return cantidadSolicitada  # Skip the rest of the method, because there is nothing to transfer.
-        cantidadDisponible = min(donadora.cantidadInsumosBodega.index(idxInsumo), cantidadSolicitada)
+        cantidadDisponible = min(donadora.cantidadInsumosBodega[idxInsumo], cantidadSolicitada)
         ajusteStock = Insumo.getPrecioStockTotal() - (insumo.getPrecioIndividual() * cantidadSolicitada)
         Insumo.setPrecioStockTotal(ajusteStock)
         if (cantidadDisponible - cantidadSolicitada) == 0:
@@ -56,12 +56,14 @@ class Sede:
                 Insumo.setPrecioStockTotal(ajusteStock)
 
     @classmethod
-    def verificarProductoOtraSede(cls, insumo):
+    def verificarProductoOtraSede(cls, insumo,excluirSede):
         retorno = False
         index = -1
         sedeATransferir = None
         precio = 0
         for sede in cls.listaSedes:
+            if sede == excluirSede:
+                continue
             for x in range(len(sede.getListaInsumosBodega())):
                 if insumo == sede.getListaInsumosBodega()[x]:
                     for cantidad in sede.cantidadInsumosBodega:
