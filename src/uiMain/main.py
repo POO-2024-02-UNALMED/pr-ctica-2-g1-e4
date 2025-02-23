@@ -29,6 +29,7 @@ class Main:
     nuevoBalance=None
     diferenciaEstimado=0
     pesimismoPorSede = [2,2]
+    listaErrores=[]
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
@@ -462,38 +463,45 @@ class Main:
             return True
 
     opcionesCompraExtra=[] # Generado en comprarInsumos. 1 lista por insumo
-    # Cada 1 con indice 0 el insumo, indice 1 proveedor, indice 3 diferencial de precio, indice 4 sede compradora.
+    # Cada 1 con indice 0 el insumo, indice 1 proveedor, indice 2 diferencial de precio, indice 3 sede compradora.
 
     # Interacción 3
     @classmethod
     def comprarInsumos(cls):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
-        for sede in cls.planDeCompra:
+        for idxSede,sede in enumerate(cls.planDeCompra):
             insumos = sede[0]
             cantidad = sede[1]
             for idxInsumo in range(len(insumos)):
                 proveedores = []
                 precios = []
                 mejorProveedor = None
-                mejorPrecio = float('inf')
+                mejorPrecio = 0
                 cantidadAñadir = 0
                 for proveedor in Proveedor.getListaProveedores():
                     if Proveedor.getInsumo(proveedor) == insumos[idxInsumo]:
                         proveedores.append(proveedor)
                         precios.append(Proveedor.costoDeLaCantidad(proveedor,insumos[idxInsumo], cantidad[idxInsumo]))
                 for x in proveedores:
-                    precio = Proveedor.costoDeLaCantidad(x,insumos[idxInsumo], cantidad[idxInsumo])
-                    if precio != 0 and precio < mejorPrecio:
+                    precio = x.costoDeLaCantidad(insumos[idxInsumo], cantidad[idxInsumo])
+                    if precio != 0 and (precio < mejorPrecio or mejorPrecio == 0):
                         mejorPrecio = precio
                         mejorProveedor = x
                         Insumo.setProveedor(insumos[idxInsumo],x)
                 if Insumo.getPrecioIndividual(insumos[idxInsumo]) < Insumo.getUltimoPrecio(insumos[idxInsumo]):
                     diferencial = Insumo.getPrecioIndividual(insumos[idxInsumo]) - Insumo.getUltimoPrecio(insumos[idxInsumo])
-                    cls.opcionesCompraExtra.append([insumos[idxInsumo], mejorProveedor, diferencial, sede])
+                    cls.opcionesCompraExtra.append([insumos[idxInsumo], mejorProveedor.getNombre(), diferencial, sede.getNombre()])
                 else:
-                    cls.comprarInsumo(cantidad[idxInsumo], insumos[idxInsumo], mejorProveedor, sede)
+                    cls.comprarInsumo(cantidad[idxInsumo], insumos[idxInsumo], mejorProveedor, Sede.getListaSedes()[idxSede])
         return cls.opcionesCompraExtra
+
+    @classmethod
+    def getNombresCompraExtra(cls):
+        nombres=[]
+        for opcion in cls.opcionesCompraExtra:
+            nombres.append(opcion[0].getNombre())
+        return nombres
     
     @classmethod
     def comprarInsumo(cls,cantidad:int,insumo:Insumo,proveedor:Proveedor,sede:Sede)->None:
