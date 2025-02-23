@@ -13,7 +13,7 @@ class ExcepcionEnteroNoValido(ExceptionC1):
 class ExcepcionContenidoVacio(ExceptionC1):
     def __init__(self, entradas):
         self.mensajeEntradas=f" Necesita llenar la(s) entrada(s) {entradas} para continuar"
-        super().__init__( self.mensajeEntradas) #Faltan algunas
+        super().__init__( self.mensajeEntradas) #Se supone que ya
 
 class ExcepcionStringNoEntero(ExceptionC1):
     def __init__(self, entero):
@@ -21,8 +21,8 @@ class ExcepcionStringNoEntero(ExceptionC1):
         super().__init__(self.mensajeEntero) #Falta aplicarla
         
 class ExcepcionEnteroNoString(ExceptionC1):
-    def __init__(self, entero):
-        self.mensajeEntero=f" La entrada {entero} no es válida, debe llenar este campo solo con números enteros"
+    def __init__(self, string):
+        self.mensajeEntero=f" La entrada {string} no es válida, debe llenar este campo solo con números enteros"
         super().__init__( self.mensajeEntero) #Falta aplicarla
 
 
