@@ -297,8 +297,7 @@ class Main:
 
     # Interacción 1 
     @classmethod
-    def planificarProduccion(cls):
-        from src.uiMain.startFrame import startFrame
+    def planificarProduccion(cls,ventanaPrincipal):
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         fecha=Main.fecha
@@ -313,14 +312,14 @@ class Main:
             valores.append(round(Venta.getPesimismo()*100))
             
         
-        startFrame.pesimismo(self, criterios, valores)
+        ventanaPrincipal.pesimismo(criterios, valores)
 
         for sede in Sede.getListaSedes():
             pantalonesPredichos = False
             camisasPredichas = False
             insumoXSede = []
             cantidadAPedir = []
-            listaXSede = [insumoXSede, cantidadAPedir]
+            listaSede = [insumoXSede, cantidadAPedir]
 
             for prenda in Sede.getPrendasInventadas(sede):
 
@@ -352,7 +351,7 @@ class Main:
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
 
-            Main.retorno.append(listaXSede)
+            Main.retorno.append(listaSede)
 
         #startFrame.prediccion(self, Main.texto, Main.retorno)
         return Main.retorno
@@ -367,7 +366,8 @@ class Main:
         
 
     # Interacción 2 
-    def coordinarBodegas(self, retorno):
+    @classmethod
+    def coordinarBodegas(cls, retorno):
         from src.uiMain.startFrame import startFrame
         insumoFieldFrame = []
         habilitado = []
@@ -376,11 +376,10 @@ class Main:
         insumosAPedir = []
         cantidadAPedir = []
         listaSede = [] # generado en este metodo
-        listaXSede = sede # Extraido de retorno
-        listaInsumos = listaXSede[0]
-        listaCantidades = listaXSede[1]
+        listaInsumos = listaSede[0]
+        listaCantidades = listaSede[1]
 
-        s=Sede.getListaSedes()[indexSede]
+        s=Sede.getListaSedes()[cls.indexSede]
 
         for i in listaInsumos:
             insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
@@ -425,7 +424,7 @@ class Main:
                 habilitado.append(False)
 
     
-            startFrame.transferir(self, insumoFieldFrame, habilitado, s)    
+            startFrame.transferir(insumoFieldFrame, habilitado, s)    
                       
         listaSede.append(insumosAPedir)
         listaSede.append(cantidadAPedir)
@@ -966,7 +965,7 @@ class Main:
                 random.shuffle(nuevos)
                 for i, prov in enumerate(compatibles):
                     prov.setPrecio(nuevos[i].getPrecio())
-    # endregion
+    #endregion
     def pedirModista(cantidadPrendas, sede, idxTanda):
         print(f"Seleccione el modista que se encargará de la tanda #{idxTanda} de producción de {cantidadPrendas} prendas en {sede.getNombre()}:")
         modistas = [empleado for empleado in sede.getListaEmpleados() if empleado.getRol() == Rol.MODISTA]
