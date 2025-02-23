@@ -605,7 +605,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.tituloF2.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
 
             ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-        self.descripcionF2 = tk.Label(self.frame1, text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", relief="ridge",wraplength=600)
+        self.descripcionF2 = tk.Label(self.frame1, 
+                            text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", 
+                            relief="ridge", wraplength=600)
         self.descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
         
         self.retorno = Main.planificarProduccion(self)
