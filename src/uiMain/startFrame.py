@@ -723,26 +723,36 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def dibujarTablaCompraExtra(self, infoTabla)->None:
         self.frameCambianteInsumos=tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
-        encabezados=["vende", "mas barato por","comprado para"]
-        self.elementosTabla=[]
-        for titulo in encabezados:
-            encabezado=tk.Label(self.frameCambianteInsumos, text=titulo, font=("Arial", 10))
-            encabezado.grid(row=0, column=encabezados.index(titulo)+2)
-            self.elementosTabla.append(encabezado)
-        idxFila=1
-        for fila in infoTabla:
-            for i in range(len(fila)-1): #debemos saltarnos el espacio del insumo 
-                elemento=tk.Label(self.frameCambianteInsumos, text=fila[i+1], font=("Arial", 10))
-                self.elementosTabla.append(elemento)
-                elemento.grid(row=idxFila, column=i+2)
-                self.frameCambianteInsumos.rowconfigure(idxFila, weight=1)
-                self.frameCambianteInsumos.columnconfigure(i+2, weight=1)
-            idxFila+=1
-        self.fieldCompraExtra=fieldFrame.FieldFrame(self.frameCambianteInsumos, "Insumo", Main.getNombresCompraExtra(), "Cantidad extra", ["0" for i in range(len(infoTabla))],aceptar=True, borrar=True)
-        self.fieldCompraExtra.grid(row=0, column=0,columnspan=2,rowspan=idxFila)
-        self.frameCambianteInsumos.rowconfigure(0, weight=1)
-        self.frameCambianteInsumos.columnconfigure(0, weight=1)
-        self.frameCambianteInsumos.columnconfigure(1, weight=1)
+        if len(infoTabla)>0:
+            encabezados=["vende", "mas barato por","comprado para"]
+            self.elementosTabla=[]
+            for titulo in encabezados:
+                encabezado=tk.Label(self.frameCambianteInsumos, text=titulo, font=("Arial", 10))
+                encabezado.grid(row=0, column=encabezados.index(titulo)+2)
+                self.elementosTabla.append(encabezado)
+            idxFila=1
+            for fila in infoTabla:
+                for i in range(len(fila)-1): #debemos saltarnos el espacio del insumo 
+                    elemento=tk.Label(self.frameCambianteInsumos, text=fila[i+1], font=("Arial", 10))
+                    self.elementosTabla.append(elemento)
+                    elemento.grid(row=idxFila, column=i+2)
+                    self.frameCambianteInsumos.rowconfigure(idxFila, weight=1)
+                    self.frameCambianteInsumos.columnconfigure(i+2, weight=1)
+                idxFila+=1
+            self.fieldCompraExtra=fieldFrame.FieldFrame(self.frameCambianteInsumos, "Insumo", Main.getNombresCompraExtra(), "Cantidad extra", ["0" for i in range(len(infoTabla))],aceptar=True, borrar=True,crecer=True)
+            self.fieldCompraExtra.grid(row=0, column=0,columnspan=2,rowspan=idxFila+1)
+            self.frameCambianteInsumos.rowconfigure(0, weight=1)
+            self.frameCambianteInsumos.rowconfigure(idxFila+1, weight=1)
+            self.frameCambianteInsumos.columnconfigure(0, weight=1)
+            self.frameCambianteInsumos.columnconfigure(1, weight=1)
+        else:
+            self.explicacion=tk.Label(self.frameCambianteInsumos, text="No se deben comprar insumos adicionales, los precios están estables o subiendo, ya compramos todo.", font=("Arial", 10))
+            self.explicacion.grid(row=0, column=0)
+            self.frameCambianteInsumos.rowconfigure(0, weight=1)
+            self.frameCambianteInsumos.columnconfigure(0, weight=1)
+    
+    def compraNormal(self):
+        Main.terminarCompraDeInsumos()
 
 #endregion
 
