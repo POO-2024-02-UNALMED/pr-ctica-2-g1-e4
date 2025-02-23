@@ -1001,10 +1001,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     
     def Facturar(self):
         self.Facturacion=tk.Frame(self)
-        self.posiblesDespedidos=[]
         self.sede=None
         self.inicialFacturacion()
-        self.empleadosADespedir=[] # Se llena al dar aceptar en la pantalla de seleccion.
         self.cantidadADespedir=0
         return self.Facturacion
         
@@ -1020,11 +1018,11 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.descripcionF1 = tk.Label(self.framePrincipal, wraplength=700 ,text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial", 10))
         self.descripcionF1.grid(row=1, column=0, sticky="nswe")        
         
-        self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
-        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
 
-        self.outputGHumana=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2, bg="#f0f0f0")
-        self.outputGHumana.grid(row=3, column=0, sticky="nswe")
+        self.outputFacturacion=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2, bg="#f0f0f0")
+        self.outputFacturacion.grid(row=3, column=0, sticky="nswe")
         
         self.framePrincipal.columnconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(0, weight=1)
@@ -1033,88 +1031,42 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(3, weight=2)
         self.interaccion1Facturacion()
 
-    def pantallaBaseFacturacion(self, limpiarFrame=False):
-        if limpiarFrame:
-            self.frameCambianteGHumana.destroy()
-            self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
-            self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe",columnspan=4)
-
-        self.labelPreConsulta=tk.Label(self.frameCambianteGHumana, text="", relief="ridge", font=("Arial", 10))
-        self.labelPreConsulta.grid(row=1, column=0, sticky="nswe",columnspan=4)
-
-        nombres=""
-        for empleado in self.posiblesDespedidos:
-            nombres+=Empleado.getNombre(empleado)+"\n"
-
-        self.cantidadADespedir=len(self.posiblesDespedidos)
-
-        self.seleccionadorDespedidos()
-
-        self.malRendidos=tk.Label(self.frameCambianteGHumana, text=nombres, font=("Arial", 10))
-        self.malRendidos.grid(row=2, column=1,sticky="nswe")
-
-        self.opcionAñadir=tk.Button(self.frameCambianteGHumana, text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", font=("Arial", 12, "bold"), command=self.interaccion1Facturacion)
-        self.opcionAñadir.grid(row=3, column=0,columnspan=2)
-
-        self.frameCambianteGHumana.rowconfigure(0, weight=1)
-        self.frameCambianteGHumana.rowconfigure(1, weight=5)
-        self.frameCambianteGHumana.rowconfigure(2, weight=10)
-        self.frameCambianteGHumana.rowconfigure(3, weight=10)
-        self.frameCambianteGHumana.columnconfigure(0, weight=10)
-        self.frameCambianteGHumana.columnconfigure(1, weight=10)
-        self.framePrincipal.columnconfigure(0, weight=1)
-        self.framePrincipal.columnconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(1, weight=1)
-        self.framePrincipal.rowconfigure(2, weight=10)
-        self.framePrincipal.rowconfigure(3, weight=2)
-    
-    def anadirOtraPrenda(self):
-        nombresADespedir=self.seleccionador.obtenerTodosLosValores()
-        del nombresADespedir[0]
-        (existen,self.empleadosADespedir)=Main.despedirEmpleados(nombresADespedir)
-        if existen:
-            Main.estadoGestionHumana="cambio-sede"
-            self.reemplazarPorCambioFactura()
-        else:
-            tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado trabaja en la empresa.")
-    
     #Este si
     # Parte de la interacción 1
     def interaccion1Facturacion(self):
         self.descripcionF1.config(text="""Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.\nInserte los datos de la sede y presione Enter para ver los empleados""")
-        self.frameCambianteGHumana.destroy()
+        self.freameCambianteFacturacion.destroy()
 
-        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
-        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
 
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Detalles Venta" ,
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Detalles Venta" ,
         ["Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", ["","Sede Principal", "",
         "","Camisa/Pantalon","0"],[True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
-        self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosEmpleadosFacturacion)
-        self.datosDespedido.grid(row=1, column=0, columnspan=2)
+        self.datosEntradasFacturacion.configurarCallBack("sede", "<Return>", self.actualizarDatosEmpleadosFacturacion)
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
         clientesPosibles="Clientes"
-        self.Clientes=tk.Label(self.frameCambianteGHumana, text=clientesPosibles, font=("Arial", 10))
+        self.Clientes=tk.Label(self.freameCambianteFacturacion, text=clientesPosibles, font=("Arial", 10))
         self.Clientes.grid(row=1, column=3)
         clientes= Main.imprimirNoEmpleados()
         for cliente in clientes:
             if isinstance(cliente,Persona):
                 clientesPosibles+="\n"+cliente.getNombre()        
         self.Clientes.config(text=clientesPosibles)
-        self.pistas=tk.Label(self.frameCambianteGHumana, text=Main.posiblesSedes(), font=("Arial", 10))
+        self.pistas=tk.Label(self.freameCambianteFacturacion, text=Main.posiblesSedes(), font=("Arial", 10))
         self.pistas.grid(row=1, column=4)
-        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 10, "bold"), command=self.leer1Facturacion)
-        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 10, "bold"), command=self.datosDespedido.borrar)
+        self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10, "bold"), command=self.leer1Facturacion)
+        self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10, "bold"), command=self.datosEntradasFacturacion.borrar)
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
         
-        self.frameCambianteGHumana.rowconfigure(0, weight=1)
-        self.frameCambianteGHumana.rowconfigure(1, weight=10)
-        self.frameCambianteGHumana.columnconfigure(0, weight=2)
-        self.frameCambianteGHumana.columnconfigure(1, weight=2)
-        self.frameCambianteGHumana.columnconfigure(3, weight=3)
-        self.frameCambianteGHumana.columnconfigure(4, weight=3)
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(3, weight=3)
+        self.freameCambianteFacturacion.columnconfigure(4, weight=3)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
         
@@ -1123,24 +1075,24 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.cantidadBolsaMediana=0
         self.cantidadBolsaPequeña=0
         self.descripcionF1.config(text="""Factura de la compra realizada.""")
-        self.frameCambianteGHumana.destroy()
-        self.outputGHumana.destroy()
-        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
-        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+        self.freameCambianteFacturacion.destroy()
+        self.outputFacturacion.destroy()
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
 
-        confirmacion=tk.Label(self.frameCambianteGHumana, anchor="center")
+        confirmacion=tk.Label(self.freameCambianteFacturacion, anchor="center")
         confirmacion.grid(row=0, column=0, sticky="nswe")
         self.impresionFinal= tk.Text(confirmacion, font=("Arial", 10), height=10,bg="plum3")
         self.impresionFinal.pack(fill="both", expand=True)
         self.impresionFinal.tag_configure("center", justify="center",spacing1=10, spacing3=10)
         self.impresionFinal.insert(1.0,mensaje)
         
-        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Salir", bg="medium orchid",command=lambda: startFrame.abrirFrameInicial(self))
+        self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Salir", bg="medium orchid",command=lambda: startFrame.abrirFrameInicial(self))
         self.siguiente.grid(row=1, column=0)       
           
-        self.frameCambianteGHumana.rowconfigure(0, weight=10)
-        self.frameCambianteGHumana.rowconfigure(1, weight=2)       
-        self.frameCambianteGHumana.columnconfigure(0, weight=10)      
+        self.freameCambianteFacturacion.rowconfigure(0, weight=10)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=2)       
+        self.freameCambianteFacturacion.columnconfigure(0, weight=10)      
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
         self.framePrincipal.rowconfigure(2, weight=10)
@@ -1151,94 +1103,94 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.cantidadBolsaMediana=0
         self.cantidadBolsaPequeña=0
         self.descripcionF1.config(text="""Se encarga de tranferir los fondos a la cuenta principal.""")
-        self.frameCambianteGHumana.destroy()
-        self.outputGHumana.config(state="normal")
-        self.outputGHumana.delete("1.0", "end")
-        self.outputGHumana.config(state="disabled")
+        self.freameCambianteFacturacion.destroy()
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.config(state="disabled")
 
-        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
-        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
         
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Fondos" ,["Transferir fondos a la cuenta principal","¿Qué porcentaje desea transferir?"],"", ["Si/No","20% o 60%"],[True,False],ancho_entry=25, tamañoFuente=10)
-        self.datosDespedido.configurarCallBack("Transferir fondos a la cuenta principal", "<Return>", self.transferirDinero)
-        self.datosDespedido.grid(row=1, column=0, columnspan=2)
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Fondos" ,["Transferir fondos a la cuenta principal","¿Qué porcentaje desea transferir?"],"", ["Si/No","20% o 60%"],[True,False],ancho_entry=25, tamañoFuente=10)
+        self.datosEntradasFacturacion.configurarCallBack("Transferir fondos a la cuenta principal", "<Return>", self.transferirDinero)
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
         
-        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 10,  "bold"), command=self.leer5Facturacion)
-        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 10,  "bold"), command=self.datosDespedido.borrar)
+        self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10,  "bold"), command=self.leer5Facturacion)
+        self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10,  "bold"), command=self.datosEntradasFacturacion.borrar)
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)        
         
-        self.frameCambianteGHumana.rowconfigure(0, weight=1)
-        self.frameCambianteGHumana.rowconfigure(1, weight=10)
-        self.frameCambianteGHumana.columnconfigure(0, weight=2)
-        self.frameCambianteGHumana.columnconfigure(1, weight=2)
-        self.frameCambianteGHumana.columnconfigure(3, weight=2)
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(3, weight=2)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
 
     def transferirDinero(self, evento):
         self.dineroTransferido=True
-        if (self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower())=="si":
-            self.datosDespedido.habilitarEntry("¿Qué porcentaje desea transferir?", True)
+        if (self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower())=="si":
+            self.datosEntradasFacturacion.habilitarEntry("¿Qué porcentaje desea transferir?", True)
 
     def leer5Facturacion(self):
         porcentaje=0
         mensaje=""
-        if self.datosDespedido.getValue("¿Qué porcentaje desea transferir?")!=None and self.datosDespedido.getValue("Transferir fondos a la cuenta principal")!=None:
-            string=self.datosDespedido.getValue("¿Qué porcentaje desea transferir?").strip("%")
+        if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?")!=None and self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")!=None:
+            string=self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%")
             if string.isnumeric():
                 porcentaje=int(string)
-            if self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower()=="si" or self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower()=="no":
-                if self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower()=="si" and porcentaje>=20 and porcentaje <=60:
-                    mensajeFinal,mensaje=Main.ingresoEmpresa(self.venta, self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower(), porcentaje)
+            if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" or self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="no":
+                if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" and porcentaje>=20 and porcentaje <=60:
+                    mensajeFinal,mensaje=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), porcentaje)
                 else:
-                    mensajeFinal=Main.ingresoEmpresa(self.venta, self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower(), 0)
+                    mensajeFinal=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), 0)
                     mensaje="No se transfirió el dinero a la cuenta principal."
-                self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
+                self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
                 self.siguiente.grid(row=2, column=3)   
-            self.outputGHumana.config(state="normal")
-            self.outputGHumana.delete("1.0", "end")
-            self.outputGHumana.insert("1.0",mensaje)
-            self.outputGHumana.config(state="disabled")    
+            self.outputFacturacion.config(state="normal")
+            self.outputFacturacion.delete("1.0", "end")
+            self.outputFacturacion.insert("1.0",mensaje)
+            self.outputFacturacion.config(state="disabled")    
 
     def interaccion4Facturacion(self):
         self.cantidadBolsaGrande=0
         self.cantidadBolsaMediana=0
         self.cantidadBolsaPequeña=0
         self.descripcionF1.config(text="""Se esncarga de Redimir y/o comprar tarjetas de regalo. \nIngrese -1 si no desea redimir ninguna tarjeta y No si no desea cmprar.""")
-        self.frameCambianteGHumana.destroy()
-        self.outputGHumana.config(state="normal")
-        self.outputGHumana.delete("1.0", "end")
-        self.outputGHumana.config(state="disabled")
+        self.freameCambianteFacturacion.destroy()
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.config(state="disabled")
 
-        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
-        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
         
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Targeta de regalo" ,["Código","Nueva tarjeta","Monto nueva Tarjeta"],"", ["-1","Si/No","100000"],[True, True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer4Facturacion)
-        self.datosDespedido.grid(row=1, column=0, columnspan=2)     
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Targeta de regalo" ,["Código","Nueva tarjeta","Monto nueva Tarjeta"],"", ["-1","Si/No","100000"],[True, True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer4Facturacion)
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)     
         
-        self.frameCambianteGHumana.rowconfigure(0, weight=1)
-        self.frameCambianteGHumana.rowconfigure(1, weight=10)
-        self.frameCambianteGHumana.columnconfigure(0, weight=2)
-        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
 
     def leer4Facturacion(self):
-        if self.datosDespedido.getValue("Código")!=None and (self.datosDespedido.getValue("Nueva tarjeta").lower()=="si" or  self.datosDespedido.getValue("Nueva tarjeta").lower()=="no")and self.datosDespedido.getValue("Monto nueva Tarjeta")!=None:
+        if self.datosEntradasFacturacion.getValue("Código")!=None and (self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="si" or  self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="no")and self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")!=None:
             respuesta="Si"
-            if self.datosDespedido.getValue("Código")=="-1":
+            if self.datosEntradasFacturacion.getValue("Código")=="-1":
                 respuesta="No"
-            codigo=self.datosDespedido.getValue("Código")
-            compraTarjeta=self.datosDespedido.getValue("Nueva tarjeta")
-            valorNuevaTarjeta=int(self.datosDespedido.getValue("Monto nueva Tarjeta"))
+            codigo=self.datosEntradasFacturacion.getValue("Código")
+            compraTarjeta=self.datosEntradasFacturacion.getValue("Nueva tarjeta")
+            valorNuevaTarjeta=int(self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta"))
             resultado=Main.tarjetaRegalo(self.venta,codigo,respuesta,compraTarjeta, valorNuevaTarjeta)
-            self.outputGHumana.config(state="normal")
-            self.outputGHumana.delete("1.0", "end")
-            self.outputGHumana.insert("1.0",resultado)
-            self.outputGHumana.config(state="disabled")
-            self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion5Facturacion)
+            self.outputFacturacion.config(state="normal")
+            self.outputFacturacion.delete("1.0", "end")
+            self.outputFacturacion.insert("1.0",resultado)
+            self.outputFacturacion.config(state="disabled")
+            self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion5Facturacion)
             self.siguiente.grid(row=4, column=3)
         else:
             tk.messagebox.showwarning("Faltan datos","Por favor llene todos los campos")
@@ -1248,107 +1200,106 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.cantidadBolsaMediana=0
         self.cantidadBolsaPequeña=0
         self.descripcionF1.config(text="""Se encarga de surtir bolsas de ser necesario.""")
-        self.frameCambianteGHumana.destroy()
+        self.freameCambianteFacturacion.destroy()
 
-        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
-        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
         
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Cantidad Bolsas" ,["Cantidad a comprar"],"Cantidad que desea Comprar", ["0"],[False],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer3Facturacion)
-        self.datosDespedido.grid(row=1, column=0, columnspan=2)      
-        self.outputGHumana.config(state="normal")
-        self.outputGHumana.delete("1.0", "end")
-        self.outputGHumana.insert("1.0","verificando...")
-        self.outputGHumana.config(state="disabled")
-        self.frameCambianteGHumana.rowconfigure(0, weight=1)
-        self.frameCambianteGHumana.rowconfigure(1, weight=10)
-        self.frameCambianteGHumana.columnconfigure(0, weight=2)
-        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Cantidad Bolsas" ,["Cantidad a comprar"],"Cantidad que desea Comprar", ["0"],[False],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer3Facturacion)
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)      
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.insert("1.0","verificando...")
+        self.outputFacturacion.config(state="disabled")
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
         Main.surtirBolsas(self, self.venta, 0)
    
     def modifInteraccion3Facturacion(self,insumo, mensaje):
         self.insumo=insumo
-        self.outputGHumana.config(state="normal")
-        self.outputGHumana.delete("1.0", "end")
-        self.outputGHumana.insert("1.0",mensaje)
-        self.outputGHumana.config(state="disabled")
-        self.datosDespedido.habilitarEntry("Cantidad a comprar", True)
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.insert("1.0",mensaje)
+        self.outputFacturacion.config(state="disabled")
+        self.datosEntradasFacturacion.habilitarEntry("Cantidad a comprar", True)
    
     def leer3Facturacion(self):
-        if self.datosDespedido.getValue("Cantidad a comprar")!=None:
-            cantidad=int(self.datosDespedido.getValue("Cantidad a comprar"))
+        if self.datosEntradasFacturacion.getValue("Cantidad a comprar")!=None:
+            cantidad=int(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))
             contador=0
             mensaje= Main.comprarBolsas(self, self.venta, self.insumo, cantidad)
-            self.outputGHumana.config(state="normal")
-            self.outputGHumana.delete("1.0", "end")
-            self.outputGHumana.insert("1.0",mensaje)
-            self.outputGHumana.config(state="disabled")
-            self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion4Facturacion)
+            self.outputFacturacion.config(state="normal")
+            self.outputFacturacion.delete("1.0", "end")
+            self.outputFacturacion.insert("1.0",mensaje)
+            self.outputFacturacion.config(state="disabled")
+            self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion4Facturacion)
             self.siguiente.grid(row=2, column=3)
-
-            
+    
     
     def interaccion2Facturacion(self):
         self.cantidadBolsaGrande=0
         self.cantidadBolsaMediana=0
         self.cantidadBolsaPequeña=0
         self.descripcionF1.config(text="""Se encarga de seleccionar bolsas para la compra.""")
-        self.frameCambianteGHumana.destroy()
+        self.freameCambianteFacturacion.destroy()
 
-        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
-        self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
 
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Bolsas Necesarias", ["0","0", "0"],[True,True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
-        self.datosDespedido.grid(row=1, column=0, columnspan=2)
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Bolsas Necesarias", ["0","0", "0"],[True,True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
         
-        self.frameCambianteGHumana.rowconfigure(0, weight=1)
-        self.frameCambianteGHumana.rowconfigure(1, weight=10)
-        self.frameCambianteGHumana.columnconfigure(0, weight=2)
-        self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
         self.revisarBolsasDisponibles()
         
     def anadirPrenda(self):
-        self.frameCambianteGHumana.destroy()
+        self.freameCambianteFacturacion.destroy()
 
-        self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
-        self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=1, column=0, sticky="nswe")
 
-        self.descripcionAñadirDespedido = tk.Label(self.frameCambianteGHumana, text="""La prenda que desea añadir y la cantidad a comprar""", relief="ridge", font=("Arial", 10))
+        self.descripcionAñadirDespedido = tk.Label(self.freameCambianteFacturacion, text="""La prenda que desea añadir y la cantidad a comprar""", relief="ridge", font=("Arial", 10))
         self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=4)
 
-        self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Añadir Prenda" ,["Prenda","Cantidad"],"valor", ["Camisa/Pantalon","0"],[True,False],ancho_entry=25, tamañoFuente=10, callbackAceptar= self.actualizarDatosAñadirSede())
-        self.datosDespedido.grid(row=1, column=0, columnspan=2)
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Añadir Prenda" ,["Prenda","Cantidad"],"valor", ["Camisa/Pantalon","0"],[True,False],ancho_entry=25, tamañoFuente=10, callbackAceptar= self.actualizarDatosAñadirSede())
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
 
-        self.pistas=tk.Label(self.frameCambianteGHumana, text=Main.posiblesSedes(), font=("Arial", 10))
+        self.pistas=tk.Label(self.freameCambianteFacturacion, text=Main.posiblesSedes(), font=("Arial", 10))
         self.pistas.grid(row=1, column=3)
-        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 10, "bold"), command=self.anadirOtraPrenda)
-        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 10, "bold"), command=self.datosDespedido.borrar)
+        self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10, "bold"), command=self.anadirOtraPrenda)
+        self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10, "bold"), command=self.datosEntradasFacturacion.borrar)
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
         
-        self.frameCambianteGHumana.rowconfigure(0, weight=1)
-        self.frameCambianteGHumana.rowconfigure(1, weight=10)
-        self.frameCambianteGHumana.columnconfigure(0, weight=2)
-        self.frameCambianteGHumana.columnconfigure(1, weight=2)
-        self.frameCambianteGHumana.columnconfigure(3, weight=4)
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(3, weight=4)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=10)
 
 #Este si
     def actualizarDatosEmpleadosFacturacion(self, evento):
-        if Main.verificarSedeExiste(self.datosDespedido.getValue("sede")):
-            self.datosDespedido.habilitarEntry("Vendedor", True)
-            self.datosDespedido.configurarCallBack("Vendedor", "<Return>", lambda e: self.actualizarDatosAñadirVendedor())
+        if Main.verificarSedeExiste(self.datosEntradasFacturacion.getValue("sede")):
+            self.datosEntradasFacturacion.habilitarEntry("Vendedor", True)
+            self.datosEntradasFacturacion.configurarCallBack("Vendedor", "<Return>", lambda e: self.actualizarDatosAñadirVendedor())
             empleadosPosibles="Vendedores posibles"
-            self.datosDespedido.habilitarEntry("Empleado caja", True)
-            self.datosDespedido.configurarCallBack("Empleado caja", "<Return>", lambda e: self.actualizarDatosAñadirCaja())
+            self.datosEntradasFacturacion.habilitarEntry("Empleado caja", True)
+            self.datosEntradasFacturacion.configurarCallBack("Empleado caja", "<Return>", lambda e: self.actualizarDatosAñadirCaja())
             asesoresPosibles="\n\nEmpleados de caja posibles"
             
-            self.sede = Main.sedePorNombre(self.datosDespedido.getValue("sede"))
+            self.sede = Main.sedePorNombre(self.datosEntradasFacturacion.getValue("sede"))
             empleados= Main.listaVendedores(self.sede)
             empleados2= Main.listaEncargados(self.sede)
             for empleado in empleados:
@@ -1361,15 +1312,15 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.pistas.config(text=empleadosPosibles+asesoresPosibles)
 
         else:
-            self.datosDespedido.habilitarEntry("sede", True)
-            self.datosDespedido.habilitarEntry("Vendedor", False)
-            self.datosDespedido.habilitarEntry("Empleado caja", False)            
+            self.datosEntradasFacturacion.habilitarEntry("sede", True)
+            self.datosEntradasFacturacion.habilitarEntry("Vendedor", False)
+            self.datosEntradasFacturacion.habilitarEntry("Empleado caja", False)            
             tk.messagebox.showwarning("La sede no existe", "Intente otra vez, luego de verificar el nombre de la sede")
     #Este si
     def actualizarDatosAñadirVendedor(self):
         try:
             excepcion = False
-            if self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is None:
+            if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor")) is None:
                 excepcion = True
             if excepcion:
                 raise ExcepcionEmpleadoNoEncontrado()
@@ -1381,7 +1332,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def actualizarDatosAñadirCaja(self):
         try:
             excepcion = False
-            if self.sede.getEmpleado(self.datosDespedido.getValue("Empleado Caja")) is None:
+            if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado Caja")) is None:
                 excepcion = True
             if excepcion:
                 raise ExcepcionEmpleadoNoEncontrado()
@@ -1399,22 +1350,22 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             excepcion = messagebox.askyesno(title = "Confirmación", message= e.mensaje_completo)           
         cliente=None
         for persona in Persona.getListaPersonas():
-            if persona.getNombre() == self.datosDespedido.getValue("Cliente"):
+            if persona.getNombre() == self.datosEntradasFacturacion.getValue("Cliente"):
                 cliente=persona
-        if (cliente is not None) and (self.sede is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor")) is not None) and (self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja")) is not None) :
+        if (cliente is not None) and (self.sede is not None) and (self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor")) is not None) and (self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja")) is not None) :
             self.cliente=cliente
-            self.vendedor=self.sede.getEmpleado(self.datosDespedido.getValue("Vendedor"))
-            self.caja=self.sede.getEmpleado(self.datosDespedido.getValue("Empleado caja"))
+            self.vendedor=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor"))
+            self.caja=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja"))
             prenda=None
             
             try: 
-                if not (self.datosDespedido.getValue("Prenda").lower() == "camisa" or self.datosDespedido.getValue("Prenda").lower() == "pantalon"):
-                    raise ExcepcionPrendaNoExistente(self.datosDespedido.getValue("Prenda"))
+                if not (self.datosEntradasFacturacion.getValue("Prenda").lower() == "camisa" or self.datosEntradasFacturacion.getValue("Prenda").lower() == "pantalon"):
+                    raise ExcepcionPrendaNoExistente(self.datosEntradasFacturacion.getValue("Prenda"))
             except ExcepcionPrendaNoExistente as b:
                     messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
             else:
                 for prendai in Sede.getPrendasInventadasTotal():
-                    if (prendai.getNombre().lower()==self.datosDespedido.getValue("Prenda").lower()):
+                    if (prendai.getNombre().lower()==self.datosEntradasFacturacion.getValue("Prenda").lower()):
                         prenda = prendai
                         break
                     elif (prenda == None):
@@ -1422,40 +1373,40 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     
                 if prenda not in self.listaPrendas:
                     self.listaPrendas.append(prenda)
-                    self.cantidadPrendas.append(int(self.datosDespedido.getValue("Cantidad")))
+                    self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))
                 else:
-                    self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosDespedido.getValue("Cantidad"))
+                    self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosEntradasFacturacion.getValue("Cantidad"))
                 if excepcion:
                     #self.pantallaBaseFacturacion(True)
-                    self.datosDespedido.habilitarEntry("Cliente", False)
-                    self.datosDespedido.habilitarEntry("sede", False)
-                    self.datosDespedido.habilitarEntry("Vendedor", False)
-                    self.datosDespedido.habilitarEntry("Empleado caja", False)
+                    self.datosEntradasFacturacion.habilitarEntry("Cliente", False)
+                    self.datosEntradasFacturacion.habilitarEntry("sede", False)
+                    self.datosEntradasFacturacion.habilitarEntry("Vendedor", False)
+                    self.datosEntradasFacturacion.habilitarEntry("Empleado caja", False)
                 else: 
                     self.venta=Main.vender(self.cliente,self.sede,self.vendedor,self.caja,self.listaPrendas,self.cantidadPrendas)
-                    self.outputGHumana.config(state="normal")
-                    self.outputGHumana.delete("1.0", "end")
-                    self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
-                    self.outputGHumana.config(state="disabled")
-                    self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion2Facturacion)
+                    self.outputFacturacion.config(state="normal")
+                    self.outputFacturacion.delete("1.0", "end")
+                    self.outputFacturacion.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
+                    self.outputFacturacion.config(state="disabled")
+                    self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion2Facturacion)
                     self.siguiente.grid(row=2, column=2)
         else:
-            self.outputGHumana.config(state="normal")
-            self.outputGHumana.delete("1.0", "end")
-            self.outputGHumana.insert("1.0", "Datos inválidos", "center")
-            self.outputGHumana.config(state="disabled")
+            self.outputFacturacion.config(state="normal")
+            self.outputFacturacion.delete("1.0", "end")
+            self.outputFacturacion.insert("1.0", "Datos inválidos", "center")
+            self.outputFacturacion.config(state="disabled")
 
     def leer2Facturacion(self):
-        self.cantidadBolsaGrande=int(self.datosDespedido.getValue("Grande"))
-        self.cantidadBolsaMediana=int(self.datosDespedido.getValue("Mediana"))
-        self.cantidadBolsaPequeña=int(self.datosDespedido.getValue("Pequeña"))
+        self.cantidadBolsaGrande=int(self.datosEntradasFacturacion.getValue("Grande"))
+        self.cantidadBolsaMediana=int(self.datosEntradasFacturacion.getValue("Mediana"))
+        self.cantidadBolsaPequeña=int(self.datosEntradasFacturacion.getValue("Pequeña"))
         revisionBolsa= self.verificarCantidadBolsa()
-        self.outputGHumana.config(state="normal")
-        self.outputGHumana.delete("1.0", "end")
-        self.outputGHumana.insert("1.0", revisionBolsa, "center")
-        self.outputGHumana.config(state="disabled")
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.insert("1.0", revisionBolsa, "center")
+        self.outputFacturacion.config(state="disabled")
         if revisionBolsa=="Se tienen suficientes bolsas para empacar todos los artículos":
-            self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=lambda: self.interaccion3Facturacion())
+            self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=lambda: self.interaccion3Facturacion())
             self.siguiente.grid(row=4, column=3)
 
             
@@ -1463,37 +1414,37 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def revisarBolsasDisponibles(self):
         self.bp, self.bm, self.bg = Main.verificarBolsas(self.venta)
         if self.bg>0:
-            self.datosDespedido.habilitarEntry("Grande", True)
+            self.datosEntradasFacturacion.habilitarEntry("Grande", True)
         if self.bm>0:
-            self.datosDespedido.habilitarEntry("Mediana", True)
+            self.datosEntradasFacturacion.habilitarEntry("Mediana", True)
         if self.bp>0:
-            self.datosDespedido.habilitarEntry("Pequeña", True)
-        self.outputGHumana.config(state="normal")
-        self.outputGHumana.delete("1.0", "end")
-        self.outputGHumana.insert("1.0", f"Hay máximo {self.bg} bolsas grandes, {self.bm} bolsas medianas y {self.bp} bolsas pequeñas,", "center")     
-        self.outputGHumana.config(state="disabled")
+            self.datosEntradasFacturacion.habilitarEntry("Pequeña", True)
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.insert("1.0", f"Hay máximo {self.bg} bolsas grandes, {self.bm} bolsas medianas y {self.bp} bolsas pequeñas,", "center")     
+        self.outputFacturacion.config(state="disabled")
 
     def verificarCantidadBolsa(self):
         
         if self.cantidadBolsaGrande<=self.bg or self.cantidadBolsaMediana<=self.bm or self.cantidadBolsaPequeña<=self.bp:
             BolsasFaltantes=Main.cantidadActualBolsas(self.venta, self.cantidadBolsaGrande, self.cantidadBolsaMediana, self.cantidadBolsaPequeña)
-            self.outputGHumana.config(state="normal")
-            self.outputGHumana.delete("1.0", "end")
+            self.outputFacturacion.config(state="normal")
+            self.outputFacturacion.delete("1.0", "end")
             self.bolsas+=self.cantidadBolsaGrande+ self.cantidadBolsaMediana+ self.cantidadBolsaPequeña
             if BolsasFaltantes>0:
                 bolasNecesarias=f"Se necesitan {BolsasFaltantes} bolsas más para empacar todos los artículos"
-                self.datosDespedido.habilitarEntry("Grande", True)
-                self.datosDespedido.habilitarEntry("Mediana", True)
-                self.datosDespedido.habilitarEntry("Pequeña", True)                
+                self.datosEntradasFacturacion.habilitarEntry("Grande", True)
+                self.datosEntradasFacturacion.habilitarEntry("Mediana", True)
+                self.datosEntradasFacturacion.habilitarEntry("Pequeña", True)                
             else:
                 bolasNecesarias="Se tienen suficientes bolsas para empacar todos los artículos"
-                self.datosDespedido.habilitarEntry("Grande", False)
-                self.datosDespedido.habilitarEntry("Mediana", False)
-                self.datosDespedido.habilitarEntry("Pequeña", False)
-            self.outputGHumana.config(state="disabled")   
+                self.datosEntradasFacturacion.habilitarEntry("Grande", False)
+                self.datosEntradasFacturacion.habilitarEntry("Mediana", False)
+                self.datosEntradasFacturacion.habilitarEntry("Pequeña", False)
+            self.outputFacturacion.config(state="disabled")   
             return bolasNecesarias
         else:
-            self.datosDespedido.borrar()
+            self.datosEntradasFacturacion.borrar()
             
 def pasarAVentanaPrincipal():
     ventana = startFrame()
