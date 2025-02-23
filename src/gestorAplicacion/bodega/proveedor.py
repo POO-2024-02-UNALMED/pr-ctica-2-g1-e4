@@ -26,7 +26,7 @@ class Proveedor:
     def costoDeLaCantidad(insumo: Insumo, cantidad: int) -> int:
         precioTotal = 0
         for proveedor in Proveedor.listaProveedores:
-            if proveedor.tipoInsumo == insumo:
+            if proveedor.tipoInsumo.getNombre() == insumo.getNombre():
                 bolsa = insumo  # Assuming Insumo is a Bolsa in this context
                 precioTotal = (proveedor.precio - round(proveedor.precio * proveedor.descuento * bolsa.getCapacidadMaxima())) * cantidad
         return precioTotal
