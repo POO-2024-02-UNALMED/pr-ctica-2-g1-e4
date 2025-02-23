@@ -353,7 +353,6 @@ class Main:
                     prediccionC = proyeccion * (1 - cls.pesimismoPorSede[idxSede])
                     Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionC)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
-                    print(Main.texto)
                     for i, insumo in enumerate(prenda.getInsumo()):
                         cantidad = math.ceil(Camisa.getCantidadInsumo()[i] * prediccionC)
                         if insumo in insumoXSede:
@@ -378,6 +377,7 @@ class Main:
         cls.indexSedeCoordinarBodegas=0
         cls.planDeCompra=[]
         cls.productosOpcionTransferencia=[]
+        cls.infoPostCoordinacion=""
         
     productosOpcionTransferencia=[] # Generado en coordinarBodega
     # contine listas con indice 0 el insumo, indice 1 indice del insumo en la bodega, indice 2 sede donadora, indice 3 precio indice 4 cantidad faltante
@@ -440,8 +440,11 @@ class Main:
                 criterios.append(f"Transferir {producto[4]} {producto[0].getNombre()} de {Sede.getNombre(producto[2])}, o comprar por ${producto[3]}")
             return criterios
 
+    infoPostCoordinacion=""
+
     @classmethod
     def siguienteSedeCoordinarBodegas(cls,respuestas)->bool:
+        cls.infoPostCoordinacion=""
         for idxRespuesta,respuesta in enumerate(respuestas):
             insumoTransferible:Insumo=cls.productosOpcionTransferencia[idxRespuesta][0]
             cantidad=cls.productosOpcionTransferencia[idxRespuesta][4]
@@ -453,6 +456,7 @@ class Main:
                 if restante>0:
                     cls.planDeCompra[cls.indexSedeCoordinarBodegas][0].append(insumoTransferible)
                     cls.planDeCompra[cls.indexSedeCoordinarBodegas][1].append(restante)
+                    cls.infoPostCoordinacion+=f"Se transfirieron {cantidad-restante} {insumoTransferible.getNombre()} de {cls.productosOpcionTransferencia[idxRespuesta][2].getNombre()}, faltaron {restante}, esa cantidad debe comprarse.\n"
             else:
                 pass #EXCEPCION
         cls.infoTablaInsumos.clear()

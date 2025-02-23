@@ -42,20 +42,21 @@ class Sede:
         cantidadDisponible = min(donadora.cantidadInsumosBodega[idxInsumo], cantidadSolicitada)
         ajusteStock = Insumo.getPrecioStockTotal() - (insumo.getPrecioIndividual() * cantidadSolicitada)
         Insumo.setPrecioStockTotal(ajusteStock)
-        if (cantidadDisponible - cantidadSolicitada) == 0:
+        if (cantidadDisponible - cantidadSolicitada) == 0: # Si hay exactamente la cantidad solicitada
             donadora.cantidadInsumosBodega[idxInsumo] = 0
-        elif (cantidadDisponible - cantidadSolicitada) < 0:
-            restante = (cantidadDisponible - cantidadSolicitada) * -1
+        elif (cantidadDisponible - cantidadSolicitada) < 0: # Si hay menos de la cantidad solicitada
+            restante = (cantidadSolicitada - cantidadDisponible) 
             donadora.cantidadInsumosBodega[idxInsumo] = 0
         else:
             donadora.cantidadInsumosBodega[idxInsumo] = (cantidadDisponible - cantidadSolicitada)
-        cls.anadirInsumo(insumo, beneficiaria, cantidadSolicitada - cantidadDisponible)
+        cantidadATransferir = cantidadSolicitada if restante<= 0 else cantidadDisponible
+        cls.anadirInsumo(insumo, beneficiaria, cantidadATransferir)
         return restante
 
     @classmethod
     def anadirInsumo(cls, insumo, sede, cantidad):
         for idxInsumoEnBodega in range(len(sede.getListaInsumosBodega())):
-            if insumo == sede.getListaInsumosBodega()[idxInsumoEnBodega]:
+            if insumo.getNombre() == sede.getListaInsumosBodega()[idxInsumoEnBodega].getNombre():
                 cantidadActual = sede.getCantidadInsumosBodega()[idxInsumoEnBodega]
                 sede.cantidadInsumosBodega[idxInsumoEnBodega] = cantidadActual + cantidad
                 ajusteStock = Insumo.getPrecioStockTotal() + (insumo.getPrecioIndividual() * cantidad)

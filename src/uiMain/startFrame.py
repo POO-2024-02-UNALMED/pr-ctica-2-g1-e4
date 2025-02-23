@@ -668,6 +668,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def tablaInsumos(self,infoTabla):
         if self.frameCambianteInsumos is not None:
             self.frameCambianteInsumos.destroy()
+        self.descripcionF2.config(text=Main.infoPostCoordinacion+"\nEsta tabla le muestra los insumos necesarios para producir, y de donde se pueden sacar.")
+        
         self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
         self.elementosTabla = []
@@ -702,7 +704,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.frameCambianteInsumos.destroy()
         self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
-
+        self.descripcionF2.config(text="Estos insumos no estan en esta sede, pero pueden traerse de otra o comprarse.")
         if len(criterios)>0:
             self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
             self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
