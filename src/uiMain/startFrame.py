@@ -1010,7 +1010,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
         self.frameCambianteGHumana.grid(row=2, column=0, sticky="nswe")
 
-        self.outputGHumana=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2)
+        self.outputGHumana=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2, bg="#f0f0f0")
         self.outputGHumana.grid(row=3, column=0, sticky="nswe")
         
         self.framePrincipal.columnconfigure(0, weight=1)
@@ -1090,8 +1090,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.Clientes.config(text=clientesPosibles)
         self.pistas=tk.Label(self.frameCambianteGHumana, text=Main.posiblesSedes(), font=("Arial", 10))
         self.pistas.grid(row=1, column=4)
-        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.leer1Facturacion)
-        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
+        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 10, "bold"), command=self.leer1Facturacion)
+        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 10, "bold"), command=self.datosDespedido.borrar)
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
@@ -1126,11 +1126,11 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.siguiente.grid(row=1, column=0)       
           
         self.frameCambianteGHumana.rowconfigure(0, weight=10)
-        self.frameCambianteGHumana.rowconfigure(1, weight=10)       
+        self.frameCambianteGHumana.rowconfigure(1, weight=2)       
         self.frameCambianteGHumana.columnconfigure(0, weight=10)      
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
-        self.framePrincipal.rowconfigure(2, weight=1)
+        self.framePrincipal.rowconfigure(2, weight=10)
 
 
     def interaccion5Facturacion(self):
@@ -1150,8 +1150,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.datosDespedido.configurarCallBack("Transferir fondos a la cuenta principal", "<Return>", self.transferirDinero)
         self.datosDespedido.grid(row=1, column=0, columnspan=2)
         
-        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.leer5Facturacion)
-        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
+        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 10,  "bold"), command=self.leer5Facturacion)
+        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 10,  "bold"), command=self.datosDespedido.borrar)
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)        
@@ -1160,6 +1160,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.rowconfigure(1, weight=10)
         self.frameCambianteGHumana.columnconfigure(0, weight=2)
         self.frameCambianteGHumana.columnconfigure(1, weight=2)
+        self.frameCambianteGHumana.columnconfigure(3, weight=2)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
 
@@ -1179,10 +1180,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 if self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower()=="si" and porcentaje>=20 and porcentaje <=60:
                     mensajeFinal,mensaje=Main.ingresoEmpresa(self.venta, self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower(), porcentaje)
                 else:
-                    mensajeFinal="No se transfirió el dinero a la cuenta principal."
-                    mensaje=mensajeFinal
-                self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
-                self.siguiente.grid(row=4, column=3)   
+                    mensajeFinal=Main.ingresoEmpresa(self.venta, self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower(), 0)
+                    mensaje="No se transfirió el dinero a la cuenta principal."
+                self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
+                self.siguiente.grid(row=2, column=3)   
             self.outputGHumana.config(state="normal")
             self.outputGHumana.delete("1.0", "end")
             self.outputGHumana.insert("1.0",mensaje)
@@ -1310,8 +1311,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.pistas=tk.Label(self.frameCambianteGHumana, text=Main.posiblesSedes(), font=("Arial", 10))
         self.pistas.grid(row=1, column=3)
-        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 12, "bold"), command=self.anadirOtraPrenda)
-        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 12, "bold"), command=self.datosDespedido.borrar)
+        self.aceptar=tk.Button(self.frameCambianteGHumana, text="Aceptar", font=("Arial", 10, "bold"), command=self.anadirOtraPrenda)
+        self.botonBorrarSeleccion=tk.Button(self.frameCambianteGHumana, text="Borrar", font=("Arial", 10, "bold"), command=self.datosDespedido.borrar)
 
         self.aceptar.grid(row=2, column=0)
         self.botonBorrarSeleccion.grid(row=2, column=1)
@@ -1423,7 +1424,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     self.outputGHumana.delete("1.0", "end")
                     self.outputGHumana.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
                     self.outputGHumana.config(state="disabled")
-                    self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=self.interaccion2Facturacion)
+                    self.siguiente=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion2Facturacion)
                     self.siguiente.grid(row=2, column=2)
         else:
             self.outputGHumana.config(state="normal")

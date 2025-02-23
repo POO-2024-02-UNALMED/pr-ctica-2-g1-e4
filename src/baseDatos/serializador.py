@@ -1,4 +1,5 @@
 import pickle
+from src.gestorAplicacion.administracion.deuda import Deuda
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.banco import Banco
 from src.gestorAplicacion.persona import Persona
@@ -10,8 +11,8 @@ from src.gestorAplicacion.venta import Venta
 def serializar():
     archivo = open("src/baseDatos/persistencia.txt", "wb")
     pickle.dump((Sede.getListaEmpleadosTotal(), Sede.getPrendasInventadasTotal(), Sede.getListaSedes(),
-                 Banco.getListaBancos(), Banco.getCuentaPrincipal(),
-                 Persona.getListaPersonas(),
-                 Venta.getCodigosRegalo(), Venta.getMontosRegalo(),
-                  Proveedor.getListaProveedores()), archivo)
+                Banco.getListaBancos(), Banco.getCuentaPrincipal(),
+                Persona.getListaPersonas(),
+                Venta.getCodigosRegalo(), Venta.getMontosRegalo(),
+                Proveedor.getListaProveedores()), Deuda.getListaDeudas(), archivo)
     archivo.close()

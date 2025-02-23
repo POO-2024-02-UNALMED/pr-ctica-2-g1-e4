@@ -1,4 +1,5 @@
 import pickle
+from src.gestorAplicacion.administracion.deuda import Deuda
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.banco import Banco
 from src.gestorAplicacion.persona import Persona
@@ -15,7 +16,7 @@ def deserializar():
      listaBancos, cuentaPrincipal,
      listaPersonas,
      codigosRegalo, montosRegalo,
-     listaProveedores) = pickle.load(archivo)
+     listaProveedores,listaDeudas) = pickle.load(archivo)
     
     Sede.setListaEmpleadosTotal(listaEmpleadosTotal)
     Sede.setPrendasInventadasTotal(prendasInventadasTotal)
@@ -26,5 +27,6 @@ def deserializar():
     Venta.setCodigosRegalo(codigosRegalo)
     Venta.setMontosRegalo(montosRegalo)
     Proveedor.setListaProveedores(listaProveedores)
+    Deuda.setListaDeudas(listaDeudas)
     
     archivo.close()
