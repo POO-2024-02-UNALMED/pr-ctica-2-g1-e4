@@ -370,6 +370,7 @@ class Main:
 
     @classmethod
     def prepararCoordinacionBodegas(cls,ventanaPrincipal)->None:
+        cls.infoTablaInsumos=[]
         cls.indexSedeCoordinarBodegas=0
         cls.planDeCompra=[]
         cls.productosOpcionTransferencia=[]
@@ -377,6 +378,7 @@ class Main:
     productosOpcionTransferencia=[] # Generado en coordinarBodega
     # contine listas con indice 0 el insumo, indice 1 indice del insumo en la bodega, indice 2 sede donadora, indice 3 precio indice 4 cantidad faltante
     planDeCompra=[] # Generado en coordinarBodega
+    infoTablaInsumos=[] # Lista de filas, cada una con insumo, cantidad en bodega,cantidad requerida, cantidad a conseguir y medio para conseguirlo.
 
     @classmethod
     def getSedeActualCoordinarBodegas(cls)->Sede:
@@ -388,10 +390,8 @@ class Main:
 
     # Interacción 2 
     @classmethod
-    def coordinarBodega(cls, ventanaPrincipal): # Antes coordinarBodegas
-        from src.uiMain.startFrame import startFrame
+    def coordinarBodega(cls): # Antes coordinarBodegas
         insumoFieldFrame = []
-        habilitado = []
         
         insumoFieldFrame.clear()
         insumosNecesarios = cls.planificarProduccion[cls.indexSedeCoordinarBodegas][0]
@@ -407,23 +407,34 @@ class Main:
             insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
             (hayEnBodega,indiceEnBodega) = Sede.verificarProductoBodega(i, s)
             idxInsumo = insumosNecesarios.index(i)
+            filaTabla=[i.getNombre(),0,cantidadesNecesarias[idxInsumo],0]
             cantidadAConseguir=cantidadesNecesarias[idxInsumo]
             if hayEnBodega:
-                 cantidadAConseguir= max(cantidadesNecesarias[idxInsumo] - Sede.getCantidadInsumosBodega(s)[indiceEnBodega], 0)
+                cantidadEnBodega= Sede.getCantidadInsumosBodega(s)[indiceEnBodega]
+                cantidadAConseguir= max(cantidadesNecesarias[idxInsumo] -cantidadEnBodega, 0)
+                filaTabla[3]=cantidadEnBodega
+                filaTabla[1]=cantidadEnBodega
             if cantidadAConseguir>0:
                 productoEnOtraSede = Sede.verificarProductoOtraSede(i,cls.getSedeActualCoordinarBodegas())
 
                 if productoEnOtraSede[0]:
                     cls.productosOpcionTransferencia.append([i, productoEnOtraSede[1], productoEnOtraSede[2], productoEnOtraSede[3],cantidadAConseguir])
+                    filaTabla.append("Comprar o transferir")
                 else:
                     productosAComprar.append(i)
                     cantidadesAComprar.append(cantidadAConseguir)
+                    filaTabla.append("Comprar")
+            else:
+                filaTabla.append("¡Lo hay!")
+            cls.infoTablaInsumos.append(filaTabla)
         cls.planDeCompra.append([productosAComprar, cantidadesAComprar])
         
-        criterios=[]
-        for producto in cls.productosOpcionTransferencia:
-            criterios.append(f"Transferir {producto[4]} {producto[0].getNombre()} de {Sede.getNombre(producto[2])}, o comprar por ${producto[3]}")
-        return criterios
+    @classmethod
+    def getCriteriosCoordinarBodegas(cls):
+            criterios=[]
+            for producto in cls.productosOpcionTransferencia:
+                criterios.append(f"Transferir {producto[4]} {producto[0].getNombre()} de {Sede.getNombre(producto[2])}, o comprar por ${producto[3]}")
+            return criterios
 
     @classmethod
     def siguienteSedeCoordinarBodegas(cls,respuestas)->bool:

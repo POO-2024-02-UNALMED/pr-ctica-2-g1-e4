@@ -595,44 +595,46 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         from src.uiMain.main import Main
         self.framePrincipal =  tk.Frame(self.insumos)
         self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
-        
-        self.frame1 = tk.Frame(self.framePrincipal, height=150)
-        self.frame1.pack(side="top", fill="x")
 
-        self.tituloF2 = tk.Label(self.frame1, text="Surtir Insumos", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-        self.tituloF2.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+        self.tituloF2 = tk.Label(self.framePrincipal, text="Surtir Insumos", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+        self.tituloF2.grid(row=0, column=0, sticky="nswe")
 
             ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-        self.descripcionF2 = tk.Label(self.frame1, 
+        self.descripcionF2 = tk.Label(self.framePrincipal, 
                             text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", 
                             relief="ridge", wraplength=600)
-        self.descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
+        self.descripcionF2.grid(row=1, column=0, sticky="nswe")
 
         self.pesimismo(Main.datosParaFieldPesimismo())
+
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=3)
+        self.framePrincipal.rowconfigure(2, weight=10)
+        self.framePrincipal.columnconfigure(0, weight=1)
 
     # Interacción 1
     def pesimismo(self, paraField):
         from src.uiMain import fieldFrame
         (criterios, valores) = paraField
-        self.frame2 = tk.Frame(self.framePrincipal, bg="light gray")
-        self.frame2.pack(anchor="s", fill="x")
+        self.frameCambianteInsumos = tk.Frame(self.framePrincipal, bg="light gray")
+        self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
             
-        self.fieldPesimismo = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
+        self.fieldPesimismo = fieldFrame.FieldFrame(self.frameCambianteInsumos, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
                                            criterios,"El porcentaje de pesimismo es de", valores, [True, True], 20, 
                                            False, 10, True, False, lambda : self.prediccion())
-        self.fieldPesimismo.pack(anchor="s",  expand=True, fill="both")
+        self.fieldPesimismo.grid(column=0, row=0, sticky="nswe")
+        self.frameCambianteInsumos.columnconfigure(0, weight=1)
+        self.frameCambianteInsumos.rowconfigure(0, weight=1)
 
 
     def prediccion(self):
-        if self.framePrediccion!=None:
-            self.framePrediccion.destroy()
         
         pesimismos=self.fieldPesimismo.obtenerTodosLosValores()
         self.retorno = Main.planificarProduccion(self,pesimismos)
         self.textoPrediccion = Main.texto
-        self.framePrediccion = tk.Frame(self.framePrincipal, bg="#f0f0f0")
-        self.framePrediccion.pack(anchor="s",  expand=True, fill="both",pady=5)
-        prediccion = tk.Text(self.framePrediccion, font=("Arial", 10), bg="#f0f0f0", relief="flat")
+        self.framePrediccion = tk.Frame(self.frameCambianteInsumos, bg="#f0f0f0")
+        self.framePrediccion.grid(row=1, column=0, sticky="nswe")
+        prediccion = tk.Text(self.framePrediccion, font=("Arial", 10), bg="#f0f0f0", relief="flat",height=7)
         mensaje = ""
 
         for caso in self.textoPrediccion:
@@ -641,29 +643,63 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         prediccion.tag_add("center", "1.0", "end")
         prediccion.tag_config("center", justify="center")
         prediccion.insert("1.0", mensaje,"center")
-        prediccion.place(relx=0.5, rely=0.5, relwidth=1, relheight=0.7,anchor="c")
+        prediccion.grid(row=0, column=0, sticky="nswe",columnspan=2)
         prediccion.config(state="disabled")
 
         label3 = tk.Label(self.framePrediccion, text="Según dicha predicción se hará la compra de los insumos")
-        label3.place(relx=0.4, rely=0.8, relwidth=1, relheight=0.1, anchor="c")    
+        label3.grid(row=1, column=0, sticky="nswe")    
         aceptar = tk.Button(self.framePrediccion, text="Siguiente", command=lambda: self.pasarAInteraccion2())
-        aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.2, anchor="c")   
+        aceptar.grid(row=1, column=1, sticky="nswe")
+        self.framePrediccion.rowconfigure(0, weight=1)
+        self.framePrediccion.columnconfigure(0, weight=1)
+        self.frameCambianteInsumos.rowconfigure(0, weight=1)
+        self.frameCambianteInsumos.rowconfigure(1, weight=1)
 
     def pasarAInteraccion2(self):
         self.contenedorFieldTransferencia=None
         Main.prepararCoordinacionBodegas(self)
-        self.criterios = Main.coordinarBodega(self)
-        self.transferir(self.criterios,Main.getNombreSedeActualCoordinacion())
+        Main.coordinarBodega()
+        self.tablaInsumos(Main.infoTablaInsumos)
 
+    def tablaInsumos(self,infoTabla):
+        if self.frameCambianteInsumos is not None:
+            self.frameCambianteInsumos.destroy()
+        self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
+        self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
+        self.elementosTabla = []
+        idxFila = 1
+        encabezados=["Insumo", "Cantidad en bodega", "Cantidad necesaria", "Cantidad a conseguir", "Modo para conseguir"]
+        self.encabezadosTabla = []
+        for i in range(len(encabezados)):
+            encabezado = tk.Label(self.frameCambianteInsumos, text=encabezados[i], font=("Arial", 10))
+            self.encabezadosTabla.append(encabezado)
+            encabezado.grid(row=0, column=i)
+        
+        for fila in infoTabla:
+            for i in range(len(fila)):
+                elemento=tk.Label(self.frameCambianteInsumos, text=fila[i], font=("Arial", 10))
+                self.elementosTabla.append(elemento)
+                elemento.grid(row=idxFila, column=i)
+            self.frameCambianteInsumos.rowconfigure(idxFila, weight=1)
+            idxFila += 1
+        
+        self.seguirDeTabla=tk.Button(self.frameCambianteInsumos, text="Elegir sobre transferencias", command=lambda: self.transferir(Main.getCriteriosCoordinarBodegas(), Main.getNombreSedeActualCoordinacion()))
+        self.seguirDeTabla.grid(row=idxFila+1, column=0)
+        self.frameCambianteInsumos.rowconfigure(idxFila+1, weight=1)
+        self.frameCambianteInsumos.columnconfigure(0, weight=1) #insumo
+        self.frameCambianteInsumos.columnconfigure(1, weight=1) # cantidad en bodega
+        self.frameCambianteInsumos.columnconfigure(2, weight=1) # cantidad necesaria
+        self.frameCambianteInsumos.columnconfigure(3, weight=1) # cantidad a conseguir
+        self.frameCambianteInsumos.columnconfigure(4, weight=1) # modo para conseguir
 
     # Interacción 2
     def transferir(self, criterios, sede):
-        self.frame2.destroy()
-        self.framePrediccion.destroy()
-        if self.contenedorFieldTransferencia is not None:
-            self.contenedorFieldTransferencia.destroy()
-        
-        self.contenedorFieldTransferencia = tk.Frame(self.framePrincipal)
+        if self.frameCambianteInsumos is not None:
+            self.frameCambianteInsumos.destroy()
+        self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
+        self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
+
+        self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
         self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
 
         self.fieldTransferencia = fieldFrame.FieldFrame(self.contenedorFieldTransferencia, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, callbackAceptar=lambda : self.otraSede(),aceptar=True, borrar=True)
@@ -673,9 +709,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
         if existeOtraSede:
             self.criterios = Main.coordinarBodega(self)
-            self.transferir(self.criterios,Main.getNombreSedeActualCoordinacion())
+            self.tablaInsumos(Main.infoTablaInsumos)
         else:
-            self.frame2.destroy()
+            self.frameCambianteInsumos.destroy()
             self.contenedorFieldTransferencia.destroy()
 
 
