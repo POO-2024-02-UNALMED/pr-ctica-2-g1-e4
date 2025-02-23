@@ -132,7 +132,7 @@ class startFrame(tk.Tk):
 #---------------------------------------------------------Frame Inicial------------------------------------------------------------------------
 
     def crearFrameInicial(self)->tk.Frame:
-        self.frameInicial=tk.Frame(self, bg="red")
+        self.frameInicial=tk.Frame(self)
         self.createWidgetsFrameInicial()
         self.frameInicial.pack(fill="both", expand=True, padx=7, pady=7)
         return self.frameInicial
@@ -1248,7 +1248,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.columnconfigure(1, weight=2)
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
-        Main.surtirBolsas(self, self.venta)
+        Main.surtirBolsas(self, self.venta, 0)
    
     def modifInteraccion3Facturacion(self,insumo, mensaje):
         self.insumo=insumo
@@ -1261,13 +1261,15 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def leer3Facturacion(self):
         if self.datosDespedido.getValue("Cantidad a comprar")!=None:
             cantidad=int(self.datosDespedido.getValue("Cantidad a comprar"))
+            contador=0
             mensaje= Main.comprarBolsas(self, self.venta, self.insumo, cantidad)
             self.outputGHumana.config(state="normal")
             self.outputGHumana.delete("1.0", "end")
             self.outputGHumana.insert("1.0",mensaje)
             self.outputGHumana.config(state="disabled")
-            self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion5Facturacion)
-            self.siguiente.grid(row=4, column=3)
+            self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion4Facturacion)
+            self.siguiente.grid(row=2, column=3)
+
             
     
     def interaccion2Facturacion(self):

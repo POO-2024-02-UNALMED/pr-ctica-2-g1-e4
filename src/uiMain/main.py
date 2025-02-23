@@ -20,6 +20,7 @@ import threading
 #endregion
 
 class Main:
+    contadorBolsas=100
     fecha:Fecha=None
     proveedorBdelmain=None
     evento_ui = threading.Event()
@@ -658,26 +659,21 @@ class Main:
         for i in range(bolsasAPedir):
             capacidadBolsa = 0
             if cantidadBolsaGrande > 0:
-                print("652")
                 capacidadBolsa = 8
                 cantidadBolsaGrande -= 1
             elif cantidadBolsaMediana > 0:
-                print("656")
                 cantidadBolsaMediana -= 1
                 capacidadBolsa = 3
             elif cantidadBolsaPequeña >0:
-                print("660")
                 capacidadBolsa = 1
                 cantidadBolsaPequeña -= 1
 
             cantidadDisponible = 0
             capacidadTotal += capacidadBolsa
-            print(capacidadTotal)
             tamañoListaInsumos=len(sede.getListaInsumosBodega())
             for i in range(tamañoListaInsumos):
                 insumo = sede.getListaInsumosBodega()[i]
                 if isinstance(insumo, Bolsa):
-                    print("Bolsa encontrada!")
                     if insumo.getCapacidadMaxima() == capacidadBolsa:
                         cantidadInsumosBodega=sede.getCantidadInsumosBodega()
                         cantidadDisponible += cantidadInsumosBodega[i]
@@ -691,35 +687,48 @@ class Main:
         venta.setMontoPagado(totalVenta)
         return debeBolsas        
 
-    def surtirBolsas(ventana, venta):
+    def surtirBolsas(ventana, venta,intento):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
-        ventana.interaccion3Facturacion(insumo, mensaje)
         nombreBolsa = "Bolsa"
-        for revisarSede in Sede.getListaSedes():
-            listaInsumos = revisarSede.getListaInsumosBodega()
-            cantidadInsumos = revisarSede.getCantidadInsumosBodega()
-            for i in range(len(listaInsumos)):
-                insumo = listaInsumos[i]
-                if isinstance(insumo, Bolsa) and cantidadInsumos[i] < 10:
-                    mensaje=f"La sede {revisarSede.getNombre()} tiene menos de 10 bolsas en stock (Cantidad: {cantidadInsumos[i]})."
-                    for e in range(len(listaInsumos)):
-                        insumo = listaInsumos[e]
-                        if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
-                            print("692")                        
-                            ventana.modifInteraccion3Facturacion(insumo, mensaje)
+        bolsaMenor=0
+        revisarSede=venta.getSede()
+        for i in range(len(revisarSede.getListaInsumosBodega())):
+            insumo=revisarSede.getListaInsumosBodega()[i]
+            if isinstance(insumo, Bolsa):
+                if bolsaMenor==0:
+                    bolsaMenor=revisarSede.getCantidadInsumosBodega()[i]
+                elif  revisarSede.getCantidadInsumosBodega()[i]<=bolsaMenor:
+                    bolsaMenor=revisarSede.getCantidadInsumosBodega()[i]
+                    break
+        listaInsumos = Sede.getListaInsumosBodega(insumo.getSede())
+        if bolsaMenor < 10:
+            mensaje=f"La sede {revisarSede.getNombre()} tiene menos de 10 bolsas en stock (Cantidad: {bolsaMenor})."
+            for e in range(len(listaInsumos)):
+                insumo = listaInsumos[e]
+                if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:                   
+                    ventana.modifInteraccion3Facturacion(insumo, mensaje)
+        else:
+            ventana.modifInteraccion3Facturacion(insumo, "No hay necesidad de comprar")
                             
-    def comprarBolsas(ventana, venta, insumo, cantidadComprar):
+    def comprarBolsas(ventana, venta, insumo, cantidadComprar):                      
         listaBolsas=[]
+        mensaje=""
         nombreBolsa=insumo.getNombre()
         sede = venta.getSede()   
         cantidadInsumosBodega = sede.getCantidadInsumosBodega()     
-        banco = sede.getCuentaSede()        
-        costoCompra = Proveedor.costoDeLaCantidad(insumo, cantidadComprar)
-        banco.setAhorroBanco(Banco.getAhorroBanco(banco) - costoCompra)
-        cantidadInsumosBodega[e] += cantidadComprar
-        insumo.setPrecioCompra(costoCompra)
-        insumo.setPrecioCompra(costoCompra)
-        return f"Se compraron {cantidadComprar} {nombreBolsa} por un costo total de {costoCompra}"
+        banco = sede.getCuentaSede()
+        for revisarSede in Sede.getListaSedes():
+            listaInsumos = Sede.getListaInsumosBodega(insumo.getSede())
+            for e in range(len(listaInsumos)):
+                    insumo = listaInsumos[e]    
+                    if isinstance(insumo, Bolsa) and insumo.getNombre() == nombreBolsa:
+                        costoCompra = Proveedor.costoDeLaCantidad(insumo, cantidadComprar)
+                        banco.setAhorroBanco(Banco.getAhorroBanco(banco) - costoCompra)
+                        cantidadInsumosBodega[e] += cantidadComprar
+                        insumo.setPrecioCompra(costoCompra)
+                        insumo.setPrecioCompra(costoCompra)
+                        mensaje= (f"Se compraron {cantidadComprar} {nombreBolsa} por un costo total de {costoCompra}")
+        return mensaje
 
     def realizarVenta(venta):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
