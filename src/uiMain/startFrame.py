@@ -651,6 +651,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         aceptar.place(relx=0.8, rely=0.8, relwidth=0.1, relheight=0.2, anchor="c")   
 
     def pasarAInteraccion2(self):
+        self.contenedorFieldTransferencia=None
         Main.prepararCoordinacionBodegas(self)
         self.criterios = Main.coordinarBodega(self)
         self.transferir(self.criterios,Main.getSedeActualCoordinacion())
@@ -660,12 +661,24 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def transferir(self, criterios, sede):
         self.frame2.destroy()
         self.framePrediccion.destroy()
-            
-        self.fidelidadclientes = tk.Frame(self.framePrincipal)
-        self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
+        if self.contenedorFieldTransferencia is not None:
+            self.contenedorFieldTransferencia.destroy()
+        
+        self.contenedorFieldTransferencia = tk.Frame(self.framePrincipal)
+        self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
 
-        self.field2 = fieldFrame.FieldFrame(self.fidelidadclientes, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, lambda : self.otraSede())
-        self.field2.pack(anchor="s",  expand=True, fill="both")
+        self.fieldTransferencia = fieldFrame.FieldFrame(self.contenedorFieldTransferencia, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, callbackAceptar=lambda : self.otraSede(),aceptar=True, borrar=True)
+        self.fieldTransferencia.pack(anchor="s",  expand=True, fill="both")
+    
+    def otraSede(self):
+        existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
+        if existeOtraSede:
+            self.criterios = Main.coordinarBodega(self)
+            self.transferir(self.criterios,Main.getSedeActualCoordinacion())
+        else:
+            self.frame2.destroy()
+            self.contenedorFieldTransferencia.destroy()
+
 
 #endregion
 
