@@ -1182,7 +1182,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.impresionFinal.tag_configure("center", justify="center",spacing1=10, spacing3=10)
         self.impresionFinal.insert(1.0,mensaje)
         
-        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Salir", bg="medium orchid",command=lambda: StartFrame.abrirFrameInicial(self))
+        self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Salir", bg="medium orchid",command=lambda: StartFrame.abrirFrameInicial(self))
         self.siguiente.grid(row=1, column=0)       
           
         self.freameCambianteFacturacion.rowconfigure(0, weight=10)
@@ -1464,13 +1464,17 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                         prenda = prendai
                         break
                     elif (prenda == None):
-                        continue
-                    
-                if prenda not in self.listaPrendas:
-                    self.listaPrendas.append(prenda)
-                    self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))
+                        continue 
+                if len(self.listaPrendas)!=0:
+                    for prendal in self.listaPrendas:
+                        if (prendal.getNombre().lower()!=prenda.getNombre().lower()):
+                            self.listaPrendas.append(prenda)
+                            self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))
+                        else: 
+                            self.cantidadPrendas[self.listaPrendas.index(prendal)]+=int(self.datosEntradasFacturacion.getValue("Cantidad"))
                 else:
-                    self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosEntradasFacturacion.getValue("Cantidad"))
+                    self.listaPrendas.append(prenda)
+                    self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))   
                 if excepcion:
                     #self.pantallaBaseFacturacion(True)
                     self.datosEntradasFacturacion.habilitarEntry("Cliente", False)

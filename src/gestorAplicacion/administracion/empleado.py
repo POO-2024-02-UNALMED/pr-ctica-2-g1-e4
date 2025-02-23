@@ -1,3 +1,4 @@
+from multimethod import multimethod
 from src.gestorAplicacion.administracion.banco import Banco
 from src.gestorAplicacion.administracion.gastoMensual import GastoMensual
 from src.gestorAplicacion.administracion.rol import Rol
@@ -11,6 +12,7 @@ from typing import List
 import random
 
 class Empleado(Persona, GastoMensual):
+    @multimethod
     def __init__(self, areaActual: Area, fecha: Fecha, sede: Sede, nombre: str, documento: int, rol: Rol, experiencia: int, membresia: Membresia=Membresia.NULA, maquinaria: Maquinaria=[]):
         self.bonificacion = 0
         Persona.__init__(self,nombre, documento, rol, experiencia, True, membresia)
@@ -26,13 +28,29 @@ class Empleado(Persona, GastoMensual):
         self.evaluaciones = []; self.ventasEncargadas = []
         sede.anadirEmpleado(self)
         Sede.getListaEmpleadosTotal().append(self)
+        
+    @multimethod
+    def __init__(self, area: Area, fecha: Fecha, sede:Sede, p: Persona):
+        self.traslados = 0
+        self.bonificacion=0
+        self.prendasDescartadas = 0
+        self.prendasProducidas = 0
+        self.maquinaria = None
+        Persona.__init__(self,p.getNombre(),p.getDocumento(),p.getRol(),p.getExperiencia(),p.isTrabaja(),p.getMembresia())
+        Sede.getListaEmpleadosTotal().append(self)
+        self.areaActual = area
+        self.evaluaciones = []; self.ventasEncargadas = []; self.areas= []
+        self.fechaContratacion = fecha
+        self.sede = sede
+        self.pericia = random.uniform(0.9,1)
+        sede.anadirEmpleado(self)
 
     def calcularGastoMensual(self):
         gasto=self.calcularSalario()
         return gasto
     
     def calcularSalario(self):
-        return Persona.calcularSalario(self) + self.bonificacion
+        return Persona.calcularSalario(self) + self.getBonificacion()
     
 
     def gastoMensualClase():

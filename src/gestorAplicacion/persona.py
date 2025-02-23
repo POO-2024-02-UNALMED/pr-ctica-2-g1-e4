@@ -68,7 +68,7 @@ class Persona:
                     aReemplazar.remove(antiguo)
                     break
             if area is not None and sede is not None:
-                emp = Empleado(area, fecha, sede, persona.getNombre(), persona.getDocumento(), persona.getRol(), persona.getExperiencia(), True, persona.getMembresia())
+                emp = Empleado(area, fecha, sede, persona)
                 Maquinaria.asignarMaquinaria(emp)
                 emp.setSalario(int(persona.getRol().getSalarioInicial() + persona.getRol().getSalarioInicial() * 0.5 * persona.getExperiencia()))
             else:

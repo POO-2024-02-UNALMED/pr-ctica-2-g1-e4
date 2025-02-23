@@ -120,13 +120,13 @@ class Venta:
                     cantidad += 1
         return cantidad
 
-    @staticmethod
-    def predecirVentas(fechaActual, sede, prenda):
+    @classmethod
+    def predecirVentas(cls,fechaActual, sede, prenda):
         from src.gestorAplicacion.sede import Sede
-        ventasMes1 = Venta.cantidadProducto(Venta.filtrar(Sede.getHistorialVentas(sede), Fecha.restarMeses(fechaActual, 3)), prenda)
-        ventasMes2 = Venta.cantidadProducto(Venta.filtrar(Sede.getHistorialVentas(sede), Fecha.restarMeses(fechaActual, 2)), prenda)
+        ventasMes1 = cls.cantidadProducto(cls.filtrar(Sede.getHistorialVentas(sede), Fecha.restarMeses(fechaActual, 3)), prenda)
+        ventasMes2 = cls.cantidadProducto(cls.filtrar(Sede.getHistorialVentas(sede), Fecha.restarMeses(fechaActual, 2)), prenda)
         pendienteMes1a2 = ventasMes2 - ventasMes1
-        ventasMes3 = Venta.cantidadProducto(Venta.filtrar(Sede.getHistorialVentas(sede), Fecha.restarMeses(fechaActual, 1)), prenda)
+        ventasMes3 = cls.cantidadProducto(cls.filtrar(Sede.getHistorialVentas(sede), Fecha.restarMeses(fechaActual, 1)), prenda)
         pendienteMes2a3 = ventasMes3 - ventasMes2
         pendientePromedio = (pendienteMes1a2 + pendienteMes2a3) / 2
         return math.ceil(ventasMes3 + pendientePromedio)
