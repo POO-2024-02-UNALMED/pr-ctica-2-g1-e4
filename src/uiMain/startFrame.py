@@ -1,5 +1,6 @@
 # Dibuja la ventana y la parte externa, y la parte interna la saca de las clases F.
 # O en el caso respectivo, no dibuja una funcionalidad, sino frameInicial.
+#region imports
 import os
 import tkinter as tk
 from tkinter import ttk
@@ -18,6 +19,7 @@ from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.rol import Rol
 import math
+#endregion
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 # Inicializar pygame para el audio
@@ -288,6 +290,7 @@ class StartFrame(tk.Tk):
         Main.fecha=fecha
         self.fechaValida = True
         return fecha
+#endregion
 
 # region gestion hunana
 #------------------------------------------------------------------------Gestión Humana---------------------------------------------------------------------------------------------
@@ -582,6 +585,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.dibujarTandaDeReemplazo(Main.getTandaReemplazo())
         else:
             tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado esta en la lista de candidatos.")
+#endregion
 
 # region insumos
 #---------------------------------------------------------------- Insumos ------------------------------------------------------------------------------------------------------------------
@@ -714,7 +718,26 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         else:
             self.frameCambianteInsumos.destroy()
             self.contenedorFieldTransferencia.destroy()
-
+            self.dibujarTablaCompraExtra(Main.comprarInsumos())
+    
+    def dibujarTablaCompraExtra(self, infoTabla)->None:
+        self.frameCambianteInsumos=tk.Frame(self.framePrincipal)
+        self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
+        encabezados=["vende", "mas barato por","comprado para"]
+        self.elementosTabla=[]
+        for titulo in encabezados:
+            encabezado=tk.Label(self.frameCambianteInsumos, text=titulo, font=("Arial", 10))
+            encabezado.grid(row=0, column=encabezados.index(titulo))
+            self.elementosTabla.apend(encabezado)
+        idxFila=1
+        for fila in infoTabla:
+            for i in range(len(fila)-1): #debemos saltarnos el espacio del insumo 
+                elemento=tk.Label(self.frameCambianteInsumos, text=fila[i+1], font=("Arial", 10))
+                self.elementosTabla.append(elemento)
+                elemento.grid(row=idxFila, column=i+2)
+            idxFila+=1
+        self.fieldCompraExtra=fieldFrame.FieldFrame(self.frameCambianteInsumos, "Insumo", Main.getNombresCompraExtra, "Cantidad extra", ["0" for i in range(len(infoTabla))],aceptar=True, borrar=True)
+        self.fieldCompraExtra.grid(row=0, column=0,columnspan=2,rowspan=idxFila)    
 
 #endregion
 
@@ -1031,7 +1054,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             # Deshabilitar edición si solo quieres mostrar el texto
             texto.config(state="disabled")
             return framePrincipal
-    
+    #endregion
     #region facturacion
 #--------------------------------------------------------- Facturación ----------------------------------------------------------------------------------------------------------------------------------
     
@@ -1481,7 +1504,8 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             return bolasNecesarias
         else:
             self.datosEntradasFacturacion.borrar()
-            
+#endregion
+
 def pasarAVentanaPrincipal():
     ventana = StartFrame()
     ventana.mainloop()
