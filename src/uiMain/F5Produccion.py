@@ -410,8 +410,8 @@ def inicioInt2(event, containerBig, cont, field_frame, labelTG, cont2, field_fra
     btnPlanificarProd.pack(pady=5)
 
 def volverMenu(event):
-    from src.uiMain.startFrame import startFrame
-    stf = startFrame()
+    from src.uiMain.startFrame import StartFrame
+    stf = StartFrame()
     ventana = event.widget.winfo_toplevel()
     ventana.destroy()
     stf.cambiarFrame(stf.areaPrincipal)

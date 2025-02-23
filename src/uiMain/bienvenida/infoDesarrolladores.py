@@ -57,7 +57,7 @@ hojasDeVida=[
     """
     #Logros: Me gusta estudiar de forma autónoma inglés, matemáticas y algunos lenguajes de programación. Como también, procuro trabajar en mis tiempos libres y vacaciones para ayudar a costear mi vida de foráneo.
 ]
-class infoDesarrolladores(tk.Frame):
+class InfoDesarrolladores(tk.Frame):
     def __init__(self,window, master=None):
         self.mostrando=False
         super().__init__(master)

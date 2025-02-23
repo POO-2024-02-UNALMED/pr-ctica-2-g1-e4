@@ -371,7 +371,7 @@ class Main:
     # Interacción 2 
     @classmethod
     def coordinarBodega(cls): # Antes coordinarBodegas
-        from src.uiMain.startFrame import startFrame
+        from src.uiMain.startFrame import StartFrame
         insumoFieldFrame = []
         habilitado = []
         
@@ -427,7 +427,7 @@ class Main:
                 habilitado.append(False)
 
     
-            startFrame.transferir(insumoFieldFrame, habilitado, s)    
+            StartFrame.transferir(insumoFieldFrame, habilitado, s)    
                       
         listaSede.append(insumosAPedir)
         listaSede.append(cantidadAPedir)
@@ -1463,10 +1463,10 @@ if __name__ == "__main__":
         opcion = input()
         match opcion:
             case "1":
-                from src.uiMain.bienvenida.bienvenida import Aplication
+                from src.uiMain.bienvenida.bienvenida import Bienvenida
                 if deserializarAlIniciar:
                     deserializar()
-                Aplication.bienvenida()
+                Bienvenida.bienvenida()
             case "2":
                 if deserializarAlIniciar:
                     deserializar()

@@ -5,7 +5,7 @@ import os
 
 # Donde se muestran fotos del sistema y el botón para seguir a main. Es p4 en el enunciado de la práctica.
 class ImagenSistemaYSalida(tk.Frame):
-    def __init__(self,window, master=None):
+    def __init__(self, window, master=None):
         super().__init__(master)
         self.master = master
         self.window = window
