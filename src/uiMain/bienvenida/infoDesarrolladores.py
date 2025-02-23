@@ -64,8 +64,13 @@ class infoDesarrolladores(tk.Frame):
         self.master = master
         self.window = window
         self.config(highlightbackground="black",highlightthickness=2)
-        self.desarrollador=0
-        self.imagenesDesarrollador=[None,None,None,None]
+        self.desarrollador:int=0
+        self.imagenesDesarrollador=[None,None,None,None] #List de ImageTk.PhotoImage
+        self.hojaDeVida=None # Contiene el label con el texto de la hoja de vida
+        self.contenedorAbajoP6=None # Contiene 4 labels con las imagenes de los desarrolladores
+        self.labelsImagenesDesarrollador=[] # Contiene los labels con las imagenes de los desarrolladores, contenidas en P6
+        self.nombreDesarrollador=None # Contiene el nombre del desarrollador, arriba de hojaDeVida
+        self.botonDesarroladores=None # Botón para mostrar los desarrolladores.
         self.create_widgets()
 
     def cambiarHojaDeVida(self):
