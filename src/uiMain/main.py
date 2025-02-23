@@ -301,7 +301,6 @@ class Main:
 #region insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
-    insumosAConseguir = []# Modificado por planificarProduccion
 
     @classmethod
     def datosParaFieldPesimismo(cls):
@@ -313,10 +312,11 @@ class Main:
             valores.append(round(Venta.getPesimismo()*100))
         return (criterios,valores)
 
+    nececidadInsumos=[]# Modificado por planificarProduccion
 
     # Interacción 1 
     @classmethod
-    def planificarProduccion(cls,ventanaPrincipal,pesimismos): # pesimismos van de 0 a 100,y cambia la predicción en ese porcentaje
+    def planificarProduccion(cls,pesimismos): # pesimismos van de 0 a 100,y cambia la predicción en ese porcentaje
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         fecha=Main.fecha
@@ -367,7 +367,7 @@ class Main:
             retorno.append(listaSede)
 
         #startFrame.prediccion(self, Main.texto, Main.retorno)
-        cls.planificarProduccion = retorno
+        cls.nececidadInsumos = retorno
         return retorno
 
     indexSedeCoordinarBodegas=0
@@ -398,8 +398,8 @@ class Main:
         insumoFieldFrame = []
         
         insumoFieldFrame.clear()
-        insumosNecesarios = cls.planificarProduccion[cls.indexSedeCoordinarBodegas][0]
-        cantidadesNecesarias = cls.planificarProduccion[cls.indexSedeCoordinarBodegas][1]
+        insumosNecesarios = cls.nececidadInsumos[cls.indexSedeCoordinarBodegas][0]
+        cantidadesNecesarias = cls.nececidadInsumos[cls.indexSedeCoordinarBodegas][1]
 
         s=Sede.getListaSedes()[cls.indexSedeCoordinarBodegas]
 

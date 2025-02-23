@@ -625,16 +625,16 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
             
         self.fieldPesimismo = fieldFrame.FieldFrame(self.frameCambianteInsumos, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
-                                           criterios,"El porcentaje de pesimismo es de", valores, habilitado=[True, True], ancho_entry= 10, aceptar=True, borrar=True,callbackAceptar= lambda : self.prediccion())
+                                           criterios,"El porcentaje de pesimismo es de", valores, habilitado=[True, True], ancho_entry= 10, aceptar=True, borrar=True,callbackAceptar= lambda : self.dibujarPrediccion())
         self.fieldPesimismo.grid(column=0, row=0, sticky="nswe")
         self.frameCambianteInsumos.columnconfigure(0, weight=1)
         self.frameCambianteInsumos.rowconfigure(0, weight=1)
 
 
-    def prediccion(self):
+    def dibujarPrediccion(self):
         
         pesimismos=self.fieldPesimismo.obtenerTodosLosValores()
-        self.retorno = Main.planificarProduccion(self,pesimismos)
+        self.retorno = Main.planificarProduccion(pesimismos)
         self.textoPrediccion = Main.texto
         self.framePrediccion = tk.Frame(self.frameCambianteInsumos, bg="#f0f0f0")
         self.framePrediccion.grid(row=1, column=0, sticky="nswe")
