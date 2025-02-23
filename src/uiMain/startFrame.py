@@ -703,20 +703,25 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
 
-        self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
-        self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
+        if len(criterios)>0:
+            self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
+            self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
 
-        self.fieldTransferencia = fieldFrame.FieldFrame(self.contenedorFieldTransferencia, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, callbackAceptar=lambda : self.otraSede(),aceptar=True, borrar=True)
-        self.fieldTransferencia.pack(anchor="s",  expand=True, fill="both")
-    
+            self.fieldTransferencia = fieldFrame.FieldFrame(self.contenedorFieldTransferencia, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, callbackAceptar=lambda : self.otraSede(),aceptar=True, borrar=True)
+            self.fieldTransferencia.pack(anchor="s",  expand=True, fill="both")
+        else:
+            self.descripcionF2.config(text="No hay insumos que se deban y puedan transferir, puedes seguir al siguiente paso.")
+            self.siguiente=tk.Button(self.frameCambianteInsumos, text="Siguiente", command=self.otraSede)
+            self.siguiente.pack(anchor="s", expand=True, fill="both")
+            self.fieldTransferencia=None
+
     def otraSede(self):
-        existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
+        existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores() if self.fieldTransferencia is not None else [])
         if existeOtraSede:
             self.criterios = Main.coordinarBodega()
             self.tablaInsumos(Main.infoTablaInsumos)
         else:
             self.frameCambianteInsumos.destroy()
-            self.contenedorFieldTransferencia.destroy()
             self.dibujarTablaCompraExtra(Main.comprarInsumos())
     
     def dibujarTablaCompraExtra(self, criterios)->None:
