@@ -618,7 +618,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             
         self.field = fieldFrame.FieldFrame(self.frame2, "\nPuede cambiar la prediccion de ventas para el siguiente mes", 
                                            criterios,"El porcentaje de pesimismo es de", valores, [True, True], 20, 
-                                           False, 10, True, False, lambda : self.prediccion(Main.texto, Main.retorno))
+                                           False, 10, True, False, lambda : self.prediccion(Main.texto, Main.insumosAConseguir))
         self.field.pack(anchor="s",  expand=True, fill="both")
 
 

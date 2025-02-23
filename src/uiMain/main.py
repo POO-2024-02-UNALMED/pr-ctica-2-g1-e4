@@ -293,7 +293,7 @@ class Main:
 #region insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
-    planProduccion = []# Modificado por planificarProduccion
+    insumosAConseguir = []# Modificado por planificarProduccion
 
     # Interacción 1 
     @classmethod
@@ -303,7 +303,7 @@ class Main:
         fecha=Main.fecha
         criterios = []
         valores = []        
-        Main.retorno = []
+        retorno = []
         Main.texto = []
 
         for sede in Sede.getListaSedes():
@@ -351,10 +351,11 @@ class Main:
                             cantidadAPedir.append(cantidad)
                     camisasPredichas = True
 
-            Main.retorno.append(listaSede)
+            retorno.append(listaSede)
 
         #startFrame.prediccion(self, Main.texto, Main.retorno)
-        return Main.retorno
+        cls.planificarProduccion = retorno
+        return retorno
 
     coordinacionBodegas = []
     indexSede=0
@@ -367,7 +368,7 @@ class Main:
 
     # Interacción 2 
     @classmethod
-    def coordinarBodegas(cls, retorno):
+    def coordinarBodega(cls): # Antes coordinarBodegas
         from src.uiMain.startFrame import startFrame
         insumoFieldFrame = []
         habilitado = []
@@ -375,19 +376,19 @@ class Main:
         insumoFieldFrame.clear()
         insumosAPedir = []
         cantidadAPedir = []
+        insumosNecesarios = cls.planificarProduccion[cls.indexSede][0]
+        cantidadesNecesarias = cls.planificarProduccion[cls.indexSede][1]
         listaSede = [] # generado en este metodo
-        listaInsumos = listaSede[0]
-        listaCantidades = listaSede[1]
 
         s=Sede.getListaSedes()[cls.indexSede]
 
-        for i in listaInsumos:
+        for i in insumosNecesarios:
             insumoFieldFrame.append(str(i) + f" ${Insumo.getPrecioIndividual(i)}")
-            productoEnBodega = Sede.verificarProductoBodega(i, s)
-            idxInsumo = listaInsumos.index(i)
-            if productoEnBodega[0]:
-                listaCantidades[idxInsumo] = max(listaCantidades[idxInsumo] - Sede.getCantidadInsumosBodega(s)[productoEnBodega.index], 0)
-            cantidadNecesaria = listaCantidades[listaInsumos.index(i)]
+            (hayEnBodega,indiceEnBodega) = Sede.verificarProductoBodega(i, s)
+            idxInsumo = insumosNecesarios.index(i)
+            if hayEnBodega:
+                cantidadesNecesarias[idxInsumo] = max(cantidadesNecesarias[idxInsumo] - Sede.getCantidadInsumosBodega(s)[indiceEnBodega], 0)
+            cantidadNecesaria = cantidadesNecesarias[insumosNecesarios.index(i)]
             productoEnOtraSede = Sede.verificarProductoOtraSede(i)
 
             if productoEnOtraSede[0]:
