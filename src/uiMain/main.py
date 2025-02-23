@@ -548,7 +548,6 @@ class Main:
         for i in range(len(productosSeleccionados)):
             cantidadPrenda= cantidadProductos[i]
             prendaSeleccionada = productosSeleccionados[i]
-            #cantidadDisponible = sum(1 for prenda in Sede.getPrendasInventadasTotal() if Prenda.getNombre(prenda) == Prenda.getNombre(prendaSeleccionada))
             cantidadDisponible = 0
             for prenda in Sede.getPrendasInventadasTotal():
                 if(Prenda.getNombre(prenda)==Prenda.getNombre(prendaSeleccionada)):
@@ -725,9 +724,6 @@ class Main:
 
                     if prendasTransferidas == faltantes:
                         break
-
-            if prendasTransferidas < faltantes:
-                print("No se pudieron transferir todas las prendas faltantes. Faltan " + str(faltantes - prendasTransferidas) + " unidades.")
 
     def tarjetaRegalo(venta,codigoIngresado,respuesta,compraTarjeta,montoTarjeta):
         sede = Venta.getSede(venta)
