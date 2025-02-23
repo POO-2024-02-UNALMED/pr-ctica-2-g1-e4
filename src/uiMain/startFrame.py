@@ -1415,8 +1415,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                             self.cantidadPrendas[self.listaPrendas.index(prendal)]+=int(self.datosEntradasFacturacion.getValue("Cantidad"))
                 else:
                     self.listaPrendas.append(prenda)
-                    self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))
-                print(self.listaPrendas, self.cantidadPrendas)   
+                    self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))   
                 if excepcion:
                     #self.pantallaBaseFacturacion(True)
                     self.datosEntradasFacturacion.habilitarEntry("Cliente", False)
