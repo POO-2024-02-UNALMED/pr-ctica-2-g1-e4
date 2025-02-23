@@ -407,7 +407,7 @@ class Main:
             if hayEnBodega:
                  cantidadAConseguir= max(cantidadesNecesarias[idxInsumo] - Sede.getCantidadInsumosBodega(s)[indiceEnBodega], 0)
             if cantidadAConseguir>0:
-                productoEnOtraSede = Sede.verificarProductoOtraSede(i)
+                productoEnOtraSede = Sede.verificarProductoOtraSede(i,cls.getSedeActualCoordinacion())
 
                 if productoEnOtraSede[0]:
                     cls.productosOpcionTransferencia.append([i, productoEnOtraSede[1], productoEnOtraSede[2], productoEnOtraSede[3],cantidadAConseguir])

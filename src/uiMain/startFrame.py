@@ -8,7 +8,6 @@ import sys
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.persona import Persona
 from src.uiMain import fieldFrame
-from src.uiMain.F4Facturaccion import Facturar
 from src.uiMain.Excepciones.exceptionC1 import *
 from src.uiMain.Excepciones.exceptionC2 import *
 from src.uiMain.main import Main
@@ -330,7 +329,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.procesoListaInicial = infoMalos[1]
 
         self.empleadosInsuficientes = infoMalos[2]
-        self.rendimientoInsufuciencias = infoMalos[3]
+        self.rendimientoInsuficiencias = infoMalos[3]
         self.acciones=infoMalos[4]
 
         self.tituloNombre=tk.Label(self.frameCambianteGHumana, text="Nombre", font=("Arial", 10))
@@ -349,7 +348,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         for i, empleado in enumerate(self.empleadosInsuficientes):
             nombre = tk.Label(self.frameCambianteGHumana, text=Empleado.getNombre(empleado), font=("Arial", 10))
             area = tk.Label(self.frameCambianteGHumana, text=Empleado.getNombre(Empleado.getAreaActual(empleado)), font=("Arial", 10))
-            rendimiento = tk.Label(self.frameCambianteGHumana, text=f"{int(self.rendimientoInsufuciencias[i])}", font=("Arial", 10))
+            rendimiento = tk.Label(self.frameCambianteGHumana, text=f"{int(self.rendimientoInsuficiencias[i])}", font=("Arial", 10))
             rendimientoDeseado = tk.Label(self.frameCambianteGHumana, text=f"{int(Sede.getRendimientoDeseado(Empleado.getSede(empleado),Empleado.getAreaActual(empleado), Main.fecha))}", font=("Arial", 10))
             textoAccion = ""
             match self.acciones[i]:

@@ -56,12 +56,14 @@ class Sede:
                 Insumo.setPrecioStockTotal(ajusteStock)
 
     @classmethod
-    def verificarProductoOtraSede(cls, insumo):
+    def verificarProductoOtraSede(cls, insumo,excluirSede):
         retorno = False
         index = -1
         sedeATransferir = None
         precio = 0
         for sede in cls.listaSedes:
+            if sede == excluirSede:
+                continue
             for x in range(len(sede.getListaInsumosBodega())):
                 if insumo == sede.getListaInsumosBodega()[x]:
                     for cantidad in sede.cantidadInsumosBodega:
