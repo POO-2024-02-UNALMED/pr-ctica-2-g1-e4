@@ -30,8 +30,8 @@ class EvaluacionFinanciera:
         montoVentasPasado = 0
         for sede in Sede.listaSedes:
             for venta in sede.historialVentas:
-                if (Fecha.compararAno(fechaActual.ano, Fecha.getAno(Venta.getFechaVenta(venta))) and 
-                    Fecha.compararMes(fechaActual.mes - 1, Fecha.getMes(Venta.getFechaVenta(venta)))):
+                if (Fecha.compararAno(fechaActual.ano, venta.getFechaVenta().ano) and
+                    Fecha.compararMes(fechaActual.mes, venta.getFechaVenta().mes-1)):
                     montoVentasPasado += Venta.getSubtotal(venta)+ Venta.getCostoEnvio(venta)
         # Predecimos las ventas con un porcentaje de fidelidad 
         porcentajeFidelidadOro = 0.8 if EvaluacionFinanciera.getBalance(balanceAnterior) >= 0 else 0.5
