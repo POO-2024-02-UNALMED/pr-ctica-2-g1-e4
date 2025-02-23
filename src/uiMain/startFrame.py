@@ -653,7 +653,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.contenedorFieldTransferencia=None
         Main.prepararCoordinacionBodegas(self)
         self.criterios = Main.coordinarBodega(self)
-        self.transferir(self.criterios,Main.getSedeActualCoordinacion())
+        self.transferir(self.criterios,Main.getNombreSedeActualCoordinacion())
 
 
     # Interacción 2
@@ -673,7 +673,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
         if existeOtraSede:
             self.criterios = Main.coordinarBodega(self)
-            self.transferir(self.criterios,Main.getSedeActualCoordinacion())
+            self.transferir(self.criterios,Main.getNombreSedeActualCoordinacion())
         else:
             self.frame2.destroy()
             self.contenedorFieldTransferencia.destroy()

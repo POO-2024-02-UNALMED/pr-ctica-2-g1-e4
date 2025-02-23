@@ -369,7 +369,7 @@ class Main:
     indexSedeCoordinarBodegas=0
 
     @classmethod
-    def prepararCoordinacionBodegas(cls,ventanaPrincipal):
+    def prepararCoordinacionBodegas(cls,ventanaPrincipal)->None:
         cls.indexSedeCoordinarBodegas=0
         cls.planDeCompra=[]
         cls.productosOpcionTransferencia=[]
@@ -379,8 +379,12 @@ class Main:
     planDeCompra=[] # Generado en coordinarBodega
 
     @classmethod
-    def getSedeActualCoordinacion(cls):
-        return Sede.getNombre(Sede.getListaSedes()[cls.indexSedeCoordinarBodegas])
+    def getSedeActualCoordinarBodegas(cls)->Sede:
+        return Sede.getListaSedes()[cls.indexSedeCoordinarBodegas]
+
+    @classmethod
+    def getNombreSedeActualCoordinacion(cls)->str:
+        return cls.getSedeActualCoordinarBodegas().getNombre()
 
     # Interacción 2 
     @classmethod
@@ -407,7 +411,7 @@ class Main:
             if hayEnBodega:
                  cantidadAConseguir= max(cantidadesNecesarias[idxInsumo] - Sede.getCantidadInsumosBodega(s)[indiceEnBodega], 0)
             if cantidadAConseguir>0:
-                productoEnOtraSede = Sede.verificarProductoOtraSede(i,cls.getSedeActualCoordinacion())
+                productoEnOtraSede = Sede.verificarProductoOtraSede(i,cls.getSedeActualCoordinarBodegas())
 
                 if productoEnOtraSede[0]:
                     cls.productosOpcionTransferencia.append([i, productoEnOtraSede[1], productoEnOtraSede[2], productoEnOtraSede[3],cantidadAConseguir])
@@ -422,7 +426,7 @@ class Main:
         return criterios
 
     @classmethod
-    def siguienteSedeCoordinarBodegas(cls,respuestas):
+    def siguienteSedeCoordinarBodegas(cls,respuestas)->bool:
         for idxRespuesta,respuesta in enumerate(respuestas):
             insumoTransferible:Insumo=cls.productosOpcionTransferencia[idxRespuesta][0]
             cantidad=cls.productosOpcionTransferencia[idxRespuesta][4]
