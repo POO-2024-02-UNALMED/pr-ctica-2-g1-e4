@@ -24,6 +24,7 @@ class Main:
     fecha:Fecha=None
     proveedorBdelmain=None
     evento_ui = threading.Event()
+    evento_ui2 = threading.Event()
     nuevoBalance=None
     diferenciaEstimado=0
     pesimismoPorSede = [2,2]
@@ -907,12 +908,22 @@ class Main:
                     prov.setPrecio(nuevos[i].getPrecio())
     #endregion
     def pedirModista(cantidadPrendas, sede, idxTanda):
-        print(f"Seleccione el modista que se encargará de la tanda #{idxTanda} de producción de {cantidadPrendas} prendas en {sede.getNombre()}:")
+        from src.uiMain.F5Produccion import recibePrintModista, getIndexx
+        printModista = None
+        printModista = f"Seleccione el modista que se encargará de la tanda #{idxTanda} de producción de {cantidadPrendas} prendas en {sede.getNombre()}:"
+        print(printModista)
         modistas = [empleado for empleado in sede.getListaEmpleados() if empleado.getRol() == Rol.MODISTA]
+        recibePrintModista(printModista, modistas)
+        Main.evento_ui.wait()
+        print("\nestoy esperando a que me dejen pasar...\n")
+        Main.evento_ui.clear()
         for i, modista in enumerate(modistas):
             print(f"{i}. {modista.getNombre()}")
+        Main.evento_ui2.clear()
+        print("\nesperando respuesta con el boton.....\n")
+        Main.evento_ui2.wait()
         while True:
-            seleccion = Main.nextIntSeguro()
+            seleccion = getIndexx() #metodo para traer de F5Produccion la senal, puede ser un getSenal(), definirlo en F5Produccion
             if 0 <= seleccion < len(modistas):
                 return modistas[seleccion]
             else:

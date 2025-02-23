@@ -22,7 +22,7 @@ class Empleado(Persona, GastoMensual):
         self.fechaContratacion = fecha
         self.prendasDescartadas = 0
         self.prendasProducidas = 0
-        self.pericia = random.uniform(0.8,1)
+        self.pericia = random.uniform(0.9,1)
         self.evaluaciones = []; self.ventasEncargadas = []
         sede.anadirEmpleado(self)
         Sede.getListaEmpleadosTotal().append(self)

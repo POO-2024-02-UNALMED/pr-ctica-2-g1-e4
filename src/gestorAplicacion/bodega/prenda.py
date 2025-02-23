@@ -36,6 +36,7 @@ class Prenda(GastoMensual):
     @staticmethod
     def producirPrendas(planProduccion, hoy):
         from src.uiMain.F5Produccion import recibeCreadasOrNo
+        from src.uiMain.main import Main
         Prenda.cantidadTelaUltimaProduccion = 0
         Prenda.cantidadUltimaProduccion = 0
         diaDeProduccion = hoy
