@@ -9,7 +9,7 @@ class ImagenSistemaYSalida(tk.Frame):
         super().__init__(master)
         self.master = master
         self.window = window
-        self.imagenSistema=0
+        self.imagenSistema:int=0
         self.archivoImagenSistema = None
         self.archivoImagenSistemaOriginal= None # Para la mayoría de recursos de tkinter, como imagenes,
         self.foto=None

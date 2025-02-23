@@ -996,6 +996,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         return self.Facturacion
         
     def inicialFacturacion(self):
+        self.dineroTransferido=False
         self.framePrincipal =  tk.Frame(self.Facturacion)
         self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
 
@@ -1163,6 +1164,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(1, weight=1)
 
     def transferirDinero(self, evento):
+        self.dineroTransferido=True
         if (self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower())=="si":
             self.datosDespedido.habilitarEntry("¿Qué porcentaje desea transferir?", True)
 
@@ -1176,6 +1178,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             if self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower()=="si" or self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower()=="no":
                 if self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower()=="si" and porcentaje>=20 and porcentaje <=60:
                     mensajeFinal,mensaje=Main.ingresoEmpresa(self.venta, self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower(), porcentaje)
+                else:
+                    mensajeFinal="No se transfirió el dinero a la cuenta principal."
+                    mensaje=mensajeFinal
                 self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
                 self.siguiente.grid(row=4, column=3)   
             self.outputGHumana.config(state="normal")
@@ -1211,7 +1216,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             respuesta="Si"
             if self.datosDespedido.getValue("Código")=="-1":
                 respuesta="No"
-            codigo=int(self.datosDespedido.getValue("Código"))
+            codigo=self.datosDespedido.getValue("Código")
             compraTarjeta=self.datosDespedido.getValue("Nueva tarjeta")
             valorNuevaTarjeta=int(self.datosDespedido.getValue("Monto nueva Tarjeta"))
             resultado=Main.tarjetaRegalo(self.venta,codigo,respuesta,compraTarjeta, valorNuevaTarjeta)
