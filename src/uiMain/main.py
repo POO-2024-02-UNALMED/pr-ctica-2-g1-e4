@@ -25,6 +25,7 @@ class Main:
     evento_ui = threading.Event()
     nuevoBalance=None
     diferenciaEstimado=0
+    pesimismoPorSede = [2,2]
     def main():
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
@@ -297,9 +298,20 @@ class Main:
    
     insumosAConseguir = []# Modificado por planificarProduccion
 
+    @classmethod
+    def datosParaFieldPesimismo(cls):
+        criterios=[]
+        valores=[]
+        for sede in Sede.getListaSedes():
+            #prediccionC = None
+            criterios.append(sede)
+            valores.append(round(Venta.getPesimismo()*100))
+        return (criterios,valores)
+
+
     # Interacción 1 
     @classmethod
-    def planificarProduccion(cls,ventanaPrincipal,pesimismo): # pesimismo va de 0 a 100,y cambia la predicción en ese porcentaje
+    def planificarProduccion(cls,ventanaPrincipal,pesimismos): # pesimismos van de 0 a 100,y cambia la predicción en ese porcentaje
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.gestorAplicacion.bodega.camisa import Camisa
         fecha=Main.fecha
@@ -307,16 +319,11 @@ class Main:
         valores = []        
         retorno = []
         Main.texto = []
+        cls.pesimismoPorSede = []
+        for i in range(len(Sede.getListaSedes())):
+            cls.pesimismoPorSede.append(float(pesimismos[i])/100)
 
-        for sede in Sede.getListaSedes():
-            #prediccionC = None
-            criterios.append(sede)
-            valores.append(round(Venta.getPesimismo()*100))
-            
-        
-        ventanaPrincipal.pesimismo(criterios, valores)
-
-        for sede in Sede.getListaSedes():
+        for idxSede,sede in enumerate(Sede.getListaSedes()):
             pantalonesPredichos = False
             camisasPredichas = False
             insumoXSede = []
@@ -327,7 +334,7 @@ class Main:
 
                 if isinstance(prenda, Pantalon) and not pantalonesPredichos:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
-                    prediccionP = proyeccion * (1 - Venta.getPesimismo())
+                    prediccionP = proyeccion * (1 - cls.pesimismoPorSede[idxSede])
                     Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionP)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
                     for insumo in prenda.getInsumo():
@@ -338,7 +345,7 @@ class Main:
 
                 if isinstance(prenda, Camisa) and not camisasPredichas:
                     proyeccion = Venta.predecirVentas(fecha, sede, prenda.getNombre())
-                    prediccionC = proyeccion * (1 - Venta.getPesimismo())
+                    prediccionC = proyeccion * (1 - cls.pesimismoPorSede[idxSede])
                     Main.texto.append(f"La predicción de ventas para {prenda} es de {math.ceil(prediccionC)} para la sede {sede}")
                     #startFrame.prediccion(self, texto)
                     print(Main.texto)

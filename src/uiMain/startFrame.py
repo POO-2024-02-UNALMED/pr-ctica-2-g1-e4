@@ -610,12 +610,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                             relief="ridge", wraplength=600)
         self.descripcionF2.place(relx=1, rely=0.8, relwidth=1, relheight=0.4, anchor="e")
 
-    # Interacción 1
-    def pesimismo(self, c, v):
-        from src.uiMain import fieldFrame
-        criterios = c
-        valores = v
+        self.pesimismo(Main.datosParaFieldPesimismo())
 
+    # Interacción 1
+    def pesimismo(self, paraField):
+        from src.uiMain import fieldFrame
+        (criterios, valores) = paraField
         self.frame2 = tk.Frame(self.framePrincipal, bg="light gray")
         self.frame2.pack(anchor="s", fill="x")
             
@@ -628,14 +628,16 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def prediccion(self):
         if self.framePrediccion!=None:
             self.framePrediccion.destroy()
-        self.retorno = Main.planificarProduccion(self)
-        self.texto = Main.texto
+        
+        pesimismos=self.fieldPesimismo.obtenerTodosLosValores()
+        self.retorno = Main.planificarProduccion(self,pesimismos)
+        self.textoPrediccion = Main.texto
         self.framePrediccion = tk.Frame(self.framePrincipal, bg="#f0f0f0")
         self.framePrediccion.pack(anchor="s",  expand=True, fill="both",pady=5)
         prediccion = tk.Text(self.framePrediccion, font=("Arial", 10), bg="#f0f0f0", relief="flat")
         mensaje = ""
 
-        for caso in texto:
+        for caso in self.textoPrediccion:
             mensaje += caso + "\n"
 
         prediccion.tag_add("center", "1.0", "end")
