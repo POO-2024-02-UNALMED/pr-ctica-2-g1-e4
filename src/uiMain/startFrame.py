@@ -257,8 +257,8 @@ class StartFrame(tk.Tk):
             if dia <= 0 or dia > 31:
                 hayExcepcion1 = True
             if hayExcepcion1:
-                raise ExcepcionEnteroNoValido(dia)
-        except ExcepcionEnteroNoValido as moscaMuerta:
+                raise ExcepcionValorNoValido(dia)
+        except ExcepcionValorNoValido as moscaMuerta:
                 messagebox.showwarning(title="Alerta", message=moscaMuerta.mensaje_completo)
                 self.borrar()
                 return hayExcepcion1
@@ -268,8 +268,8 @@ class StartFrame(tk.Tk):
             if mes <= 0 or mes > 12:
                 hayExcepcion2 = True
             if hayExcepcion2:
-                raise ExcepcionEnteroNoValido(mes)
-        except ExcepcionEnteroNoValido as carrastrufia:
+                raise ExcepcionValorNoValido(mes)
+        except ExcepcionValorNoValido as carrastrufia:
             messagebox.showwarning(title="Alerta", message=carrastrufia.mensaje_completo)
             self.borrar()
             return hayExcepcion2
@@ -279,8 +279,8 @@ class StartFrame(tk.Tk):
             if año <= 0:
                 hayExcepcion3 = True
             if hayExcepcion3:
-                raise ExcepcionEnteroNoValido(año)
-        except ExcepcionEnteroNoValido as mojarra:
+                raise ExcepcionValorNoValido(año)
+        except ExcepcionValorNoValido as mojarra:
             messagebox.showwarning(title="Alerta", message=mojarra.mensaje_completo)
             self.borrar()
             return hayExcepcion3
@@ -713,7 +713,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def otraSede(self):
         existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
         if existeOtraSede:
-            self.criterios = Main.coordinarBodega()
+            self.criterios = Main.coordinarBodega(self)
             self.tablaInsumos(Main.infoTablaInsumos)
         else:
             self.frameCambianteInsumos.destroy()
@@ -771,7 +771,24 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     texto2.config(state="disabled") 
                     boton2 = tk.Button(self.estimadoVentasDeudas, text="Siguiente", command=lambda: Interaccion3(self))
                     boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-                    
+
+                try:
+                    if isinstance(Porcentaje, str) and not Porcentaje.replace(".", "", 1).isdigit():
+                      raise ExcepcionNumeroNoString(Porcentaje)
+                except ExcepcionNumeroNoString as uwu:
+                    messagebox.showwarning(title="Alerta", message=uwu.mensaje_completo)
+                    Porcentaje.delete(0, "end")
+                    return True     
+                Porcentaje = float(Porcentaje)
+                try:
+                    if Porcentaje != "":
+                        if Porcentaje < 0 or Porcentaje > 100:
+                            raise ExcepcionValorNoValido(Porcentaje)
+                except ExcepcionValorNoValido as pochoclo:
+                    messagebox.showwarning(title="Alerta", message=pochoclo.mensaje_completo)
+                    Porcentaje.delete(0, "end")
+                    return True
+                
             def Interaccion2(self):
                 frame2.destroy()
                 frame3.destroy()
@@ -815,6 +832,25 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     if Banco.getNombreEntidad(banco_actual) == seleccion:
                             banco = seleccion
                             break
+                if banco == None:
+                    try:
+                         if isinstance(seleccion, str) and not seleccion.replace(".", "", 1).isdigit():
+                            raise ExcepcionStringNoNumero(seleccion)
+                    except ExcepcionStringNoNumero as p:
+                        messagebox.showwarning(title="Alerta", message=p.mensaje_completo)
+                        seleccion.delete(0, "end")
+                        return True
+                    else:
+                        try:
+                            bancos_disponibles = [Banco.getNombreEntidad(banco) for banco in Banco.getListaBancos()]
+                            if seleccion != "":
+                                if seleccion not in bancos_disponibles:
+                                 raise ExcepcionValorNoValido(seleccion)
+                        except ExcepcionValorNoValido as ch:
+                            messagebox.showwarning(title="Alerta", message = ch.mensaje_completo)
+                            seleccion.delete(0, "end")
+                            return True
+                        
                 c = Main.planRecuperacion(StartFrame.diferencia_estimada,banco)  # Use float to handle percentage  
                 self.texto3.config(state="normal")   # Habilitar edición
                 self.texto3.delete("1.0", "end")     # Eliminar texto actual
@@ -905,14 +941,22 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame4, "Descuento a futuro")
-                
+
+                if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
+                    try:
+                        raise ExcepcionNumeroNoString(Porcentaje)
+                    except ExcepcionNumeroNoString as ask:
+                        messagebox.showwarning(title="Alerta", message=ask.mensaje_completo)
+                        Porcentaje.delete(0, "end")
+                        return True
+                                   
                 if Porcentaje != str(descuento):
                     Porcentaje = Porcentaje.strip("%")
                     StartFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
 
                     texto4.config(state="normal")   # Habilitar edición
                     texto4.delete("1.0", "end")     # Eliminar texto actual
-                    texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro), "center")  # Insertar nuevo texto
+                    texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.analisis_futuro), "center")  # Insertar nuevo texto
                     texto4.config(state="disabled")
                     boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
                     boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
@@ -961,9 +1005,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 from src.uiMain.startFrame import StartFrame
                 self.evBlackFriday.destroy()
                 self.botonesF4.destroy()
-                s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(startFrame.balance_anterior))
-                s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(startFrame.diferencia_estimada)
-                s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(self.diferencia_estimada)+"\n"+str(startFrame.analisis_futuro)
+                s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(StartFrame.balance_anterior))
+                s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(StartFrame.diferencia_estimada)
+                s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(self.diferencia_estimada)+"\n"+str(StartFrame.analisis_futuro)
                 s4= "\n y por tanto el nuevo porcentaje de pesimismo de la producción es:\n" + str(Venta.getPesimismo())+ "."        
                 confirmacion5 = tk.Label(framePrincipal, anchor="center", wraplength=600)
                 confirmacion5.place(relx=0, rely=0.3, relwidth=1, relheight=0.4)
@@ -998,7 +1042,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                         if Empleado.getNombre(empleado_actual) == seleccion:
                             empleado = empleado_actual
                     StartFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
-                    
+                   
                     texto.config(state="normal")   # Habilitar edición
                     texto.delete("1.0", "end")     # Eliminar texto actual
                     texto.insert("1.0", EvaluacionFinanciera.informe(StartFrame.balance_anterior), "center")  # Insertar nuevo texto
@@ -1007,6 +1051,23 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
                 else: #Excepcion
                     combo.delete(0,"end")
+                try:
+                    error = []
+                    if not isinstance(resultadosP, str):
+                        error.append(resultadosP)
+                    if not isinstance(resultadosB, str):
+                        error.append(resultadosB)
+                    if error != []:
+                        raise ExcepcionStringNoNumero(error)
+                except ExcepcionStringNoNumero as obleas:
+                    messagebox.showwarning(title="Alerta", message=obleas.mensaje_completo)
+                try:
+                   if resultadosP != "" and resultadosB != "":
+                    if resultadosP.lower() not in ["si", "no"] or resultadosB.lower() not in ["si", "no"]:
+                        raise ExcepcionValorNoValido(resultadosP.lower())
+                except ExcepcionValorNoValido as cornal:
+                    messagebox.showwarning(title="Alerta", message=cornal.mensaje_completo)
+                    return True
 
             framePrincipal =  tk.Frame(ventana)
             framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
