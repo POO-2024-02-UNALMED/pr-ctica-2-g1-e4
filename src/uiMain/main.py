@@ -452,7 +452,7 @@ class Main:
                 if restante>0:
                     cls.planDeCompra[cls.indexSedeCoordinarBodegas][0].append(insumoTransferible)
                     cls.planDeCompra[cls.indexSedeCoordinarBodegas][1].append(restante)
-
+        cls.infoTablaInsumos.clear()
         cls.productosOpcionTransferencia.clear()
         if cls.indexSedeCoordinarBodegas>=len(Sede.getListaSedes())-1:
             return False

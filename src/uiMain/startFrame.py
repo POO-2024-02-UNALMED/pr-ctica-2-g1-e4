@@ -709,7 +709,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def otraSede(self):
         existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
         if existeOtraSede:
-            self.criterios = Main.coordinarBodega(self)
+            self.criterios = Main.coordinarBodega()
             self.tablaInsumos(Main.infoTablaInsumos)
         else:
             self.frameCambianteInsumos.destroy()
