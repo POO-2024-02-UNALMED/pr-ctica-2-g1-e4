@@ -361,14 +361,14 @@ class Main:
     indexSede=0
 
     @classmethod
-    def prepararCoordinacionBodegas(cls):
+    def prepararCoordinacionBodegas(cls,ventanaPrincipal):
         cls.indexSede=0
-        cls.coordinacionBodegas.append(cls.coordinarBodega())
+        cls.coordinacionBodegas.append(cls.coordinarBodega(ventanaPrincipal))
         
 
     # Interacción 2 
     @classmethod
-    def coordinarBodega(cls): # Antes coordinarBodegas
+    def coordinarBodega(cls, ventanaPrincipal): # Antes coordinarBodegas
         from src.uiMain.startFrame import startFrame
         insumoFieldFrame = []
         habilitado = []
@@ -425,20 +425,21 @@ class Main:
                 habilitado.append(False)
 
     
-            startFrame.transferir(insumoFieldFrame, habilitado, s)    
+            ventanaPrincipal.transferir(insumoFieldFrame, habilitado, s)    
                       
         listaSede.append(insumosAPedir)
         listaSede.append(cantidadAPedir)
-        Main.coordinarBodegas.append(listaSede)
+        cls.coordinacionBodegas.append(listaSede)
 
-        return Main.coordinarBodegas
+        return cls.coordinacionBodegas
 
     # Interacción 3
-    def comprarInsumos(fecha):
+    @classmethod
+    def comprarInsumos(cls,fecha):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.administracion.deuda import Deuda
         deudas = []
-        for sede in Main.coordinarBodegas:
+        for sede in cls.coordinacionBodegas:
             insumos = sede[0]
             cantidad = sede[1]
             for sedee in Sede.getListaSedes():
