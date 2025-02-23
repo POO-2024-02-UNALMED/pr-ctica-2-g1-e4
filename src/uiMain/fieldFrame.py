@@ -59,11 +59,15 @@ class FieldFrame(Frame):
             vacios = [] 
             nombresCamposVacíos = []  
             hayExcepcion = False
+            criterios = []
+            
+            for i, c in enumerate(self.citerios):
+                criterios.append(c)
 
             for i, valor in enumerate(entradas):
                 if valor.strip() == "":  
                     vacios.append(self.valores[i])  
-                    nombresCamposVacíos.append(self.citerios[i])  
+                    nombresCamposVacíos.append(criterios[i])  
                     hayExcepcion = True
 
             if hayExcepcion:
