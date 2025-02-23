@@ -1130,8 +1130,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
         self.framePrincipal.rowconfigure(2, weight=1)
-        self.outputGHumana.config(state="normal")
-        self.outputGHumana.delete("1.0", "end")
 
 
     def interaccion5Facturacion(self):
@@ -1178,7 +1176,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             if self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower()=="si" or self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower()=="no":
                 if self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower()=="si" and porcentaje>=20 and porcentaje <=60:
                     mensajeFinal,mensaje=Main.ingresoEmpresa(self.venta, self.datosDespedido.getValue("Transferir fondos a la cuenta principal").lower(), porcentaje)
-                self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion6Facturacion(mensajeFinal))
+                self.siguiente=tk.Button(self.datosDespedido, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
                 self.siguiente.grid(row=4, column=3)   
             self.outputGHumana.config(state="normal")
             self.outputGHumana.delete("1.0", "end")

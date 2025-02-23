@@ -12,6 +12,7 @@ class ImagenSistemaYSalida(tk.Frame):
         self.imagenSistema=0
         self.archivoImagenSistema = None
         self.archivoImagenSistemaOriginal= None # Para la mayoría de recursos de tkinter, como imagenes,
+        self.foto=None
         # hay que manejarse con referencias, si no se hace, python las elimina y no se muestran
         self.create_widgets()
         self.config(highlightbackground="black", highlightthickness=1)
