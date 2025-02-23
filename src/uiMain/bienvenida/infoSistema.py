@@ -3,7 +3,7 @@ import tkinter as tk
 from src.uiMain.bienvenida.imagenSistemaYSalida import ImagenSistemaYSalida
 
 # P1 en el enunciado de la practica, contiene a P3 y P4
-class infoSistema(tk.Frame):
+class InfoSistema(tk.Frame):
     def __init__(self, window, master=None):
         super().__init__(master)
         self.master = master
@@ -14,7 +14,7 @@ class infoSistema(tk.Frame):
 
     def create_widgets(self):
         # P3 en el enunciado de la practica
-        self.frameArriba = tk.Frame(master = self, highlightbackground="black",highlightthickness=1,)
+        self.frameArriba = tk.Frame(master = self, highlightbackground="black", highlightthickness=1,)
         mensaje = """Bienvenido a ecomoda, 
 Haz click en la imagen para empezar"""
 

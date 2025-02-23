@@ -1404,10 +1404,10 @@ if __name__ == "__main__":
         opcion = input()
         match opcion:
             case "1":
-                from src.uiMain.bienvenida.bienvenida import Aplication
+                from src.uiMain.bienvenida.bienvenida import Bienvenida
                 if deserializarAlIniciar:
                     deserializar()
-                Aplication.bienvenida()
+                Bienvenida.bienvenida()
             case "2":
                 if deserializarAlIniciar:
                     deserializar()

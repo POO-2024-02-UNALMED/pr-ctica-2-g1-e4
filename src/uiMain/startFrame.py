@@ -24,10 +24,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 #pygame.mixer.init() Función para reproducir el audio #def reproducir_audio(): #ruta_audio = os.path.join("src", "uiMain", "imagenes", "EcomodaALaOrden.mp3") #pygame.mixer.music.load(ruta_audio)  # Cambia la ruta del archivo de audio #pygame.mixer.music.play()
 
 
-class startFrame(tk.Tk):
+class StartFrame(tk.Tk):
     balance_anterior=0
     diferencia_estimada=0
     analisis_futuro=0
+    
     def __init__(self):
         self.bolsas=0
         self.insumo=None
@@ -734,16 +735,16 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             ventana=self      
                         
             def LeerF2(self, field_frame2, texto2):
-                from src.uiMain.startFrame import startFrame
+                from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame2, "Fidelidad")
                 
                 if Porcentaje != "0% / 100%":
                     Porcentaje = Porcentaje.strip("%")
-                    startFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
+                    StartFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
                     texto2.config(state="normal")   # Habilitar edición
                     texto2.delete("1.0", "end")     # Eliminar texto actual
-                    texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.diferencia_estimada), "center")  # Insertar nuevo texto
+                    texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.diferencia_estimada), "center")  # Insertar nuevo texto
                     texto2.config(state="disabled") 
                     boton2 = tk.Button(self.estimadoVentasDeudas, text="Siguiente", command=lambda: Interaccion3(self))
                     boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
@@ -791,7 +792,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     if Banco.getNombreEntidad(banco_actual) == seleccion:
                             banco = seleccion
                             break
-                c = Main.planRecuperacion(startFrame.diferencia_estimada,banco)  # Use float to handle percentage  
+                c = Main.planRecuperacion(StartFrame.diferencia_estimada,banco)  # Use float to handle percentage  
                 self.texto3.config(state="normal")   # Habilitar edición
                 self.texto3.delete("1.0", "end")     # Eliminar texto actual
                 self.texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
@@ -868,7 +869,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.texto3.tag_configure("center", justify="center",spacing1=10, spacing3=10)
                 self.texto3.config(state="normal")   # Habilitar edición
                 
-                if startFrame.diferencia_estimada > 0:
+                if StartFrame.diferencia_estimada > 0:
                     self.texto3.delete("1.0", "end")     # Eliminar texto actual
                     self.texto3.insert("1.0", "El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", "center")  # Insertar nuevo texto
                     self.texto3.config(state="disabled") 
@@ -878,17 +879,17 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                     self.texto3.config(state="disabled") 
 
             def LeerF4(self,field_frame4, texto4, descuento):
-                from src.uiMain.startFrame import startFrame
+                from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame4, "Descuento entre 0% y 5%")
                 
                 if Porcentaje != str(descuento):
                     Porcentaje = Porcentaje.strip("%")
-                    startFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
+                    StartFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
 
                     texto4.config(state="normal")   # Habilitar edición
                     texto4.delete("1.0", "end")     # Eliminar texto actual
-                    texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(startFrame.analisis_futuro), "center")  # Insertar nuevo texto
+                    texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.analisis_futuro), "center")  # Insertar nuevo texto
                     texto4.config(state="disabled")
                     boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
                     boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
@@ -934,12 +935,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto4.config(state="disabled") 
             
             def Interaccion5(self):
-                from src.uiMain.startFrame import startFrame
+                from src.uiMain.startFrame import StartFrame
                 self.evBlackFriday.destroy()
                 self.botonesF4.destroy()
-                s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(startFrame.balance_anterior))
-                s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(startFrame.diferencia_estimada)
-                s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(startFrame.analisis_futuro)
+                s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(StartFrame.balance_anterior))
+                s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(StartFrame.diferencia_estimada)
+                s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(StartFrame.analisis_futuro)
                 s4= "\n y por tanto el nuevo porcentaje de pesimismo de la producción es:\n" + str(Venta.getPesimismo())+ "."        
                 confirmacion5 = tk.Label(framePrincipal, anchor="center", wraplength=600)
                 confirmacion5.place(relx=0, rely=0.3, relwidth=1, relheight=0.4)
@@ -948,13 +949,13 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 texto5.tag_configure("center", justify="center",spacing1=10, spacing3=10)
                 texto5.insert(1.0,s1+s2+s3+s4)
                 
-                boton2 = tk.Button(framePrincipal, text="Salir", bg="medium orchid",command=lambda: startFrame.abrirFrameInicial(self))
+                boton2 = tk.Button(framePrincipal, text="Salir", bg="medium orchid",command=lambda: StartFrame.abrirFrameInicial(self))
                 boton2.place(relx=0.5, rely=0.9, relwidth=0.1, relheight=0.1, anchor="s")  
             
             
             def LeerF1(self):
                 from src.uiMain.main import Main
-                from src.uiMain.startFrame import startFrame
+                from src.uiMain.startFrame import StartFrame
                 eleccionDeuda=0
                 resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
                 resultadosB=FieldFrame.getValue(field_frame,"Banco")
@@ -973,11 +974,11 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                         seleccion=combo.get()
                         if Empleado.getNombre(empleado_actual) == seleccion:
                             empleado = empleado_actual
-                    startFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
+                    StartFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
                     
                     texto.config(state="normal")   # Habilitar edición
                     texto.delete("1.0", "end")     # Eliminar texto actual
-                    texto.insert("1.0", EvaluacionFinanciera.informe(startFrame.balance_anterior), "center")  # Insertar nuevo texto
+                    texto.insert("1.0", EvaluacionFinanciera.informe(StartFrame.balance_anterior), "center")  # Insertar nuevo texto
                     texto.config(state="disabled") 
                     boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
                     boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
@@ -1122,7 +1123,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.impresionFinal.tag_configure("center", justify="center",spacing1=10, spacing3=10)
         self.impresionFinal.insert(1.0,mensaje)
         
-        self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Salir", bg="medium orchid",command=lambda: startFrame.abrirFrameInicial(self))
+        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Salir", bg="medium orchid",command=lambda: StartFrame.abrirFrameInicial(self))
         self.siguiente.grid(row=1, column=0)       
           
         self.freameCambianteFacturacion.rowconfigure(0, weight=10)
@@ -1482,6 +1483,6 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.datosEntradasFacturacion.borrar()
             
 def pasarAVentanaPrincipal():
-    ventana = startFrame()
+    ventana = StartFrame()
     ventana.mainloop()
     
