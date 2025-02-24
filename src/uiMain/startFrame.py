@@ -798,16 +798,20 @@ Ya terminamos, tenga buen día.""")
                 from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame2, "Fidelidad")
-                
-                
+                   
                 try:
-                    if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
-                      raise ExcepcionNumeroNoString(Porcentaje)
+                    if  Porcentaje == "":
+                        raise ExcepcionContenidoVacio(["Fidelidad"])
+                    elif isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
+                        raise ExcepcionNumeroNoString(Porcentaje)
                 except ExcepcionNumeroNoString as uwu:
                     messagebox.showwarning(title="Alerta", message=uwu.mensaje_completo)
                     return True 
+                except ExcepcionContenidoVacio as cabezaHueca:
+                    messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                    return True
                 
-                if Porcentaje != "0% / 100%":
+                if Porcentaje != "0% / 100%":           
                     Porcentaje = Porcentaje.strip("%")
                     StartFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
                     texto2.config(state="normal")   # Habilitar edición
@@ -864,25 +868,32 @@ Ya terminamos, tenga buen día.""")
                 from src.uiMain.main import Main
                 seleccion = FieldFrame.getValue(field_frame3, "Bancos")
                 banco=None
+                
                 for banco_actual in Banco.getListaBancos():
                     if Banco.getNombreEntidad(banco_actual) == seleccion:
                             banco = seleccion
                             break
                 if banco == None:
                     try:
-                         if not isinstance(seleccion, str):
+                        if seleccion == "":
+                            raise ExcepcionContenidoVacio(["Bancos"])
+                        if not isinstance(seleccion, str):
                             raise ExcepcionStringNoNumero(seleccion)
                     except ExcepcionStringNoNumero as p:
                         messagebox.showwarning(title="Alerta", message=p.mensaje_completo)
                         return True
+                    except ExcepcionContenidoVacio as cabezaHueca:
+                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                        return True
                     else:
-                        try:
-                            bancos_disponibles = [Banco.getNombreEntidad(banco) for banco in Banco.getListaBancos()]
-                            if seleccion not in bancos_disponibles:
-                                 raise ExcepcionValorNoValido(seleccion)
-                        except ExcepcionValorNoValido as ch:
-                            messagebox.showwarning(title="Alerta", message = ch.mensaje_completo)
-                            return True
+                            try:
+                                
+                                bancos_disponibles = [Banco.getNombreEntidad(banco) for banco in Banco.getListaBancos()]
+                                if seleccion not in bancos_disponibles:
+                                    raise ExcepcionValorNoValido(seleccion)
+                            except ExcepcionValorNoValido as ch:
+                                messagebox.showwarning(title="Alerta", message = ch.mensaje_completo)
+                                return True
                         
                 c = Main.planRecuperacion(StartFrame.diferencia_estimada,banco)  # Use float to handle percentage  
                 self.texto3.config(state="normal")   # Habilitar edición
@@ -974,25 +985,32 @@ Ya terminamos, tenga buen día.""")
                 from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame4, "Descuento a futuro")
-
-                if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
+                if Porcentaje == "":
                     try:
-                        raise ExcepcionNumeroNoString(Porcentaje)
-                    except ExcepcionNumeroNoString as ask:
-                        messagebox.showwarning(title="Alerta", message=ask.mensaje_completo)
-                        Porcentaje.delete(0, "end")
-                        return True
-                                   
-                if Porcentaje != str(descuento):
-                    Porcentaje = Porcentaje.strip("%")
-                    StartFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
+                        raise ExcepcionContenidoVacio(["Descuento a futuro"]) 
 
-                    texto4.config(state="normal")   # Habilitar edición
-                    texto4.delete("1.0", "end")     # Eliminar texto actual
-                    texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.analisis_futuro), "center")  # Insertar nuevo texto
-                    texto4.config(state="disabled")
-                    boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
-                    boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+                    except ExcepcionContenidoVacio as cabezaHueca:
+                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                        return True
+                else:
+                    if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
+                        try:
+                            raise ExcepcionNumeroNoString(Porcentaje)
+                        except ExcepcionNumeroNoString as ask:
+                            messagebox.showwarning(title="Alerta", message=ask.mensaje_completo)
+                            Porcentaje.delete(0, "end")
+                            return True
+                                    
+                    if Porcentaje != str(descuento):
+                        Porcentaje = Porcentaje.strip("%")
+                        StartFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
+
+                        texto4.config(state="normal")   # Habilitar edición
+                        texto4.delete("1.0", "end")     # Eliminar texto actual
+                        texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.analisis_futuro), "center")  # Insertar nuevo texto
+                        texto4.config(state="disabled")
+                        boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
+                        boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
             
             def Interaccion4(self,frameb):
                 from src.uiMain.main import Main
@@ -1059,6 +1077,7 @@ Ya terminamos, tenga buen día.""")
                 eleccionDeuda=0
                 resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
                 resultadosB=FieldFrame.getValue(field_frame,"Banco")
+                
                 if resultadosP.lower()!="si/no" and resultadosB.lower()!="si/no" and combo.get()!="":
                     from src.uiMain.main import Main
                     cosa=combo.get()
@@ -1083,7 +1102,30 @@ Ya terminamos, tenga buen día.""")
                     boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
                     boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
                 else: #Excepcion
-                    combo.delete(0,"end")
+                    try:
+                        entradas = field_frame.obtenerTodosLosValores()  
+                        vacios = [] 
+                        nombresCamposVacíos = []  
+                        hayExcepcion = False
+                        criterios = []
+                        
+                        for i, c in enumerate(field_frame.citerios):
+                            criterios.append(c)
+
+                        for i, valor in enumerate(entradas):
+                            if valor.strip() == "":  
+                                hayExcepcion = True
+                                vacios.append(field_frame.valores[i])  
+                                nombresCamposVacíos.append(criterios[i])
+                        if  combo.get() == "":
+                            raise ExcepcionContenidoVacio(nombresCamposVacíos+["Directivo"])                   
+                        if hayExcepcion:
+                            raise ExcepcionContenidoVacio(nombresCamposVacíos) 
+
+                    except ExcepcionContenidoVacio as cabezaHueca:
+                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                        return hayExcepcion
+
                 try:
                     error = []
                     if not isinstance(resultadosP, str):
