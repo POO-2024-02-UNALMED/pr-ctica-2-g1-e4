@@ -66,7 +66,7 @@ class StartFrame(tk.Tk):
         self.procesosMenu.add_separator()
         self.procesosMenu.add_command(label="Pedir insumos", command = lambda : self.eliminarF2())
         self.procesosMenu.add_separator()
-        self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.eliminarF3())
+        self.procesosMenu.add_command(label="Ver el desglose económico de la empresa", command = lambda : self.eliminarF3())
         self.procesosMenu.add_separator()
         self.procesosMenu.add_command(label="Facturacion", command = lambda : self.eliminarF4())
         self.procesosMenu.add_separator()
