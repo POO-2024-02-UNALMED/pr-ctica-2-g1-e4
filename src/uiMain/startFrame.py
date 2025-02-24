@@ -22,7 +22,6 @@ from src.uiMain.Excepciones.exceptionC2 import ExcepcionCodigoTarjetaregalo
 from src.uiMain.Excepciones.exceptionC2 import ExcepcionEmpleadoNoEncontrado
 from src.uiMain.Excepciones.exceptionC2 import ExcepcionPrendaNoExistente
 from src.uiMain.main import Main
-from src.uiMain.F3Financiera import F3Financiera
 from src.uiMain.fieldFrame import FieldFrame
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.sede import Sede
