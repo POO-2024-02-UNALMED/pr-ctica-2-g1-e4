@@ -206,10 +206,11 @@ class StartFrame(tk.Tk):
         self.bind("<Configure>", self.actualizarWrapLengths)
     
     def actualizarWrapLengths(self,_event):
-        self.descripcionFrameInicial.config(wraplength=self.frameInicial.winfo_width()*0.9)
-        self.instruccionesFrameInicial.config(wraplength=self.contenedorFecha.winfo_width()*0.9)
-        if self.winfo_width()<400:
-            self.labelFotoEcomoda.place(relx=0.5, rely=0.2, relwidth=1, relheight=0.3, anchor="n")
+        if self.pagina=="inicial":
+            self.descripcionFrameInicial.config(wraplength=self.frameInicial.winfo_width()*0.9)
+            self.instruccionesFrameInicial.config(wraplength=self.contenedorFecha.winfo_width()*0.9)
+            if self.winfo_width()<400:
+                self.labelFotoEcomoda.place(relx=0.5, rely=0.2, relwidth=1, relheight=0.3, anchor="n")
 
 
 
@@ -317,11 +318,27 @@ class StartFrame(tk.Tk):
         self.gestionHumana=tk.Frame(self)
         self.posiblesDespedidos=[]
         self.sede=None
+        self.paginaGHumana="Tabla"
         self.inicialGestionHumana()
         self.empleadosADespedir=[] # Se llena al dar aceptar en la pantalla de seleccion.
         Main.estadoGestionHumana="despedir"
+        self.bind("<Configure>", self.actualizarWrapLengthsGHumana)
         self.cantidadADespedir=0
         return self.gestionHumana
+
+    def actualizarWrapLengthsGHumana(self,_event):
+        if not self.pagina=="gestionHumana":
+            return
+
+        match self.paginaGHumana:
+            case "Tabla":
+                self.descripcionF1.config(wraplength=self.frameCambianteGHumana.winfo_width()*0.9)
+            case "EleccionDespidos":
+                self.labelPreConsulta.config(wraplength=self.frameCambianteGHumana.winfo_width()*0.9)
+            case "Reemplazo":
+                self.tituloTanda.config(wraplength=self.frameCambianteGHumana.winfo_width()*0.9)
+                self.descripcionCambioSede.config(wraplength=self.frameCambianteGHumana.winfo_width()*0.9)
+
         
     def inicialGestionHumana(self):
         self.framePrincipal =  tk.Frame(self.gestionHumana, bg="blue")
@@ -411,6 +428,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.framePrincipal.rowconfigure(1, weight=10)
 
     def pantallaEleccionDespedir(self, limpiarFrame=False):
+        self.paginaGHumana="EleccionDespidos"
         if limpiarFrame:
             self.frameCambianteGHumana.destroy()
             self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
@@ -418,7 +436,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         empleadosMalosString=""
         
-        empleadosMalosString += """Los empleados de la derecha no rinden correctamente y no pudieron ser cambiados ni de area ni de sede. .\n"""
+        empleadosMalosString += """Los empleados de la derecha no rinden correctamente y no pudieron ser cambiados ni de area ni de sede.\n"""
 
         empleadosMalosString += """También puede añadir a otros empleados, para buscar mas empleados, haga click en "Añadir empleado a la lista guía" \n"""
 
@@ -489,6 +507,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
     # Parte de la interacción 1
     def pantallaAñadirDespedido(self):
+        self.paginaGHumana="AñadirDespedido"
         self.frameCambianteGHumana.destroy()
 
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal, height=150)
@@ -558,6 +577,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteGHumana.columnconfigure(0, weight=3)
     
     def dibujarTandaDeReemplazo(self, tanda):
+        self.paginaGHumana="Reemplazo"
         candidatos,sedeDonadora,rol,cantidad = tanda
 
         if self.contenedorTandaTransferencia is not None:
@@ -797,7 +817,7 @@ Ya terminamos, tenga buen día.""")
 
 #endregion
 
-
+#region produccion
 #---------------------------------------------------------------------- Producción ----------------------------------------------------------------------------------------------------
 
     def producir(self, ventana:tk.Frame):
@@ -1726,7 +1746,7 @@ Ya terminamos, tenga buen día.""")
             labelPericia = tk.Label(contInternoBotones, text=f"Pericia: {round(modista.getPericia(), 2)}", bg="white", font=("Arial", 9, "italic"))
             labelPericia.pack(side="left", padx=2)
             boton.bind("<Button-1>", lambda event : self.botonesModistas(event, contBotonesModistas))
-
+#endregion
 
 
 #region sistema financiero
