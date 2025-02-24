@@ -2005,8 +2005,8 @@ Ya terminamos, tenga buen día.""")
             StartFrame.ventanaPrincipal.after(1500, self.volverMenu2)
             return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
-
-        threading.Thread(target=Maquinaria.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
+        maqPrueba = Maquinaria("nombrePrueba")
+        threading.Thread(target=maqPrueba.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
         
     senal= 0
     def receptor(self, texto):
