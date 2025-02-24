@@ -902,7 +902,7 @@ class Main:
         valorBase = int(montoPagar / (1 + tasaIva))
         iva = montoPagar - valorBase
         mensajeFinal+="\n---- FACTURA ----"
-        mensajeFinal+="\nPrendas compradas:"
+        mensajeFinal+="\n\nPrendas compradas:"
         cantidadCamisas = 0
         cantidadPantalon = 0
         subtotalCamisas = 0
@@ -920,19 +920,19 @@ class Main:
         pantalonEncontrado = False
         for prenda in productosSeleccionados:
             if isinstance(prenda, Camisa) and not camisaEncontrada:
-                mensajeFinal+="\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadCamisas) + " - Subtotal: $" + str(subtotalCamisas)
+                mensajeFinal+="\n\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadCamisas) + " - Subtotal: $" + str(subtotalCamisas)
                 camisaEncontrada = True
             if isinstance(prenda, Pantalon) and not pantalonEncontrado:
-                mensajeFinal+="\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadPantalon) + " - Subtotal: $" + str(subtotalPantalon)
+                mensajeFinal+="\n\n"+prenda.getNombre() + " - Cantidad: " + str(cantidadPantalon) + " - Subtotal: $" + str(subtotalPantalon)
                 pantalonEncontrado = True
 
-        mensajeFinal+="\n"+"Valor total a pagar: $" + str(montoPagar)
-        mensajeFinal+="\n"+"Subtotal prendas: $" + str(Venta.getSubtotal(venta))
-        mensajeFinal+="\n"+"IVA: $" + str(iva)
-        mensajeFinal+="\n"+"Venta registrada por: " + Venta.getEncargado(venta).getNombre()
-        mensajeFinal+="\n"+"Asesor de la compra: " + Venta.getAsesor(venta).getNombre()
+        mensajeFinal+="\n\n"+"Valor total a pagar: $" + str(montoPagar)
+        mensajeFinal+="\n\n"+"Subtotal prendas: $" + str(Venta.getSubtotal(venta))
+        mensajeFinal+="\n\n"+"IVA: $" + str(iva)
+        mensajeFinal+="\n\n"+"Venta registrada por: " + Venta.getEncargado(venta).getNombre()
+        mensajeFinal+="\n\n"+"Asesor de la compra: " + Venta.getAsesor(venta).getNombre()
 
-        mensajeFinal+="\n""El monto total a pagar por parte del cliente es " + str(montoPagar) + " y el estado final de la cuenta de la sede es $" + str(Banco.getAhorroBanco(bancoTransferir))
+        mensajeFinal+="\n\n""El monto total a pagar por parte del cliente es " + str(montoPagar) + " y el estado final de la cuenta de la sede es $" + str(Banco.getAhorroBanco(bancoTransferir))
         return mensajeFinal, mensaje
     
     def generarCodigoAleatorio():

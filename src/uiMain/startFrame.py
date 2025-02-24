@@ -807,16 +807,20 @@ Ya terminamos, tenga buen día.""")
                 from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame2, "Fidelidad")
-                
-                
+                   
                 try:
-                    if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
-                      raise ExcepcionNumeroNoString(Porcentaje)
+                    if  Porcentaje == "":
+                        raise ExcepcionContenidoVacio(["Fidelidad"])
+                    elif isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
+                        raise ExcepcionNumeroNoString(Porcentaje)
                 except ExcepcionNumeroNoString as uwu:
                     messagebox.showwarning(title="Alerta", message=uwu.mensaje_completo)
                     return True 
+                except ExcepcionContenidoVacio as cabezaHueca:
+                    messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                    return True
                 
-                if Porcentaje != "0% / 100%":
+                if Porcentaje != "0% / 100%":           
                     Porcentaje = Porcentaje.strip("%")
                     StartFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
                     texto2.config(state="normal")   # Habilitar edición
@@ -873,25 +877,32 @@ Ya terminamos, tenga buen día.""")
                 from src.uiMain.main import Main
                 seleccion = FieldFrame.getValue(field_frame3, "Bancos")
                 banco=None
+                
                 for banco_actual in Banco.getListaBancos():
                     if Banco.getNombreEntidad(banco_actual) == seleccion:
                             banco = seleccion
                             break
                 if banco == None:
                     try:
-                         if not isinstance(seleccion, str):
+                        if seleccion == "":
+                            raise ExcepcionContenidoVacio(["Bancos"])
+                        if not isinstance(seleccion, str):
                             raise ExcepcionStringNoNumero(seleccion)
                     except ExcepcionStringNoNumero as p:
                         messagebox.showwarning(title="Alerta", message=p.mensaje_completo)
                         return True
+                    except ExcepcionContenidoVacio as cabezaHueca:
+                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                        return True
                     else:
-                        try:
-                            bancos_disponibles = [Banco.getNombreEntidad(banco) for banco in Banco.getListaBancos()]
-                            if seleccion not in bancos_disponibles:
-                                 raise ExcepcionValorNoValido(seleccion)
-                        except ExcepcionValorNoValido as ch:
-                            messagebox.showwarning(title="Alerta", message = ch.mensaje_completo)
-                            return True
+                            try:
+                                
+                                bancos_disponibles = [Banco.getNombreEntidad(banco) for banco in Banco.getListaBancos()]
+                                if seleccion not in bancos_disponibles:
+                                    raise ExcepcionValorNoValido(seleccion)
+                            except ExcepcionValorNoValido as ch:
+                                messagebox.showwarning(title="Alerta", message = ch.mensaje_completo)
+                                return True
                         
                 c = Main.planRecuperacion(StartFrame.diferencia_estimada,banco)  # Use float to handle percentage  
                 self.texto3.config(state="normal")   # Habilitar edición
@@ -983,25 +994,32 @@ Ya terminamos, tenga buen día.""")
                 from src.uiMain.startFrame import StartFrame
                 from src.uiMain.main import Main
                 Porcentaje = FieldFrame.getValue(field_frame4, "Descuento a futuro")
-
-                if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
+                if Porcentaje == "":
                     try:
-                        raise ExcepcionNumeroNoString(Porcentaje)
-                    except ExcepcionNumeroNoString as ask:
-                        messagebox.showwarning(title="Alerta", message=ask.mensaje_completo)
-                        Porcentaje.delete(0, "end")
-                        return True
-                                   
-                if Porcentaje != str(descuento):
-                    Porcentaje = Porcentaje.strip("%")
-                    StartFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
+                        raise ExcepcionContenidoVacio(["Descuento a futuro"]) 
 
-                    texto4.config(state="normal")   # Habilitar edición
-                    texto4.delete("1.0", "end")     # Eliminar texto actual
-                    texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.analisis_futuro), "center")  # Insertar nuevo texto
-                    texto4.config(state="disabled")
-                    boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
-                    boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+                    except ExcepcionContenidoVacio as cabezaHueca:
+                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                        return True
+                else:
+                    if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
+                        try:
+                            raise ExcepcionNumeroNoString(Porcentaje)
+                        except ExcepcionNumeroNoString as ask:
+                            messagebox.showwarning(title="Alerta", message=ask.mensaje_completo)
+                            Porcentaje.delete(0, "end")
+                            return True
+                                    
+                    if Porcentaje != str(descuento):
+                        Porcentaje = Porcentaje.strip("%")
+                        StartFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
+
+                        texto4.config(state="normal")   # Habilitar edición
+                        texto4.delete("1.0", "end")     # Eliminar texto actual
+                        texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.analisis_futuro), "center")  # Insertar nuevo texto
+                        texto4.config(state="disabled")
+                        boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
+                        boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
             
             def Interaccion4(self,frameb):
                 from src.uiMain.main import Main
@@ -1057,10 +1075,6 @@ Ya terminamos, tenga buen día.""")
                 texto5.pack(fill="both", expand=True)
                 texto5.tag_configure("center", justify="center",spacing1=10, spacing3=10)
                 texto5.insert(1.0,s1+s2+s3+s4)
-                
-                boton2 = tk.Button(framePrincipal, text="Salir", bg="medium orchid",command=lambda: StartFrame.abrirFrameInicial(self))
-                boton2.place(relx=0.5, rely=0.9, relwidth=0.1, relheight=0.1, anchor="s")  
-            
             
             def LeerF1(self):
                 from src.uiMain.main import Main
@@ -1068,6 +1082,7 @@ Ya terminamos, tenga buen día.""")
                 eleccionDeuda=0
                 resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
                 resultadosB=FieldFrame.getValue(field_frame,"Banco")
+                
                 if resultadosP.lower()!="si/no" and resultadosB.lower()!="si/no" and combo.get()!="":
                     from src.uiMain.main import Main
                     cosa=combo.get()
@@ -1092,7 +1107,30 @@ Ya terminamos, tenga buen día.""")
                     boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
                     boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
                 else: #Excepcion
-                    combo.delete(0,"end")
+                    try:
+                        entradas = field_frame.obtenerTodosLosValores()  
+                        vacios = [] 
+                        nombresCamposVacíos = []  
+                        hayExcepcion = False
+                        criterios = []
+                        
+                        for i, c in enumerate(field_frame.citerios):
+                            criterios.append(c)
+
+                        for i, valor in enumerate(entradas):
+                            if valor.strip() == "":  
+                                hayExcepcion = True
+                                vacios.append(field_frame.valores[i])  
+                                nombresCamposVacíos.append(criterios[i])
+                        if  combo.get() == "":
+                            raise ExcepcionContenidoVacio(nombresCamposVacíos+["Directivo"])                   
+                        if hayExcepcion:
+                            raise ExcepcionContenidoVacio(nombresCamposVacíos) 
+
+                    except ExcepcionContenidoVacio as cabezaHueca:
+                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                        return hayExcepcion
+
                 try:
                     error = []
                     if not isinstance(resultadosP, str):
@@ -1246,10 +1284,7 @@ Ya terminamos, tenga buen día.""")
         self.impresionFinal= tk.Text(confirmacion, font=("Arial", 10), height=10,bg="plum3")
         self.impresionFinal.pack(fill="both", expand=True)
         self.impresionFinal.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-        self.impresionFinal.insert(1.0,mensaje)
-        
-        self.siguiente=tk.Button(self.frameCambianteGHumana, text="Salir", bg="medium orchid",command=lambda: StartFrame.abrirFrameInicial(self))
-        self.siguiente.grid(row=1, column=0)       
+        self.impresionFinal.insert(1.0,mensaje)       
           
         self.freameCambianteFacturacion.rowconfigure(0, weight=10)
         self.freameCambianteFacturacion.rowconfigure(1, weight=2)       
@@ -1299,6 +1334,10 @@ Ya terminamos, tenga buen día.""")
             try: 
                 if not isinstance(valor, str):
                     raise ExcepcionStringNoNumero((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")))
+                if valor =="":
+                    raise ExcepcionContenidoVacio(["¿Qué porcentaje desea transferir?"])
+            except ExcepcionContenidoVacio as cabezaHueca:
+                messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
             except ExcepcionPrendaNoExistente as guegue:
                 messagebox.showwarning(title="Alerta", message=guegue.mensaje_completo)
                 return True
@@ -1313,24 +1352,25 @@ Ya terminamos, tenga buen día.""")
     def leer5Facturacion(self):
         porcentaje=0
         mensaje=""
-        if isinstance(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"),str):
+        
+        if not self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").replace(".", "", 1).isdigit():
+            if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?") != "":
+                if str(self.datosEntradasFacturacion).replace(".", "", 1).isdigit():
+                    if  self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%") < 0:
+                        try:
+                            raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
+                        except ExcepcionValorNoValido as mon:
+                            messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
+                            return True
             try:
                 raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))
             except ExcepcionNumeroNoString as b:
                 messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
                 return True
-        elif self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?") != "":
-            if  self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%") < 0:
-                try:
-                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
-                except ExcepcionValorNoValido as mon:
-                    messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
-                    return True
-
         else:
             if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?")!=None and self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")!=None:
                 string=self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%")
-                if string.isnumeric():
+                if str(string).replace(".", "", 1).isdigit():
                     porcentaje=int(string)
                 if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" or self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="no":
                     if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" and porcentaje>=20 and porcentaje <=60:
@@ -1369,22 +1409,41 @@ Ya terminamos, tenga buen día.""")
         self.framePrincipal.rowconfigure(1, weight=1)
 
     def leer4Facturacion(self):
-        if self.datosEntradasFacturacion.getValue("Código")!=None and (self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="si" or  self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="no")and self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")!=None:
-            respuesta="Si"
-            if self.datosEntradasFacturacion.getValue("Código")=="-1":
-                respuesta="No"
-            codigo=self.datosEntradasFacturacion.getValue("Código")
-            compraTarjeta=self.datosEntradasFacturacion.getValue("Nueva tarjeta")
-            valorNuevaTarjeta=int(self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta"))
-            resultado=Main.tarjetaRegalo(self.venta,codigo,respuesta,compraTarjeta, valorNuevaTarjeta)
-            self.outputFacturacion.config(state="normal")
-            self.outputFacturacion.delete("1.0", "end")
-            self.outputFacturacion.insert("1.0",resultado)
-            self.outputFacturacion.config(state="disabled")
-            self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion5Facturacion)
-            self.siguiente.grid(row=4, column=3)
-        else:
-            tk.messagebox.showwarning("Faltan datos","Por favor llene todos los campos")
+        try:
+            entradas = [self.datosEntradasFacturacion.getValue("Código"), self.datosEntradasFacturacion.getValue("Nueva tarjeta"), self.datosEntradasFacturacion.getValue("Nueva tarjeta"), self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")]  
+            vacios = [] 
+            nombresCamposVacíos = []  
+            hayExcepcion = False
+            criterios = [["Código"],["Nueva tarjeta"],["Monto nueva Tarjeta"]]
+
+            for i, valor in enumerate(entradas):
+                if valor.strip() == "":  
+                    hayExcepcion = True
+                    vacios.append(self.freameCambianteFacturacion.valores[i])  
+                    nombresCamposVacíos.append(criterios[i])
+            if hayExcepcion:
+                raise ExcepcionContenidoVacio(nombresCamposVacíos) 
+
+        except ExcepcionContenidoVacio as cabezaHueca:
+            messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+            return hayExcepcion
+        else:        
+            if  self.datosEntradasFacturacion.getValue("Código")!=None and (self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="si" or  self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="no")and self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")!=None:
+                respuesta="Si"
+                if self.datosEntradasFacturacion.getValue("Código")=="-1":
+                    respuesta="No"
+                codigo=self.datosEntradasFacturacion.getValue("Código")
+                compraTarjeta=self.datosEntradasFacturacion.getValue("Nueva tarjeta")
+                valorNuevaTarjeta=int(self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta"))
+                resultado=Main.tarjetaRegalo(self.venta,codigo,respuesta,compraTarjeta, valorNuevaTarjeta)
+                self.outputFacturacion.config(state="normal")
+                self.outputFacturacion.delete("1.0", "end")
+                self.outputFacturacion.insert("1.0",resultado)
+                self.outputFacturacion.config(state="disabled")
+                self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion5Facturacion)
+                self.siguiente.grid(row=4, column=3)
+            else:
+                tk.messagebox.showwarning("Faltan datos","Por favor llene todos los campos")
    
     def interaccion3Facturacion(self):
         self.cantidadBolsaGrande=0
@@ -1419,14 +1478,14 @@ Ya terminamos, tenga buen día.""")
         self.datosEntradasFacturacion.habilitarEntry("Cantidad a comprar", True)
    
     def leer3Facturacion(self):
-        if isinstance(self.datosEntradasFacturacion.getValue("Cantidad a comprar"),str):
+        if not self.datosEntradasFacturacion.getValue("Cantidad a comprar").replace(".", "", 1).isdigit():
             try:
                 raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))
             except ExcepcionNumeroNoString as b:
                 messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
                 return True
         elif self.datosEntradasFacturacion.getValue("Cantidad a comprar") != "":
-            if  self.datosEntradasFacturacion.getValue("Cantidad a comprar") < 0:
+            if  int(self.datosEntradasFacturacion.getValue("Cantidad a comprar")) < 0:
                 try:
                     raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))  
                 except ExcepcionValorNoValido as mon:
@@ -1555,8 +1614,38 @@ Ya terminamos, tenga buen día.""")
         cliente=None
         for persona in Persona.getListaPersonas():
             if persona.getNombre() == self.datosEntradasFacturacion.getValue("Cliente"):
-                cliente=persona
-        if (cliente is not None) and (self.sede is not None) and (self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor")) is not None) and (self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja")) is not None) :
+                cliente=persona        
+        try:
+            error = []
+            datoinv=[]
+            if cliente is None:
+                error.append("Cliente")
+            if self.sede is None:
+                error.append("Sede")
+            if self.datosEntradasFacturacion.getValue("Vendedor")=="":
+                error.append("Vendedor")
+            if self.datosEntradasFacturacion.getValue("Empleado caja")=="":
+                error.append("Empleado caja")
+            if self.datosEntradasFacturacion.getValue("Prenda")=="":
+                error.append("Prenda")
+            if self.datosEntradasFacturacion.getValue("Cantidad")=="":
+                error.append("Cantidad")
+            if self.sede is not None:
+                if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor")) is None:
+                    datoinv.append("Vendedor")
+                if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja")) is None:
+                    datoinv.append("Empleado caja")            
+            if error != []:
+                raise ExcepcionContenidoVacio(error)
+            elif datoinv != []:
+                raise ExcepcionEmpleadoNoEncontrado(datoinv)
+        except ExcepcionContenidoVacio as cabezaHueca:
+            messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+            return True
+        except ExcepcionEmpleadoNoEncontrado as sabandija:
+            messagebox.showwarning(title="Alerta", message=sabandija.mensaje_completo)
+                        
+        else:
             self.cliente=cliente
             self.vendedor=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor"))
             self.caja=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja"))
@@ -1594,11 +1683,28 @@ Ya terminamos, tenga buen día.""")
                     self.outputFacturacion.config(state="disabled")
                     self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion2Facturacion)
                     self.siguiente.grid(row=2, column=2)
-        else:
-            self.outputFacturacion.config(state="normal")
-            self.outputFacturacion.delete("1.0", "end")
-            self.outputFacturacion.insert("1.0", "Datos inválidos", "center")
-            self.outputFacturacion.config(state="disabled")
+                    
+            try:
+                entradas = self.datosEntradasFacturacion.obtenerTodosLosValores()  
+                vacios = [] 
+                nombresCamposVacíos = []  
+                hayExcepcion = False
+                criterios = []
+                
+                for i, c in enumerate(self.datosEntradasFacturacion.citerios):
+                    criterios.append(c)
+
+                for i, valor in enumerate(entradas):
+                    if valor.strip() == "":  
+                        hayExcepcion = True
+                        vacios.append(self.datosEntradasFacturacion.valores[i])  
+                        nombresCamposVacíos.append(criterios[i])            
+                if hayExcepcion:
+                    raise ExcepcionContenidoVacio(nombresCamposVacíos) 
+
+            except ExcepcionContenidoVacio as cabezaHueca:
+                messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                return hayExcepcion
 
     def leer2Facturacion(self):
         self.cantidadBolsaGrande=int(self.datosEntradasFacturacion.getValue("Grande"))
