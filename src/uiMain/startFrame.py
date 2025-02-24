@@ -23,12 +23,12 @@ from src.uiMain.Excepciones.exceptionC2 import ExcepcionEmpleadoNoEncontrado
 from src.uiMain.Excepciones.exceptionC2 import ExcepcionPrendaNoExistente
 from src.uiMain.main import Main
 from src.uiMain.F3Financiera import F3Financiera
-from src.uiMain.F5Produccion import producir
 from src.uiMain.fieldFrame import FieldFrame
 from src.gestorAplicacion.fecha import Fecha
 from src.gestorAplicacion.sede import Sede
 from src.gestorAplicacion.administracion.rol import Rol
 import math
+import threading
 #endregion
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -40,7 +40,7 @@ class StartFrame(tk.Tk):
     balance_anterior=0
     diferencia_estimada=0
     analisis_futuro=0
-    
+
     def __init__(self):
         self.bolsas=0
         self.insumo=None
@@ -53,12 +53,14 @@ class StartFrame(tk.Tk):
         self.fechaValida = False
         self.listaPrendas=[]
         self.cantidadPrendas=[]
+        
         # Llamar a la función de audio al abrir la ventana #reproducir_audio()
 
         self.barraMenus = tk.Menu(self)
         self.config(menu=self.barraMenus)
         self.archivoMenu = tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Archivo", menu=self.archivoMenu)
+        self.archivoMenu.add_command(label="Aplicacion", command = lambda : tk.messagebox.showinfo("Informacion", "Aplicacion de Ecomoda"))
         self.archivoMenu.add_command(label="Salir", command = lambda : self.pasarABienvenida())
         self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
@@ -66,7 +68,7 @@ class StartFrame(tk.Tk):
         self.procesosMenu.add_separator()
         self.procesosMenu.add_command(label="Pedir insumos", command = lambda : self.eliminarF2())
         self.procesosMenu.add_separator()
-        self.procesosMenu.add_command(label="Ver el desglose economico de la empresa", command = lambda : self.eliminarF3())
+        self.procesosMenu.add_command(label="Ver el desglose económico de la empresa", command = lambda : self.eliminarF3())
         self.procesosMenu.add_separator()
         self.procesosMenu.add_command(label="Facturacion", command = lambda : self.eliminarF4())
         self.procesosMenu.add_separator()
@@ -114,7 +116,7 @@ class StartFrame(tk.Tk):
             return
         self.pagina="produccion"
         self.areaPrincipal.destroy()
-        self.cambiarFrame(producir(self))
+        self.cambiarFrame(self.producir(self))
         
     def cambiarFrame(self, reemplazo:tk.Frame):
         self.areaPrincipal = reemplazo
@@ -790,6 +792,914 @@ Ya terminamos, tenga buen día.""")
 
 
 #---------------------------------------------------------------------- Producción ----------------------------------------------------------------------------------------------------
+
+    def producir(self, ventana:tk.Frame):
+        StartFrame.ventanaPrincipal = ventana
+        framePrincipal =  tk.Frame(ventana, bg="blue")
+        framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+
+        frame1 = tk.Frame(framePrincipal)
+        frame1.pack(side="top", fill="x")
+
+        tituloF5 = tk.Label(frame1, text="Producción", bg="medium orchid", relief="ridge", height=2, font=("Arial",16, "bold"))
+        tituloF5.pack(fill="both", expand=True) 
+        ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
+
+        StartFrame.descripcionF5 = tk.Label(frame1, text="Se registra la producción de prendas y actualiza su inventario: Se toma la cantidad necesaria del stock de materiales para fabricar nuevas prendas y se actualizan los datos, tanto de lo que se descontó de Stock como lo que se agregó a la cantidad de pendas.", height=3,wraplength=800, font=("Arial", 10, "italic"))
+        StartFrame.descripcionF5.pack(fill="both", expand=True)
+
+        frame2 = tk.Frame(framePrincipal, bg="light gray")
+        frame2.pack(anchor="s",  expand=True, fill="both")
+        StartFrame.frameDeTrabajo = frame2
+
+        descripcion1 = tk.Label(frame2, text="Presiona 'CONTINUAR' para evaluar el estado de la maquinaria disponible en cada sede", wraplength=200, justify="center")
+        descripcion1.place(relx=0.3, rely=0.08)
+
+        botonContinuar = tk.Button(frame2, text="CONTINUAR", command=lambda : self.activar(frame2, descripcion1, botonContinuar))
+        botonContinuar.place(relx=0.6, rely=0.12)
+
+        StartFrame.indicaRepMalo = tk.Label(frame2, text="", bg="light gray")
+        StartFrame.indicaRepMalo.place(relx=0.5, rely=0.35, anchor="center")
+
+        return framePrincipal
+    
+    def activar(self, ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #creo que al poner varias variables en global no sirve para modificarlas globalmente, verificar
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+        from src.uiMain.main import Main
+        StartFrame.proveedoresQueLlegan = []
+        StartFrame.preciosProvQueLlegan = []
+        StartFrame.totalGastado = 0
+        StartFrame.nomListMaqRev = []
+        StartFrame.sedesListMaqRev = []
+        StartFrame.senal = 0
+        StartFrame.maqDisponibless = []
+        StartFrame.nomMaqProdDispSedeP = []
+        StartFrame.sedeMaqProdDispSedeP = []
+        StartFrame.horasUsoMaqProdDispSedeP = []
+        StartFrame.nomMaqProdDispSede2 = []
+        StartFrame.sedeMaqProdDispSede2 = []
+        StartFrame.horasUsoMaqProdDispSede2 = []
+        StartFrame.textIndicador = None
+        StartFrame.senalizador = 0
+        StartFrame.aProdFinal = []
+        StartFrame.aProducirPaEnviar = []
+        StartFrame.num3 = 0
+        self.buscarProveedor(ventana, descrip1, botonContinuar)
+
+        threading.Thread(target=Maquinaria.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
+        
+    senal= 0
+    def receptor(self, texto):
+        StartFrame.senal = StartFrame.senal + 1
+        if StartFrame.senal == 1:
+            if StartFrame.indicaRepMalo:
+                StartFrame.indicaRepMalo.config(text=texto, font=("Arial", 16, "bold"))
+        else:
+            if StartFrame.indicaRepMalo:
+                StartFrame.indicaRepMalo.config(text=texto, font=("Arial", 16, "bold"))
+                StartFrame.indicaRepMalo.place(relx=0.5, rely=0.2, anchor="center")        
+
+    indicaRepMalo = None
+    frameDeTrabajo = None
+    proveedorB = None
+    botonProveedorB = None
+    descripcionF5 = None
+    ventanaPrincipal = None
+
+    senal2 = 0
+    def buscarProveedor(self, ventana:tk.Frame, descrip1: tk.Label, botonContinuar:tk.Button):
+        StartFrame.senal2 = StartFrame.senal2 + 1
+        if StartFrame.senal2 == 1:
+            StartFrame.botonProveedorB = tk.Button(ventana, text="Consultar", wraplength=250, justify="center", font=("Arial", 12, "bold"), command=lambda : (self.limpieza(ventana, descrip1, botonContinuar, StartFrame.botonProveedorB), self.mostrarProveedorB()))
+            StartFrame.botonProveedorB.place(relx=0.5, rely=0.5, anchor="center")
+        else:
+            StartFrame.botonProveedorB = tk.Button(ventana, text="Consultar", wraplength=250, justify="center", font=("Arial", 12, "bold"), command=lambda : (self.limpieza(ventana, descrip1, botonContinuar, StartFrame.botonProveedorB), self.mostrarProveedorB()))
+            StartFrame.botonProveedorB.place(relx=0.5, rely=0.5, anchor="center")
+            ventana.bind("<space>", lambda event: self.eliminarBoton(event, StartFrame.botonProveedorB))
+
+            
+    def eliminarBoton(self, event, boton):
+        boton.destroy()
+
+    senal3 = 0
+    def limpieza(self, ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button, botonProveedorB:tk.Button):
+        StartFrame.senal3 = StartFrame.senal3 + 1
+        if StartFrame.senal3 == 1:
+            descrip1.destroy()
+            botonContinuar.destroy()
+            botonProveedorB.place_forget()
+
+            StartFrame.indicaRepMalo.place(relx=0.5, rely=0.2, anchor="center")
+        else: 
+            botonProveedorB.place_forget()
+
+
+    proveedoresQueLlegan = []
+    preciosProvQueLlegan = []
+    totalGastado = 0
+    def recibeProveedorB(self, proveedorBa):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        StartFrame.proveedorB = proveedorBa
+
+        if proveedorBa is not None:
+            StartFrame.proveedoresQueLlegan.append(proveedorBa.getInsumo().getNombre())
+            StartFrame.preciosProvQueLlegan.append(proveedorBa.getPrecio())
+            StartFrame.totalGastado += proveedorBa.getPrecio()
+
+    def mostrarProveedorB(self):
+
+        if StartFrame.proveedorB is None:
+            StartFrame.indicaRepMalo.destroy()
+            self.resultadosRev()
+            return
+        
+        nombreP = tk.Label(StartFrame.frameDeTrabajo, text=StartFrame.proveedorB.getNombre(), font=("Arial", 12, "italic"))
+        nombreP.place(relx=0.6, rely=0.37)
+
+        nombre = tk.Label(StartFrame.frameDeTrabajo, text="PROVEEDOR BARATO:", bg="light gray", font=("Arial", 12, "bold italic"))
+        nombre.place(relx=0.3, rely=0.37)
+
+        precio = tk.Label(StartFrame.frameDeTrabajo, text="PRECIO:", bg="light gray", font=("Arial", 12, "bold italic"))
+        precio.place(relx=0.35, rely=0.45)
+        precioP = tk.Label(StartFrame.frameDeTrabajo, text=str(StartFrame.proveedorB.getPrecio()), font=("Arial", 12, "italic"))
+        precioP.place(relx=0.6, rely=0.45)
+        comprar = tk.Button(StartFrame.frameDeTrabajo, text="COMPRAR REPUESTO", font=("Arial", 13, "bold"))
+        comprar.place(relx=0.38, rely=0.61)
+        comprar.bind("<Button-1>", lambda event: self.evento(event, nombre, nombreP, precio, precioP))
+
+    def evento(self, event, nombre, nombreP, precio, precioP):
+        from src.gestorAplicacion.sede import Sede
+        event.widget.destroy()
+
+        separador = ttk.Separator(StartFrame.frameDeTrabajo, orient="horizontal")
+        separador.place(relx=0.05, rely=0.55, relwidth=0.9)
+        seleccionar = tk.Label(StartFrame.frameDeTrabajo, text="Seleccione la sede desde donde comprará el Repuesto:", bg="light gray", font=("Arial", 12, "bold"))
+        seleccionar.place(relx=0.5, rely=0.63, anchor="center")
+        contSedes = tk.Frame(StartFrame.frameDeTrabajo, bg="light gray", bd=4, relief="ridge")
+        contSedes.place(relx=0.5, rely=0.85, anchor="center") #sede Principal
+        contSedeP = tk.Frame(contSedes, bg="light gray", width=100, height=100)
+        contSedeP.pack(fill="x", padx=5, pady=5)
+        sedePdinero = tk.Label(contSedeP, text=str(Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()), font=("Arial", 12, "italic"))
+        sedePdinero.pack(side="right", padx=10, pady=5)
+        sedePflecha = tk.Label(contSedeP, text="------------>", bg="light gray", font=("Arial", 12, "bold"))
+        sedePflecha.pack(side="right", pady=5)    
+        #sede2
+        contSedes2 = tk.Frame(contSedes, bg="light gray", width=100, height=100)
+        contSedes2.pack(fill="x", padx=35, pady=0)
+        sede2dinero = tk.Label(contSedes2, text=str(Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()), font=("Arial", 12, "italic"))
+        sede2dinero.pack(side="right", padx=10, pady=5)
+        sede2flecha = tk.Label(contSedes2, text="------------>", bg="light gray", font=("Arial", 12, "bold"))
+        sede2flecha.pack(side="right", pady=5)
+        sedePboton = tk.Button(contSedeP, text="Sede Principal", font=("Arial", 12, "italic"))
+        sedePboton.pack(side="right", padx=10, pady=5)
+        sedePboton.bind("<Button-1>", lambda event: self.eventoDeCompra(event, nombre, nombreP, precio, precioP, separador, seleccionar, contSedes, contSedeP, sedePdinero, sedePflecha, contSedes2, sede2dinero, sede2flecha, sede2boton))
+        sede2boton = tk.Button(contSedes2, text="Sede 2", font=("Arial", 12, "italic"))
+        sede2boton.pack(side="right", padx=10, pady=5)
+        sede2boton.bind("<Button-1>", lambda event: self.eventoDeCompra(event, nombre, nombreP, precio, precioP, separador, seleccionar, contSedes, contSedeP, sedePdinero, sedePflecha, contSedes2, sede2dinero, sede2flecha, sedePboton))
+
+    def eventoDeCompra(self, event, nombre, nombreP, precio, precioP, separador, seleccionar, contSedes, contSedeP, sedePdinero, sedePflecha, contSedes2, sede2dinero, sede2flecha, botonDeSede):
+        from src.gestorAplicacion.sede import Sede
+        textoDeBoton = botonDeSede.cget("text")
+        StartFrame.indicaRepMalo.place_forget()
+        nombre.destroy()
+        nombreP.destroy()
+        precio.destroy()
+        precioP.destroy()
+        separador.destroy()
+        seleccionar.destroy()
+        contSedes.destroy()
+        contSedeP.destroy()
+        sedePdinero.destroy()
+        sedePflecha.destroy()
+        contSedes2.destroy()
+        sede2dinero.destroy()
+        sede2flecha.destroy()
+        botonDeSede.destroy()
+        event.widget.destroy()
+
+        if textoDeBoton == "Sede 2":
+            labelDeCompraP = tk.Label(StartFrame.frameDeTrabajo, text=f"El repuesto {StartFrame.proveedorB.getInsumo().getNombre()} se compró exitosamente desde la Sede Principal", wraplength=500, font=("Arial", 14, "bold"))
+            labelDeCompraP.place(relx=0.5, rely=0.2, anchor="center")
+            Sede.getListaSedes()[0].getCuentaSede().setAhorroBanco( (Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco() - StartFrame.proveedorB.getPrecio()) )
+            labelSaldo = tk.Label(StartFrame.frameDeTrabajo, text= f"Saldo Disponible: {Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()} pesos", font=("Arial", 14, "italic"))
+            labelSaldo.place(relx=0.5, rely=0.4, anchor="center")
+
+            seguirAnalisis = tk.Button(StartFrame.frameDeTrabajo, text="Continuar Análisis", font=("Arial", 12, "bold"))
+            seguirAnalisis.place(relx=0.5, rely=0.6, anchor="center")
+            seguirAnalisis.bind("<Button-1>", lambda event: self.eventoContinuador(event, labelDeCompraP, labelSaldo))
+
+        else:
+            labelDeCompraP = tk.Label(StartFrame.frameDeTrabajo, text=f"El repuesto {StartFrame.proveedorB.getInsumo().getNombre()} se compró exitosamente desde la Sede 2", wraplength=500, font=("Arial", 14, "bold"))
+            labelDeCompraP.place(relx=0.5, rely=0.2, anchor="center")
+            Sede.getListaSedes()[1].getCuentaSede().setAhorroBanco( (Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco() - StartFrame.proveedorB.getPrecio()) )
+            labelSaldo = tk.Label(StartFrame.frameDeTrabajo, text= f"Saldo Disponible: {Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()} pesos", font=("Arial", 14, "italic"))
+            labelSaldo.place(relx=0.5, rely=0.4, anchor="center")
+
+            seguirAnalisis = tk.Button(StartFrame.frameDeTrabajo, text="Continuar Análisis", font=("Arial", 12, "bold"))
+            seguirAnalisis.place(relx=0.5, rely=0.6, anchor="center")
+            seguirAnalisis.bind("<Button-1>", lambda event: self.eventoContinuador(event, labelDeCompraP, labelSaldo))
+            
+        
+    def eventoContinuador(self, event, labelDeCompra, labelSaldo):
+        from src.uiMain.main import Main
+
+        labelDeCompra.destroy()
+        labelSaldo.destroy()
+        event.widget.destroy()
+        Main.evento_ui.set()
+        print(StartFrame.proveedorB)
+        self.buscarProveedor(StartFrame.frameDeTrabajo, 1, 1)
+
+    nomListMaqRev = []
+    sedesListMaqRev = []
+    def recibeMaqPaRevisar(self, listMaquinasRev):
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+
+        for maq in listMaquinasRev:
+            StartFrame.nomListMaqRev.append(maq.getNombre())
+            StartFrame.sedesListMaqRev.append(maq.getSede().getNombre())
+        
+
+    def resultadosRev(self):
+        from src.uiMain.fieldFrame import FieldFrame
+        
+        criterios = StartFrame.proveedoresQueLlegan
+        #print(f"\nlos proveedores que llegaron fueron: {len(StartFrame.proveedoresQueLlegan)}")
+        valores = StartFrame.preciosProvQueLlegan
+        habilitado = [False for _ in range(len(StartFrame.proveedoresQueLlegan))]
+
+        containerBig = tk.Frame(StartFrame.frameDeTrabajo, bg="light gray")
+        containerBig.pack(pady=10)
+
+        cont = tk.Frame(containerBig, bg="medium orchid")
+        cont.pack(side="left", pady=20)
+        
+        field_frame = FieldFrame(cont, "Los repuestos comprados fueron:", criterios, "", valores, habilitado)
+        field_frame.pack(padx=10, pady=10)
+
+        labelTotalGastado = tk.Label(cont, text=f"Total gastado: {StartFrame.totalGastado} pesos", font=("Arial", 12, "italic"))
+        labelTotalGastado.pack(pady=10)
+
+        criterios2 = StartFrame.nomListMaqRev
+        valores2 = StartFrame.sedesListMaqRev
+        habilitado2 = [False for _ in range(len(StartFrame.nomListMaqRev))]
+
+        cont2 = tk.Frame(containerBig, bg="medium orchid")
+        cont2.pack(side="left", pady=20, padx=5)
+        
+        field_frame2 = FieldFrame(cont2, "Maquinas inhabilidas\npor falta de revisión:", criterios2, "", valores2, habilitado2)
+        field_frame2.pack(padx=10, pady=10)
+
+        #labelTotalGastado = tk.Label(cont, text=f"Total gastado: {totalGastado} pesos", font=("Arial", 12, "italic"))
+        #labelTotalGastado.pack(pady=10)
+
+        botonInt2 = tk.Button(StartFrame.frameDeTrabajo, text="Maquinaria Disponible", font=("Arial", 12, "bold italic"))
+        botonInt2.pack(pady=4)
+        botonInt2.bind("<Button-1>", lambda event: self.inicioInt2(event, containerBig, cont, field_frame, labelTotalGastado, cont2, field_frame2))
+
+    maqDisponibless = []
+
+    def recibeMaqDisp(self, maqDisponibles):
+        StartFrame.maqDisponibless = maqDisponibles
+
+    nomMaqProdDispSedeP = []
+    sedeMaqProdDispSedeP = []
+    horasUsoMaqProdDispSedeP = []
+    nomMaqProdDispSede2 = []
+    sedeMaqProdDispSede2 = []
+    horasUsoMaqProdDispSede2 = []
+    
+    def recibeMaqDispSeparadas(self, maqProdSedeP, maqProdSede2):
+        for maquinasSedeP in maqProdSedeP:
+            StartFrame.nomMaqProdDispSedeP.append(maquinasSedeP.getNombre())
+            StartFrame.sedeMaqProdDispSedeP.append(maquinasSedeP.getSede().getNombre())
+            StartFrame.horasUsoMaqProdDispSedeP.append(maquinasSedeP.getHorasUso())
+        for maquinasSede2 in maqProdSede2:
+            StartFrame.nomMaqProdDispSede2.append(maquinasSede2.getNombre())
+            StartFrame.sedeMaqProdDispSede2.append(maquinasSede2.getSede().getNombre())
+            StartFrame.horasUsoMaqProdDispSede2.append(maquinasSede2.getHorasUso())
+        StartFrame.even2.set()
+
+    textIndicador = None
+    senalizador = 0
+    evento_senalizador = threading.Event()
+    even2 = threading.Event()
+    def recibeTextIndicador(self, textRecibido, senal):
+        StartFrame.textIndicador = textRecibido
+        StartFrame.senalizador = senal
+        StartFrame.evento_senalizador.set()
+
+    def inicioInt2(self, event, containerBig, cont, field_frame, labelTG, cont2, field_frame2):
+        from src.uiMain.fieldFrame import FieldFrame
+        from src.gestorAplicacion.sede import Sede
+        from src.uiMain.main import Main
+        containerBig.destroy()
+        cont.destroy()
+        field_frame.destroy()
+        labelTG.destroy()
+        cont2.destroy()
+        field_frame2.destroy()
+        event.widget.destroy()
+        StartFrame.frameDeTrabajo.config(bg="white")
+        threading.Thread(target=Sede.planProduccion, args=(StartFrame.maqDisponibless, Main.fecha), daemon=True).start()
+
+        StartFrame.even2.wait()
+        StartFrame.even2.clear()
+        criterios = StartFrame.nomMaqProdDispSedeP
+        print(f"\nlas maq disponiles en la sede p son: {len(StartFrame.nomMaqProdDispSedeP)}")
+        valores = StartFrame.horasUsoMaqProdDispSedeP
+        habilitado = [False for _ in range(len(StartFrame.nomMaqProdDispSedeP))]
+
+        containerBig = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
+        containerBig.pack(pady=2)
+
+        StartFrame.evento_senalizador.wait()
+        StartFrame.evento_senalizador.clear()
+        
+        if StartFrame.senalizador == 2 or StartFrame.senalizador == 4:
+            cont = tk.Frame(containerBig, bg="gray")
+            cont.pack(side="left", padx=5, pady=10)
+        else:
+            cont = tk.Frame(containerBig, bg="medium orchid")
+            cont.pack(side="left", padx=5, pady=10)
+        
+        field_frame = FieldFrame(cont, "Sede Principal", criterios, "", valores, habilitado)
+        field_frame.pack(padx=10, pady=10)
+
+        criterios2 = StartFrame.nomMaqProdDispSede2
+        valores2 = StartFrame.horasUsoMaqProdDispSede2
+        habilitado2 = [False for _ in range(len(StartFrame.nomMaqProdDispSede2))]
+
+        if StartFrame.senalizador == 1 or StartFrame.senalizador == 4:
+            cont2 = tk.Frame(containerBig, bg="gray")
+            cont2.pack(side="left", padx=5,pady=10)
+        else:
+            cont2 = tk.Frame(containerBig, bg="medium orchid")
+            cont2.pack(side="left", padx=5,pady=10)
+        
+        field_frame2 = FieldFrame(cont2, "Sede 2", criterios2, "", valores2, habilitado2)
+        field_frame2.pack(padx=10, pady=10)
+
+        contLabelYBoton = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
+        contLabelYBoton.pack(pady=1)
+
+        labelTextIndicador = tk.Label(contLabelYBoton, text=StartFrame.textIndicador, font=("Arial", 14, "bold"), bg="white", wraplength=600)
+        labelTextIndicador.pack(pady=0)
+
+        btnPlanificarProd = tk.Button(StartFrame.frameDeTrabajo, text="Planificar Produccion", font=("Arial", 12, "bold italic"))
+        
+        if StartFrame.senalizador == 2:
+            btnPlanificarProd.bind("<Button-1>", lambda event: self.planProduccionn(event, containerBig, contLabelYBoton, 1))
+        elif StartFrame.senalizador == 1:
+            btnPlanificarProd.bind("<Button-1>", lambda event: self.planProduccionn(event, containerBig, contLabelYBoton, 2))
+        elif StartFrame.senalizador == 3:
+            btnPlanificarProd.bind("<Button-1>", lambda event: self.planProduccionn(event, containerBig, contLabelYBoton, 3))
+        elif StartFrame.senalizador == 4:
+            # Cuando ninguna sede esta disponible, entonces aqui se debe crear un boton pa volver
+            btnPlanificarProd.config(text="Volver al inicio")
+            btnPlanificarProd.bind("<Button-1>", self.volverMenu)
+        
+        btnPlanificarProd.pack(pady=5)
+
+    def volverMenu(self, event):
+        from src.uiMain.startFrame import StartFrame
+        stff = StartFrame()
+        ventana = event.widget.winfo_toplevel()
+        stff.cambiarFrame(stff.areaPrincipal)
+        ventana.destroy()
+
+    aProdFinal = []
+    def recibeProdFinal(self, aProdF):
+        tempProd = []
+        for listas1 in aProdF:
+            for listas2 in listas1:
+                for listas3 in listas2:
+                    tempProd.append(listas3)
+        print("\n",len(tempProd) , f"- la produccion en una sola lista es: {tempProd}\n")
+        StartFrame.aProdFinal.append(tempProd[0]); StartFrame.aProdFinal.append(tempProd[1]); StartFrame.aProdFinal.append(tempProd[4]); StartFrame.aProdFinal.append(tempProd[5])
+        StartFrame.aProdFinal.append(tempProd[2]); StartFrame.aProdFinal.append(tempProd[3]); StartFrame.aProdFinal.append(tempProd[6]); StartFrame.aProdFinal.append(tempProd[7])
+        print("\n",len(StartFrame.aProdFinal) , f"- la produccion cruzada en una sola lista es: {StartFrame.aProdFinal}\n")
+        StartFrame.evento_senalizador.set()
+
+    enlacesP = [(0, 2), (0, 4), (0, 6)] ; enlacesPSede2 = [(4, 6)]
+    enlacesC = [(1, 3), (1, 5), (1, 7)] ; enlacesCSede2 = [(5, 7)]
+    indiceEnlaceP = 0
+    indiceEnlaceC = 0
+    direccion = False
+    modoP = True
+    idx1, idx2 = enlacesP[indiceEnlaceP]
+    idx3, idx4 = enlacesPSede2[0]
+    def planProduccionn(self, event, containerBig, contLyB, indicador):
+        from src.uiMain.main import Main
+        containerBig.destroy()
+        contLyB.destroy()
+        StartFrame.descripcionF5.destroy()
+        event.widget.destroy()
+        StartFrame.frameDeTrabajo.config(bg="white")
+        contBigRecor = tk.Frame(StartFrame.frameDeTrabajo)
+        contBigRecor.pack(fill="x")
+
+        
+        contRe1 = tk.Frame(contBigRecor)
+        contRe1.pack(pady=3)
+        recorderis = tk.Label(contRe1, text="Si en la produccion de hoy\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"))
+        recorderis.pack(side="left", padx=10, pady=2)
+        textRecorderis = tk.Label(contRe1, text="Sobre costo = 5000 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"))
+        textRecorderis.pack(side="left", padx=10, pady=2)
+        #separador
+        separador = ttk.Separator(contBigRecor, orient="horizontal")
+        separador.pack(fill="x", padx=50)
+        contRe2 = tk.Frame(contBigRecor)
+        contRe2.pack(pady=3)
+        recorderis2 = tk.Label(contRe2, text="Si en la produccion de la otra semana\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"))
+        recorderis2.pack(side="left", padx=10, pady=2)
+        textRecorderis2 = tk.Label(contRe2, text="Sobre costo = 2500 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"))
+        textRecorderis2.pack(side="left", padx=10, pady=2)
+
+        Main.evento_ui.set()
+                #CAMBIAR PRODUCCION A GUSTO
+        StartFrame.evento_senalizador.wait()
+        StartFrame.evento_senalizador.clear()
+        varEntries = [tk.StringVar(value=str(StartFrame.aProdFinal[x])) for x in range(8)]
+        #print(f"\nvalores de entrada de la interfaz: {[int(var.get()) for var in varEntries]}")
+        entries = []
+        flechas = []
+        varIntermedio = tk.StringVar()
+
+        def confirmarProduccion(event):
+            from tkinter import messagebox
+            from src.gestorAplicacion.sede import Sede
+            from src.uiMain.fieldFrame import FieldFrame
+            from src.gestorAplicacion.bodega.prenda import Prenda
+            listSobreCostos = calcularSobreCostos()
+            produccionPaEnviar()
+            respuesta = messagebox.askyesno("Confirmación", f"¿Deseas continuar?\n\n* Sobre Costo de la Sede Principal = {listSobreCostos[0]}\n* Sobre Costo de la Sede 2 = {listSobreCostos[1]}")
+            
+            if respuesta:
+                print("El usuario eligió continuar.")
+                contBigRecor.destroy() ; contRe1.destroy() ; recorderis.destroy() ; textRecorderis.destroy() ; separador.destroy()
+                contRe2.destroy() ; recorderis2.destroy() ; textRecorderis2.destroy() ; frameGeneral.destroy() ; frameIzq.destroy() ; frameDer.destroy()
+                for subf in subframes:
+                    subf.destroy()
+                frameBotones.destroy() ; frameEntry.destroy()
+                StartFrame.ventanaPrincipal.after(100, self.inicioInt3)
+
+            else:
+                print("El usuario canceló la acción.")
+
+        def produccionPaEnviar():
+            valores = [int(modificados.get()) for modificados in varEntries]
+            list1 = [valores[0], valores[1]] ; list2 = [valores[4], valores[5]] ; listProdHoy = [list1, list2]
+            list3 = [valores[2], valores[3]] ; list4 = [valores[6], valores[7]] ; listProdOWeek = [list3, list4]
+            StartFrame.aProducirPaEnviar.append(listProdHoy) ; StartFrame.aProducirPaEnviar.append(listProdOWeek)
+            print(f"\nproduccion pa enviar: {StartFrame.aProducirPaEnviar}")
+
+        def calcularSobreCostos():
+            import math
+            sedesSC = []
+            valores = [int(modificados.get()) for modificados in varEntries]
+            prendasSCHoySedeP = math.floor((valores[0] + valores[1]) / 6)
+            dinero1SedeP = prendasSCHoySedeP * 5000
+            prendasSCMSedeP = math.floor((valores[2] + valores[3]) / 6)
+            dinero2SedeP = prendasSCMSedeP * 2500
+            sobreCostoTotalSedeP = dinero1SedeP + dinero2SedeP
+
+            prendasSCHoySede2 = math.floor((valores[4] + valores[5]) / 6)
+            dinero1Sede2 = prendasSCHoySede2 * 5000
+            prendasSCMSede2 = math.floor((valores[6] + valores[7]) / 6)
+            dinero2Sede2 = prendasSCMSede2 * 2500
+            sobreCostoTotalSede2 = dinero1Sede2 + dinero2Sede2
+
+            sedesSC = [sobreCostoTotalSedeP, sobreCostoTotalSede2]
+            return sedesSC
+
+        def actualizarValores(event=None):
+            global direccion, idx1, idx2, idx3, idx4
+            try:
+                valorIntermedio = int(varIntermedio.get()) if varIntermedio.get() else 0
+                if indicador == 3 or indicador == 2:
+                    val1 = int(varEntries[StartFrame.idx1].get())
+                    val2 = int(varEntries[StartFrame.idx2].get())
+                elif indicador == 1:
+                    val1 = int(varEntries[StartFrame.idx3].get())
+                    val2 = int(varEntries[StartFrame.idx4].get())
+
+                if StartFrame.direccion: 
+                    if val2 - valorIntermedio < 0:
+                        valorIntermedio = val2
+                    if indicador == 3 or indicador == 2:
+                        varEntries[StartFrame.idx1].set(str(val1 + valorIntermedio))
+                        varEntries[StartFrame.idx2].set(str(val2 - valorIntermedio))
+                    elif indicador == 1:
+                        varEntries[StartFrame.idx3].set(str(val1 + valorIntermedio))
+                        varEntries[StartFrame.idx4].set(str(val2 - valorIntermedio))
+                else:  
+                    if val1 - valorIntermedio < 0:
+                        valorIntermedio = val1
+                    if indicador == 3 or indicador == 2:
+                        varEntries[StartFrame.idx1].set(str(val1 - valorIntermedio))
+                        varEntries[StartFrame.idx2].set(str(val2 + valorIntermedio))
+                    elif indicador == 1:
+                        varEntries[StartFrame.idx3].set(str(val1 - valorIntermedio))
+                        varEntries[StartFrame.idx4].set(str(val2 + valorIntermedio))
+
+                varIntermedio.set("")  # Limpiar Entry intermedio
+            except ValueError:
+                pass  # Ignorar valores no numéricos
+
+        def cambiarEnlaceP():
+            StartFrame.modoP = True  # Activar modo "cambiarP"
+            StartFrame.idx1, StartFrame.idx2 = StartFrame.enlacesP[StartFrame.indiceEnlaceP]  # Actualizar índices
+            StartFrame.idx3, StartFrame.idx4 = StartFrame.enlacesPSede2[0]
+            if indicador == 3:
+                StartFrame.indiceEnlaceP = (StartFrame.indiceEnlaceP + 1) % len(StartFrame.enlacesP)
+            actualizarFlechas()
+
+        def cambiarEnlaceC():
+            StartFrame.modoP = False  # Activar modo "cambiarC"
+            StartFrame.idx1, StartFrame.idx2 = StartFrame.enlacesC[StartFrame.indiceEnlaceC]  # Actualizar índices
+            StartFrame.idx3, StartFrame.idx4 = StartFrame.enlacesCSede2[0]
+            if indicador == 3:
+                StartFrame.indiceEnlaceC = (StartFrame.indiceEnlaceC + 1) % len(StartFrame.enlacesC)
+            actualizarFlechas()
+
+        def cambiarDireccion():
+            StartFrame.direccion = not StartFrame.direccion
+            actualizarFlechas()
+
+        def actualizarFlechas():
+            for label in flechas:
+                label.config(text="")
+            if indicador == 3 or indicador == 2:
+                flechas[StartFrame.idx1].config(text="⬅" if StartFrame.direccion else "➡")
+                flechas[StartFrame.idx2].config(text="➡" if not StartFrame.direccion else "⬅")
+            elif indicador == 1:
+                flechas[StartFrame.idx3].config(text="⬅" if StartFrame.direccion else "➡")
+                flechas[StartFrame.idx4].config(text="➡" if not StartFrame.direccion else "⬅")
+
+        def onFocusIn(event):
+            if event.widget.get() == "Modifica aquí...":
+                event.widget.delete(0, tk.END)
+                event.widget.config(fg="black")
+
+        def onFocusOut(event):
+            if event.widget.get() == "":
+                event.widget.insert(0, "Modifica aquí...")
+                event.widget.config(fg="gray")
+            # Contenedores principales con títulos
+        frameGeneral = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
+        frameGeneral.pack(pady=10)
+
+        if indicador == 1: # Sede Principal no disponible
+            frameIzq = tk.LabelFrame(frameGeneral, text="Sede Principal", padx=17, pady=3, bg="light gray", font=("Arial", 14, "bold italic"))
+        elif indicador != 1 and indicador != 4:
+            frameIzq = tk.LabelFrame(frameGeneral, text="Sede Principal", padx=17, pady=3, bg="#E0A8F2", font=("Arial", 14, "bold italic"))
+        else:   # Para cuando es 4 el indicador ( es decir, ninguna sede esta disponible )
+            frameIzq = tk.LabelFrame(frameGeneral, text="Sede Principal", padx=17, pady=3, bg="light gray", font=("Arial", 14, "bold italic"))
+
+        if indicador == 2: # Sede 2 no disponible
+            frameDer = tk.LabelFrame(frameGeneral, text="Sede 2", padx=17, pady=3, bg="light gray", font=("Arial", 14, "bold italic"))
+        elif indicador != 2 and indicador != 4:
+            frameDer = tk.LabelFrame(frameGeneral, text="Sede 2", padx=17, pady=3, bg="#E0A8F2", font=("Arial", 14, "bold italic"))
+        else:   # Para cuando es 4 el indicador ( es decir, ninguna sede esta disponible )
+            frameDer = tk.LabelFrame(frameGeneral, text="Sede 2", padx=17, pady=3, bg="light gray", font=("Arial", 14, "bold italic"))
+        frameIzq.pack(side=tk.LEFT, padx=10)
+        frameDer.pack(side=tk.RIGHT, padx=10)
+
+        # Crear los sub-frames (cada uno contiene 2 Entry)
+        subframes = []
+        labels = ["Comenzar\nproducción", "Producir la\notra semana", "Comenzar\nproducción", "Producir la\notra semana"]
+        for i in range(4):
+            frame = tk.Frame(frameIzq if i < 2 else frameDer, padx=12, pady=7, bg="#E6E6FA")
+            frame.pack(side=tk.LEFT, padx=12, pady=7)
+            label = tk.Label(frame, text=labels[i], font=("Arial", 12, "bold"), bg="#E6E6FA")
+            label.pack(pady=5)
+            subframes.append(frame)
+
+        # Crear los Entry, flechas y etiquetas "PANTALÓN" y "CAMISA"
+        for i in range(8):
+            text = "Pantalones" if i % 2 == 0 else "Camisas"
+            etiqueta = tk.Label(subframes[i // 2], text=text, font=("Arial", 10, "bold"), bg="#E6E6FA")
+            etiqueta.pack(pady=2)
+
+            frameEntry = tk.Frame(subframes[i // 2])
+            frameEntry.pack()
+            
+            flecha = tk.Label(frameEntry, text="", font=("Arial", 12))
+            flecha.pack(side=tk.LEFT)
+            flechas.append(flecha)
+            
+            entry = tk.Entry(frameEntry, textvariable=varEntries[i], width=10, justify="center", state="readonly")
+            entry.pack(side=tk.LEFT)
+            entries.append(entry)
+
+        # Contenedor de botones
+        frameBotones = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
+        frameBotones.pack(pady=5)
+
+        botonModificarP = tk.Button(frameBotones, text="Modificar Pantalones", command=cambiarEnlaceP, font=("Arial", 11, "bold italic"), bg="light gray")
+        entryIntermedio = tk.Entry(frameBotones, textvariable=varIntermedio, width=15, justify="center", font=("Arial", 11), fg="gray", bg="light gray")
+        entryIntermedio.insert(0, "Modifica aquí...")  # Texto inicial
+        entryIntermedio.bind("<FocusIn>", onFocusIn)
+        entryIntermedio.bind("<FocusOut>", onFocusOut)
+        entryIntermedio.bind("<Return>", actualizarValores)
+        botonCambiarC = tk.Button(frameBotones, text="Modificar Camisas", command=cambiarEnlaceC, font=("Arial", 11, "bold italic"))
+
+        botonModificarP.pack(side=tk.LEFT, padx=15, pady=1)
+        entryIntermedio.pack(side=tk.LEFT, padx=15, pady=1)
+        botonCambiarC.pack(side=tk.LEFT, padx=15, pady=1)
+
+        # Entry para ingresar cantidad
+        frameEntry = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
+        frameEntry.pack(pady=10)
+        botonCambiarDir = tk.Button(frameEntry, text="Cambiar Dirección", command=cambiarDireccion, font=("Arial", 11, "bold italic"))
+        botonCambiarDir.pack(side="left", padx=15)
+        botonContinue = tk.Button(frameEntry, text="CONTINUAR", font=("Arial", 13, "bold italic"))
+        botonContinue.pack(side="left", padx=15)
+        botonContinue.bind("<Button-1>", confirmarProduccion)
+
+        # Iniciar con los primeros enlaces resaltados
+        cambiarEnlaceP()
+
+    aProducirPaEnviar = []
+    creadas = None
+    def recibeCreadasOrNo(self, creadasss):
+        from src.gestorAplicacion.bodega.prenda import Prenda
+        StartFrame.creadas = creadasss
+        StartFrame.contenedorGrande.destroy()
+        resultado = None
+
+        prendasHoy = [] ; hoySedeP = [] ; hoySede2 = [] ; pHoySedeP = [] ; pHoySede2 = [] ; cHoySedeP = [] ; cHoySede2 = []
+        prendasOW = [] ; OWSedeP = [] ; OWSede2 = [] ; pOWSedeP = [] ; pOWSede2 = [] ; cOWSedeP = [] ; cOWSede2 = []
+        diaRef = Prenda.prendasUltimaProduccion[0].getFecha().getDia()
+        print(f"dia de referencia: {diaRef}")
+        for prendaPorFecha in Prenda.prendasUltimaProduccion:
+            if prendaPorFecha.getFecha().getDia() == diaRef:
+                prendasHoy.append(prendaPorFecha)
+            else:
+                prendasOW.append(prendaPorFecha)
+        #print(f"Numero de producidas hoy: {len(prendasHoy)}, numero de producidas la otra semana: {len(prendasOW)}")
+        for lodelaP in prendasHoy:
+            if lodelaP.getSede().getNombre().lower() == "sede principal":
+                hoySedeP.append(lodelaP)
+            else:
+                hoySede2.append(lodelaP)
+        for lodelaP2 in prendasOW:
+            if lodelaP2.getSede().getNombre().lower() == "sede principal":
+                OWSedeP.append(lodelaP2)
+            else:
+                OWSede2.append(lodelaP2)
+        #TENIENDO LA PRODUCCION DE HOY Y DE LA OTRA SEMANA SEPARADAS, vamos separar por pantalones y camisas...
+        for prendaEs in hoySedeP:
+            if prendaEs.getNombre().lower() == "pantalon":
+                pHoySedeP.append(prendaEs)
+            else:
+                cHoySedeP.append(prendaEs)
+        for prendaEs2 in hoySede2:
+            if prendaEs2.getNombre().lower() == "pantalon":
+                pHoySede2.append(prendaEs2)
+            else:
+                cHoySede2.append(prendaEs2)
+        for prendaEs3 in OWSedeP:
+            if prendaEs3.getNombre().lower() == "pantalon":
+                pOWSedeP.append(prendaEs3)
+            else:
+                cOWSedeP.append(prendaEs3)
+        for prendaEs4 in OWSede2:
+            if prendaEs4.getNombre().lower() == "pantalon":
+                pOWSede2.append(prendaEs4)
+            else:
+                cOWSede2.append(prendaEs4)
+        
+        #print(f"\n[{len(pHoySedeP)}, {len(cHoySedeP)}, {len(pHoySede2)}, {len(cHoySede2)} --- {len(pOWSedeP)}, {len(cOWSedeP)}, {len(pOWSede2)}, {len(cOWSede2)}]")
+
+        contCONTENEDOR = tk.Frame(StartFrame.frameDeTrabajo, bg="white", relief="ridge", bd=4)
+        contCONTENEDOR.pack(pady=20)
+
+        contARRIBA = tk.Frame(contCONTENEDOR, bg="#E0A8F2")
+        contARRIBA.pack(side="left", pady=5, padx=5)
+
+        labelProdSal = tk.Label(contARRIBA, text="PRODUCCIÓN\nSALIENTE", font=("Arial", 15, "bold italic"), bg="#E0A8F2")
+        labelProdSal.pack(pady=7)
+
+        contSEDES = tk.Frame(contARRIBA, bg="#E0A8F2")
+        contSEDES.pack(pady=2, padx=20)
+
+        contSedeP = tk.Frame(contSEDES, bg="#E6E6FA")
+        contSedeP.pack(side="left", padx=10, pady=5)
+
+        contSede2 = tk.Frame(contSEDES, bg="#E6E6FA")
+        contSede2.pack(side="left", padx=10, pady=5)
+
+        label1 = tk.Label(contSedeP, bg="#E6E6FA", text="Sede Principal", font=("Arial", 13, "bold italic"))
+        label1.pack(pady=4, padx=4)
+
+        label2 = tk.Label(contSedeP, bg="#E6E6FA", text=f"Pantalones: {len(pHoySedeP)}", font=("Arial", 10, "italic"))
+        label2.pack(pady=2, padx=4)
+
+        label3 = tk.Label(contSedeP, bg="#E6E6FA", text=f"Camisas: {len(cHoySedeP)}", font=("Arial", 10, "italic"))
+        label3.pack(pady=2, padx=4)
+
+        label4 = tk.Label(contSede2, bg="#E6E6FA", text="Sede 2", font=("Arial", 11, "bold italic"))
+        label4.pack(pady=4, padx=4)
+
+        label5 = tk.Label(contSede2, bg="#E6E6FA", text=f"Pantalones: {len(pHoySede2)}", font=("Arial", 10, "italic"))
+        label5.pack(pady=2, padx=4)
+
+        label6 = tk.Label(contSede2, bg="#E6E6FA", text=f"Camisas: {len(cHoySede2)}", font=("Arial", 10, "italic"))
+        label6.pack(pady=2, padx=4)
+
+            #resultados de lo de la otra semana...
+        contDERECHA = tk.Frame(contCONTENEDOR, bg="#E0A8F2")
+        contDERECHA.pack(side="left", pady=5, padx=5)
+
+        labelProdSal2 = tk.Label(contDERECHA, text="PRODUCCIÓN LANZADA\nLA OTRA SEMANA", font=("Arial", 15, "bold italic"), bg="#E0A8F2")
+        labelProdSal2.pack(pady=7)
+
+        contSEDES2 = tk.Frame(contDERECHA, bg="#E0A8F2")
+        contSEDES2.pack(pady=2, padx=20)
+
+        contSedeP2 = tk.Frame(contSEDES2, bg="#E6E6FA")
+        contSedeP2.pack(side="left", padx=10, pady=5)
+
+        contSede22 = tk.Frame(contSEDES2, bg="#E6E6FA")
+        contSede22.pack(side="left", padx=10, pady=5)
+
+        label12 = tk.Label(contSedeP2, bg="#E6E6FA", text="Sede Principal", font=("Arial", 13, "bold italic"))
+        label12.pack(pady=4, padx=4)
+
+        label22 = tk.Label(contSedeP2, bg="#E6E6FA", text=f"Pantalones: {len(pOWSedeP)}", font=("Arial", 10, "italic"))
+        label22.pack(pady=2, padx=4)
+
+        label32 = tk.Label(contSedeP2, bg="#E6E6FA", text=f"Camisas: {len(cOWSedeP)}", font=("Arial", 10, "italic"))
+        label32.pack(pady=2, padx=4)
+
+        label42 = tk.Label(contSede22, bg="#E6E6FA", text="Sede 2", font=("Arial", 11, "bold italic"))
+        label42.pack(pady=4, padx=4)
+
+        label52 = tk.Label(contSede22, bg="#E6E6FA", text=f"Pantalones: {len(pOWSede2)}", font=("Arial", 10, "italic"))
+        label52.pack(pady=2, padx=4)
+
+        label62 = tk.Label(contSede22, bg="#E6E6FA", text=f"Camisas: {len(cOWSede2)}", font=("Arial", 10, "italic"))
+        label62.pack(pady=2, padx=4)
+
+
+        if creadasss:
+            resultado = f"{Prenda.getCantidadUltimaProduccion()} Prendas creadas con éxito"
+        else:
+            resultado = f"No se pudo producir todo porque los insumos no alcanzaron, producimos {Prenda.getCantidadUltimaProduccion()} prendas"
+        
+        labelResultado = tk.Label(StartFrame.frameDeTrabajo, text=resultado, bg="white", font=("Arial", 18, "bold italic"), wraplength=500, justify="center")
+        labelResultado.pack(pady=15)
+
+        botonVOLVER = tk.Button(StartFrame.frameDeTrabajo, text="Volver al Menu", font=("Arial", 16, "bold italic"))
+        botonVOLVER.pack(pady=10)
+        botonVOLVER.bind("<Button-1>", self.volverMenu)
+
+        
+    contenedorGrande = None
+    def inicioInt3(self):
+        from src.gestorAplicacion.bodega.prenda import Prenda
+        from src.uiMain.main import Main
+        from src.gestorAplicacion.sede import Sede
+        from src.uiMain.fieldFrame import FieldFrame
+
+        criterios1 = [] ; criterios2 = [] ; valores1 = [] ; valores2 = []
+        print("\nComienzo de la interacción 3...")
+        print(f"\n Lista de insumos actual de la sede Principal: {Sede.getListaSedes()[0].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[0].getCantidadInsumosBodega()}")
+        print(f"\n Lista de insumos actual de la sede 2: {Sede.getListaSedes()[1].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[1].getCantidadInsumosBodega()}\n")
+        #contenedorGrande = tk.Frame(frameDeTrabajo, bg="light gray")
+        #contenedorGrande.pack(pady=5)
+
+        StartFrame.contenedorGrande = tk.Frame(StartFrame.frameDeTrabajo, bg="light gray")
+        StartFrame.contenedorGrande.pack(pady=5)
+
+            # CONTENEDOR IZQUIERDA ------------------------------------------------------------------------
+        contenedorInsumos = tk.Frame(StartFrame.contenedorGrande, bg="white")
+        contenedorInsumos.pack(side="left", padx=5, pady=5)
+            #field Frame de los insumos disponibles en sede Principal
+        for insumosProd in Sede.getListaSedes()[0].getListaInsumosBodega():
+            if insumosProd.getNombre() != "Bolsa":
+                criterios1.append(insumosProd)
+        for index1, valor1 in enumerate(criterios1):
+            valores1.append(Sede.getListaSedes()[0].getCantidadInsumosBodega()[index1])
+        habilitado1 = [False for _ in range(len(criterios1))]
+
+        ffInsumosSedeP = FieldFrame(contenedorInsumos, "Insumos que hay en\nla Sede Principal", criterios1, "", valores1, habilitado1)
+        ffInsumosSedeP.pack(pady=2)
+        
+            #field Frame de los insumos disponibles en sede 2
+        for insumosProd2 in Sede.getListaSedes()[1].getListaInsumosBodega():
+            if insumosProd2.getNombre() != "Bolsa":
+                criterios2.append(insumosProd2)
+        for index2, valor2 in enumerate(criterios2):
+            valores2.append(Sede.getListaSedes()[1].getCantidadInsumosBodega()[index2])
+        habilitado2 = [False for _ in range(len(criterios2))]
+
+        ffInsumosSede2 = FieldFrame(contenedorInsumos, "Insumos que hay en\nla Sede 2", criterios2, "", valores2, habilitado2)
+        ffInsumosSede2.pack(pady=2)
+        StartFrame.frameDeTrabajo.update_idletasks()
+            #CONTENEDOR DERECHA ----------------------------------------------------------------------------
+        StartFrame.contSeleccionModista = tk.Frame(StartFrame.contenedorGrande, bg="white")
+        StartFrame.contSeleccionModista.pack(side="left", padx=5, pady=5)
+        StartFrame.frameDeTrabajo.update_idletasks()
+        StartFrame.labelPrueba = tk.Label(StartFrame.contSeleccionModista, text="No hay insumos:(", font=("Arial", 10, "bold italic"), wraplength=300, justify="center")
+        StartFrame.labelPrueba.pack(pady=5)
+        StartFrame.frameDeTrabajo.update_idletasks()
+        threading.Thread(target=Prenda.producirPrendas, args=(StartFrame.aProducirPaEnviar, Main.fecha), daemon=True).start()
+        #print("\nsigo después del hilo")
+        
+        StartFrame.evento_senalizador.wait()
+        StartFrame.evento_senalizador.clear()
+
+        
+        self.verificarEvento()
+        contBotonesModistas = tk.Frame(StartFrame.contSeleccionModista, bg="white")
+        contBotonesModistas.pack(pady=3)
+
+        for modista in StartFrame.listModistas:
+            contInternoBotones = tk.Frame(contBotonesModistas, bg="white")
+            contInternoBotones.pack(pady=4)
+            boton = tk.Button(contInternoBotones, text=modista.getNombre(), font=("Arial", 9, "italic"))
+            boton.pack(side="left", padx=2)
+            labelFlecha = tk.Label(contInternoBotones, text="------>", bg="white", font=("Arial", 9, "italic"))
+            labelFlecha.pack(side="left", padx=2)
+            labelPericia = tk.Label(contInternoBotones, text=f"Pericia: {round(modista.getPericia(), 2)}", bg="white", font=("Arial", 9, "italic"))
+            labelPericia.pack(side="left", padx=2)
+            boton.bind("<Button-1>", lambda event : self.botonesModistas(event, contBotonesModistas))
+
+    even = threading.Event()
+    printModistaGlobal = None
+    listModistas = []
+    labelPrueba = None
+    numero = 0
+    contSeleccionModista = None
+    def recibePrintModista(self, printModista, modistas):
+        StartFrame.listModistas = modistas
+        StartFrame.printModistaGlobal = printModista
+        StartFrame.indexx = 10
+        StartFrame.evento_senalizador.set()
+        if StartFrame.numero >= 1:
+            self.verificarEvento()
+        StartFrame.numero = StartFrame.numero + 1       
+
+    num3 = 0
+    def verificarEvento(self):
+        from src.uiMain.main import Main
+        #colocar a esperar dos segundos si no funciona
+        if StartFrame.printModistaGlobal is not None:
+            StartFrame.labelPrueba.config(text=StartFrame.printModistaGlobal)
+            StartFrame.frameDeTrabajo.update_idletasks()
+            print("\nVOLVI A ENTRARRRRR")
+            Main.evento_ui.set()
+        else:
+            StartFrame.ventanaPrincipal.after(100, self.verificarEvento)
+        
+        if StartFrame.num3 >= 1:
+            self.crearBotones()
+        StartFrame.num3 = StartFrame.num3 + 1
+
+
+    indexx = 10
+    num2 = 0
+    def botonesModistas(self, event, contPaEliminar):
+        from src.uiMain.main import Main
+        nombreElegido = event.widget.cget("text")
+        if StartFrame.num2 == 0:
+            for modista in StartFrame.listModistas:
+                if modista.getNombre().lower() == nombreElegido.lower():
+                    StartFrame.indexx = StartFrame.listModistas.index(modista)
+            print(f"\nnumero de indice: {StartFrame.indexx}")
+            contPaEliminar.destroy()
+            Main.evento_ui2.set()
+        else:
+            for modista in StartFrame.listModistas:
+                if modista.getNombre().lower() == nombreElegido.lower():
+                    StartFrame.indexx = StartFrame.listModistas.index(modista)
+            print(f"\nnumero de indice: {StartFrame.indexx}")
+            contPaEliminar.pack_forget()
+            Main.evento_ui2.set()
+        StartFrame.num2 = StartFrame.num2 + 1
+
+    def getIndexx(self):
+        if StartFrame.indexx != 10:
+            return StartFrame.indexx
+        
+    def crearBotones(self):
+        contBotonesModistas = tk.Frame(StartFrame.contSeleccionModista, bg="white")
+        contBotonesModistas.pack(pady=3)
+
+        for modista in StartFrame.listModistas:
+            contInternoBotones = tk.Frame(contBotonesModistas, bg="white")
+            contInternoBotones.pack(pady=4)
+            boton = tk.Button(contInternoBotones, text=modista.getNombre(), font=("Arial", 9, "italic"))
+            boton.pack(side="left", padx=2)
+            labelFlecha = tk.Label(contInternoBotones, text="------>", bg="white", font=("Arial", 9, "italic"))
+            labelFlecha.pack(side="left", padx=2)
+            labelPericia = tk.Label(contInternoBotones, text=f"Pericia: {round(modista.getPericia(), 2)}", bg="white", font=("Arial", 9, "italic"))
+            labelPericia.pack(side="left", padx=2)
+            boton.bind("<Button-1>", lambda event : self.botonesModistas(event, contBotonesModistas))
+
 
 
 #region sistema financiero
