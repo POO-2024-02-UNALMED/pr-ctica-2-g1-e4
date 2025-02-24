@@ -976,7 +976,209 @@ class Main:
 
     @classmethod
     def crearSedesMaquinasRepuestos(cls):
-        pass
+        from ..gestorAplicacion.administracion.empleado import Empleado
+        from src.gestorAplicacion.bodega.repuesto import Repuesto
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        from src.gestorAplicacion.bodega.pantalon import Pantalon 
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
+        from src.gestorAplicacion.administracion.deuda import Deuda    
+        from src.gestorAplicacion.administracion.area import Area
+        #Episodio 43
+        p1 = Proveedor(600, "Rag Tela")
+        p1.setInsumo(Insumo("Tela", p1))
+        p2 = Proveedor(250, "Macro Telas")
+        p2.setInsumo(Insumo("Hilo", p2))
+        p4 = Proveedor(15000, "Insumos textileros")
+        p4.setInsumo(Insumo("Cremallera", p4))
+        p3 = Proveedor(200, "San Remo")
+        p3.setInsumo(Insumo("Boton", p3))
+        p5 = Proveedor(500, "Fatelares")
+        p5.setInsumo(Insumo("Tela", p5))
+        p6 = Proveedor(500, "Macro Textil")
+        p6.setInsumo(Insumo("Tela", p6))
+        p9 = Proveedor(300, "Hilos Venus")
+        p9.setInsumo(Insumo("Hilo", p9))
+        p7 = Proveedor(10000, "Insumos para Confección")
+        p7.setInsumo(Insumo("Cremallera", p7))
+        p8 = Proveedor(170, "InduBoton")
+        p8.setInsumo(Insumo("Boton", p8))
+        p10 = Proveedor(5000, "Primavera")
+        p10.setDescuento(0.06)
+        p10.setInsumo(Bolsa("Bolsa", p10))
+        p11 = Proveedor(8000, "Empaques y Cartones")
+        p11.setInsumo(Bolsa("Bolsa", p11))
+        p11.setDescuento(0.1)
+        p12 = Proveedor(6000, "Plastienda")
+        p10.setDescuento(0.05)
+        p12.setInsumo(Bolsa("Bolsa", p12))
+        #PROVEEDORES QUE VENDEN AGUJAS DE LA MAQUINA DE COSER:
+        p13 = Proveedor(80500, "Solo Agujas")
+        p13.setInsumo(Insumo("Agujas de la Maquina de Coser", p13))
+        p14 = Proveedor(92000, "Agujas y mas")
+        p14.setInsumo(Insumo("Agujas de la Maquina de Coser", p14))
+        p15 = Proveedor(70000, "Las propias agujas")
+        p15.setInsumo(Insumo("Agujas de la Maquina de Coser", p15))
+        p1.setDeuda(Deuda(Fecha(15, 1, 24), 500_000, p1.getNombre(), "Proveedor", 5))
+        p2.setDeuda(Deuda(Fecha(15, 1, 24), 1_000_000, p2.getNombre(), "Proveedor", 10))
+        # PROVEEDORES QUE VENDEN ACEITE:
+        p16 = Proveedor(24000, "Aceites y mas")
+        p16.setInsumo(Insumo("Aceite", p16))
+        p17 = Proveedor(30000, "Aceitunas")
+        p17.setInsumo(Insumo("Aceite", p17))
+        p18 = Proveedor(20000, "El barato del Aceite")
+        p18.setInsumo(Insumo("Aceite", p18))
+        # PROVEEDORES QUE VENDEN CUCHILLAS
+        p19 = Proveedor(32000, "El de las Cuchillas")
+        p19.setInsumo(Insumo("Cuchillas", p19))
+        p20 = Proveedor(28000, "El barato de las cuchillas")
+        p20.setInsumo(Insumo("Cuchillas", p20))
+        p21 = Proveedor(37000, "El carero de las cuchillas")
+        p21.setInsumo(Insumo("Cuchillas", p21))
+        # PROVEEDORES QUE VENDEN AFILADORES
+        p22 = Proveedor(72000, "El afilador")
+        p22.setInsumo(Insumo("Afiladores", p22))
+        p23 = Proveedor(60000, "La bodega del afilador")
+        p23.setInsumo(Insumo("Afiladores", p23))
+        p24 = Proveedor(80000, "Afilamos caro")
+        p24.setInsumo(Insumo("Afiladores", p24))
+        # PROVEEDORES QUE VENDEN RESISTENCIAS ELECTRICAS:
+        p25 = Proveedor(160000, "Resistencias y mas")
+        p25.setInsumo(Insumo("Resistencia electrica", p25))
+        p26 = Proveedor(140000, "Electricos")
+        p26.setInsumo(Insumo("Resistencia electrica", p26))
+        # PROVEEDORES QUE VENDEN MANGUERAS DE VAPOR:
+        p27 = Proveedor(120000, "Mangueras y mas")
+        p27.setInsumo(Insumo("Manguera de vapor", p27))
+        p28 = Proveedor(140000, "Mangueras Don Diego")
+        p28.setInsumo(Insumo("Manguera de vapor", p28))
+        # PROVEEDORES QUE VENDEN AGUJAS DE LA BORDADORA INDUSTRIAL:
+        p29 = Proveedor(55000, "El Agujero")
+        p29.setInsumo(Insumo("Agujas de la Bordadora industrial", p29))
+        p30 = Proveedor(45000, "La bodega del Agujero")
+        p30.setInsumo(Insumo("Agujas de la Bordadora industrial", p30))
+        # PROVEEDORES QUE VENDEN BANDAS DE TRANSMISION:
+        p31 = Proveedor(200000, "El de las Bandas")
+        p31.setInsumo(Insumo("Bandas de transmision", p31))
+        p32 = Proveedor(250000, "El carero de las Bandas")
+        p32.setInsumo(Insumo("Bandas de transmision", p32))
+        # PROVEEDORES QUE VENDEN TINTA NEGRA PARA IMPRESORA:
+        p33 = Proveedor(50000, "Tinta por aqui")
+        p33.setInsumo(Insumo("Tinta Negra Impresora", p33))
+        p34 = Proveedor(44000, "El tintoso")
+        p34.setInsumo(Insumo("Tinta Negra Impresora", p34))
+        # PROVEEDORES QUE VENDEN LECTORES DE BARRAS:
+        p35 = Proveedor(120000, "Mega tecnologies")
+        p35.setInsumo(Insumo("Lector de barras", p35))
+        p36 = Proveedor(160000, "HP")
+        p36.setInsumo(Insumo("Lector de barras", p36))
+        # PROVEEDORES QUE VENDEN PAPEL QUIMICO:
+        p37 = Proveedor(40000, "Panamericana")
+        p37.setInsumo(Insumo("Papel quimico", p37))
+        p38 = Proveedor(50000, "SSKaisen")
+        p38.setInsumo(Insumo("Papel quimico", p38))
+        # PROVEEDORES QUE VENDEN CARGADORES PARA PORTATILES:
+        p39 = Proveedor(150000, "Homecenter")
+        p39.setInsumo(Insumo("Cargador Computador", p39))
+        p40 = Proveedor(180000, "Todo en cargadores")
+        p40.setInsumo(Insumo("Cargador Computador", p40))
+        # PROVEEDORES QUE VENDER MOUSE PARA PORTATILES:
+        p41 = Proveedor(20000, "Mecado Libre")
+        p41.setInsumo(Insumo("Mouse Computador", p41))
+        p42 = Proveedor(30000, "Asus")
+        p42.setInsumo(Insumo("Mouse Computador", p42))
+        # CREACION DE TODOS LOS REPUESTOS QUE MANEJAREMOS PARA LA FUNCIONALIDAD
+        # PRODUCCION
+        AgujasMC = Repuesto("Agujas de la Maquina de coser", p13, 12)
+        Aceite = Repuesto("Aceite", p16, 60, 1, None, 70)
+
+        Cuchillas = Repuesto("Cuchillas", p19, 60)
+        Afiladores = Repuesto("Afiladores", p22, 750)
+        ResistenciaElectrica = Repuesto("Resistencia Electrica", p25, 1500)
+        MangueraDeVapor = Repuesto("Manguera de Vapor", p27, 750, 1, None)
+        AgujasBI = Repuesto("Agujas de la Bordadora Industrial", p29, 25)
+        BandasDeTransmision = Repuesto("Bandas de Transmision", p31, 2500)
+        TintaN = Repuesto("Tinta Negra Impresora", p33, 3000, 1, None, 3100)
+        Lector = Repuesto("Lector de barras", p35, 3000)
+        PapelQuimico = Repuesto("Papel quimico", p37, 72)
+        Cargador = Repuesto("Cargador Computador", p39, 6000)
+        Mouse = Repuesto("Mouse Computador", p41, 900, 1, None, 1000)
+
+        # CREACION DE LAS SEDES QUE MANEJAREMOS, CON SUS RESPECTIVAS MAQUINAS EN CADA
+        # UNA DE ELLAS
+        sedeP = Sede("Sede Principal")
+        sede2 = Sede("Sede 2")
+        # AGRUPACION DE LOS REPUESTOS EN LISTAS PARA ENVIARLOS A LAS MAQUINAS
+        # CORRESPONDIENTES
+        repuestosMC = []; repuestosMCorte = []; repuestosPI = []; repuestosBI = []; repuestosMTermofijado = []; repuestosMTijereado = []; repuestosImp = []; repuestosRe = []; repuestosComp = []; repuestosMC2 = []; repuestosMCorte2 = []; repuestosPI2 = []; repuestosBI2 = []; repuestosMTermofijado2 = []; repuestosMTijereado2 = []; repuestosImp2 = []; repuestosRe2 = []; repuestosComp2 = []
+        repuestosImp.append(TintaN)
+        repuestosRe.append(PapelQuimico)
+        repuestosRe.append(Lector)
+        repuestosComp.append(Mouse)
+        repuestosComp.append(Cargador)
+        repuestosMC.append(AgujasMC)
+        repuestosMC.append(Aceite)
+        repuestosMCorte.append(Cuchillas)
+        repuestosMCorte.append(Afiladores)
+        repuestosPI.append(ResistenciaElectrica)
+        repuestosPI.append(MangueraDeVapor)
+        repuestosBI.append(AgujasBI)
+        repuestosBI.append(Aceite.copiar())
+        repuestosMTermofijado.append(BandasDeTransmision)
+        repuestosMTermofijado.append(ResistenciaElectrica.copiar())
+        repuestosMTijereado.append(Cuchillas.copiar())
+        repuestosMTijereado.append(Aceite.copiar())
+        # respuestos para las maquinas de la sede2
+        repuestosImp2.append(TintaN.copiar())
+        repuestosRe2.append(PapelQuimico.copiar())
+        repuestosRe2.append(Lector.copiar())
+        repuestosComp2.append(Mouse.copiar())
+        repuestosComp2.append(Cargador.copiar())
+        repuestosMC2.append(AgujasMC.copiar())
+        repuestosMC2.append(Aceite.copiar())
+        repuestosMCorte2.append(Cuchillas.copiar())
+        repuestosMCorte2.append(Afiladores.copiar())
+        repuestosPI2.append(ResistenciaElectrica.copiar())
+        repuestosPI2.append(MangueraDeVapor.copiar())
+        repuestosBI2.append(AgujasBI.copiar())
+        repuestosBI2.append(Aceite.copiar())
+        repuestosMTermofijado2.append(BandasDeTransmision.copiar())
+        repuestosMTermofijado2.append(ResistenciaElectrica.copiar())
+        repuestosMTijereado2.append(Cuchillas.copiar())
+        repuestosMTijereado2.append(Aceite.copiar())
+
+        # CREACION DE LAS MAQUINAS QUE MANEJAREMOS CON SUS RESPECTIVOS RESPUESTOS
+        # sedeP
+        MaquinaDeCoser = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC, sedeP)
+        MaquinaDeCorte = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte, sedeP)
+        PlanchaIndustrial = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI, sedeP)
+        #BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP, 501)
+        BordadoraIndustrial = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI, sedeP)
+        BordadoraIndustrial.setHorasUso(501)
+        
+        #MaquinaDeTermofijado = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado, sedeP, 1001)
+        MaquinaDeTermofijado = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado, sedeP)
+        MaquinaDeTermofijado.setHorasUso(101)
+        MaquinaDeTijereado = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado,sedeP)
+        Impresora = Maquinaria("Impresora", 800000, 2000, repuestosImp, sedeP)
+        Registradora = Maquinaria("Caja Registradora", 700000, 17000, repuestosRe, sedeP)
+        Computador = Maquinaria("Computador", 2_000_000, 10000, repuestosComp, sedeP)
+
+        # sede2
+        MaquinaDeCoser2 = Maquinaria("Maquina de Coser Industrial", 4250000, 600, repuestosMC2, sede2)
+        MaquinaDeCorte2 = Maquinaria("Maquina de Corte", 6000000, 700, repuestosMCorte2, sede2)
+        #PlanchaIndustrial2 = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI2, sede2, 901)
+        PlanchaIndustrial2 = Maquinaria("Plancha Industrial", 2000000, 900, repuestosPI2, sede2)
+        PlanchaIndustrial2.setHorasUso(901)
+        BordadoraIndustrial2 = Maquinaria("Bordadora Industrial", 31000000, 500, repuestosBI2, sede2)
+        MaquinaDeTermofijado2 = Maquinaria("Maquina de Termofijado", 20000000, 1000,repuestosMTermofijado2, sede2)
+        MaquinaDeTijereado2 = Maquinaria("Maquina de Tijereado", 5000000, 600, repuestosMTijereado2,sede2)
+        Impresora2 = Maquinaria("Impresora", 800000, 2000, repuestosImp2, sede2)
+        Registradora2 = Maquinaria("Caja Registradora", 700000, 17000, repuestosRe2, sede2)
+        Computador2 = Maquinaria("Computador", 2_000_000, 10000, repuestosComp2, sede2)
+
+        
 
     @classmethod
     def fijarUltimoPrecioInicial(cls):
