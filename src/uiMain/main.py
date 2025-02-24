@@ -29,65 +29,7 @@ class Main:
     nuevoBalance=None
     diferenciaEstimado=0
     pesimismoPorSede = [2,2]
-    def main():
-        from src.gestorAplicacion.bodega.prenda import Prenda
-        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
-        Main.fecha = Main.ingresarFechaConsola()
-        print("Ecomoda a la orden")
-        while True:
-            print("\n¿Que operación desea realizar?")
-            print("1. Despedir/Transferir/Contratar empleados")
-            print("2. Adquirir insumos para la produccion")
-            print("3, Ver el desglose economico de la empresa")
-            print("4. Vender un producto")
-            print("5. Producir prendas")
-            print("6. Salir")
-            
-            opcion = Main.nextIntSeguro()
-            if opcion == 1:
-                pass
-            elif opcion == 2:
-                retorno = Main.planificarProduccion()
-                lista_a = Main.coordinarBodegas(retorno)
-                print(Main.comprarInsumos(lista_a))
-            elif opcion == 3:
-                balance_anterior = Main.calcularBalanceAnterior()
-                diferencia_estimada = Main.calcularEstimado(balance_anterior)
-                analisis_futuro = Main.planRecuperacion(diferencia_estimada)
-                s1="\nSegún la evaluación del estado Financiero actual: " + "\n"+balance_anterior.Informe() 
-                s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos. \n"+ analisis_futuro
-                s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+ diferencia_estimada
-                s4=" y por tanto el nuevo porcentaje de pesimismo de la producción es:" + Venta.getPesimismo()+ "."
-                retorna=s1+s2+s3+s4
-                print(retorna)
-            elif opcion == 4:
-                venta = Main.vender()
-                Main.realizarVenta(venta)
-                Main.tarjetaRegalo(venta)
-                sede = venta.getSede()
-                Sede.getHistorialVentas().append(venta)
-            elif opcion == 5:
-                plan = Sede.planProduccion(Maquinaria.agruparMaquinasDisponibles(Main.fecha), Main.fecha)
-                creadas = Prenda.producirPrendas(plan,Main.fecha)
-                if (creadas):
-                    print(Prenda.getCantidadUltimaProduccion()+" Prendas creadas con éxito")
-                else:
-                    print("No se pudo producir todo, los insumos no alcanzaron, producimos "+Prenda.getCantidadUltimaProduccion()+" prendas")
-            #elif opcion == 6: #Serializador.serializar() #sys.exit(0)
-            else:
-                print("Esa opción no es valida.")
     
-    @classmethod
-    def ingresarFechaConsola(cls):
-        dia = -1
-        mes = -1
-        while dia <= 0 or dia > 31:
-            dia = int(input("Ingrese día: "))
-            while mes <= 0 or mes > 12:
-                mes = int(input("Ingrese mes: "))
-        año = int(input("Ingrese año: "))
-        fecha = Fecha(dia, mes, año)
-        return fecha
     
     def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
         from src.uiMain.F5Produccion import evento_senalizador
@@ -543,14 +485,6 @@ class Main:
         return filas
     
     #endregion
-
-    def nextIntSeguro():
-        while True:
-            respuesta = input()
-            if respuesta.isdigit():
-                return int(respuesta)
-            else:
-                print("Por favor ingrese un número entero")
 
     @classmethod
     def dondeRetirar(cls):
@@ -1462,24 +1396,9 @@ class Main:
     @classmethod # Wrapper para uso de StartFrame
     def guardar(cls):
         serializar()
+    
+    deserializacionPendiente=True
 
 if __name__ == "__main__":
-    print("Para usar la interfaz grafica, 1. Para usar la consola, 2. Para reiniciar los datos, 3")
-    opcion="3"
-    deserializarAlIniciar=True
-    while opcion=="3":
-        opcion = input()
-        match opcion:
-            case "1":
-                from src.uiMain.bienvenida.bienvenida import Bienvenida
-                if deserializarAlIniciar:
-                    deserializar()
-                Bienvenida.bienvenida()
-            case "2":
-                if deserializarAlIniciar:
-                    deserializar()
-                Main.main()
-            case "3":
-                Main.crearSedesMaquinasRepuestos()
-                serializar()
-                deserializarAlIniciar=False
+    from src.uiMain.bienvenida.bienvenida import Bienvenida
+    Bienvenida.bienvenida()

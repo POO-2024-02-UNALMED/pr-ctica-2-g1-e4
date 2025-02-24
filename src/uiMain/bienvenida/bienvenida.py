@@ -11,12 +11,12 @@ from src.uiMain.bienvenida.infoDesarrolladores import InfoDesarrolladores
 
 class Bienvenida(tk.Frame):
     def __init__(self, master=None):
+
         super().__init__(master)
         self.master = master
         self.barraMenus=None
         self.inicioMenu=None
         self.infoSistema=None
-        self.infoDesarrolladores=None
         self.pack(expand=1,fill="both")
         self.create_widgets()
 

@@ -9,6 +9,7 @@ from src.gestorAplicacion.bodega.proveedor import Proveedor
 from src.gestorAplicacion.bodega.repuesto import Repuesto
 from src.gestorAplicacion.venta import Venta
 def serializar():
+    print("Serializando")
     archivo = open("src/baseDatos/persistencia.txt", "wb")
     pickle.dump((Sede.getListaEmpleadosTotal(), Sede.getPrendasInventadasTotal(), Sede.getListaSedes(),
                 Banco.getListaBancos(), Banco.getCuentaPrincipal(),
