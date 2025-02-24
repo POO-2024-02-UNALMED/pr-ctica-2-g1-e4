@@ -7,6 +7,7 @@ from tkinter import ttk
 from tkinter.font import Font
 from tkinter import messagebox
 import sys
+import unicodedata
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.persona import Persona
 from src.uiMain import fieldFrame
@@ -81,7 +82,9 @@ class StartFrame(tk.Tk):
         self.abrirFrameInicial()
 
     #-------------------------------------------- Listeners para el menú superior ------------------------------------------------------------------
-    
+    def normalizar_texto(self,texto):
+        return unicodedata.normalize("NFKD", texto).encode("ASCII", "ignore").decode("utf-8").strip().lower()
+   
     def abrirGestionHumana(self):
         if not self.fechaValida:
             return
@@ -1724,17 +1727,18 @@ Ya terminamos, tenga buen día.""")
         if error == []:
             listaClientes = []
             for clienteI in Persona.getListaPersonas():
-                listaClientes.append(clienteI.getNombre())
+                listaClientes.append(self.normalizar_texto(clienteI.getNombre()))
             try:
-                if self.datosEntradasFacturacion.getValue("Cliente") not in listaClientes:
+                if self.normalizar_texto(self.datosEntradasFacturacion.getValue("Cliente")) not in listaClientes:
                     raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Cliente"))
             except ExcepcionValorNoValido as z:
                 messagebox.showwarning(title="Alerta", message=z.mensaje_completo)
                 return True
             listaVendedor = []
+
             for vendedorI in Sede.getListaEmpleadosTotal():
-                listaVendedor.append(vendedorI.getNombre())
-            if self.datosEntradasFacturacion.getValue("Vendedor") not in listaVendedor:
+                listaVendedor.append(self.normalizar_texto(vendedorI.getNombre()))
+            if self.normalizar_texto(self.datosEntradasFacturacion.getValue("Vendedor")) not in listaVendedor:
                 try:
                     raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Vendedor"))
                 except ExcepcionValorNoValido as z:
@@ -1742,8 +1746,8 @@ Ya terminamos, tenga buen día.""")
                     return True
             listaEmpleadoCaja = []
             for cajaI in Sede.getListaEmpleadosTotal():
-                listaEmpleadoCaja.append(cajaI.getNombre())
-            if self.datosEntradasFacturacion.getValue("Empleado caja") not in listaEmpleadoCaja:
+                listaEmpleadoCaja.append(self.normalizar_texto(cajaI.getNombre()))
+            if self.normalizar_texto(self.datosEntradasFacturacion.getValue("Empleado caja")) not in listaEmpleadoCaja:
                 try:
                     raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Empleado caja"))
                 except ExcepcionValorNoValido as z:
