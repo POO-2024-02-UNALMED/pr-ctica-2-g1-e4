@@ -295,12 +295,6 @@ class Sede:
         prodSedesCalculada.append(prodCalculadaSede2)
         return prodSedesCalculada
 
-    @classmethod
-    #def prodSedeP(cls, fecha: 'Fecha') -> List[int]:
-    #    pantalonesSedeP = cls.calcProduccionSedes(fecha)[0][0] + cls.calcProduccionSedes(fecha)[1][0]
-    #    camisasSedeP = cls.calcProduccionSedes(fecha)[0][1] + cls.calcProduccionSedes(fecha)[1][1]
-    #    prodAproximada = [pantalonesSedeP, camisasSedeP]
-    #    return prodAproximada
 
     @classmethod        #siento que aquí falta algo
     def prodSede2(cls, fecha: 'Fecha') -> List[int]:
@@ -342,8 +336,9 @@ class Sede:
     def planProduccion(cls, maqDisponible: List, fecha: 'Fecha') -> List[List[List[int]]]:
         from .bodega.maquinaria import Maquinaria
         from src.uiMain.main import Main
-        from src.uiMain.F5Produccion import recibeMaqDispSeparadas, recibeTextIndicador, recibeProdFinal
         import math
+        from src.uiMain.startFrame import StartFrame
+        stf2 = StartFrame()
         aProducirFinal = []; aProducir = []; listaEspera = []; listaDeCeros = [0, 0]
         listaEsperaVacia = [listaDeCeros.copy(), listaDeCeros.copy()]
         maqSedeP = []; maqSede2 = []
@@ -374,11 +369,11 @@ class Sede:
             senal = 5
         if len(Sede.getListaSedes()[1].maqProduccion) > 3:
             senal += 10
-
-        recibeMaqDispSeparadas(Sede.getListaSedes()[0].maqProduccion, Sede.getListaSedes()[1].maqProduccion)
+        #print(f"\nlas maq de produccion de la sede p son: {Sede.getListaSedes()[0].maqProduccion}")
+        stf2.recibeMaqDispSeparadas(Sede.getListaSedes()[0].maqProduccion, Sede.getListaSedes()[1].maqProduccion)
 
         if senal == 5:
-            recibeTextIndicador(Main.printsInt2(1), 1)
+            stf2.recibeTextIndicador(Main.printsInt2(1), 1)
             Main.evento_ui.clear()  
             print("\nEsperando confirmación para seguir con la produccion")
             Main.evento_ui.wait()
@@ -392,7 +387,7 @@ class Sede:
             aProducirFinal.insert(1, listaEspera)
                 
         elif senal == 10:
-            recibeTextIndicador(Main.printsInt2(3), 2)
+            stf2.recibeTextIndicador(Main.printsInt2(3), 2)
             Main.evento_ui.clear()  
             print("\nEsperando confirmación para seguir con la produccion")
             Main.evento_ui.wait()
@@ -407,7 +402,7 @@ class Sede:
 
         elif senal == 15:
             # Se produce todo entre las dos sedes
-            recibeTextIndicador(Main.printsInt2(12), 3)
+            stf2.recibeTextIndicador(Main.printsInt2(12), 3)
             Main.evento_ui.clear()  
             print("\nEsperando confirmación para seguir con la produccion")
             Main.evento_ui.wait()
@@ -447,10 +442,10 @@ class Sede:
         else:
                 #no se puede producir nada porque ninguna sede esta disponible, enviar el print siguiente a la interfaz y darle un boton para volver
             aProducirFinal = None
-            recibeTextIndicador(Main.printsInt2(11), 4)
+            stf2.recibeTextIndicador(Main.printsInt2(11), 4)
         
         if aProducirFinal is not None:
-            recibeProdFinal(aProducirFinal)
+            stf2.recibeProdFinal(aProducirFinal)
         return aProducirFinal
 
     @classmethod

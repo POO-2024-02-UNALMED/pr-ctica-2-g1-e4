@@ -32,11 +32,9 @@ class Main:
     
     
     def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
-        from src.uiMain.F5Produccion import evento_senalizador
         from src.gestorAplicacion.bodega.prenda import Prenda
         print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
         print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
-        #evento_senalizador.set()
 
 
 
@@ -888,12 +886,13 @@ class Main:
                     prov.setPrecio(nuevos[i].getPrecio())
     #endregion
     def pedirModista(cantidadPrendas, sede, idxTanda):
-        from src.uiMain.F5Produccion import recibePrintModista, getIndexx
+        from src.uiMain.startFrame import StartFrame
+        stf33 = StartFrame()
         printModista = None
         printModista = f"Seleccione el modista que se encargará de la tanda #{idxTanda} de producción de {cantidadPrendas} prendas en {sede.getNombre()}:"
         print(printModista)
         modistas = [empleado for empleado in sede.getListaEmpleados() if empleado.getRol() == Rol.MODISTA]
-        recibePrintModista(printModista, modistas)
+        stf33.recibePrintModista(printModista, modistas)
         Main.evento_ui.wait()
         print("\nestoy esperando a que me dejen pasar...\n")
         Main.evento_ui.clear()
@@ -903,7 +902,7 @@ class Main:
         print("\nesperando respuesta con el boton.....\n")
         Main.evento_ui2.wait()
         while True:
-            seleccion = getIndexx() #metodo para traer de F5Produccion la senal, puede ser un getSenal(), definirlo en F5Produccion
+            seleccion = stf33.getIndexx() #metodo para traer de F5Produccion la senal, puede ser un getSenal(), definirlo en F5Produccion
             if 0 <= seleccion < len(modistas):
                 return modistas[seleccion]
             else:

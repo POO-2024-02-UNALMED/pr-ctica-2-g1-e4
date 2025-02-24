@@ -93,7 +93,8 @@ class Maquinaria:
         from src.uiMain.main import Main
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.bodega.insumo import Insumo
-        from src.uiMain.F5Produccion import receptor, recibeProveedorB, recibeMaqPaRevisar, recibeMaqDisp
+        from src.uiMain.startFrame import StartFrame
+        stf = StartFrame()
         
         print(f"los repuestos mas actuales creados: {Repuesto.getListadoRepuestos()}\n y hay en total: {len(Repuesto.getListadoRepuestos())}")
         maqDisponibles = []
@@ -108,14 +109,14 @@ class Maquinaria:
                         cadaMaquina.mantenimiento = False
                     for cadaRepuesto in cadaMaquina.getRepuestos():
                         if (cadaRepuesto.getHorasDeVidaUtil() - cadaRepuesto.getHorasDeUso()) <= 0:
-                            receptor(Main.printsInt1(1, cadaRepuesto, cadaMaquina, cadaSede))
+                            stf.receptor(Main.printsInt1(1, cadaRepuesto, cadaMaquina, cadaSede))
                             todosProvBaratos = cls.encontrarProveedoresBaratos()
                             print(len(todosProvBaratos))
                             for elMasEconomico in todosProvBaratos:
                                 if elMasEconomico.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
                                     print("adentro")
                                     proveedorBarato = elMasEconomico
-                                    recibeProveedorB(proveedorBarato)
+                                    stf.recibeProveedorB(proveedorBarato)
                                     print(proveedorBarato.getNombre())
                                     Main.recibeProveedorB(proveedorBarato)
                                     break
@@ -123,7 +124,7 @@ class Maquinaria:
                             Main.evento_ui.clear()  
                             print("Esperando confirmación del usuario en la UI...")
                             Main.evento_ui.wait()
-                            receptor("No hay mas repuestos por cambiar,\npresiona el boton de abajo para ver el resumen de la revisión...")
+                            stf.receptor("No hay mas repuestos por cambiar,\npresiona el boton de abajo para ver el resumen de la revisión...")
                             print("Usuario confirmó la compra. Continuando...")
 
                             for sedeCreada in Sede.getListaSedes():
@@ -168,9 +169,9 @@ class Maquinaria:
                 else:
                     maquinasPaRevisar.append(cadaMaquina)
                 
-        recibeProveedorB(None)
-        recibeMaqPaRevisar(maquinasPaRevisar)
-        recibeMaqDisp(maqDisponibles)
+        stf.recibeProveedorB(None)
+        stf.recibeMaqPaRevisar(maquinasPaRevisar)
+        stf.recibeMaqDisp(maqDisponibles)
         print("finish interaccion 1")
         return maqDisponibles
 

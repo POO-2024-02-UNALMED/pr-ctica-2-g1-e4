@@ -36,8 +36,9 @@ class Prenda(GastoMensual):
 
     @staticmethod
     def producirPrendas(planProduccion, hoy):
-        from src.uiMain.F5Produccion import recibeCreadasOrNo
         from src.uiMain.main import Main
+        from src.uiMain.startFrame import StartFrame
+        stf3 = StartFrame()
         Prenda.cantidadTelaUltimaProduccion = 0
         Prenda.cantidadUltimaProduccion = 0
         Prenda.prendasUltimaProduccion = []
@@ -48,7 +49,7 @@ class Prenda(GastoMensual):
                 if not Prenda.producirListaPrendas(dia[i], sede, diaDeProduccion):
                     alcanzaInsumos = False
             diaDeProduccion = diaDeProduccion.diaSiguiente()
-        recibeCreadasOrNo(alcanzaInsumos)
+        stf3.recibeCreadasOrNo(alcanzaInsumos)
         return alcanzaInsumos
 
     @staticmethod
