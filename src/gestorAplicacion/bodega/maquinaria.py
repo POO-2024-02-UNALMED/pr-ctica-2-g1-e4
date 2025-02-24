@@ -2,6 +2,7 @@ from typing import List
 
 from multimethod import multimethod
 from ..sede import Sede
+from src.gestorAplicacion.fecha import Fecha
 
 class Maquinaria:
     
@@ -104,6 +105,8 @@ class Maquinaria:
         maquinasPaRevisar = []
         for cadaSede in Sede.getListaSedes():
             for cadaMaquina in cadaSede.getListaMaquinas():
+                #if cadaMaquina.mantenimiento is True:
+                    #cls.hanPasadoMasDeTresDias()
                 if (cadaMaquina.getHoraRevision() - cadaMaquina.getHorasUso()) > 0:
                     if not cadaMaquina.mantenimiento:
                         cadaMaquina.mantenimiento = False
@@ -231,3 +234,8 @@ class Maquinaria:
 
     def setHorasUso(self, horas):
         self.horasUso = horas
+    @classmethod
+    def hanPasadoMasDeTresDias(cls, fecha1: Fecha, fecha2: Fecha) -> bool:
+        diferencia = 0
+        diferencia = fecha2.aDiasTotales() - fecha1.aDiasTotales()
+        return diferencia > 3

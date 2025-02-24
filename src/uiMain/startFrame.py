@@ -808,17 +808,17 @@ Ya terminamos, tenga buen día.""")
         StartFrame.descripcionF5 = tk.Label(frame1, text="Se registra la producción de prendas y actualiza su inventario: Se toma la cantidad necesaria del stock de materiales para fabricar nuevas prendas y se actualizan los datos, tanto de lo que se descontó de Stock como lo que se agregó a la cantidad de pendas.", height=3,wraplength=800, font=("Arial", 10, "italic"))
         StartFrame.descripcionF5.pack(fill="both", expand=True)
 
-        frame2 = tk.Frame(framePrincipal, bg="light gray")
+        frame2 = tk.Frame(framePrincipal, bg="white")
         frame2.pack(anchor="s",  expand=True, fill="both")
         StartFrame.frameDeTrabajo = frame2
 
-        descripcion1 = tk.Label(frame2, text="Presiona 'CONTINUAR' para evaluar el estado de la maquinaria disponible en cada sede", wraplength=200, justify="center")
-        descripcion1.place(relx=0.3, rely=0.08)
+        descripcion1 = tk.Label(frame2, text="Presiona 'CONTINUAR' para evaluar el estado de la maquinaria disponible en cada sede", wraplength=500, justify="center", font=("Arial", 14, "italic"), bg="white")
+        descripcion1.place(relx=0.4, rely=0.16, anchor="center")
 
-        botonContinuar = tk.Button(frame2, text="CONTINUAR", command=lambda : self.activar(frame2, descripcion1, botonContinuar))
-        botonContinuar.place(relx=0.6, rely=0.12)
+        botonContinuar = tk.Button(frame2, text="CONTINUAR", command=lambda : self.activar(frame2, descripcion1, botonContinuar), font=("Arial", 12, "italic"), bg="white")
+        botonContinuar.place(relx=0.8, rely=0.16, anchor="center")
 
-        StartFrame.indicaRepMalo = tk.Label(frame2, text="", bg="light gray")
+        StartFrame.indicaRepMalo = tk.Label(frame2, text="", bg="white")
         StartFrame.indicaRepMalo.place(relx=0.5, rely=0.35, anchor="center")
 
         return framePrincipal
@@ -844,6 +844,11 @@ Ya terminamos, tenga buen día.""")
         StartFrame.aProdFinal = []
         StartFrame.aProducirPaEnviar = []
         StartFrame.num3 = 0
+        if Sede.getListaSedes()[0].getCantidadInsumosBodega()[0] < 200 or Sede.getListaSedes()[1].getCantidadInsumosBodega()[0] < 200:
+            labelDesp = tk.Label(StartFrame.frameDeTrabajo, text="NO HAY INSUMOS SUFICIENTES\nVUELVE CUANDO HAYAS CONSEGUIDO MAS\n\nREDIRIGIENDO...", font=("Arial", 14, "bold italic"), bg="white")
+            labelDesp.place(relx=0.5, rely=0.5, anchor="center")
+            StartFrame.ventanaPrincipal.after(1500, self.volverMenu2)
+            return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
 
         threading.Thread(target=Maquinaria.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
@@ -913,15 +918,15 @@ Ya terminamos, tenga buen día.""")
             self.resultadosRev()
             return
         
-        nombreP = tk.Label(StartFrame.frameDeTrabajo, text=StartFrame.proveedorB.getNombre(), font=("Arial", 12, "italic"))
+        nombreP = tk.Label(StartFrame.frameDeTrabajo, text=StartFrame.proveedorB.getNombre(), font=("Arial", 12, "italic"), bg="white")
         nombreP.place(relx=0.6, rely=0.37)
 
-        nombre = tk.Label(StartFrame.frameDeTrabajo, text="PROVEEDOR BARATO:", bg="light gray", font=("Arial", 12, "bold italic"))
+        nombre = tk.Label(StartFrame.frameDeTrabajo, text="PROVEEDOR BARATO:", bg="white", font=("Arial", 12, "bold italic"))
         nombre.place(relx=0.3, rely=0.37)
 
-        precio = tk.Label(StartFrame.frameDeTrabajo, text="PRECIO:", bg="light gray", font=("Arial", 12, "bold italic"))
+        precio = tk.Label(StartFrame.frameDeTrabajo, text="PRECIO:", bg="white", font=("Arial", 12, "bold italic"))
         precio.place(relx=0.35, rely=0.45)
-        precioP = tk.Label(StartFrame.frameDeTrabajo, text=str(StartFrame.proveedorB.getPrecio()), font=("Arial", 12, "italic"))
+        precioP = tk.Label(StartFrame.frameDeTrabajo, text=str(StartFrame.proveedorB.getPrecio()), font=("Arial", 12, "italic"), bg="white")
         precioP.place(relx=0.6, rely=0.45)
         comprar = tk.Button(StartFrame.frameDeTrabajo, text="COMPRAR REPUESTO", font=("Arial", 13, "bold"))
         comprar.place(relx=0.38, rely=0.61)
@@ -933,27 +938,27 @@ Ya terminamos, tenga buen día.""")
 
         separador = ttk.Separator(StartFrame.frameDeTrabajo, orient="horizontal")
         separador.place(relx=0.05, rely=0.55, relwidth=0.9)
-        seleccionar = tk.Label(StartFrame.frameDeTrabajo, text="Seleccione la sede desde donde comprará el Repuesto:", bg="light gray", font=("Arial", 12, "bold"))
+        seleccionar = tk.Label(StartFrame.frameDeTrabajo, text="Seleccione la sede desde donde comprará el Repuesto:", bg="white", font=("Arial", 12, "bold"))
         seleccionar.place(relx=0.5, rely=0.63, anchor="center")
-        contSedes = tk.Frame(StartFrame.frameDeTrabajo, bg="light gray", bd=4, relief="ridge")
+        contSedes = tk.Frame(StartFrame.frameDeTrabajo, bg="#E0A8F2", bd=4, relief="ridge")
         contSedes.place(relx=0.5, rely=0.85, anchor="center") #sede Principal
-        contSedeP = tk.Frame(contSedes, bg="light gray", width=100, height=100)
+        contSedeP = tk.Frame(contSedes, bg="#E0A8F2", width=100, height=100)
         contSedeP.pack(fill="x", padx=5, pady=5)
-        sedePdinero = tk.Label(contSedeP, text=str(Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()), font=("Arial", 12, "italic"))
+        sedePdinero = tk.Label(contSedeP, text=str(Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()), font=("Arial", 12, "italic"), bg="#E0A8F2")
         sedePdinero.pack(side="right", padx=10, pady=5)
-        sedePflecha = tk.Label(contSedeP, text="------------>", bg="light gray", font=("Arial", 12, "bold"))
+        sedePflecha = tk.Label(contSedeP, text="------------>", bg="#E0A8F2", font=("Arial", 12, "bold"))
         sedePflecha.pack(side="right", pady=5)    
         #sede2
-        contSedes2 = tk.Frame(contSedes, bg="light gray", width=100, height=100)
+        contSedes2 = tk.Frame(contSedes, bg="#E0A8F2", width=100, height=100)
         contSedes2.pack(fill="x", padx=35, pady=0)
-        sede2dinero = tk.Label(contSedes2, text=str(Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()), font=("Arial", 12, "italic"))
+        sede2dinero = tk.Label(contSedes2, text=str(Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()), font=("Arial", 12, "italic"), bg="#E0A8F2")
         sede2dinero.pack(side="right", padx=10, pady=5)
-        sede2flecha = tk.Label(contSedes2, text="------------>", bg="light gray", font=("Arial", 12, "bold"))
+        sede2flecha = tk.Label(contSedes2, text="------------>", bg="#E0A8F2", font=("Arial", 12, "bold"))
         sede2flecha.pack(side="right", pady=5)
-        sedePboton = tk.Button(contSedeP, text="Sede Principal", font=("Arial", 12, "italic"))
+        sedePboton = tk.Button(contSedeP, text="Sede Principal", font=("Arial", 12, "italic"), bd=5, relief="ridge")
         sedePboton.pack(side="right", padx=10, pady=5)
         sedePboton.bind("<Button-1>", lambda event: self.eventoDeCompra(event, nombre, nombreP, precio, precioP, separador, seleccionar, contSedes, contSedeP, sedePdinero, sedePflecha, contSedes2, sede2dinero, sede2flecha, sede2boton))
-        sede2boton = tk.Button(contSedes2, text="Sede 2", font=("Arial", 12, "italic"))
+        sede2boton = tk.Button(contSedes2, text="Sede 2", font=("Arial", 12, "italic"), bd=5, relief="ridge")
         sede2boton.pack(side="right", padx=10, pady=5)
         sede2boton.bind("<Button-1>", lambda event: self.eventoDeCompra(event, nombre, nombreP, precio, precioP, separador, seleccionar, contSedes, contSedeP, sedePdinero, sedePflecha, contSedes2, sede2dinero, sede2flecha, sedePboton))
 
@@ -978,24 +983,24 @@ Ya terminamos, tenga buen día.""")
         event.widget.destroy()
 
         if textoDeBoton == "Sede 2":
-            labelDeCompraP = tk.Label(StartFrame.frameDeTrabajo, text=f"El repuesto {StartFrame.proveedorB.getInsumo().getNombre()} se compró exitosamente desde la Sede Principal", wraplength=500, font=("Arial", 14, "bold"))
+            labelDeCompraP = tk.Label(StartFrame.frameDeTrabajo, text=f"El repuesto {StartFrame.proveedorB.getInsumo().getNombre()} se compró exitosamente desde la Sede Principal", wraplength=600, font=("Arial", 18, "bold"), bg="white")
             labelDeCompraP.place(relx=0.5, rely=0.2, anchor="center")
             Sede.getListaSedes()[0].getCuentaSede().setAhorroBanco( (Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco() - StartFrame.proveedorB.getPrecio()) )
-            labelSaldo = tk.Label(StartFrame.frameDeTrabajo, text= f"Saldo Disponible: {Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()} pesos", font=("Arial", 14, "italic"))
+            labelSaldo = tk.Label(StartFrame.frameDeTrabajo, text= f"Saldo Disponible: {Sede.getListaSedes()[0].getCuentaSede().getAhorroBanco()} pesos", font=("Arial", 14, "italic"), bg="white")
             labelSaldo.place(relx=0.5, rely=0.4, anchor="center")
 
-            seguirAnalisis = tk.Button(StartFrame.frameDeTrabajo, text="Continuar Análisis", font=("Arial", 12, "bold"))
+            seguirAnalisis = tk.Button(StartFrame.frameDeTrabajo, text="Continuar Análisis", font=("Arial", 12, "bold"), bd=5, relief="ridge")
             seguirAnalisis.place(relx=0.5, rely=0.6, anchor="center")
             seguirAnalisis.bind("<Button-1>", lambda event: self.eventoContinuador(event, labelDeCompraP, labelSaldo))
 
         else:
-            labelDeCompraP = tk.Label(StartFrame.frameDeTrabajo, text=f"El repuesto {StartFrame.proveedorB.getInsumo().getNombre()} se compró exitosamente desde la Sede 2", wraplength=500, font=("Arial", 14, "bold"))
+            labelDeCompraP = tk.Label(StartFrame.frameDeTrabajo, text=f"El repuesto {StartFrame.proveedorB.getInsumo().getNombre()} se compró exitosamente desde la Sede 2", wraplength=600, font=("Arial", 18, "bold"), bg="white")
             labelDeCompraP.place(relx=0.5, rely=0.2, anchor="center")
             Sede.getListaSedes()[1].getCuentaSede().setAhorroBanco( (Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco() - StartFrame.proveedorB.getPrecio()) )
-            labelSaldo = tk.Label(StartFrame.frameDeTrabajo, text= f"Saldo Disponible: {Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()} pesos", font=("Arial", 14, "italic"))
+            labelSaldo = tk.Label(StartFrame.frameDeTrabajo, text= f"Saldo Disponible: {Sede.getListaSedes()[1].getCuentaSede().getAhorroBanco()} pesos", font=("Arial", 14, "italic"), bg="white")
             labelSaldo.place(relx=0.5, rely=0.4, anchor="center")
 
-            seguirAnalisis = tk.Button(StartFrame.frameDeTrabajo, text="Continuar Análisis", font=("Arial", 12, "bold"))
+            seguirAnalisis = tk.Button(StartFrame.frameDeTrabajo, text="Continuar Análisis", font=("Arial", 12, "bold"), bd=5, relief="ridge")
             seguirAnalisis.place(relx=0.5, rely=0.6, anchor="center")
             seguirAnalisis.bind("<Button-1>", lambda event: self.eventoContinuador(event, labelDeCompraP, labelSaldo))
             
@@ -1028,7 +1033,7 @@ Ya terminamos, tenga buen día.""")
         valores = StartFrame.preciosProvQueLlegan
         habilitado = [False for _ in range(len(StartFrame.proveedoresQueLlegan))]
 
-        containerBig = tk.Frame(StartFrame.frameDeTrabajo, bg="light gray")
+        containerBig = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
         containerBig.pack(pady=10)
 
         cont = tk.Frame(containerBig, bg="medium orchid")
@@ -1167,6 +1172,12 @@ Ya terminamos, tenga buen día.""")
         ventana = event.widget.winfo_toplevel()
         stff.cambiarFrame(stff.areaPrincipal)
         ventana.destroy()
+    
+    def volverMenu2(self):
+        from src.uiMain.startFrame import StartFrame
+        stff = StartFrame()
+        stff.cambiarFrame(stff.areaPrincipal)
+        StartFrame.ventanaPrincipal.destroy()
 
     aProdFinal = []
     def recibeProdFinal(self, aProdF):
@@ -1426,6 +1437,12 @@ Ya terminamos, tenga buen día.""")
     def recibeCreadasOrNo(self, creadasss):
         from src.gestorAplicacion.bodega.prenda import Prenda
         StartFrame.creadas = creadasss
+
+        if not Prenda.prendasUltimaProduccion:
+            print("\nADIOS...")
+            StartFrame.ventanaPrincipal.after(700, self.volverMenu2)
+            return
+        
         StartFrame.contenedorGrande.destroy()
         resultado = None
 
@@ -1603,16 +1620,19 @@ Ya terminamos, tenga buen día.""")
         StartFrame.contSeleccionModista = tk.Frame(StartFrame.contenedorGrande, bg="white")
         StartFrame.contSeleccionModista.pack(side="left", padx=5, pady=5)
         StartFrame.frameDeTrabajo.update_idletasks()
-        StartFrame.labelPrueba = tk.Label(StartFrame.contSeleccionModista, text="No hay insumos:(", font=("Arial", 10, "bold italic"), wraplength=300, justify="center")
+        StartFrame.labelPrueba = tk.Label(StartFrame.contSeleccionModista, text="No hay insumos :(\n\ncompra mas para producir\n\nvolviendo...", font=("Arial", 10, "bold italic"), wraplength=300, justify="center")
         StartFrame.labelPrueba.pack(pady=5)
         StartFrame.frameDeTrabajo.update_idletasks()
         threading.Thread(target=Prenda.producirPrendas, args=(StartFrame.aProducirPaEnviar, Main.fecha), daemon=True).start()
         #print("\nsigo después del hilo")
         
+        #print(f"\nla tela en la sede p es: {Sede.getListaSedes()[0].getCantidadInsumosBodega()[0]}")
+        if Sede.getListaSedes()[0].getCantidadInsumosBodega()[0] < 200 or Sede.getListaSedes()[1].getCantidadInsumosBodega()[0] < 200:
+            StartFrame.evento_senalizador.set()
+
         StartFrame.evento_senalizador.wait()
         StartFrame.evento_senalizador.clear()
 
-        
         self.verificarEvento()
         contBotonesModistas = tk.Frame(StartFrame.contSeleccionModista, bg="white")
         contBotonesModistas.pack(pady=3)
