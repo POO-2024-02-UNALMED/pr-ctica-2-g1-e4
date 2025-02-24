@@ -531,7 +531,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
         Main.prepararCambioSede()
         tanda = Main.getTandaReemplazo()
-        if tanda is not None:
+        if tanda is None:
+            pass
+        else:
             self.dibujarTandaDeReemplazo(tanda)
 
         self.frameCambianteGHumana.columnconfigure(0, weight=3)

@@ -188,7 +188,9 @@ class Main:
             else:
                 return cls.getTandaContratacion() # Hace lo mismo, pero no toma en cuenta la sede.
         else:
-            return None
+            if cls.estadoGestionHumana == "cambio-sede":
+                cls.prepararContratacion()
+                return cls.getTandaReemplazo()
         
         
     # Avanza la interacción 2 y 3, cambiando de 2 a 3 cuando se han reemplazado todos los empleados posibles
@@ -216,13 +218,13 @@ class Main:
                     cls.porReemplazar.remove(emp)
         cls.idxRol+=1
         if cls.idxRol >= len(cls.rolesAReemplazar):
-            cls.estadoGestionHumana="contratacion"
             cls.prepararContratacion()
         return True
 
     # Inicia interacción 3 grafica.
     @classmethod
     def prepararContratacion(cls):
+        cls.estadoGestionHumana="contratacion"
         cls.aptosParaContratar, cls.rolesAReemplazar, cls.cantidadAContratar= Persona.entrevistar(cls.porReemplazar)
         cls.idxRol = 0
 
