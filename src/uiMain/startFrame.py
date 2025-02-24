@@ -1823,14 +1823,6 @@ Ya terminamos, tenga buen día.""")
             self.datosEntradasFacturacion.borrar()
 #endregion
 
-def pasarAVentanaPrincipal():
-    if Main.deserializacionPendiente:
-        from src.uiMain.main import deserializar
-        deserializar()
-        Main.deserializacionPendiente = False
-
-    ventana = StartFrame()
-    ventana.mainloop()
 
 
     #region produccion
@@ -2763,3 +2755,12 @@ def pasarAVentanaPrincipal():
             labelPericia.pack(side="left", padx=2)
             boton.bind("<Button-1>", lambda event : self.botonesModistas(event, contBotonesModistas))
 #endregion
+
+def pasarAVentanaPrincipal():
+    if Main.deserializacionPendiente:
+        from src.uiMain.main import deserializar
+        deserializar()
+        Main.deserializacionPendiente = False
+
+    ventana = StartFrame()
+    ventana.mainloop()
