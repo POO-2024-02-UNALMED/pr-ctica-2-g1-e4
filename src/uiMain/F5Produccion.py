@@ -417,8 +417,9 @@ def volverMenu(event):
     from src.uiMain.startFrame import StartFrame
     stf = StartFrame()
     ventana = event.widget.winfo_toplevel()
-    ventana.destroy()
+    
     stf.cambiarFrame(stf.areaPrincipal)
+    ventana.destroy()
 
 aProdFinal = []
 def recibeProdFinal(aProdF):
@@ -690,6 +691,122 @@ def recibeCreadasOrNo(creadasss):
     creadas = creadasss
     contenedorGrande.destroy()
     resultado = None
+
+    prendasHoy = [] ; hoySedeP = [] ; hoySede2 = [] ; pHoySedeP = [] ; pHoySede2 = [] ; cHoySedeP = [] ; cHoySede2 = []
+    prendasOW = [] ; OWSedeP = [] ; OWSede2 = [] ; pOWSedeP = [] ; pOWSede2 = [] ; cOWSedeP = [] ; cOWSede2 = []
+    diaRef = Prenda.prendasUltimaProduccion[0].getFecha().getDia()
+    print(f"dia de referencia: {diaRef}")
+    for prendaPorFecha in Prenda.prendasUltimaProduccion:
+        if prendaPorFecha.getFecha().getDia() == diaRef:
+            prendasHoy.append(prendaPorFecha)
+        else:
+            prendasOW.append(prendaPorFecha)
+    #print(f"Numero de producidas hoy: {len(prendasHoy)}, numero de producidas la otra semana: {len(prendasOW)}")
+    for lodelaP in prendasHoy:
+        if lodelaP.getSede().getNombre().lower() == "sede principal":
+            hoySedeP.append(lodelaP)
+        else:
+            hoySede2.append(lodelaP)
+    for lodelaP2 in prendasOW:
+        if lodelaP2.getSede().getNombre().lower() == "sede principal":
+            OWSedeP.append(lodelaP2)
+        else:
+            OWSede2.append(lodelaP2)
+    #TENIENDO LA PRODUCCION DE HOY Y DE LA OTRA SEMANA SEPARADAS, vamos separar por pantalones y camisas...
+    for prendaEs in hoySedeP:
+        if prendaEs.getNombre().lower() == "pantalon":
+            pHoySedeP.append(prendaEs)
+        else:
+            cHoySedeP.append(prendaEs)
+    for prendaEs2 in hoySede2:
+        if prendaEs2.getNombre().lower() == "pantalon":
+            pHoySede2.append(prendaEs2)
+        else:
+            cHoySede2.append(prendaEs2)
+    for prendaEs3 in OWSedeP:
+        if prendaEs3.getNombre().lower() == "pantalon":
+            pOWSedeP.append(prendaEs3)
+        else:
+            cOWSedeP.append(prendaEs3)
+    for prendaEs4 in OWSede2:
+        if prendaEs4.getNombre().lower() == "pantalon":
+            pOWSede2.append(prendaEs4)
+        else:
+            cOWSede2.append(prendaEs4)
+    
+    #print(f"\n[{len(pHoySedeP)}, {len(cHoySedeP)}, {len(pHoySede2)}, {len(cHoySede2)} --- {len(pOWSedeP)}, {len(cOWSedeP)}, {len(pOWSede2)}, {len(cOWSede2)}]")
+
+    contCONTENEDOR = tk.Frame(frameDeTrabajo, bg="white", relief="ridge", bd=4)
+    contCONTENEDOR.pack(pady=20)
+
+    contARRIBA = tk.Frame(contCONTENEDOR, bg="#E0A8F2")
+    contARRIBA.pack(side="left", pady=5, padx=5)
+
+    labelProdSal = tk.Label(contARRIBA, text="PRODUCCIÓN\nSALIENTE", font=("Arial", 15, "bold italic"), bg="#E0A8F2")
+    labelProdSal.pack(pady=7)
+
+    contSEDES = tk.Frame(contARRIBA, bg="#E0A8F2")
+    contSEDES.pack(pady=2, padx=20)
+
+    contSedeP = tk.Frame(contSEDES, bg="#E6E6FA")
+    contSedeP.pack(side="left", padx=10, pady=5)
+
+    contSede2 = tk.Frame(contSEDES, bg="#E6E6FA")
+    contSede2.pack(side="left", padx=10, pady=5)
+
+    label1 = tk.Label(contSedeP, bg="#E6E6FA", text="Sede Principal", font=("Arial", 13, "bold italic"))
+    label1.pack(pady=4, padx=4)
+
+    label2 = tk.Label(contSedeP, bg="#E6E6FA", text=f"Pantalones: {len(pHoySedeP)}", font=("Arial", 10, "italic"))
+    label2.pack(pady=2, padx=4)
+
+    label3 = tk.Label(contSedeP, bg="#E6E6FA", text=f"Camisas: {len(cHoySedeP)}", font=("Arial", 10, "italic"))
+    label3.pack(pady=2, padx=4)
+
+    label4 = tk.Label(contSede2, bg="#E6E6FA", text="Sede 2", font=("Arial", 11, "bold italic"))
+    label4.pack(pady=4, padx=4)
+
+    label5 = tk.Label(contSede2, bg="#E6E6FA", text=f"Pantalones: {len(pHoySede2)}", font=("Arial", 10, "italic"))
+    label5.pack(pady=2, padx=4)
+
+    label6 = tk.Label(contSede2, bg="#E6E6FA", text=f"Camisas: {len(cHoySede2)}", font=("Arial", 10, "italic"))
+    label6.pack(pady=2, padx=4)
+
+        #resultados de lo de la otra semana...
+    contDERECHA = tk.Frame(contCONTENEDOR, bg="#E0A8F2")
+    contDERECHA.pack(side="left", pady=5, padx=5)
+
+    labelProdSal2 = tk.Label(contDERECHA, text="PRODUCCIÓN LANZADA\nLA OTRA SEMANA", font=("Arial", 15, "bold italic"), bg="#E0A8F2")
+    labelProdSal2.pack(pady=7)
+
+    contSEDES2 = tk.Frame(contDERECHA, bg="#E0A8F2")
+    contSEDES2.pack(pady=2, padx=20)
+
+    contSedeP2 = tk.Frame(contSEDES2, bg="#E6E6FA")
+    contSedeP2.pack(side="left", padx=10, pady=5)
+
+    contSede22 = tk.Frame(contSEDES2, bg="#E6E6FA")
+    contSede22.pack(side="left", padx=10, pady=5)
+
+    label12 = tk.Label(contSedeP2, bg="#E6E6FA", text="Sede Principal", font=("Arial", 13, "bold italic"))
+    label12.pack(pady=4, padx=4)
+
+    label22 = tk.Label(contSedeP2, bg="#E6E6FA", text=f"Pantalones: {len(pOWSedeP)}", font=("Arial", 10, "italic"))
+    label22.pack(pady=2, padx=4)
+
+    label32 = tk.Label(contSedeP2, bg="#E6E6FA", text=f"Camisas: {len(cOWSedeP)}", font=("Arial", 10, "italic"))
+    label32.pack(pady=2, padx=4)
+
+    label42 = tk.Label(contSede22, bg="#E6E6FA", text="Sede 2", font=("Arial", 11, "bold italic"))
+    label42.pack(pady=4, padx=4)
+
+    label52 = tk.Label(contSede22, bg="#E6E6FA", text=f"Pantalones: {len(pOWSede2)}", font=("Arial", 10, "italic"))
+    label52.pack(pady=2, padx=4)
+
+    label62 = tk.Label(contSede22, bg="#E6E6FA", text=f"Camisas: {len(cOWSede2)}", font=("Arial", 10, "italic"))
+    label62.pack(pady=2, padx=4)
+
+
     if creadasss:
         resultado = f"{Prenda.getCantidadUltimaProduccion()} Prendas creadas con éxito"
     else:
@@ -698,6 +815,9 @@ def recibeCreadasOrNo(creadasss):
     labelResultado = tk.Label(frameDeTrabajo, text=resultado, bg="white", font=("Arial", 18, "bold italic"), wraplength=500, justify="center")
     labelResultado.pack(pady=15)
 
+    botonVOLVER = tk.Button(frameDeTrabajo, text="Volver al Menu", font=("Arial", 16, "bold italic"))
+    botonVOLVER.pack(pady=10)
+    botonVOLVER.bind("<Button-1>", volverMenu)
 
     
 contenedorGrande = None
