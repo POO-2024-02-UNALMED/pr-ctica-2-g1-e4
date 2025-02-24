@@ -1193,8 +1193,8 @@ Ya terminamos, tenga buen día.""")
         self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
 
         self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Detalles Venta" ,
-        ["Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", ["","Sede Principal", "",
-        "","Camisa/Pantalon","0"],[True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
+        ["Fecha","Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", [f"Dia: {Main.fecha.getDia()}  Mes: {Main.fecha.getMes()}  Año: {Main.fecha.getAno()}","","Sede Principal", "",
+        "","Camisa/Pantalon","0"],[False,True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
         self.datosEntradasFacturacion.configurarCallBack("sede", "<Return>", self.actualizarDatosEmpleadosFacturacion)
         self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
         clientesPosibles="Clientes"
