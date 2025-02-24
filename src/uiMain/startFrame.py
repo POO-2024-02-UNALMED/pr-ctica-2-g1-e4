@@ -338,6 +338,8 @@ class StartFrame(tk.Tk):
             case "Reemplazo":
                 self.tituloTanda.config(wraplength=self.frameCambianteGHumana.winfo_width()*0.9)
                 self.descripcionCambioSede.config(wraplength=self.frameCambianteGHumana.winfo_width()*0.9)
+            case "Despedida":
+                self.descripcionCambioSede.config(wraplength=self.frameCambianteGHumana.winfo_width()*0.9)
 
         
     def inicialGestionHumana(self):
@@ -615,6 +617,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         if existen:
             tanda=Main.getTandaReemplazo()
             if tanda is None:
+                self.paginaGHumana="Despedida"
                 self.frameCambianteGHumana.destroy()
                 self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
                 self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
