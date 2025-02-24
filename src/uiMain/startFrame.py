@@ -817,7 +817,1020 @@ Ya terminamos, tenga buen día.""")
 
 #endregion
 
-#region produccion
+
+#region sistema financiero
+#-------------------------------------------------------------------Sistema Financiero--------------------------------------------------------------------------------------------------------
+
+    def SistemaFinanciero(self)->tk.Frame:
+            from src.gestorAplicacion.administracion.banco import Banco
+            from src.gestorAplicacion.administracion.deuda import Deuda
+            from src.gestorAplicacion.administracion.empleado import Empleado
+            from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
+            from src.gestorAplicacion.venta import Venta
+            from src.uiMain.fieldFrame import FieldFrame
+            ventana=self      
+                        
+            def LeerF2(self, field_frame2, texto2):
+                from src.uiMain.startFrame import StartFrame
+                from src.uiMain.main import Main
+                Porcentaje = FieldFrame.getValue(field_frame2, "Fidelidad")
+                   
+                try:
+                    if  Porcentaje == "":
+                        raise ExcepcionContenidoVacio(["Fidelidad"])
+                    elif isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
+                        raise ExcepcionNumeroNoString(Porcentaje)
+                except ExcepcionNumeroNoString as uwu:
+                    messagebox.showwarning(title="Alerta", message=uwu.mensaje_completo)
+                    return True 
+                except ExcepcionContenidoVacio as cabezaHueca:
+                    messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                    return True
+                
+                if Porcentaje != "0% / 100%":           
+                    Porcentaje = Porcentaje.strip("%")
+                    StartFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
+                    texto2.config(state="normal")   # Habilitar edición
+                    texto2.delete("1.0", "end")     # Eliminar texto actual
+                    texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.diferencia_estimada), "center")  # Insertar nuevo texto
+                    texto2.config(state="disabled") 
+                    boton2 = tk.Button(self.estimadoVentasDeudas, text="Siguiente", command=lambda: Interaccion3(self))
+                    boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+
+                Porcentaje = float(Porcentaje)
+                try:
+                    if Porcentaje < 0 or Porcentaje > 100:
+                        raise ExcepcionValorNoValido(Porcentaje)
+                except ExcepcionValorNoValido as pochoclo:
+                    messagebox.showwarning(title="Alerta", message=pochoclo.mensaje_completo)
+                    return True
+                
+            def Interaccion2(self):
+                frame2.destroy()
+                frame3.destroy()
+                
+                self.fidelidadclientes = tk.Frame(framePrincipal)
+                self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
+                
+                criterios = ["Fidelidad"]
+                valores = ["0% / 100%"]
+                habilitado = [True]
+                
+                # Creamos el FieldFrame con los botones
+                field_frame2 = FieldFrame(self.fidelidadclientes, "Ingrese porcentaje a modificar para", criterios, "los clientes sin membresía", valores, habilitado)
+                field_frame2.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
+                
+                self.estimadoVentasDeudas = tk.Frame(framePrincipal)
+                self.estimadoVentasDeudas.pack(anchor="s", expand=True, fill="both")
+                
+                boton1 = tk.Button(self.estimadoVentasDeudas, text="Aceptar", command=lambda: LeerF2(self, field_frame2, texto2))
+                boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
+                borrar=tk.Button(self.estimadoVentasDeudas,text="Borrar", command = lambda: field_frame2.borrar())
+                borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+                
+                confirmacion2 = tk.Label(self.estimadoVentasDeudas, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center", wraplength=600)
+                confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+                
+                texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
+                texto2.pack(fill="both", expand=True)
+                texto2.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+
+                texto2.config(state="normal")   # Habilitar edición
+                texto2.delete("1.0", "end")     # Eliminar texto actual
+                texto2.insert("1.0", "Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", "center")  # Insertar nuevo texto
+                texto2.config(state="disabled") 
+
+            def LeerF3(self,field_frame3, frameb):
+                from src.uiMain.main import Main
+                seleccion = FieldFrame.getValue(field_frame3, "Bancos")
+                banco=None
+                
+                for banco_actual in Banco.getListaBancos():
+                    if Banco.getNombreEntidad(banco_actual) == seleccion:
+                            banco = seleccion
+                            break
+                if banco == None:
+                    try:
+                        if seleccion == "":
+                            raise ExcepcionContenidoVacio(["Bancos"])
+                        if not isinstance(seleccion, str):
+                            raise ExcepcionStringNoNumero(seleccion)
+                    except ExcepcionStringNoNumero as p:
+                        messagebox.showwarning(title="Alerta", message=p.mensaje_completo)
+                        return True
+                    except ExcepcionContenidoVacio as cabezaHueca:
+                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                        return True
+                    else:
+                            try:  
+                                bancos_disponibles = [Banco.getNombreEntidad(banco) for banco in Banco.getListaBancos()]
+                                if seleccion not in bancos_disponibles:
+                                    raise ExcepcionValorNoValido(seleccion)
+                            except ExcepcionValorNoValido as ch:
+                                messagebox.showwarning(title="Alerta", message = ch.mensaje_completo)
+                                return True
+                        
+                c = Main.planRecuperacion(StartFrame.diferencia_estimada,banco)  # Use float to handle percentage  
+                self.texto3.config(state="normal")   # Habilitar edición
+                self.texto3.delete("1.0", "end")     # Eliminar texto actual
+                self.texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
+                self.texto3.config(state="disabled") 
+                boton2 = tk.Button(self.botonesI3, text="Siguiente", command=lambda: Interaccion4(self, frameb))
+                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
+                    
+                return c
+                
+            def listaBancos(self, frameb):
+                
+                bancos=Banco.getListaBancos()
+
+                tituloNombre=tk.Label(frameb, text="Nombre", font=("Arial", 10))
+                tituloDeuda=tk.Label(frameb, text="Deuda inicial", font=("Arial", 10))
+                tituloAhorro=tk.Label(frameb, text="Ahorros", font=("Arial", 10))
+                tituloInter=tk.Label(frameb, text="Interés", font=("Arial", 10))
+                
+                tituloNombre.grid(row=2, column=0)
+                tituloDeuda.grid(row=2, column=1)
+                tituloAhorro.grid(row=2, column=2)
+                tituloInter.grid(row=2, column=3)
+
+                for row, banco in enumerate(bancos):
+                    nombre = tk.Label(frameb, text=Banco.getNombreEntidad(banco), font=("Arial", 10))
+                    deudaInicial=0
+                    for deuda in Banco.getDeuda(banco):
+                        deudaInicial+=Deuda.getValorInicialDeuda(deuda)
+                    deuda = tk.Label(frameb, text=deudaInicial, font=("Arial", 10))
+                    ahorro = tk.Label(frameb, text=Banco.getAhorroBanco(banco), font=("Arial", 10))
+                    Interes = tk.Label(frameb, text=Banco.getInteres(banco), font=("Arial", 10))
+                    nombre.grid(row=row+3, column=0)
+                    deuda.grid(row=row+3, column=1)
+                    ahorro.grid(row=row+3, column=2)
+                    Interes.grid(row=row+3, column=3)
+                
+                frameb.rowconfigure(0, weight=0)
+                frameb.rowconfigure(1, weight=4)
+                frameb.columnconfigure(0, weight=2)# Empleado insuficiente
+                frameb.columnconfigure(1, weight=1)# area
+                frameb.columnconfigure(2, weight=1)# rendimiento
+                frameb.columnconfigure(3, weight=1)# rendimiento esperado
+        
+            def Interaccion3(self):
+                from src.uiMain.main import Main
+                self.fidelidadclientes.destroy()
+                self.estimadoVentasDeudas.destroy()
+                self.bancoParaDeudas = tk.Frame(framePrincipal, bg="light gray")
+                self.bancoParaDeudas.pack(anchor="s",  expand=True, fill="both")
+                criterios = ["Bancos"]
+                valores = ["Ingrese nombre"]
+                habilitado = [True]
+                # Creamos el FieldFrame con los botones
+                field_frame3 = FieldFrame(self.bancoParaDeudas, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
+                field_frame3.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
+
+                frameb = tk.Frame(framePrincipal)
+                frameb.pack(anchor="s", expand=True, fill="both")
+                labelBanco= tk.Frame(frameb)
+                labelBanco.place(relx=0, rely=0, relwidth=1, relheight=1)
+                listaBancos(self,labelBanco)
+                
+                self.botonesI3 = tk.Frame(framePrincipal)
+                self.botonesI3.pack(anchor="s", expand=True, fill="both")
+                boton1 = tk.Button(self.botonesI3, text="Aceptar", command=lambda: LeerF3(self, field_frame3,frameb))
+                boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
+                borrar=tk.Button(self.botonesI3,text="Borrar", command = lambda: field_frame3.borrar())
+                borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
+                
+                confirmacion3 = tk.Label(self.botonesI3, text="", anchor="center",wraplength=600)
+                confirmacion3.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
+                self.texto3 = tk.Text(confirmacion3, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
+                self.texto3.pack(fill="both", expand=True)
+                self.texto3.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+                self.texto3.config(state="normal")   # Habilitar edición
+                
+                if StartFrame.diferencia_estimada > 0:
+                    self.texto3.delete("1.0", "end")     # Eliminar texto actual
+                    self.texto3.insert("1.0", "El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", "center")  # Insertar nuevo texto
+                    self.texto3.config(state="disabled") 
+                else:
+                    self.texto3.delete("1.0", "end")     # Eliminar texto actual
+                    self.texto3.insert("1.0", "El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo", "center")  # Insertar nuevo texto
+                    self.texto3.config(state="disabled") 
+
+            def LeerF4(self,field_frame4, texto4, descuento):
+                from src.uiMain.startFrame import StartFrame
+                from src.uiMain.main import Main
+                Porcentaje = FieldFrame.getValue(field_frame4, "Descuento a futuro")
+                if Porcentaje == "":
+                    try:
+                        raise ExcepcionContenidoVacio(["Descuento a futuro"]) 
+
+                    except ExcepcionContenidoVacio as cabezaHueca:
+                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                        return True
+                else:
+                    if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
+                        try:
+                            raise ExcepcionNumeroNoString(Porcentaje)
+                        except ExcepcionNumeroNoString as ask:
+                            messagebox.showwarning(title="Alerta", message=ask.mensaje_completo)
+                            Porcentaje.delete(0, "end")
+                            return True
+                                    
+                    if Porcentaje != str(descuento):
+                        Porcentaje = Porcentaje.strip("%")
+                        StartFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
+
+                        texto4.config(state="normal")   # Habilitar edición
+                        texto4.delete("1.0", "end")     # Eliminar texto actual
+                        texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.analisis_futuro), "center")  # Insertar nuevo texto
+                        texto4.config(state="disabled")
+                        boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
+                        boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+            
+            def Interaccion4(self,frameb):
+                from src.uiMain.main import Main
+                self.bancoParaDeudas.destroy()
+                frameb.destroy()
+                self.botonesI3.destroy()
+                
+                self.evBlackFriday = tk.Frame(framePrincipal)
+                self.evBlackFriday.pack(anchor="s", expand=True, fill="both")
+                descuento = Venta.blackFriday(Main.fecha)
+                resultado="si"
+                if descuento <= 0.0:
+                    resultado="no"
+                    
+                criterios = ["Descuento a futuro"]
+                valores = [str(descuento*100)]
+                habilitado = [True]
+                
+                # Creamos el FieldFrame con los botones
+                field_frame4 = FieldFrame(self.evBlackFriday, ("Según las Ventas anteriores, aplicar descuentos"+resultado+" funcionará"), criterios, "¿Desea Cambiar el siguiente descuento:?", valores, habilitado)
+                field_frame4.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
+                
+                self.botonesF4 = tk.Frame(framePrincipal)
+                self.botonesF4.pack(anchor="s", expand=True, fill="both")
+                
+                boton1 = tk.Button(self.botonesF4, text="Aceptar", command=lambda: LeerF4(self, field_frame4, texto4, descuento))
+                boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
+                borrar4=tk.Button(self.botonesF4,text="Borrar", command = lambda: field_frame4.borrar())
+                borrar4.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
+                
+                confirmacion4 = tk.Label(self.botonesF4, anchor="center", wraplength=600)
+                confirmacion4.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+                texto4 = tk.Text(confirmacion4, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
+                texto4.pack(fill="both", expand=True)
+                texto4.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+
+                texto4.config(state="normal")   # Habilitar edición
+                texto4.delete("1.0", "end")     # Eliminar texto actual
+                texto4.insert("1.0", "Analizando posibilidad de hacer descuentos para subir las ventas...", "center")  # Insertar nuevo texto
+                texto4.config(state="disabled") 
+            
+            def Interaccion5(self):
+                from src.uiMain.startFrame import StartFrame
+                self.evBlackFriday.destroy()
+                self.botonesF4.destroy()
+                s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(StartFrame.balance_anterior))
+                s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(StartFrame.diferencia_estimada)
+                s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(self.diferencia_estimada)+"\n"+str(StartFrame.analisis_futuro)
+                s4= "\n y por tanto el nuevo porcentaje de pesimismo de la producción es:\n" + str(Venta.getPesimismo())+ "."        
+                confirmacion5 = tk.Label(framePrincipal, anchor="center", wraplength=600)
+                confirmacion5.place(relx=0, rely=0.3, relwidth=1, relheight=0.4)
+                texto5 = tk.Text(confirmacion5, width=50, height=5,bg="plum3", font=("Arial", 10))  # Usa valores válidos
+                texto5.pack(fill="both", expand=True)
+                texto5.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+                texto5.insert(1.0,s1+s2+s3+s4)
+            
+            def LeerF1(self):
+                from src.uiMain.main import Main
+                from src.uiMain.startFrame import StartFrame
+                eleccionDeuda=0
+                resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
+                resultadosB=FieldFrame.getValue(field_frame,"Banco")
+                
+                if resultadosP.lower()!="si/no" and resultadosB.lower()!="si/no" and combo.get()!="":
+                    from src.uiMain.main import Main
+                    cosa=combo.get()
+                    if resultadosP.lower() == "si" and resultadosB.lower()=="no":
+                        elecionDeuda = 1
+                    elif resultadosP.lower() == "no" and resultadosB.lower()=="si":
+                        elecionDeuda = 2
+                    elif resultadosP.lower() == "si" and resultadosB.lower()=="si":
+                        elecionDeuda = 3
+                    from src.gestorAplicacion.sede import Sede
+                    empleado=None
+                    for empleado_actual in Sede.getListaEmpleadosTotal():
+                        seleccion=combo.get()
+                        if Empleado.getNombre(empleado_actual) == seleccion:
+                            empleado = empleado_actual
+                    StartFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
+                   
+                    texto.config(state="normal")   # Habilitar edición
+                    texto.delete("1.0", "end")     # Eliminar texto actual
+                    texto.insert("1.0", EvaluacionFinanciera.informe(StartFrame.balance_anterior), "center")  # Insertar nuevo texto
+                    texto.config(state="disabled") 
+                    boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
+                    boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+                else: #Excepcion
+                    try:
+                        entradas = field_frame.obtenerTodosLosValores()  
+                        vacios = [] 
+                        nombresCamposVacíos = []  
+                        hayExcepcion = False
+                        criterios = []
+                        
+                        for i, c in enumerate(field_frame.citerios):
+                            criterios.append(c)
+
+                        for i, valor in enumerate(entradas):
+                            if valor.strip() == "":  
+                                hayExcepcion = True
+                                vacios.append(field_frame.valores[i])  
+                                nombresCamposVacíos.append(criterios[i])
+                        if  combo.get() == "":
+                            raise ExcepcionContenidoVacio(nombresCamposVacíos+["Directivo"])                   
+                        if hayExcepcion:
+                            raise ExcepcionContenidoVacio(nombresCamposVacíos) 
+
+                    except ExcepcionContenidoVacio as cabezaHueca:
+                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                        return hayExcepcion
+
+                try:
+                    error = []
+                    if not isinstance(resultadosP, str):
+                        error.append(resultadosP)
+                    if not isinstance(resultadosB, str):
+                        error.append(resultadosB)
+                    if error != []:
+                        raise ExcepcionStringNoNumero(error)
+                except ExcepcionStringNoNumero as obleas:
+                    messagebox.showwarning(title="Alerta", message=obleas.mensaje_completo)
+                try:
+                    if resultadosP.lower() not in ["si", "no"] or resultadosB.lower() not in ["si", "no"]:
+                        raise ExcepcionValorNoValido(resultadosP.lower())
+                except ExcepcionValorNoValido as cornal:
+                    messagebox.showwarning(title="Alerta", message=cornal.mensaje_completo)
+                    return True
+
+            framePrincipal =  tk.Frame(ventana)
+            framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+            frame1 = tk.Frame(framePrincipal, height=150)
+            frame1.pack(side="top", fill="x")
+            tituloF3 = tk.Label(frame1, text="Gestión Financiera", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+            tituloF3.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+            ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
+            descripcionF3 = tk.Label(frame1, text="Se realiza una evaluación del estado financiero de la empresa haciendo el cálculo de los activos y los pasivos, para indicarle al usuario qué tan bien administrada está, mostrandole los resulatdos y su significado", relief="ridge", wraplength=600)
+            descripcionF3.place(relx=1, rely=0.7, relwidth=1, relheight=0.4, anchor="e")
+            frame2 = tk.Frame(framePrincipal)
+            frame2.pack(anchor="s",  expand=True, fill="both")
+            criterios = ["Proveedor", "Banco"]
+            valores = ["Si/No", "Si/No"]
+            habilitado = [True, True]
+            # Creamos el FieldFrame con los botones
+            field_frame = FieldFrame(frame2, "Desea calcular las ", criterios, "siguientes Deudas", valores, habilitado)
+            field_frame.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
+            frame3 = tk.Frame(framePrincipal)
+            frame3.pack(anchor="s",  expand=True, fill="both")
+            label7 = tk.Label(frame3, text="Directivos disponibles:",anchor="w", font=("Arial",12, "bold"))
+            label7.place(relx=0.5, rely=0.6, relwidth=1, relheight=1, anchor="s")
+            label7.config(padx=200)
+            Lista=Main.Directivos()
+            placeholder = tk.StringVar(master=label7, value="Elije al directivo")
+            combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
+            combo.place(relx=0.5, rely=0.6, relwidth=0.5, relheight=0.2, anchor="s")
+            boton1 = tk.Button(frame3, text="Aceptar", command = lambda: LeerF1(self))
+            boton1.place(relx=0.3, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+            borrar=tk.Button(frame3,text="Borrar", command = lambda: field_frame.borrar())
+            borrar.place(relx=0.5, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
+            confirmacion = tk.Frame(frame3)
+            confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+            espacio=tk.Label(confirmacion, text="", font=("Arial", 10), wraplength=600)
+            espacio.place(relx=0, rely=0, relwidth=1, relheight=1, anchor="c")
+            confirmacion.update_idletasks()  # Asegura que el tamaño se actualice correctamente
+
+            texto = tk.Text(confirmacion, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
+            texto.pack(fill="both", expand=True)
+            texto.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+
+            # Insertar el texto con el tag "center"
+            texto.insert("1.0", "Calculando la diferencia entre ingresos por venta y costos de producción...", "center")
+
+            # Deshabilitar edición si solo quieres mostrar el texto
+            texto.config(state="disabled")
+            return framePrincipal
+    #endregion
+    #region facturacion
+#--------------------------------------------------------- Facturación ----------------------------------------------------------------------------------------------------------------------------------
+    
+    def Facturar(self):
+        self.Facturacion=tk.Frame(self)
+        self.sede=None
+        self.inicialFacturacion()
+        self.cantidadADespedir=0
+        return self.Facturacion
+        
+    def inicialFacturacion(self):
+        self.dineroTransferido=False
+        self.framePrincipal =  tk.Frame(self.Facturacion)
+        self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+
+        self.tituloF1 = tk.Label(self.framePrincipal, text="Facturacion", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
+        self.tituloF1.grid(row=0, column=0, sticky="nswe")
+        
+        ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
+        self.descripcionF1 = tk.Label(self.framePrincipal, wraplength=700 ,text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial", 10))
+        self.descripcionF1.grid(row=1, column=0, sticky="nswe")        
+        
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
+
+        self.outputFacturacion=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2, bg="#f0f0f0")
+        self.outputFacturacion.grid(row=3, column=0, sticky="nswe")
+        
+        self.framePrincipal.columnconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+        self.framePrincipal.rowconfigure(2, weight=10)
+        self.framePrincipal.rowconfigure(3, weight=2)
+        self.interaccion1Facturacion()
+
+    #Este si
+    # Parte de la interacción 1
+    def interaccion1Facturacion(self):
+        self.descripcionF1.config(text="""Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.\nInserte los datos de la sede y presione Enter para ver los empleados""")
+        self.freameCambianteFacturacion.destroy()
+
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
+
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Detalles Venta" ,
+        ["Fecha","Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", [f"Dia: {Main.fecha.getDia()}  Mes: {Main.fecha.getMes()}  Año: {Main.fecha.getAno()}","","Sede Principal", "",
+        "","Camisa/Pantalon","0"],[False,True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
+        self.datosEntradasFacturacion.configurarCallBack("sede", "<Return>", self.actualizarDatosEmpleadosFacturacion)
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
+        clientesPosibles="Clientes"
+        self.Clientes=tk.Label(self.freameCambianteFacturacion, text=clientesPosibles, font=("Arial", 10))
+        self.Clientes.grid(row=1, column=3)
+        clientes= Main.imprimirNoEmpleados()
+        for cliente in clientes:
+            if isinstance(cliente,Persona):
+                clientesPosibles+="\n"+cliente.getNombre()        
+        self.Clientes.config(text=clientesPosibles)
+        self.pistas=tk.Label(self.freameCambianteFacturacion, text=Main.posiblesSedes(), font=("Arial", 10))
+        self.pistas.grid(row=1, column=4)
+        self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10, "bold"), command=self.leer1Facturacion)
+        self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10, "bold"), command=self.datosEntradasFacturacion.borrar)
+
+        self.aceptar.grid(row=2, column=0)
+        self.botonBorrarSeleccion.grid(row=2, column=1)
+        
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(3, weight=3)
+        self.freameCambianteFacturacion.columnconfigure(4, weight=3)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=10)
+        
+    def interaccion6Facturacion(self, mensaje):
+        self.cantidadBolsaGrande=0
+        self.cantidadBolsaMediana=0
+        self.cantidadBolsaPequeña=0
+        self.descripcionF1.config(text="""Factura de la compra realizada.""")
+        self.freameCambianteFacturacion.destroy()
+        self.outputFacturacion.destroy()
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
+
+        confirmacion=tk.Label(self.freameCambianteFacturacion, anchor="center")
+        confirmacion.grid(row=0, column=0, sticky="nswe")
+        self.impresionFinal= tk.Text(confirmacion, font=("Arial", 10), height=10,bg="plum3")
+        self.impresionFinal.pack(fill="both", expand=True)
+        self.impresionFinal.tag_configure("center", justify="center",spacing1=10, spacing3=10)
+        self.impresionFinal.insert(1.0,mensaje)       
+          
+        self.freameCambianteFacturacion.rowconfigure(0, weight=10)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=2)       
+        self.freameCambianteFacturacion.columnconfigure(0, weight=10)      
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+        self.framePrincipal.rowconfigure(2, weight=10)
+
+
+    def interaccion5Facturacion(self):
+        self.cantidadBolsaGrande=0
+        self.cantidadBolsaMediana=0
+        self.cantidadBolsaPequeña=0
+        self.descripcionF1.config(text="""Se encarga de tranferir los fondos a la cuenta principal.""")
+        self.freameCambianteFacturacion.destroy()
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.config(state="disabled")
+
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
+        
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Fondos" ,["Transferir fondos a la cuenta principal","¿Qué porcentaje desea transferir?"],"", ["Si/No","20% o 60%"],[True,False],ancho_entry=25, tamañoFuente=10)
+        self.datosEntradasFacturacion.configurarCallBack("Transferir fondos a la cuenta principal", "<Return>", self.transferirDinero)
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
+        
+        self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10,  "bold"), command=self.leer5Facturacion)
+        self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10,  "bold"), command=self.datosEntradasFacturacion.borrar)
+
+        self.aceptar.grid(row=2, column=0)
+        self.botonBorrarSeleccion.grid(row=2, column=1)        
+        
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(3, weight=2)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+
+    def transferirDinero(self, evento):
+        self.dineroTransferido=True
+        if (self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower())=="si":
+            self.datosEntradasFacturacion.habilitarEntry("¿Qué porcentaje desea transferir?", True)
+        else:
+            valor = (self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower())
+            try: 
+                if not isinstance(valor, str):
+                    raise ExcepcionStringNoNumero((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")))
+                if valor =="":
+                    raise ExcepcionContenidoVacio(["¿Qué porcentaje desea transferir?"])
+            except ExcepcionContenidoVacio as cabezaHueca:
+                messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+           
+            else:
+                try:
+                    if valor not in ["si", "no"]:
+                        raise ExcepcionValorNoValido((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()))
+                except ExcepcionValorNoValido as cacahuate:
+                    messagebox.showwarning(title="Alerta", message=cacahuate.mensaje_completo)
+                    return True
+
+    def leer5Facturacion(self):
+        porcentaje=0
+        mensaje=""
+        
+        if not self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").replace(".", "", 1).isdigit():
+            if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?") != "":
+                if str(self.datosEntradasFacturacion).replace(".", "", 1).isdigit():
+                    if  self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%") < 0:
+                        try:
+                            raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
+                        except ExcepcionValorNoValido as mon:
+                            messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
+                            return True
+            try:
+                raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))
+            except ExcepcionNumeroNoString as b:
+                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
+                return True
+        else:
+            if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?")!=None and self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")!=None:
+                string=self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%")
+                if str(string).replace(".", "", 1).isdigit():
+                    porcentaje=int(string)
+                if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" or self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="no":
+                    if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" and porcentaje>=20 and porcentaje <=60:
+                        mensajeFinal,mensaje=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), porcentaje)
+                    else:
+                        mensajeFinal=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), 0)
+                        mensaje="No se transfirió el dinero a la cuenta principal."
+                    self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
+                    self.siguiente.grid(row=2, column=3)   
+                self.outputFacturacion.config(state="normal")
+                self.outputFacturacion.delete("1.0", "end")
+                self.outputFacturacion.insert("1.0",mensaje)
+                self.outputFacturacion.config(state="disabled")    
+
+    def interaccion4Facturacion(self):
+        self.cantidadBolsaGrande=0
+        self.cantidadBolsaMediana=0
+        self.cantidadBolsaPequeña=0
+        self.descripcionF1.config(text="""Se esncarga de Redimir y/o comprar tarjetas de regalo. \nIngrese -1 si no desea redimir ninguna tarjeta y No si no desea cmprar.""")
+        self.freameCambianteFacturacion.destroy()
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.config(state="disabled")
+
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
+        
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Targeta de regalo" ,["Código","Nueva tarjeta","Monto nueva Tarjeta"],"", ["-1","Si/No","100000"],[True, True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer4Facturacion)
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)     
+        
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+
+    def leer4Facturacion(self):
+        try:
+            entradas = [self.datosEntradasFacturacion.getValue("Código"), self.datosEntradasFacturacion.getValue("Nueva tarjeta"), self.datosEntradasFacturacion.getValue("Nueva tarjeta"), self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")]  
+            vacios = [] 
+            nombresCamposVacíos = []  
+            hayExcepcion = False
+            criterios = [["Código"],["Nueva tarjeta"],["Monto nueva Tarjeta"]]
+
+            codigos = Venta.getCodigosRegalo()
+            if self.datosEntradasFacturacion.getValue("Código") != None:
+                if self.datosEntradasFacturacion.getValue("Código") not in codigos:
+                    try:
+                        raise ExcepcionCodigoTarjetaregalo(self.datosEntradasFacturacion.getValue("Código"))
+                    except ExcepcionCodigoTarjetaregalo as chacarron:
+                        messagebox.showwarning(title="Alerta", message=chacarron.mensaje_completo)
+                        return True
+
+            for i, valor in enumerate(entradas):
+                if valor.strip() == "":  
+                    hayExcepcion = True
+                    vacios.append(self.freameCambianteFacturacion.valores[i])  
+                    nombresCamposVacíos.append(criterios[i])
+            if hayExcepcion:
+                raise ExcepcionContenidoVacio(nombresCamposVacíos) 
+
+        except ExcepcionContenidoVacio as cabezaHueca:
+            messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+            return hayExcepcion
+        else:        
+            if  self.datosEntradasFacturacion.getValue("Código")!=None and (self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="si" or  self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="no")and self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")!=None:
+                respuesta="Si"
+                if self.datosEntradasFacturacion.getValue("Código")=="-1":
+                    respuesta="No"
+                codigo=self.datosEntradasFacturacion.getValue("Código")
+                compraTarjeta=self.datosEntradasFacturacion.getValue("Nueva tarjeta")
+                valorNuevaTarjeta=int(self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta"))
+                resultado=Main.tarjetaRegalo(self.venta,codigo,respuesta,compraTarjeta, valorNuevaTarjeta)
+                self.outputFacturacion.config(state="normal")
+                self.outputFacturacion.delete("1.0", "end")
+                self.outputFacturacion.insert("1.0",resultado)
+                self.outputFacturacion.config(state="disabled")
+                self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion5Facturacion)
+                self.siguiente.grid(row=4, column=3)
+            else:
+                tk.messagebox.showwarning("Faltan datos","Por favor llene todos los campos")
+
+   
+    def interaccion3Facturacion(self):
+        self.cantidadBolsaGrande=0
+        self.cantidadBolsaMediana=0
+        self.cantidadBolsaPequeña=0
+        self.descripcionF1.config(text="""Se encarga de surtir bolsas de ser necesario.""")
+        self.freameCambianteFacturacion.destroy()
+
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
+        
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Cantidad Bolsas" ,["Cantidad a comprar"],"Cantidad que desea Comprar", ["0"],[False],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer3Facturacion)
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)      
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.insert("1.0","verificando...")
+        self.outputFacturacion.config(state="disabled")
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+        Main.surtirBolsas(self, self.venta, 0)
+   
+    def modifInteraccion3Facturacion(self,insumo, mensaje):
+        self.insumo=insumo
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.insert("1.0",mensaje)
+        self.outputFacturacion.config(state="disabled")
+        self.datosEntradasFacturacion.habilitarEntry("Cantidad a comprar", True)
+   
+    def leer3Facturacion(self):
+        if not self.datosEntradasFacturacion.getValue("Cantidad a comprar").replace(".", "", 1).isdigit():
+            try:
+                raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))
+            except ExcepcionNumeroNoString as b:
+                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
+                return True
+        elif self.datosEntradasFacturacion.getValue("Cantidad a comprar") != "":
+            if  int(self.datosEntradasFacturacion.getValue("Cantidad a comprar")) < 0:
+                try:
+                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))  
+                except ExcepcionValorNoValido as mon:
+                    messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
+                    return True
+        if self.datosEntradasFacturacion.getValue("Cantidad a comprar")!=None:
+            cantidad=int(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))
+            contador=0
+            mensaje= Main.comprarBolsas(self, self.venta, self.insumo, cantidad)
+            self.outputFacturacion.config(state="normal")
+            self.outputFacturacion.delete("1.0", "end")
+            self.outputFacturacion.insert("1.0",mensaje)
+            self.outputFacturacion.config(state="disabled")
+            self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion4Facturacion)
+            self.siguiente.grid(row=2, column=3)
+    
+    
+    def interaccion2Facturacion(self):
+        self.cantidadBolsaGrande=0
+        self.cantidadBolsaMediana=0
+        self.cantidadBolsaPequeña=0
+        self.descripcionF1.config(text="""Se encarga de seleccionar bolsas para la compra.""")
+        self.freameCambianteFacturacion.destroy()
+
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
+
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Bolsas Necesarias", ["0","0", "0"],[True,True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
+        
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=1)
+        self.revisarBolsasDisponibles()
+        
+    def anadirPrenda(self):
+        self.freameCambianteFacturacion.destroy()
+
+        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
+        self.freameCambianteFacturacion.grid(row=1, column=0, sticky="nswe")
+
+        self.descripcionAñadirDespedido = tk.Label(self.freameCambianteFacturacion, text="""La prenda que desea añadir y la cantidad a comprar""", relief="ridge", font=("Arial", 10))
+        self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=4)
+
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Añadir Prenda" ,["Prenda","Cantidad"],"valor", ["Camisa/Pantalon","0"],[True,False],ancho_entry=25, tamañoFuente=10, callbackAceptar= self.actualizarDatosAñadirSede())
+        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
+
+        self.pistas=tk.Label(self.freameCambianteFacturacion, text=Main.posiblesSedes(), font=("Arial", 10))
+        self.pistas.grid(row=1, column=3)
+        self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10, "bold"), command=self.anadirOtraPrenda)
+        self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10, "bold"), command=self.datosEntradasFacturacion.borrar)
+
+        self.aceptar.grid(row=2, column=0)
+        self.botonBorrarSeleccion.grid(row=2, column=1)
+        
+        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
+        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
+        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
+        self.freameCambianteFacturacion.columnconfigure(3, weight=4)
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.rowconfigure(1, weight=10)
+
+#Este si
+    def actualizarDatosEmpleadosFacturacion(self, evento):
+        if Main.verificarSedeExiste(self.datosEntradasFacturacion.getValue("sede")):
+            self.datosEntradasFacturacion.habilitarEntry("Vendedor", True)
+            self.datosEntradasFacturacion.configurarCallBack("Vendedor", "<Return>", lambda e: self.actualizarDatosAñadirVendedor())
+            empleadosPosibles="Vendedores posibles"
+            self.datosEntradasFacturacion.habilitarEntry("Empleado caja", True)
+            self.datosEntradasFacturacion.configurarCallBack("Empleado caja", "<Return>", lambda e: self.actualizarDatosAñadirCaja())
+            asesoresPosibles="\n\nEmpleados de caja posibles"
+            
+            self.sede = Main.sedePorNombre(self.datosEntradasFacturacion.getValue("sede"))
+            empleados= Main.listaVendedores(self.sede)
+            empleados2= Main.listaEncargados(self.sede)
+            for empleado in empleados:
+                if isinstance(empleado,Persona):
+                    empleadosPosibles+="\n"+empleado.getNombre()
+                       
+            for empleado2 in empleados2:                
+                if isinstance(empleado2,Persona):
+                    asesoresPosibles+="\n"+empleado2.getNombre()
+            self.pistas.config(text=empleadosPosibles+asesoresPosibles)
+
+        else:
+            self.datosEntradasFacturacion.habilitarEntry("sede", True)
+            self.datosEntradasFacturacion.habilitarEntry("Vendedor", False)
+            self.datosEntradasFacturacion.habilitarEntry("Empleado caja", False)            
+            tk.messagebox.showwarning("La sede no existe", "Intente otra vez, luego de verificar el nombre de la sede")
+    #Este si
+    def actualizarDatosAñadirVendedor(self):
+        try:
+            excepcion = False
+            if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor")) is None:
+                excepcion = True
+            if excepcion:
+                raise ExcepcionEmpleadoNoEncontrado()
+        except ExcepcionEmpleadoNoEncontrado as patoLucas:
+            messagebox.showwarning(title = "Alerta", message = patoLucas.mensaje_completo)
+            return excepcion
+
+  #Este si
+    def actualizarDatosAñadirCaja(self):
+        try:
+            excepcion = False
+            if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado Caja")) is None:
+                excepcion = True
+            if excepcion:
+                raise ExcepcionEmpleadoNoEncontrado()
+        except ExcepcionEmpleadoNoEncontrado as sabandija:
+            messagebox.showwarning(title = "Alerta", message = sabandija.mensaje_completo)
+            return excepcion
+
+    #Este si
+    def leer1Facturacion(self):
+        excepcion=True
+        try:
+          if excepcion:
+               raise ExcepcionAgregarOtraPrenda()
+        except ExcepcionAgregarOtraPrenda as e:
+            excepcion = messagebox.askyesno(title = "Confirmación", message= e.mensaje_completo)           
+        cliente=None
+        for persona in Persona.getListaPersonas():
+            if persona.getNombre() == self.datosEntradasFacturacion.getValue("Cliente"):
+                cliente=persona        
+        try:
+            error = []
+            datoinv=[]
+            if cliente is None:
+                error.append("Cliente")
+            if self.sede is None:
+                error.append("Sede")
+            if self.datosEntradasFacturacion.getValue("Vendedor")=="":
+                error.append("Vendedor")
+            if self.datosEntradasFacturacion.getValue("Empleado caja")=="":
+                error.append("Empleado caja")
+            if self.datosEntradasFacturacion.getValue("Prenda")=="":
+                error.append("Prenda")
+            if self.datosEntradasFacturacion.getValue("Cantidad")=="":
+                error.append("Cantidad")
+            if self.sede is not None:
+                if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor")) is None:
+                    datoinv.append("Vendedor")
+                if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja")) is None:
+                    datoinv.append("Empleado caja")            
+            if error != []:
+                raise ExcepcionContenidoVacio(error)
+            elif datoinv != []:
+                raise ExcepcionEmpleadoNoEncontrado(datoinv)
+        except ExcepcionContenidoVacio as cabezaHueca:
+            messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+            return True
+        except ExcepcionEmpleadoNoEncontrado as sabandija:
+            messagebox.showwarning(title="Alerta", message=sabandija.mensaje_completo)
+                        
+        else:
+            self.cliente=cliente
+            self.vendedor=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor"))
+            self.caja=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja"))
+            prenda=None
+            
+            try: 
+                if self.datosEntradasFacturacion.getValue("Prenda").lower() not in ["camisa","pantalon"]:
+                    raise ExcepcionPrendaNoExistente(self.datosEntradasFacturacion.getValue("Prenda"))
+            except ExcepcionPrendaNoExistente as b:
+                    messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
+            else:
+                for prendai in Sede.getPrendasInventadasTotal():
+                    if (prendai.getNombre().lower()==self.datosEntradasFacturacion.getValue("Prenda").lower()):
+                        prenda = prendai
+                        break
+                    elif (prenda == None):
+                        continue
+                    
+                if prenda not in self.listaPrendas:
+                    self.listaPrendas.append(prenda)
+                    self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))
+                else:
+                    self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosEntradasFacturacion.getValue("Cantidad"))
+                if excepcion:
+                    #self.pantallaBaseFacturacion(True)
+                    self.datosEntradasFacturacion.habilitarEntry("Cliente", False)
+                    self.datosEntradasFacturacion.habilitarEntry("sede", False)
+                    self.datosEntradasFacturacion.habilitarEntry("Vendedor", False)
+                    self.datosEntradasFacturacion.habilitarEntry("Empleado caja", False)
+                else: 
+                    self.venta=Main.vender(self.cliente,self.sede,self.vendedor,self.caja,self.listaPrendas,self.cantidadPrendas)
+                    self.outputFacturacion.config(state="normal")
+                    self.outputFacturacion.delete("1.0", "end")
+                    self.outputFacturacion.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
+                    self.outputFacturacion.config(state="disabled")
+                    self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion2Facturacion)
+                    self.siguiente.grid(row=2, column=2)
+                    
+            try:
+                entradas = self.datosEntradasFacturacion.obtenerTodosLosValores()  
+                vacios = [] 
+                nombresCamposVacíos = []  
+                hayExcepcion = False
+                criterios = []
+                
+                for i, c in enumerate(self.datosEntradasFacturacion.citerios):
+                    criterios.append(c)
+
+                for i, valor in enumerate(entradas):
+                    if valor.strip() == "":  
+                        hayExcepcion = True
+                        vacios.append(self.datosEntradasFacturacion.valores[i])  
+                        nombresCamposVacíos.append(criterios[i])            
+                if hayExcepcion:
+                    raise ExcepcionContenidoVacio(nombresCamposVacíos) 
+
+            except ExcepcionContenidoVacio as cabezaHueca:
+                messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
+                return hayExcepcion
+
+    def leer2Facturacion(self):
+        self.cantidadBolsaGrande=int(self.datosEntradasFacturacion.getValue("Grande"))
+        self.cantidadBolsaMediana=int(self.datosEntradasFacturacion.getValue("Mediana"))
+        self.cantidadBolsaPequeña=int(self.datosEntradasFacturacion.getValue("Pequeña"))
+        error = []
+        try:
+            if not str(self.cantidadBolsaGrande).replace(".", "", 1).isdigit():
+                error.append(self.cantidadBolsaGrande)
+            if not str(self.cantidadBolsaMediana).replace(".", "", 1).isdigit():
+                error.append(self.cantidadBolsaMediana)
+            if not str(self.cantidadBolsaMediana).replace(".", "", 1).isdigit():
+                error.append(self.cantidadBolsaMediana)
+            if not str(self.cantidadBolsaPequeña).replace(".", "", 1).isdigit():
+                error.append(self.cantidadBolsaPequeña)
+            if error != []:
+                raise ExcepcionNumeroNoString(error)
+        except ExcepcionNumeroNoString as chicarron:
+            messagebox.showwarning(title="Alerta", message=chicarron.mensaje_completo)
+            return True
+        if error == []:
+            try:
+                if self.cantidadBolsaGrande < 0:
+                    error.append(self.cantidadBolsaGrande)
+                if self.cantidadBolsaMediana < 0:
+                    error.append(self.cantidadBolsaMediana)
+                if self.cantidadBolsaPequeña < 0:
+                    error.append(self.cantidadBolsaPequeña)
+                if error != []:
+                    raise ExcepcionValorNoValido(error)
+            except ExcepcionValorNoValido as jiejie:
+                messagebox.showwarning(title="Alerta", message=jiejie.mensaje_completo)
+                return True
+                
+        revisionBolsa= self.verificarCantidadBolsa()
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.insert("1.0", revisionBolsa, "center")
+        self.outputFacturacion.config(state="disabled")
+        if revisionBolsa=="Se tienen suficientes bolsas para empacar todos los artículos":
+            self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=lambda: self.interaccion3Facturacion())
+            self.siguiente.grid(row=4, column=3)
+
+            
+
+    def revisarBolsasDisponibles(self):
+        self.bp, self.bm, self.bg = Main.verificarBolsas(self.venta)
+        if self.bg>0:
+            self.datosEntradasFacturacion.habilitarEntry("Grande", True)
+        if self.bm>0:
+            self.datosEntradasFacturacion.habilitarEntry("Mediana", True)
+        if self.bp>0:
+            self.datosEntradasFacturacion.habilitarEntry("Pequeña", True)
+        self.outputFacturacion.config(state="normal")
+        self.outputFacturacion.delete("1.0", "end")
+        self.outputFacturacion.insert("1.0", f"Hay máximo {self.bg} bolsas grandes, {self.bm} bolsas medianas y {self.bp} bolsas pequeñas,", "center")     
+        self.outputFacturacion.config(state="disabled")
+
+    def verificarCantidadBolsa(self):
+        
+        if self.cantidadBolsaGrande<=self.bg or self.cantidadBolsaMediana<=self.bm or self.cantidadBolsaPequeña<=self.bp:
+            BolsasFaltantes=Main.cantidadActualBolsas(self.venta, self.cantidadBolsaGrande, self.cantidadBolsaMediana, self.cantidadBolsaPequeña)
+            self.outputFacturacion.config(state="normal")
+            self.outputFacturacion.delete("1.0", "end")
+            self.bolsas+=self.cantidadBolsaGrande+ self.cantidadBolsaMediana+ self.cantidadBolsaPequeña
+            if BolsasFaltantes>0:
+                bolasNecesarias=f"Se necesitan {BolsasFaltantes} bolsas más para empacar todos los artículos"
+                self.datosEntradasFacturacion.habilitarEntry("Grande", True)
+                self.datosEntradasFacturacion.habilitarEntry("Mediana", True)
+                self.datosEntradasFacturacion.habilitarEntry("Pequeña", True)                
+            else:
+                bolasNecesarias="Se tienen suficientes bolsas para empacar todos los artículos"
+                self.datosEntradasFacturacion.habilitarEntry("Grande", False)
+                self.datosEntradasFacturacion.habilitarEntry("Mediana", False)
+                self.datosEntradasFacturacion.habilitarEntry("Pequeña", False)
+            self.outputFacturacion.config(state="disabled")   
+            return bolasNecesarias
+        else:
+            self.datosEntradasFacturacion.borrar()
+#endregion
+
+def pasarAVentanaPrincipal():
+    if Main.deserializacionPendiente:
+        from src.uiMain.main import deserializar
+        deserializar()
+        Main.deserializacionPendiente = False
+
+    ventana = StartFrame()
+    ventana.mainloop()
+
+
+    #region produccion
 #---------------------------------------------------------------------- Producción ----------------------------------------------------------------------------------------------------
 
     def producir(self, ventana:tk.Frame):
@@ -1747,1017 +2760,3 @@ Ya terminamos, tenga buen día.""")
             labelPericia.pack(side="left", padx=2)
             boton.bind("<Button-1>", lambda event : self.botonesModistas(event, contBotonesModistas))
 #endregion
-
-
-#region sistema financiero
-#-------------------------------------------------------------------Sistema Financiero--------------------------------------------------------------------------------------------------------
-
-    def SistemaFinanciero(self)->tk.Frame:
-            from src.gestorAplicacion.administracion.banco import Banco
-            from src.gestorAplicacion.administracion.deuda import Deuda
-            from src.gestorAplicacion.administracion.empleado import Empleado
-            from src.gestorAplicacion.administracion.evaluacionFinanciera import EvaluacionFinanciera
-            from src.gestorAplicacion.venta import Venta
-            from src.uiMain.fieldFrame import FieldFrame
-            ventana=self      
-                        
-            def LeerF2(self, field_frame2, texto2):
-                from src.uiMain.startFrame import StartFrame
-                from src.uiMain.main import Main
-                Porcentaje = FieldFrame.getValue(field_frame2, "Fidelidad")
-                   
-                try:
-                    if  Porcentaje == "":
-                        raise ExcepcionContenidoVacio(["Fidelidad"])
-                    elif isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
-                        raise ExcepcionNumeroNoString(Porcentaje)
-                except ExcepcionNumeroNoString as uwu:
-                    messagebox.showwarning(title="Alerta", message=uwu.mensaje_completo)
-                    return True 
-                except ExcepcionContenidoVacio as cabezaHueca:
-                    messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
-                    return True
-                
-                if Porcentaje != "0% / 100%":           
-                    Porcentaje = Porcentaje.strip("%")
-                    StartFrame.diferencia_estimada = Main.calcularEstimado(float(Porcentaje) / 100)  # Use float to handle percentage
-                    texto2.config(state="normal")   # Habilitar edición
-                    texto2.delete("1.0", "end")     # Eliminar texto actual
-                    texto2.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.diferencia_estimada), "center")  # Insertar nuevo texto
-                    texto2.config(state="disabled") 
-                    boton2 = tk.Button(self.estimadoVentasDeudas, text="Siguiente", command=lambda: Interaccion3(self))
-                    boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-
-                Porcentaje = float(Porcentaje)
-                try:
-                    if Porcentaje < 0 or Porcentaje > 100:
-                        raise ExcepcionValorNoValido(Porcentaje)
-                except ExcepcionValorNoValido as pochoclo:
-                    messagebox.showwarning(title="Alerta", message=pochoclo.mensaje_completo)
-                    return True
-                
-            def Interaccion2(self):
-                frame2.destroy()
-                frame3.destroy()
-                
-                self.fidelidadclientes = tk.Frame(framePrincipal)
-                self.fidelidadclientes.pack(anchor="s", expand=True, fill="both")
-                
-                criterios = ["Fidelidad"]
-                valores = ["0% / 100%"]
-                habilitado = [True]
-                
-                # Creamos el FieldFrame con los botones
-                field_frame2 = FieldFrame(self.fidelidadclientes, "Ingrese porcentaje a modificar para", criterios, "los clientes sin membresía", valores, habilitado)
-                field_frame2.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
-                
-                self.estimadoVentasDeudas = tk.Frame(framePrincipal)
-                self.estimadoVentasDeudas.pack(anchor="s", expand=True, fill="both")
-                
-                boton1 = tk.Button(self.estimadoVentasDeudas, text="Aceptar", command=lambda: LeerF2(self, field_frame2, texto2))
-                boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
-                borrar=tk.Button(self.estimadoVentasDeudas,text="Borrar", command = lambda: field_frame2.borrar())
-                borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-                
-                confirmacion2 = tk.Label(self.estimadoVentasDeudas, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center", wraplength=600)
-                confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
-                
-                texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
-                texto2.pack(fill="both", expand=True)
-                texto2.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-
-                texto2.config(state="normal")   # Habilitar edición
-                texto2.delete("1.0", "end")     # Eliminar texto actual
-                texto2.insert("1.0", "Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", "center")  # Insertar nuevo texto
-                texto2.config(state="disabled") 
-
-            def LeerF3(self,field_frame3, frameb):
-                from src.uiMain.main import Main
-                seleccion = FieldFrame.getValue(field_frame3, "Bancos")
-                banco=None
-                
-                for banco_actual in Banco.getListaBancos():
-                    if Banco.getNombreEntidad(banco_actual) == seleccion:
-                            banco = seleccion
-                            break
-                if banco == None:
-                    try:
-                        if seleccion == "":
-                            raise ExcepcionContenidoVacio(["Bancos"])
-                        if not isinstance(seleccion, str):
-                            raise ExcepcionStringNoNumero(seleccion)
-                    except ExcepcionStringNoNumero as p:
-                        messagebox.showwarning(title="Alerta", message=p.mensaje_completo)
-                        return True
-                    except ExcepcionContenidoVacio as cabezaHueca:
-                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
-                        return True
-                    else:
-                            try:
-                                
-                                bancos_disponibles = [Banco.getNombreEntidad(banco) for banco in Banco.getListaBancos()]
-                                if seleccion not in bancos_disponibles:
-                                    raise ExcepcionValorNoValido(seleccion)
-                            except ExcepcionValorNoValido as ch:
-                                messagebox.showwarning(title="Alerta", message = ch.mensaje_completo)
-                                return True
-                        
-                c = Main.planRecuperacion(StartFrame.diferencia_estimada,banco)  # Use float to handle percentage  
-                self.texto3.config(state="normal")   # Habilitar edición
-                self.texto3.delete("1.0", "end")     # Eliminar texto actual
-                self.texto3.insert("1.0", str(c), "center")  # Insertar nuevo texto
-                self.texto3.config(state="disabled") 
-                boton2 = tk.Button(self.botonesI3, text="Siguiente", command=lambda: Interaccion4(self, frameb))
-                boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
-                    
-                return c
-                
-            def listaBancos(self, frameb):
-                
-                bancos=Banco.getListaBancos()
-
-                tituloNombre=tk.Label(frameb, text="Nombre", font=("Arial", 10))
-                tituloDeuda=tk.Label(frameb, text="Deuda inicial", font=("Arial", 10))
-                tituloAhorro=tk.Label(frameb, text="Ahorros", font=("Arial", 10))
-                tituloInter=tk.Label(frameb, text="Interés", font=("Arial", 10))
-                
-                tituloNombre.grid(row=2, column=0)
-                tituloDeuda.grid(row=2, column=1)
-                tituloAhorro.grid(row=2, column=2)
-                tituloInter.grid(row=2, column=3)
-
-                for row, banco in enumerate(bancos):
-                    nombre = tk.Label(frameb, text=Banco.getNombreEntidad(banco), font=("Arial", 10))
-                    deudaInicial=0
-                    for deuda in Banco.getDeuda(banco):
-                        deudaInicial+=Deuda.getValorInicialDeuda(deuda)
-                    deuda = tk.Label(frameb, text=deudaInicial, font=("Arial", 10))
-                    ahorro = tk.Label(frameb, text=Banco.getAhorroBanco(banco), font=("Arial", 10))
-                    Interes = tk.Label(frameb, text=Banco.getInteres(banco), font=("Arial", 10))
-                    nombre.grid(row=row+3, column=0)
-                    deuda.grid(row=row+3, column=1)
-                    ahorro.grid(row=row+3, column=2)
-                    Interes.grid(row=row+3, column=3)
-                
-                frameb.rowconfigure(0, weight=0)
-                frameb.rowconfigure(1, weight=4)
-                frameb.columnconfigure(0, weight=2)# Empleado insuficiente
-                frameb.columnconfigure(1, weight=1)# area
-                frameb.columnconfigure(2, weight=1)# rendimiento
-                frameb.columnconfigure(3, weight=1)# rendimiento esperado
-        
-            def Interaccion3(self):
-                from src.uiMain.main import Main
-                self.fidelidadclientes.destroy()
-                self.estimadoVentasDeudas.destroy()
-                self.bancoParaDeudas = tk.Frame(framePrincipal, bg="light gray")
-                self.bancoParaDeudas.pack(anchor="s",  expand=True, fill="both")
-                criterios = ["Bancos"]
-                valores = ["Ingrese nombre"]
-                habilitado = [True]
-                # Creamos el FieldFrame con los botones
-                field_frame3 = FieldFrame(self.bancoParaDeudas, "Ingrese Banco para evaluar las deudas", criterios, "", valores, habilitado)
-                field_frame3.place(relx=1, rely=0.5, relwidth=1, relheight=1, anchor="e")
-
-                frameb = tk.Frame(framePrincipal)
-                frameb.pack(anchor="s", expand=True, fill="both")
-                labelBanco= tk.Frame(frameb)
-                labelBanco.place(relx=0, rely=0, relwidth=1, relheight=1)
-                listaBancos(self,labelBanco)
-                
-                self.botonesI3 = tk.Frame(framePrincipal)
-                self.botonesI3.pack(anchor="s", expand=True, fill="both")
-                boton1 = tk.Button(self.botonesI3, text="Aceptar", command=lambda: LeerF3(self, field_frame3,frameb))
-                boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")            
-                borrar=tk.Button(self.botonesI3,text="Borrar", command = lambda: field_frame3.borrar())
-                borrar.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.2, anchor="s")
-                
-                confirmacion3 = tk.Label(self.botonesI3, text="", anchor="center",wraplength=600)
-                confirmacion3.place(relx=0, rely=0.6, relwidth=1, relheight=0.4)
-                self.texto3 = tk.Text(confirmacion3, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
-                self.texto3.pack(fill="both", expand=True)
-                self.texto3.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-                self.texto3.config(state="normal")   # Habilitar edición
-                
-                if StartFrame.diferencia_estimada > 0:
-                    self.texto3.delete("1.0", "end")     # Eliminar texto actual
-                    self.texto3.insert("1.0", "El estimado es positivo, las ventas superan las deudas. Hay dinero suficiente para hacer el pago de algunas Deudas", "center")  # Insertar nuevo texto
-                    self.texto3.config(state="disabled") 
-                else:
-                    self.texto3.delete("1.0", "end")     # Eliminar texto actual
-                    self.texto3.insert("1.0", "El estimado es negativo, la deuda supera las ventas. No hay Dinero suficiente para cubrir los gastos de la empresa, tendremos que pedir un préstamo", "center")  # Insertar nuevo texto
-                    self.texto3.config(state="disabled") 
-
-            def LeerF4(self,field_frame4, texto4, descuento):
-                from src.uiMain.startFrame import StartFrame
-                from src.uiMain.main import Main
-                Porcentaje = FieldFrame.getValue(field_frame4, "Descuento a futuro")
-                if Porcentaje == "":
-                    try:
-                        raise ExcepcionContenidoVacio(["Descuento a futuro"]) 
-
-                    except ExcepcionContenidoVacio as cabezaHueca:
-                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
-                        return True
-                else:
-                    if isinstance(Porcentaje, str) and not str(Porcentaje).replace(".", "", 1).isdigit():
-                        try:
-                            raise ExcepcionNumeroNoString(Porcentaje)
-                        except ExcepcionNumeroNoString as ask:
-                            messagebox.showwarning(title="Alerta", message=ask.mensaje_completo)
-                            Porcentaje.delete(0, "end")
-                            return True
-                                    
-                    if Porcentaje != str(descuento):
-                        Porcentaje = Porcentaje.strip("%")
-                        StartFrame.analisis_futuro = Main.descuentosBlackFriday(descuento, float(Porcentaje) / 100)  # Use float to handle percentage
-
-                        texto4.config(state="normal")   # Habilitar edición
-                        texto4.delete("1.0", "end")     # Eliminar texto actual
-                        texto4.insert("1.0", "La diferencia entre ventas y deudas futuras, fue de: $"+str(StartFrame.analisis_futuro), "center")  # Insertar nuevo texto
-                        texto4.config(state="disabled")
-                        boton2 = tk.Button(self.botonesF4, text="Siguiente", command=lambda: Interaccion5(self))
-                        boton2.place(relx=0.7, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-            
-            def Interaccion4(self,frameb):
-                from src.uiMain.main import Main
-                self.bancoParaDeudas.destroy()
-                frameb.destroy()
-                self.botonesI3.destroy()
-                
-                self.evBlackFriday = tk.Frame(framePrincipal)
-                self.evBlackFriday.pack(anchor="s", expand=True, fill="both")
-                descuento = Venta.blackFriday(Main.fecha)
-                resultado="si"
-                if descuento <= 0.0:
-                    resultado="no"
-                    
-                criterios = ["Descuento a futuro"]
-                valores = [str(descuento*100)]
-                habilitado = [True]
-                
-                # Creamos el FieldFrame con los botones
-                field_frame4 = FieldFrame(self.evBlackFriday, ("Según las Ventas anteriores, aplicar descuentos"+resultado+" funcionará"), criterios, "¿Desea Cambiar el siguiente descuento:?", valores, habilitado)
-                field_frame4.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
-                
-                self.botonesF4 = tk.Frame(framePrincipal)
-                self.botonesF4.pack(anchor="s", expand=True, fill="both")
-                
-                boton1 = tk.Button(self.botonesF4, text="Aceptar", command=lambda: LeerF4(self, field_frame4, texto4, descuento))
-                boton1.place(relx=0.3, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")            
-                borrar4=tk.Button(self.botonesF4,text="Borrar", command = lambda: field_frame4.borrar())
-                borrar4.place(relx=0.5, rely=0.5, relwidth=0.1, relheight=0.1, anchor="s")
-                
-                confirmacion4 = tk.Label(self.botonesF4, anchor="center", wraplength=600)
-                confirmacion4.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
-                texto4 = tk.Text(confirmacion4, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
-                texto4.pack(fill="both", expand=True)
-                texto4.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-
-                texto4.config(state="normal")   # Habilitar edición
-                texto4.delete("1.0", "end")     # Eliminar texto actual
-                texto4.insert("1.0", "Analizando posibilidad de hacer descuentos para subir las ventas...", "center")  # Insertar nuevo texto
-                texto4.config(state="disabled") 
-            
-            def Interaccion5(self):
-                from src.uiMain.startFrame import StartFrame
-                self.evBlackFriday.destroy()
-                self.botonesF4.destroy()
-                s1="Según la evaluación del estado Financiero actual: \n" +str(EvaluacionFinanciera.informe(StartFrame.balance_anterior))
-                s2="\n\nSe realizó un análisis sobre la posibilidad de aplicar descuentos: \n"+ str(StartFrame.diferencia_estimada)
-                s3="\n\nEste resultado se usó para estimar la diferencia entre ventas y deudas futuras, \nque fue de: $"+str(self.diferencia_estimada)+"\n"+str(StartFrame.analisis_futuro)
-                s4= "\n y por tanto el nuevo porcentaje de pesimismo de la producción es:\n" + str(Venta.getPesimismo())+ "."        
-                confirmacion5 = tk.Label(framePrincipal, anchor="center", wraplength=600)
-                confirmacion5.place(relx=0, rely=0.3, relwidth=1, relheight=0.4)
-                texto5 = tk.Text(confirmacion5, width=50, height=5,bg="plum3", font=("Arial", 10))  # Usa valores válidos
-                texto5.pack(fill="both", expand=True)
-                texto5.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-                texto5.insert(1.0,s1+s2+s3+s4)
-            
-            def LeerF1(self):
-                from src.uiMain.main import Main
-                from src.uiMain.startFrame import StartFrame
-                eleccionDeuda=0
-                resultadosP=FieldFrame.getValue(field_frame,"Proveedor")
-                resultadosB=FieldFrame.getValue(field_frame,"Banco")
-                
-                if resultadosP.lower()!="si/no" and resultadosB.lower()!="si/no" and combo.get()!="":
-                    from src.uiMain.main import Main
-                    cosa=combo.get()
-                    if resultadosP.lower() == "si" and resultadosB.lower()=="no":
-                        elecionDeuda = 1
-                    elif resultadosP.lower() == "no" and resultadosB.lower()=="si":
-                        elecionDeuda = 2
-                    elif resultadosP.lower() == "si" and resultadosB.lower()=="si":
-                        elecionDeuda = 3
-                    from src.gestorAplicacion.sede import Sede
-                    empleado=None
-                    for empleado_actual in Sede.getListaEmpleadosTotal():
-                        seleccion=combo.get()
-                        if Empleado.getNombre(empleado_actual) == seleccion:
-                            empleado = empleado_actual
-                    StartFrame.balance_anterior=Main.calcularBalanceAnterior(empleado,eleccionDeuda)
-                   
-                    texto.config(state="normal")   # Habilitar edición
-                    texto.delete("1.0", "end")     # Eliminar texto actual
-                    texto.insert("1.0", EvaluacionFinanciera.informe(StartFrame.balance_anterior), "center")  # Insertar nuevo texto
-                    texto.config(state="disabled") 
-                    boton2 = tk.Button(frame3, text="Siguiente", command = lambda: Interaccion2(self))
-                    boton2.place(relx=0.7, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
-                else: #Excepcion
-                    try:
-                        entradas = field_frame.obtenerTodosLosValores()  
-                        vacios = [] 
-                        nombresCamposVacíos = []  
-                        hayExcepcion = False
-                        criterios = []
-                        
-                        for i, c in enumerate(field_frame.citerios):
-                            criterios.append(c)
-
-                        for i, valor in enumerate(entradas):
-                            if valor.strip() == "":  
-                                hayExcepcion = True
-                                vacios.append(field_frame.valores[i])  
-                                nombresCamposVacíos.append(criterios[i])
-                        if  combo.get() == "":
-                            raise ExcepcionContenidoVacio(nombresCamposVacíos+["Directivo"])                   
-                        if hayExcepcion:
-                            raise ExcepcionContenidoVacio(nombresCamposVacíos) 
-
-                    except ExcepcionContenidoVacio as cabezaHueca:
-                        messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
-                        return hayExcepcion
-
-                try:
-                    error = []
-                    if not isinstance(resultadosP, str):
-                        error.append(resultadosP)
-                    if not isinstance(resultadosB, str):
-                        error.append(resultadosB)
-                    if error != []:
-                        raise ExcepcionStringNoNumero(error)
-                except ExcepcionStringNoNumero as obleas:
-                    messagebox.showwarning(title="Alerta", message=obleas.mensaje_completo)
-                try:
-                    if resultadosP.lower() not in ["si", "no"] or resultadosB.lower() not in ["si", "no"]:
-                        raise ExcepcionValorNoValido(resultadosP.lower())
-                except ExcepcionValorNoValido as cornal:
-                    messagebox.showwarning(title="Alerta", message=cornal.mensaje_completo)
-                    return True
-
-            framePrincipal =  tk.Frame(ventana)
-            framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
-            frame1 = tk.Frame(framePrincipal, height=150)
-            frame1.pack(side="top", fill="x")
-            tituloF3 = tk.Label(frame1, text="Gestión Financiera", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-            tituloF3.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
-            ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-            descripcionF3 = tk.Label(frame1, text="Se realiza una evaluación del estado financiero de la empresa haciendo el cálculo de los activos y los pasivos, para indicarle al usuario qué tan bien administrada está, mostrandole los resulatdos y su significado", relief="ridge", wraplength=600)
-            descripcionF3.place(relx=1, rely=0.7, relwidth=1, relheight=0.4, anchor="e")
-            frame2 = tk.Frame(framePrincipal)
-            frame2.pack(anchor="s",  expand=True, fill="both")
-            criterios = ["Proveedor", "Banco"]
-            valores = ["Si/No", "Si/No"]
-            habilitado = [True, True]
-            # Creamos el FieldFrame con los botones
-            field_frame = FieldFrame(frame2, "Desea calcular las ", criterios, "siguientes Deudas", valores, habilitado)
-            field_frame.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
-            frame3 = tk.Frame(framePrincipal)
-            frame3.pack(anchor="s",  expand=True, fill="both")
-            label7 = tk.Label(frame3, text="Directivos disponibles:",anchor="w", font=("Arial",12, "bold"))
-            label7.place(relx=0.5, rely=0.6, relwidth=1, relheight=1, anchor="s")
-            label7.config(padx=200)
-            Lista=Main.Directivos()
-            placeholder = tk.StringVar(master=label7, value="Elije al directivo")
-            combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
-            combo.place(relx=0.5, rely=0.6, relwidth=0.5, relheight=0.2, anchor="s")
-            boton1 = tk.Button(frame3, text="Aceptar", command = lambda: LeerF1(self))
-            boton1.place(relx=0.3, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
-            borrar=tk.Button(frame3,text="Borrar", command = lambda: field_frame.borrar())
-            borrar.place(relx=0.5, rely=0.6, relwidth=0.1, relheight=0.1, anchor="s")
-            confirmacion = tk.Frame(frame3)
-            confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
-            espacio=tk.Label(confirmacion, text="", font=("Arial", 10), wraplength=600)
-            espacio.place(relx=0, rely=0, relwidth=1, relheight=1, anchor="c")
-            confirmacion.update_idletasks()  # Asegura que el tamaño se actualice correctamente
-
-            texto = tk.Text(confirmacion, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
-            texto.pack(fill="both", expand=True)
-            texto.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-
-            # Insertar el texto con el tag "center"
-            texto.insert("1.0", "Calculando la diferencia entre ingresos por venta y costos de producción...", "center")
-
-            # Deshabilitar edición si solo quieres mostrar el texto
-            texto.config(state="disabled")
-            return framePrincipal
-    #endregion
-    #region facturacion
-#--------------------------------------------------------- Facturación ----------------------------------------------------------------------------------------------------------------------------------
-    
-    def Facturar(self):
-        self.Facturacion=tk.Frame(self)
-        self.sede=None
-        self.inicialFacturacion()
-        self.cantidadADespedir=0
-        return self.Facturacion
-        
-    def inicialFacturacion(self):
-        self.dineroTransferido=False
-        self.framePrincipal =  tk.Frame(self.Facturacion)
-        self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
-
-        self.tituloF1 = tk.Label(self.framePrincipal, text="Facturacion", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
-        self.tituloF1.grid(row=0, column=0, sticky="nswe")
-        
-        ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-        self.descripcionF1 = tk.Label(self.framePrincipal, wraplength=700 ,text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial", 10))
-        self.descripcionF1.grid(row=1, column=0, sticky="nswe")        
-        
-        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal)
-        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
-
-        self.outputFacturacion=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2, bg="#f0f0f0")
-        self.outputFacturacion.grid(row=3, column=0, sticky="nswe")
-        
-        self.framePrincipal.columnconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(1, weight=1)
-        self.framePrincipal.rowconfigure(2, weight=10)
-        self.framePrincipal.rowconfigure(3, weight=2)
-        self.interaccion1Facturacion()
-
-    #Este si
-    # Parte de la interacción 1
-    def interaccion1Facturacion(self):
-        self.descripcionF1.config(text="""Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.\nInserte los datos de la sede y presione Enter para ver los empleados""")
-        self.freameCambianteFacturacion.destroy()
-
-        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
-        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
-
-        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Detalles Venta" ,
-        ["Fecha","Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", [f"Dia: {Main.fecha.getDia()}  Mes: {Main.fecha.getMes()}  Año: {Main.fecha.getAno()}","","Sede Principal", "",
-        "","Camisa/Pantalon","0"],[False,True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
-        self.datosEntradasFacturacion.configurarCallBack("sede", "<Return>", self.actualizarDatosEmpleadosFacturacion)
-        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
-        clientesPosibles="Clientes"
-        self.Clientes=tk.Label(self.freameCambianteFacturacion, text=clientesPosibles, font=("Arial", 10))
-        self.Clientes.grid(row=1, column=3)
-        clientes= Main.imprimirNoEmpleados()
-        for cliente in clientes:
-            if isinstance(cliente,Persona):
-                clientesPosibles+="\n"+cliente.getNombre()        
-        self.Clientes.config(text=clientesPosibles)
-        self.pistas=tk.Label(self.freameCambianteFacturacion, text=Main.posiblesSedes(), font=("Arial", 10))
-        self.pistas.grid(row=1, column=4)
-        self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10, "bold"), command=self.leer1Facturacion)
-        self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10, "bold"), command=self.datosEntradasFacturacion.borrar)
-
-        self.aceptar.grid(row=2, column=0)
-        self.botonBorrarSeleccion.grid(row=2, column=1)
-        
-        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
-        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
-        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
-        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
-        self.freameCambianteFacturacion.columnconfigure(3, weight=3)
-        self.freameCambianteFacturacion.columnconfigure(4, weight=3)
-        self.framePrincipal.rowconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(1, weight=10)
-        
-    def interaccion6Facturacion(self, mensaje):
-        self.cantidadBolsaGrande=0
-        self.cantidadBolsaMediana=0
-        self.cantidadBolsaPequeña=0
-        self.descripcionF1.config(text="""Factura de la compra realizada.""")
-        self.freameCambianteFacturacion.destroy()
-        self.outputFacturacion.destroy()
-        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
-        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
-
-        confirmacion=tk.Label(self.freameCambianteFacturacion, anchor="center")
-        confirmacion.grid(row=0, column=0, sticky="nswe")
-        self.impresionFinal= tk.Text(confirmacion, font=("Arial", 10), height=10,bg="plum3")
-        self.impresionFinal.pack(fill="both", expand=True)
-        self.impresionFinal.tag_configure("center", justify="center",spacing1=10, spacing3=10)
-        self.impresionFinal.insert(1.0,mensaje)       
-          
-        self.freameCambianteFacturacion.rowconfigure(0, weight=10)
-        self.freameCambianteFacturacion.rowconfigure(1, weight=2)       
-        self.freameCambianteFacturacion.columnconfigure(0, weight=10)      
-        self.framePrincipal.rowconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(1, weight=1)
-        self.framePrincipal.rowconfigure(2, weight=10)
-
-
-    def interaccion5Facturacion(self):
-        self.cantidadBolsaGrande=0
-        self.cantidadBolsaMediana=0
-        self.cantidadBolsaPequeña=0
-        self.descripcionF1.config(text="""Se encarga de tranferir los fondos a la cuenta principal.""")
-        self.freameCambianteFacturacion.destroy()
-        self.outputFacturacion.config(state="normal")
-        self.outputFacturacion.delete("1.0", "end")
-        self.outputFacturacion.config(state="disabled")
-
-        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
-        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
-        
-        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Fondos" ,["Transferir fondos a la cuenta principal","¿Qué porcentaje desea transferir?"],"", ["Si/No","20% o 60%"],[True,False],ancho_entry=25, tamañoFuente=10)
-        self.datosEntradasFacturacion.configurarCallBack("Transferir fondos a la cuenta principal", "<Return>", self.transferirDinero)
-        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
-        
-        self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10,  "bold"), command=self.leer5Facturacion)
-        self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10,  "bold"), command=self.datosEntradasFacturacion.borrar)
-
-        self.aceptar.grid(row=2, column=0)
-        self.botonBorrarSeleccion.grid(row=2, column=1)        
-        
-        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
-        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
-        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
-        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
-        self.freameCambianteFacturacion.columnconfigure(3, weight=2)
-        self.framePrincipal.rowconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(1, weight=1)
-
-    def transferirDinero(self, evento):
-        self.dineroTransferido=True
-        if (self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower())=="si":
-            self.datosEntradasFacturacion.habilitarEntry("¿Qué porcentaje desea transferir?", True)
-        else:
-            valor = (self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower())
-            try: 
-                if not isinstance(valor, str):
-                    raise ExcepcionStringNoNumero((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")))
-                if valor =="":
-                    raise ExcepcionContenidoVacio(["¿Qué porcentaje desea transferir?"])
-            except ExcepcionContenidoVacio as cabezaHueca:
-                messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
-           
-            else:
-                try:
-                    if valor not in ["si", "no"]:
-                        raise ExcepcionValorNoValido((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()))
-                except ExcepcionValorNoValido as cacahuate:
-                    messagebox.showwarning(title="Alerta", message=cacahuate.mensaje_completo)
-                    return True
-
-    def leer5Facturacion(self):
-        porcentaje=0
-        mensaje=""
-        
-        if not self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").replace(".", "", 1).isdigit():
-            if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?") != "":
-                if str(self.datosEntradasFacturacion).replace(".", "", 1).isdigit():
-                    if  self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%") < 0:
-                        try:
-                            raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
-                        except ExcepcionValorNoValido as mon:
-                            messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
-                            return True
-            try:
-                raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))
-            except ExcepcionNumeroNoString as b:
-                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
-                return True
-        else:
-            if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?")!=None and self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")!=None:
-                string=self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%")
-                if str(string).replace(".", "", 1).isdigit():
-                    porcentaje=int(string)
-                if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" or self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="no":
-                    if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" and porcentaje>=20 and porcentaje <=60:
-                        mensajeFinal,mensaje=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), porcentaje)
-                    else:
-                        mensajeFinal=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), 0)
-                        mensaje="No se transfirió el dinero a la cuenta principal."
-                    self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
-                    self.siguiente.grid(row=2, column=3)   
-                self.outputFacturacion.config(state="normal")
-                self.outputFacturacion.delete("1.0", "end")
-                self.outputFacturacion.insert("1.0",mensaje)
-                self.outputFacturacion.config(state="disabled")    
-
-    def interaccion4Facturacion(self):
-        self.cantidadBolsaGrande=0
-        self.cantidadBolsaMediana=0
-        self.cantidadBolsaPequeña=0
-        self.descripcionF1.config(text="""Se esncarga de Redimir y/o comprar tarjetas de regalo. \nIngrese -1 si no desea redimir ninguna tarjeta y No si no desea cmprar.""")
-        self.freameCambianteFacturacion.destroy()
-        self.outputFacturacion.config(state="normal")
-        self.outputFacturacion.delete("1.0", "end")
-        self.outputFacturacion.config(state="disabled")
-
-        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
-        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
-        
-        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Targeta de regalo" ,["Código","Nueva tarjeta","Monto nueva Tarjeta"],"", ["-1","Si/No","100000"],[True, True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer4Facturacion)
-        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)     
-        
-        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
-        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
-        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
-        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
-        self.framePrincipal.rowconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(1, weight=1)
-
-    def leer4Facturacion(self):
-        try:
-            entradas = [self.datosEntradasFacturacion.getValue("Código"), self.datosEntradasFacturacion.getValue("Nueva tarjeta"), self.datosEntradasFacturacion.getValue("Nueva tarjeta"), self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")]  
-            vacios = [] 
-            nombresCamposVacíos = []  
-            hayExcepcion = False
-            criterios = [["Código"],["Nueva tarjeta"],["Monto nueva Tarjeta"]]
-
-            codigos = Venta.getCodigosRegalo()
-            if self.datosEntradasFacturacion.getValue("Código") != None:
-                if self.datosEntradasFacturacion.getValue("Código") not in codigos:
-                    try:
-                        raise ExcepcionCodigoTarjetaregalo(self.datosEntradasFacturacion.getValue("Código"))
-                    except ExcepcionCodigoTarjetaregalo as chacarron:
-                        messagebox.showwarning(title="Alerta", message=chacarron.mensaje_completo)
-                        return True
-
-            for i, valor in enumerate(entradas):
-                if valor.strip() == "":  
-                    hayExcepcion = True
-                    vacios.append(self.freameCambianteFacturacion.valores[i])  
-                    nombresCamposVacíos.append(criterios[i])
-            if hayExcepcion:
-                raise ExcepcionContenidoVacio(nombresCamposVacíos) 
-
-        except ExcepcionContenidoVacio as cabezaHueca:
-            messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
-            return hayExcepcion
-        else:        
-            if  self.datosEntradasFacturacion.getValue("Código")!=None and (self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="si" or  self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="no")and self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")!=None:
-                respuesta="Si"
-                if self.datosEntradasFacturacion.getValue("Código")=="-1":
-                    respuesta="No"
-                codigo=self.datosEntradasFacturacion.getValue("Código")
-                compraTarjeta=self.datosEntradasFacturacion.getValue("Nueva tarjeta")
-                valorNuevaTarjeta=int(self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta"))
-                resultado=Main.tarjetaRegalo(self.venta,codigo,respuesta,compraTarjeta, valorNuevaTarjeta)
-                self.outputFacturacion.config(state="normal")
-                self.outputFacturacion.delete("1.0", "end")
-                self.outputFacturacion.insert("1.0",resultado)
-                self.outputFacturacion.config(state="disabled")
-                self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion5Facturacion)
-                self.siguiente.grid(row=4, column=3)
-            else:
-                tk.messagebox.showwarning("Faltan datos","Por favor llene todos los campos")
-
-   
-    def interaccion3Facturacion(self):
-        self.cantidadBolsaGrande=0
-        self.cantidadBolsaMediana=0
-        self.cantidadBolsaPequeña=0
-        self.descripcionF1.config(text="""Se encarga de surtir bolsas de ser necesario.""")
-        self.freameCambianteFacturacion.destroy()
-
-        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
-        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
-        
-        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Cantidad Bolsas" ,["Cantidad a comprar"],"Cantidad que desea Comprar", ["0"],[False],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer3Facturacion)
-        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)      
-        self.outputFacturacion.config(state="normal")
-        self.outputFacturacion.delete("1.0", "end")
-        self.outputFacturacion.insert("1.0","verificando...")
-        self.outputFacturacion.config(state="disabled")
-        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
-        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
-        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
-        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
-        self.framePrincipal.rowconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(1, weight=1)
-        Main.surtirBolsas(self, self.venta, 0)
-   
-    def modifInteraccion3Facturacion(self,insumo, mensaje):
-        self.insumo=insumo
-        self.outputFacturacion.config(state="normal")
-        self.outputFacturacion.delete("1.0", "end")
-        self.outputFacturacion.insert("1.0",mensaje)
-        self.outputFacturacion.config(state="disabled")
-        self.datosEntradasFacturacion.habilitarEntry("Cantidad a comprar", True)
-   
-    def leer3Facturacion(self):
-        if not self.datosEntradasFacturacion.getValue("Cantidad a comprar").replace(".", "", 1).isdigit():
-            try:
-                raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))
-            except ExcepcionNumeroNoString as b:
-                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
-                return True
-        elif self.datosEntradasFacturacion.getValue("Cantidad a comprar") != "":
-            if  int(self.datosEntradasFacturacion.getValue("Cantidad a comprar")) < 0:
-                try:
-                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))  
-                except ExcepcionValorNoValido as mon:
-                    messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
-                    return True
-        if self.datosEntradasFacturacion.getValue("Cantidad a comprar")!=None:
-            cantidad=int(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))
-            contador=0
-            mensaje= Main.comprarBolsas(self, self.venta, self.insumo, cantidad)
-            self.outputFacturacion.config(state="normal")
-            self.outputFacturacion.delete("1.0", "end")
-            self.outputFacturacion.insert("1.0",mensaje)
-            self.outputFacturacion.config(state="disabled")
-            self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion4Facturacion)
-            self.siguiente.grid(row=2, column=3)
-    
-    
-    def interaccion2Facturacion(self):
-        self.cantidadBolsaGrande=0
-        self.cantidadBolsaMediana=0
-        self.cantidadBolsaPequeña=0
-        self.descripcionF1.config(text="""Se encarga de seleccionar bolsas para la compra.""")
-        self.freameCambianteFacturacion.destroy()
-
-        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
-        self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
-
-        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Tamaño bolsa" ,["Grande","Mediana", "Pequeña"],"Bolsas Necesarias", ["0","0", "0"],[True,True,True],ancho_entry=25, tamañoFuente=10, aceptar=True,borrar=True,callbackAceptar= self.leer2Facturacion)
-        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
-        
-        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
-        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
-        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
-        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
-        self.framePrincipal.rowconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(1, weight=1)
-        self.revisarBolsasDisponibles()
-        
-    def anadirPrenda(self):
-        self.freameCambianteFacturacion.destroy()
-
-        self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
-        self.freameCambianteFacturacion.grid(row=1, column=0, sticky="nswe")
-
-        self.descripcionAñadirDespedido = tk.Label(self.freameCambianteFacturacion, text="""La prenda que desea añadir y la cantidad a comprar""", relief="ridge", font=("Arial", 10))
-        self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=4)
-
-        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Añadir Prenda" ,["Prenda","Cantidad"],"valor", ["Camisa/Pantalon","0"],[True,False],ancho_entry=25, tamañoFuente=10, callbackAceptar= self.actualizarDatosAñadirSede())
-        self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
-
-        self.pistas=tk.Label(self.freameCambianteFacturacion, text=Main.posiblesSedes(), font=("Arial", 10))
-        self.pistas.grid(row=1, column=3)
-        self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10, "bold"), command=self.anadirOtraPrenda)
-        self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10, "bold"), command=self.datosEntradasFacturacion.borrar)
-
-        self.aceptar.grid(row=2, column=0)
-        self.botonBorrarSeleccion.grid(row=2, column=1)
-        
-        self.freameCambianteFacturacion.rowconfigure(0, weight=1)
-        self.freameCambianteFacturacion.rowconfigure(1, weight=10)
-        self.freameCambianteFacturacion.columnconfigure(0, weight=2)
-        self.freameCambianteFacturacion.columnconfigure(1, weight=2)
-        self.freameCambianteFacturacion.columnconfigure(3, weight=4)
-        self.framePrincipal.rowconfigure(0, weight=1)
-        self.framePrincipal.rowconfigure(1, weight=10)
-
-#Este si
-    def actualizarDatosEmpleadosFacturacion(self, evento):
-        if Main.verificarSedeExiste(self.datosEntradasFacturacion.getValue("sede")):
-            self.datosEntradasFacturacion.habilitarEntry("Vendedor", True)
-            self.datosEntradasFacturacion.configurarCallBack("Vendedor", "<Return>", lambda e: self.actualizarDatosAñadirVendedor())
-            empleadosPosibles="Vendedores posibles"
-            self.datosEntradasFacturacion.habilitarEntry("Empleado caja", True)
-            self.datosEntradasFacturacion.configurarCallBack("Empleado caja", "<Return>", lambda e: self.actualizarDatosAñadirCaja())
-            asesoresPosibles="\n\nEmpleados de caja posibles"
-            
-            self.sede = Main.sedePorNombre(self.datosEntradasFacturacion.getValue("sede"))
-            empleados= Main.listaVendedores(self.sede)
-            empleados2= Main.listaEncargados(self.sede)
-            for empleado in empleados:
-                if isinstance(empleado,Persona):
-                    empleadosPosibles+="\n"+empleado.getNombre()
-                       
-            for empleado2 in empleados2:                
-                if isinstance(empleado2,Persona):
-                    asesoresPosibles+="\n"+empleado2.getNombre()
-            self.pistas.config(text=empleadosPosibles+asesoresPosibles)
-
-        else:
-            self.datosEntradasFacturacion.habilitarEntry("sede", True)
-            self.datosEntradasFacturacion.habilitarEntry("Vendedor", False)
-            self.datosEntradasFacturacion.habilitarEntry("Empleado caja", False)            
-            tk.messagebox.showwarning("La sede no existe", "Intente otra vez, luego de verificar el nombre de la sede")
-    #Este si
-    def actualizarDatosAñadirVendedor(self):
-        try:
-            excepcion = False
-            if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor")) is None:
-                excepcion = True
-            if excepcion:
-                raise ExcepcionEmpleadoNoEncontrado()
-        except ExcepcionEmpleadoNoEncontrado as patoLucas:
-            messagebox.showwarning(title = "Alerta", message = patoLucas.mensaje_completo)
-            return excepcion
-
-  #Este si
-    def actualizarDatosAñadirCaja(self):
-        try:
-            excepcion = False
-            if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado Caja")) is None:
-                excepcion = True
-            if excepcion:
-                raise ExcepcionEmpleadoNoEncontrado()
-        except ExcepcionEmpleadoNoEncontrado as sabandija:
-            messagebox.showwarning(title = "Alerta", message = sabandija.mensaje_completo)
-            return excepcion
-
-    #Este si
-    def leer1Facturacion(self):
-        excepcion=True
-        try:
-          if excepcion:
-               raise ExcepcionAgregarOtraPrenda()
-        except ExcepcionAgregarOtraPrenda as e:
-            excepcion = messagebox.askyesno(title = "Confirmación", message= e.mensaje_completo)           
-        cliente=None
-        for persona in Persona.getListaPersonas():
-            if persona.getNombre() == self.datosEntradasFacturacion.getValue("Cliente"):
-                cliente=persona        
-        try:
-            error = []
-            datoinv=[]
-            if cliente is None:
-                error.append("Cliente")
-            if self.sede is None:
-                error.append("Sede")
-            if self.datosEntradasFacturacion.getValue("Vendedor")=="":
-                error.append("Vendedor")
-            if self.datosEntradasFacturacion.getValue("Empleado caja")=="":
-                error.append("Empleado caja")
-            if self.datosEntradasFacturacion.getValue("Prenda")=="":
-                error.append("Prenda")
-            if self.datosEntradasFacturacion.getValue("Cantidad")=="":
-                error.append("Cantidad")
-            if self.sede is not None:
-                if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor")) is None:
-                    datoinv.append("Vendedor")
-                if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja")) is None:
-                    datoinv.append("Empleado caja")            
-            if error != []:
-                raise ExcepcionContenidoVacio(error)
-            elif datoinv != []:
-                raise ExcepcionEmpleadoNoEncontrado(datoinv)
-        except ExcepcionContenidoVacio as cabezaHueca:
-            messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
-            return True
-        except ExcepcionEmpleadoNoEncontrado as sabandija:
-            messagebox.showwarning(title="Alerta", message=sabandija.mensaje_completo)
-                        
-        else:
-            self.cliente=cliente
-            self.vendedor=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor"))
-            self.caja=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja"))
-            prenda=None
-            
-            try: 
-                if self.datosEntradasFacturacion.getValue("Prenda").lower() not in ["camisa","pantalon"]:
-                    raise ExcepcionPrendaNoExistente(self.datosEntradasFacturacion.getValue("Prenda"))
-            except ExcepcionPrendaNoExistente as b:
-                    messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
-            else:
-                for prendai in Sede.getPrendasInventadasTotal():
-                    if (prendai.getNombre().lower()==self.datosEntradasFacturacion.getValue("Prenda").lower()):
-                        prenda = prendai
-                        break
-                    elif (prenda == None):
-                        continue
-                    
-                if prenda not in self.listaPrendas:
-                    self.listaPrendas.append(prenda)
-                    self.cantidadPrendas.append(int(self.datosEntradasFacturacion.getValue("Cantidad")))
-                else:
-                    self.cantidadPrendas[self.listaPrendas.index(prenda)]+=int(self.datosEntradasFacturacion.getValue("Cantidad"))
-                if excepcion:
-                    #self.pantallaBaseFacturacion(True)
-                    self.datosEntradasFacturacion.habilitarEntry("Cliente", False)
-                    self.datosEntradasFacturacion.habilitarEntry("sede", False)
-                    self.datosEntradasFacturacion.habilitarEntry("Vendedor", False)
-                    self.datosEntradasFacturacion.habilitarEntry("Empleado caja", False)
-                else: 
-                    self.venta=Main.vender(self.cliente,self.sede,self.vendedor,self.caja,self.listaPrendas,self.cantidadPrendas)
-                    self.outputFacturacion.config(state="normal")
-                    self.outputFacturacion.delete("1.0", "end")
-                    self.outputFacturacion.insert("1.0", f"Se ha añadido la venta con éxito, subtotal: {self.venta.getSubtotal()}", "center")
-                    self.outputFacturacion.config(state="disabled")
-                    self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=self.interaccion2Facturacion)
-                    self.siguiente.grid(row=2, column=2)
-                    
-            try:
-                entradas = self.datosEntradasFacturacion.obtenerTodosLosValores()  
-                vacios = [] 
-                nombresCamposVacíos = []  
-                hayExcepcion = False
-                criterios = []
-                
-                for i, c in enumerate(self.datosEntradasFacturacion.citerios):
-                    criterios.append(c)
-
-                for i, valor in enumerate(entradas):
-                    if valor.strip() == "":  
-                        hayExcepcion = True
-                        vacios.append(self.datosEntradasFacturacion.valores[i])  
-                        nombresCamposVacíos.append(criterios[i])            
-                if hayExcepcion:
-                    raise ExcepcionContenidoVacio(nombresCamposVacíos) 
-
-            except ExcepcionContenidoVacio as cabezaHueca:
-                messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
-                return hayExcepcion
-
-    def leer2Facturacion(self):
-        self.cantidadBolsaGrande=int(self.datosEntradasFacturacion.getValue("Grande"))
-        self.cantidadBolsaMediana=int(self.datosEntradasFacturacion.getValue("Mediana"))
-        self.cantidadBolsaPequeña=int(self.datosEntradasFacturacion.getValue("Pequeña"))
-        error = []
-        try:
-            if not str(self.cantidadBolsaGrande).replace(".", "", 1).isdigit():
-                error.append(self.cantidadBolsaGrande)
-            if not str(self.cantidadBolsaMediana).replace(".", "", 1).isdigit():
-                error.append(self.cantidadBolsaMediana)
-            if not str(self.cantidadBolsaMediana).replace(".", "", 1).isdigit():
-                error.append(self.cantidadBolsaMediana)
-            if not str(self.cantidadBolsaPequeña).replace(".", "", 1).isdigit():
-                error.append(self.cantidadBolsaPequeña)
-            if error != []:
-                raise ExcepcionNumeroNoString(error)
-        except ExcepcionNumeroNoString as chicarron:
-            messagebox.showwarning(title="Alerta", message=chicarron.mensaje_completo)
-            return True
-        if error == []:
-            try:
-                if self.cantidadBolsaGrande < 0:
-                    error.append(self.cantidadBolsaGrande)
-                if self.cantidadBolsaMediana < 0:
-                    error.append(self.cantidadBolsaMediana)
-                if self.cantidadBolsaPequeña < 0:
-                    error.append(self.cantidadBolsaPequeña)
-                if error != []:
-                    raise ExcepcionValorNoValido(error)
-            except ExcepcionValorNoValido as jiejie:
-                messagebox.showwarning(title="Alerta", message=jiejie.mensaje_completo)
-                return True
-                
-        revisionBolsa= self.verificarCantidadBolsa()
-        self.outputFacturacion.config(state="normal")
-        self.outputFacturacion.delete("1.0", "end")
-        self.outputFacturacion.insert("1.0", revisionBolsa, "center")
-        self.outputFacturacion.config(state="disabled")
-        if revisionBolsa=="Se tienen suficientes bolsas para empacar todos los artículos":
-            self.siguiente=tk.Button(self.datosEntradasFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=lambda: self.interaccion3Facturacion())
-            self.siguiente.grid(row=4, column=3)
-
-            
-
-    def revisarBolsasDisponibles(self):
-        self.bp, self.bm, self.bg = Main.verificarBolsas(self.venta)
-        if self.bg>0:
-            self.datosEntradasFacturacion.habilitarEntry("Grande", True)
-        if self.bm>0:
-            self.datosEntradasFacturacion.habilitarEntry("Mediana", True)
-        if self.bp>0:
-            self.datosEntradasFacturacion.habilitarEntry("Pequeña", True)
-        self.outputFacturacion.config(state="normal")
-        self.outputFacturacion.delete("1.0", "end")
-        self.outputFacturacion.insert("1.0", f"Hay máximo {self.bg} bolsas grandes, {self.bm} bolsas medianas y {self.bp} bolsas pequeñas,", "center")     
-        self.outputFacturacion.config(state="disabled")
-
-    def verificarCantidadBolsa(self):
-        
-        if self.cantidadBolsaGrande<=self.bg or self.cantidadBolsaMediana<=self.bm or self.cantidadBolsaPequeña<=self.bp:
-            BolsasFaltantes=Main.cantidadActualBolsas(self.venta, self.cantidadBolsaGrande, self.cantidadBolsaMediana, self.cantidadBolsaPequeña)
-            self.outputFacturacion.config(state="normal")
-            self.outputFacturacion.delete("1.0", "end")
-            self.bolsas+=self.cantidadBolsaGrande+ self.cantidadBolsaMediana+ self.cantidadBolsaPequeña
-            if BolsasFaltantes>0:
-                bolasNecesarias=f"Se necesitan {BolsasFaltantes} bolsas más para empacar todos los artículos"
-                self.datosEntradasFacturacion.habilitarEntry("Grande", True)
-                self.datosEntradasFacturacion.habilitarEntry("Mediana", True)
-                self.datosEntradasFacturacion.habilitarEntry("Pequeña", True)                
-            else:
-                bolasNecesarias="Se tienen suficientes bolsas para empacar todos los artículos"
-                self.datosEntradasFacturacion.habilitarEntry("Grande", False)
-                self.datosEntradasFacturacion.habilitarEntry("Mediana", False)
-                self.datosEntradasFacturacion.habilitarEntry("Pequeña", False)
-            self.outputFacturacion.config(state="disabled")   
-            return bolasNecesarias
-        else:
-            self.datosEntradasFacturacion.borrar()
-#endregion
-
-def pasarAVentanaPrincipal():
-    if Main.deserializacionPendiente:
-        from src.uiMain.main import deserializar
-        deserializar()
-        Main.deserializacionPendiente = False
-
-    ventana = StartFrame()
-    ventana.mainloop()
-    
