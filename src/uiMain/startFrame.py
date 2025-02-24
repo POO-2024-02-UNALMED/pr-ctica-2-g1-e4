@@ -10,6 +10,7 @@ import sys
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.persona import Persona
 from src.uiMain import fieldFrame
+from src.gestorAplicacion.venta import Venta
 from src.uiMain.Excepciones.exceptionC1 import ExceptionC1
 from src.uiMain.Excepciones.exceptionC1 import ExcepcionContenidoVacio
 from src.uiMain.Excepciones.exceptionC1 import ExcepcionNumeroNoString
@@ -1416,6 +1417,15 @@ Ya terminamos, tenga buen día.""")
             hayExcepcion = False
             criterios = [["Código"],["Nueva tarjeta"],["Monto nueva Tarjeta"]]
 
+            codigos = Venta.getCodigosRegalo()
+            if self.datosEntradasFacturacion.getValue("Código") != None:
+                if self.datosEntradasFacturacion.getValue("Código") not in codigos:
+                    try:
+                        raise ExcepcionCodigoTarjetaregalo(self.datosEntradasFacturacion.getValue("Código"))
+                    except ExcepcionCodigoTarjetaregalo as chacarron:
+                        messagebox.showwarning(title="Alerta", message=chacarron.mensaje_completo)
+                        return True
+
             for i, valor in enumerate(entradas):
                 if valor.strip() == "":  
                     hayExcepcion = True
@@ -1444,6 +1454,7 @@ Ya terminamos, tenga buen día.""")
                 self.siguiente.grid(row=4, column=3)
             else:
                 tk.messagebox.showwarning("Faltan datos","Por favor llene todos los campos")
+
    
     def interaccion3Facturacion(self):
         self.cantidadBolsaGrande=0
