@@ -11,7 +11,8 @@ class Prenda(GastoMensual):
     porcentajeGanancia = 0.40
     cantidadUltimaProduccion = 0
     cantidadTelaUltimaProduccion = 0
-    sobreCostoPorTrabajoExtra=0 # Es un metodo de clase pues aplica para TODA la tanda de producción, no solo para una prenda en específico.
+    prendasUltimaProduccion = []
+    sobreCostoPorTrabajoExtra=0  #Es un metodo de clase pues aplica para TODA la tanda de producción, no solo para una prenda en específico.
 
     def __init__(self, fecha: Fecha, sede: Sede, nombre: str, modista:Empleado, descartada: bool, terminada: bool, insumos: Insumo):
         self.fechaFabricacion = fecha
@@ -39,6 +40,7 @@ class Prenda(GastoMensual):
         from src.uiMain.main import Main
         Prenda.cantidadTelaUltimaProduccion = 0
         Prenda.cantidadUltimaProduccion = 0
+        Prenda.prendasUltimaProduccion = []
         diaDeProduccion = hoy
         alcanzaInsumos = True
         for dia in planProduccion:
@@ -121,6 +123,7 @@ class Prenda(GastoMensual):
                     elif resultado == "LISTO":
                         prenda.terminada = True
                         modista.prendasProducidas += 1
+                        Prenda.prendasUltimaProduccion.append(prenda)
                         prendas.remove(prenda)
                         Prenda.cantidadUltimaProduccion += 1
             idxTanda += 1
@@ -181,6 +184,8 @@ class Prenda(GastoMensual):
         return self.nombre
     def getInsumo(self):
         return self.insumo
+    def getSede(self):
+        return self.sede
     @classmethod
     def getCantidadInsumo(cls):
         return cls.cantidadInsumo
@@ -188,9 +193,14 @@ class Prenda(GastoMensual):
         return self.costoInsumos
     def getPrecio(self):
         return self.precio
+    def getFecha(self):
+        return self.fechaFabricacion
     @classmethod
     def getCantidadUltimaProduccion(cls):
         return cls.cantidadUltimaProduccion
     @classmethod
     def getCantidadTelaUltimaProduccion(cls):
         return cls.cantidadTelaUltimaProduccion
+    @classmethod
+    def setSobreCosto(cls, sobreCosto):
+        Prenda.sobreCostoPorTrabajoExtra = sobreCosto

@@ -1,33 +1,33 @@
 from typing import List
 
-#from multimethod import multimethod
+from multimethod import multimethod
 from ..sede import Sede
 
 class Maquinaria:
     
-    #@multimethod
-    #def __init__(self, maquina: 'Maquinaria', repuestos: list):
-        #self.nombre = maquina.nombre
-        #self.sede = maquina.sede
-        #self.valor = maquina.valor
-        #self.horaRevision = maquina.horaRevision
-        #self.repuestos = repuestos
-        #self.sede.getListaMaquinas().append(self)
-        #self.asignarRepAsedes(self.sede, repuestos)
-        #self.horasUso = 0
-        #self.user = None
-        #self.estado = True
-        #self.asignable = True
-        #self.mantenimiento = False
-        #self.horasVisitaTecnico = 0
-        #self.ultFechaRevision = None
+    @multimethod
+    def __init__(self, maquina: 'Maquinaria', repuestos: list):
+        self.nombre = maquina.nombre
+        self.sede = maquina.sede
+        self.valor = maquina.valor
+        self.horaRevision = maquina.horaRevision
+        self.repuestos = repuestos
+        self.sede.getListaMaquinas().append(self)
+        self.asignarRepAsedes(self.sede, repuestos)
+        self.horasUso = 0
+        self.user = None
+        self.estado = True
+        self.asignable = True
+        self.mantenimiento = False
+        self.horasVisitaTecnico = 0
+        self.ultFechaRevision = None
         
-    #@multimethod        
-    def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos=[], sede: Sede=None, horasUso=0):
+    @multimethod        
+    def __init__(self, nombre: str, valor: int, horaRevision: int, repuestos: list, sede: Sede):
         
         self.nombre = nombre
         self.user = None
-        self.horasUso = horasUso
+        self.horasUso = 0
         self.estado = True
         self.asignable = True
         self.mantenimiento = False
@@ -42,8 +42,8 @@ class Maquinaria:
 
     def copiar(self):
         nuevosRepuestos = [rep.copiar() for rep in self.repuestos]
-        return Maquinaria(self.nombre, self.valor, self.horaRevision, nuevosRepuestos, self.sede)
-        #return Maquinaria(self, nuevosRepuestos)
+        #return Maquinaria(self.nombre, self.valor, self.horaRevision, nuevosRepuestos, self.sede)
+        return Maquinaria(self, nuevosRepuestos)
     
     @staticmethod
     def gastoMensualClase(fecha) -> int:

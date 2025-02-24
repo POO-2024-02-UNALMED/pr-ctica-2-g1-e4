@@ -540,7 +540,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
         Main.prepararCambioSede()
         tanda = Main.getTandaReemplazo()
-        if tanda is not None:
+        if tanda is None:
+            pass
+        else:
             self.dibujarTandaDeReemplazo(tanda)
 
         self.frameCambianteGHumana.columnconfigure(0, weight=3)
@@ -1200,8 +1202,8 @@ Ya terminamos, tenga buen día.""")
         self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
 
         self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Detalles Venta" ,
-        ["Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", ["","Sede Principal", "",
-        "","Camisa/Pantalon","0"],[True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
+        ["Fecha","Cliente","sede", "Vendedor","Empleado caja","Prenda", "Cantidad"],"valor", [f"Dia: {Main.fecha.getDia()}  Mes: {Main.fecha.getMes()}  Año: {Main.fecha.getAno()}","","Sede Principal", "",
+        "","Camisa/Pantalon","0"],[False,True,True,False,False,True,True],ancho_entry=25, tamañoFuente=10)
         self.datosEntradasFacturacion.configurarCallBack("sede", "<Return>", self.actualizarDatosEmpleadosFacturacion)
         self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
         clientesPosibles="Clientes"
