@@ -5,12 +5,21 @@ import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter.font import Font
+from tkinter import messagebox
 import sys
 from src.gestorAplicacion.administracion.empleado import Empleado
 from src.gestorAplicacion.persona import Persona
 from src.uiMain import fieldFrame
-from src.uiMain.Excepciones.exceptionC1 import *
-from src.uiMain.Excepciones.exceptionC2 import *
+from src.uiMain.Excepciones.exceptionC1 import ExceptionC1
+from src.uiMain.Excepciones.exceptionC1 import ExcepcionContenidoVacio
+from src.uiMain.Excepciones.exceptionC1 import ExcepcionNumeroNoString
+from src.uiMain.Excepciones.exceptionC1 import ExcepcionStringNoNumero
+from src.uiMain.Excepciones.exceptionC1 import ExcepcionValorNoValido
+from src.uiMain.Excepciones.exceptionC2 import ExceptionC2
+from src.uiMain.Excepciones.exceptionC2 import ExcepcionAgregarOtraPrenda
+from src.uiMain.Excepciones.exceptionC2 import ExcepcionCodigoTarjetaregalo
+from src.uiMain.Excepciones.exceptionC2 import ExcepcionEmpleadoNoEncontrado
+from src.uiMain.Excepciones.exceptionC2 import ExcepcionPrendaNoExistente
 from src.uiMain.main import Main
 from src.uiMain.F3Financiera import F3Financiera
 from src.uiMain.F5Produccion import producir
