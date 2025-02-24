@@ -1397,17 +1397,20 @@ Ya terminamos, tenga buen día.""")
         porcentaje=0
         mensaje=""
         
-        if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").replace(" ", "")\
-                .replace("-", "", 1).replace(".", "", 1).isdigit():
-            if int(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%")) <= 0:
+
+        valor = self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip().strip("%")
+
+        if valor.replace(".", "", 1).replace("-", "", 1).isdigit(): 
+            valor = int(valor)
+            if valor <= 0:
                 try:
-                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
+                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
                 except ExcepcionValorNoValido as mon:
                     messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
                     return True
-        elif not self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").isdigit():    
+        elif not self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").isdigit():    
             try:
-                raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))
+                raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))
             except ExcepcionNumeroNoString as b:
                 messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
                 return True
