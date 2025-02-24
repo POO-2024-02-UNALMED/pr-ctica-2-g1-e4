@@ -263,6 +263,20 @@ class StartFrame(tk.Tk):
             mes = int(partesMes[-1])
         if partesAño[-1].isdigit():
             año = int(partesAño[-1])
+        
+        excepcion = []
+        try:
+            if not partesDia[-1].isdigit():
+                excepcion.append(partesDia)
+            if not partesMes[-1].isdigit():
+                excepcion.append(partesMes)
+            if  not partesAño[-1].isdigit():
+                excepcion.append(partesAño)
+            if excepcion != []:
+                raise ExcepcionNumeroNoString(excepcion)
+        except ExcepcionNumeroNoString as t:
+            messagebox.showwarning(title="Alerta", message=t.mensaje_completo)
+            return True
 
         try:
             hayExcepcion1 = False
@@ -2246,7 +2260,7 @@ Ya terminamos, tenga buen día.""")
                 if not isinstance(valor, str):
                     raise ExcepcionStringNoNumero((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")))
                 if valor =="":
-                    raise ExcepcionContenidoVacio(["¿Qué porcentaje desea transferir?"])
+                    raise ExcepcionContenidoVacio(["¿Qué porcentaje desea transferir?"])
             except ExcepcionContenidoVacio as cabezaHueca:
                 messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
            
@@ -2262,23 +2276,22 @@ Ya terminamos, tenga buen día.""")
         porcentaje=0
         mensaje=""
         
-        if not self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").replace(".", "", 1).isdigit():
-            if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?") != "":
-                if str(self.datosEntradasFacturacion).replace(".", "", 1).isdigit():
-                    if  self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%") < 0:
-                        try:
-                            raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
-                        except ExcepcionValorNoValido as mon:
-                            messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
-                            return True
+        if not self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").isdigit():
+            if str(self.datosEntradasFacturacion).replace(".", "", 1).isdigit():
+                if  self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%") < 0:
+                    try:
+                        raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
+                    except ExcepcionValorNoValido as mon:
+                        messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
+                        return True
             try:
-                raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))
+                raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))
             except ExcepcionNumeroNoString as b:
                 messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
                 return True
         else:
-            if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?")!=None and self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")!=None:
-                string=self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%")
+            if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?")!=None and self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")!=None:
+                string=self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%")
                 if str(string).replace(".", "", 1).isdigit():
                     porcentaje=int(string)
                 if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" or self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="no":
@@ -2286,13 +2299,13 @@ Ya terminamos, tenga buen día.""")
                         mensajeFinal,mensaje=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), porcentaje)
                     else:
                         mensajeFinal=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), 0)
-                        mensaje="No se transfirió el dinero a la cuenta principal."
+                        mensaje="No se transfirió el dinero a la cuenta principal."
                     self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
                     self.siguiente.grid(row=2, column=3)   
                 self.outputFacturacion.config(state="normal")
                 self.outputFacturacion.delete("1.0", "end")
                 self.outputFacturacion.insert("1.0",mensaje)
-                self.outputFacturacion.config(state="disabled")    
+                self.outputFacturacion.config(state="disabled")   
 
     def interaccion4Facturacion(self):
         self.cantidadBolsaGrande=0
@@ -2319,15 +2332,16 @@ Ya terminamos, tenga buen día.""")
 
     def leer4Facturacion(self):
         try:
-            entradas = [self.datosEntradasFacturacion.getValue("Código"), self.datosEntradasFacturacion.getValue("Nueva tarjeta"), self.datosEntradasFacturacion.getValue("Nueva tarjeta"), self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")]  
+            entradas = [self.datosEntradasFacturacion.getValue("Código"), self.datosEntradasFacturacion.getValue("Nueva tarjeta"), self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")]  
             vacios = [] 
             nombresCamposVacíos = []  
             hayExcepcion = False
             criterios = [["Código"],["Nueva tarjeta"],["Monto nueva Tarjeta"]]
 
             codigos = Venta.getCodigosRegalo()
-            if self.datosEntradasFacturacion.getValue("Código") != None:
-                if self.datosEntradasFacturacion.getValue("Código") not in codigos:
+            if self.datosEntradasFacturacion.getValue("Código") is not None:
+                if self.datosEntradasFacturacion.getValue("Código") != "-1" and \
+                    self.datosEntradasFacturacion.getValue("Código") not in codigos:
                     try:
                         raise ExcepcionCodigoTarjetaregalo(self.datosEntradasFacturacion.getValue("Código"))
                     except ExcepcionCodigoTarjetaregalo as chacarron:
@@ -2345,6 +2359,36 @@ Ya terminamos, tenga buen día.""")
         except ExcepcionContenidoVacio as cabezaHueca:
             messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
             return hayExcepcion
+        try:
+            nuevaTarjeta = self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")
+            if isinstance(nuevaTarjeta, str) and not (nuevaTarjeta).replace(" ", "")\
+                .replace("-", "", 1).replace(".", "", 1).isdigit():
+                raise ExcepcionNumeroNoString(nuevaTarjeta)
+        except ExcepcionNumeroNoString as b:
+            messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
+            return True
+        try:
+            tarjeta = self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()
+            if not isinstance(tarjeta, str) and (tarjeta).replace(" ", "")\
+                .replace("-", "", 1).replace(".", "", 1).isdigit():
+                raise ExcepcionStringNoNumero(tarjeta)
+        except ExcepcionValorNoValido as roscon:
+                    messagebox.showwarning(title="Alerta", message=roscon.mensaje_completo)
+                    return True
+        else:
+            if self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower() not in ["si", "no"]:
+                try:
+                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Nueva tarjeta"))
+                except ExcepcionValorNoValido as mandubia:
+                    messagebox.showwarning(title="Alerta", message=mandubia.mensaje_completo)
+                    return True
+
+        if  int(self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")) < 0:
+            try:
+                raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta"))  
+            except ExcepcionValorNoValido as mon:
+                messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
+                return True
         else:        
             if  self.datosEntradasFacturacion.getValue("Código")!=None and (self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="si" or  self.datosEntradasFacturacion.getValue("Nueva tarjeta").lower()=="no")and self.datosEntradasFacturacion.getValue("Monto nueva Tarjeta")!=None:
                 respuesta="Si"
@@ -2397,19 +2441,24 @@ Ya terminamos, tenga buen día.""")
         self.datosEntradasFacturacion.habilitarEntry("Cantidad a comprar", True)
    
     def leer3Facturacion(self):
-        if not self.datosEntradasFacturacion.getValue("Cantidad a comprar").replace(".", "", 1).isdigit():
-            try:
+        try:
+            cantidad = self.datosEntradasFacturacion.getValue("Cantidad a comprar")
+            if isinstance(cantidad, str):
+               cantidad = cantidad.strip() 
+            if cantidad.startswith("-"):  
+                cantidad = cantidad[1:] 
+            if not cantidad.replace(".", "", 1).isdigit():
                 raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))
-            except ExcepcionNumeroNoString as b:
-                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
+        except ExcepcionNumeroNoString as b:
+            messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
+            return True
+               
+        if  int(self.datosEntradasFacturacion.getValue("Cantidad a comprar")) < 0:
+            try:
+                raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))  
+            except ExcepcionValorNoValido as mon:
+                messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
                 return True
-        elif self.datosEntradasFacturacion.getValue("Cantidad a comprar") != "":
-            if  int(self.datosEntradasFacturacion.getValue("Cantidad a comprar")) < 0:
-                try:
-                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))  
-                except ExcepcionValorNoValido as mon:
-                    messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
-                    return True
         if self.datosEntradasFacturacion.getValue("Cantidad a comprar")!=None:
             cantidad=int(self.datosEntradasFacturacion.getValue("Cantidad a comprar"))
             contador=0
@@ -2533,10 +2582,10 @@ Ya terminamos, tenga buen día.""")
         cliente=None
         for persona in Persona.getListaPersonas():
             if persona.getNombre() == self.datosEntradasFacturacion.getValue("Cliente"):
-                cliente=persona        
+                cliente=persona  
+      
         try:
             error = []
-            datoinv=[]
             if cliente is None:
                 error.append("Cliente")
             if self.sede is None:
@@ -2548,23 +2597,58 @@ Ya terminamos, tenga buen día.""")
             if self.datosEntradasFacturacion.getValue("Prenda")=="":
                 error.append("Prenda")
             if self.datosEntradasFacturacion.getValue("Cantidad")=="":
-                error.append("Cantidad")
-            if self.sede is not None:
-                if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor")) is None:
-                    datoinv.append("Vendedor")
-                if self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja")) is None:
-                    datoinv.append("Empleado caja")            
+                error.append("Cantidad")       
             if error != []:
                 raise ExcepcionContenidoVacio(error)
-            elif datoinv != []:
-                raise ExcepcionEmpleadoNoEncontrado(datoinv)
         except ExcepcionContenidoVacio as cabezaHueca:
             messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
             return True
-        except ExcepcionEmpleadoNoEncontrado as sabandija:
-            messagebox.showwarning(title="Alerta", message=sabandija.mensaje_completo)
+        if error == []:
+            listaClientes = []
+            for clienteI in Persona.getListaPersonas():
+                listaClientes.append(clienteI.getNombre())
+            try:
+                if self.datosEntradasFacturacion.getValue("Cliente") not in listaClientes:
+                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Cliente"))
+            except ExcepcionValorNoValido as z:
+                messagebox.showwarning(title="Alerta", message=z.mensaje_completo)
+                return True
+            listaVendedor = []
+            for vendedorI in Sede.getListaEmpleadosTotal():
+                listaVendedor.append(vendedorI.getNombre())
+            if self.datosEntradasFacturacion.getValue("Vendedor") not in listaVendedor:
+                try:
+                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Vendedor"))
+                except ExcepcionValorNoValido as z:
+                    messagebox.showwarning(title="Alerta", message=z.mensaje_completo)
+                    return True
+            listaEmpleadoCaja = []
+            for cajaI in Sede.getListaEmpleadosTotal():
+                listaEmpleadoCaja.append(cajaI.getNombre())
+            if self.datosEntradasFacturacion.getValue("Empleado caja") not in listaEmpleadoCaja:
+                try:
+                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Empleado caja"))
+                except ExcepcionValorNoValido as z:
+                    messagebox.showwarning(title="Alerta", message=z.mensaje_completo)
+                    return True
+            cantidadI = self.datosEntradasFacturacion.getValue("Cantidad")
+            if not (cantidadI).replace(" ", "").replace("-", "", 1).replace(".", "", 1).isdigit():
+                try:
+                    raise ExcepcionNumeroNoString(cantidadI)
+                except ExcepcionNumeroNoString as pi:
+                    messagebox.showwarning(title="Alerta", message=pi.mensaje_completo)
+                    return True
+            else:
+                cantidadI = int(self.datosEntradasFacturacion.getValue("Cantidad"))
+                try:
+                    if cantidadI < 0:
+                        raise ExcepcionValorNoValido(cantidadI)
+                except ExcepcionValorNoValido as wiwiwi:
+                    messagebox.showwarning(title="Alerta", message=wiwiwi.mensaje_completo)
+                    return True
+
                         
-        else:
+        if error == []:
             self.cliente=cliente
             self.vendedor=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor"))
             self.caja=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Empleado caja"))
@@ -2625,25 +2709,31 @@ Ya terminamos, tenga buen día.""")
                 messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
                 return hayExcepcion
 
+         
     def leer2Facturacion(self):
-        self.cantidadBolsaGrande=int(self.datosEntradasFacturacion.getValue("Grande"))
-        self.cantidadBolsaMediana=int(self.datosEntradasFacturacion.getValue("Mediana"))
-        self.cantidadBolsaPequeña=int(self.datosEntradasFacturacion.getValue("Pequeña"))
+        self.cantidadBolsaGrande= self.datosEntradasFacturacion.getValue("Grande")
+        self.cantidadBolsaMediana= self.datosEntradasFacturacion.getValue("Mediana")
+        self.cantidadBolsaPequeña= self.datosEntradasFacturacion.getValue("Pequeña")
         error = []
         try:
-            if not str(self.cantidadBolsaGrande).replace(".", "", 1).isdigit():
+            if isinstance(self.cantidadBolsaGrande, str) and not (self.cantidadBolsaGrande).replace(" ", "")\
+                .replace("-", "", 1).replace(".", "", 1).isdigit():
                 error.append(self.cantidadBolsaGrande)
-            if not str(self.cantidadBolsaMediana).replace(".", "", 1).isdigit():
+            if isinstance(self.cantidadBolsaMediana, str) and not (self.cantidadBolsaMediana).replace(" ", "")\
+                .replace("-", "", 1).replace(".", "", 1).isdigit():
                 error.append(self.cantidadBolsaMediana)
-            if not str(self.cantidadBolsaMediana).replace(".", "", 1).isdigit():
-                error.append(self.cantidadBolsaMediana)
-            if not str(self.cantidadBolsaPequeña).replace(".", "", 1).isdigit():
+            if isinstance(self.cantidadBolsaPequeña, str) and not (self.cantidadBolsaPequeña).replace(" ", "")\
+                .replace("-", "", 1).replace(".", "", 1).isdigit():
                 error.append(self.cantidadBolsaPequeña)
+
             if error != []:
                 raise ExcepcionNumeroNoString(error)
         except ExcepcionNumeroNoString as chicarron:
             messagebox.showwarning(title="Alerta", message=chicarron.mensaje_completo)
             return True
+        self.cantidadBolsaGrande=int(self.datosEntradasFacturacion.getValue("Grande"))
+        self.cantidadBolsaMediana=int(self.datosEntradasFacturacion.getValue("Mediana"))
+        self.cantidadBolsaPequeña=int(self.datosEntradasFacturacion.getValue("Pequeña"))
         if error == []:
             try:
                 if self.cantidadBolsaGrande < 0:

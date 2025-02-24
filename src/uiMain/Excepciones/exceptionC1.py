@@ -17,12 +17,12 @@ class ExcepcionContenidoVacio(ExceptionC1):
 
 class ExcepcionStringNoNumero(ExceptionC1):
     def __init__(self, entero):
-        self.mensajeEntero=f" La entrada {entero} no es válida, debe llenar este campo solo con String"
+        self.mensajeEntero=f" La(s) entrada(s) {entero} no es válida, debe llenar este(os) campo(s) solo con String"
         super().__init__(self.mensajeEntero) #Faltan algunas
         
 class ExcepcionNumeroNoString(ExceptionC1):
     def __init__(self, string):
-        self.mensajeEntero=f" La entrada {string} no es válida, debe llenar este campo solo con números"
+        self.mensajeEntero=f" La(s) entrada(s) {string} no es válida, debe llenar este(os) campo(s) solo con números"
         super().__init__( self.mensajeEntero) #Faltan algunas
 
 
