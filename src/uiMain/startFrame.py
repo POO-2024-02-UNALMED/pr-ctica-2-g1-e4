@@ -1758,6 +1758,11 @@ Ya terminamos, tenga buen día.""")
 #endregion
 
 def pasarAVentanaPrincipal():
+    if Main.deserializacionPendiente:
+        from src.uiMain.main import deserializar
+        deserializar()
+        Main.deserializacionPendiente = False
+
     ventana = StartFrame()
     ventana.mainloop()
     

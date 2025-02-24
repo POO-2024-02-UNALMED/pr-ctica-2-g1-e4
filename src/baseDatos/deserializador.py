@@ -11,6 +11,7 @@ from src.gestorAplicacion.venta import Venta
 
 
 def deserializar():
+    print("Deserializando")
     archivo = open("src/baseDatos/persistencia.txt", "rb")
     (listaEmpleadosTotal, prendasInventadasTotal, listaSedes,
      listaBancos, cuentaPrincipal,

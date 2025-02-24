@@ -117,6 +117,7 @@ class InfoDesarrolladores(tk.Frame):
             self.window.bind("<Map>", lambda e: self.actualizarImagenes())
         else:
             self.botonDesarroladores=ttk.Button(master = self.p5HojaDeVida, text="Desarrolladores", command=lambda: self.mostrarDesarrolladores())
+            self.botonDesarroladores.bind("<Button-3>", lambda e: self.noDeserializar())
             self.botonDesarroladores.grid(row=0,column=0, padx=10, pady=10)
 
         self.contenedorAbajoP6.grid(row = 1, column = 0, padx=10, pady=10, sticky="nswe")
@@ -133,6 +134,15 @@ class InfoDesarrolladores(tk.Frame):
         self.rowconfigure(0,weight=10)
         self.rowconfigure(1,weight=20)
         self.columnconfigure(0,weight=10)
+    
+    def noDeserializar(self):
+        from src.uiMain.main import Main
+        Main.deserializacionPendiente=False
+        Main.crearSedesMaquinasRepuestos()
+        Main.guardar()
+        aviso = tk.Label(master = self.p5HojaDeVida, text="Por motivos de prueba, reiniciamos los datos.", font=("Arial", 10))
+        aviso.grid(row=1, column=0, padx=10, pady=10)
+
     
     def mostrarDesarrolladores(self):
         self.mostrando=True
