@@ -9,7 +9,7 @@ class ExceptionC2(ErrorAplicacion):
 class ExcepcionCodigoTarjetaregalo(ExceptionC2):
     def __init__(self, codigo):
         self.mensajeCodigo = f" El código {codigo} no se encuentra habilitado. ¿Desea intentar nuevamente?"
-        super().__init__(self.mensajeCodigo) #Falta aplicarla
+        super().__init__(self.mensajeCodigo) #Ya
 
 class ExcepcionPrendaNoExistente(ExceptionC2):
     def __init__(self, prenda):

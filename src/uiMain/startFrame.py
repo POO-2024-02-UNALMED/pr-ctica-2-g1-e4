@@ -1339,9 +1339,7 @@ Ya terminamos, tenga buen día.""")
                     raise ExcepcionContenidoVacio(["¿Qué porcentaje desea transferir?"])
             except ExcepcionContenidoVacio as cabezaHueca:
                 messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
-            except ExcepcionPrendaNoExistente as guegue:
-                messagebox.showwarning(title="Alerta", message=guegue.mensaje_completo)
-                return True
+           
             else:
                 try:
                     if valor not in ["si", "no"]:
@@ -1721,6 +1719,35 @@ Ya terminamos, tenga buen día.""")
         self.cantidadBolsaGrande=int(self.datosEntradasFacturacion.getValue("Grande"))
         self.cantidadBolsaMediana=int(self.datosEntradasFacturacion.getValue("Mediana"))
         self.cantidadBolsaPequeña=int(self.datosEntradasFacturacion.getValue("Pequeña"))
+        error = []
+        try:
+            if not str(self.cantidadBolsaGrande).replace(".", "", 1).isdigit():
+                error.append(self.cantidadBolsaGrande)
+            if not str(self.cantidadBolsaMediana).replace(".", "", 1).isdigit():
+                error.append(self.cantidadBolsaMediana)
+            if not str(self.cantidadBolsaMediana).replace(".", "", 1).isdigit():
+                error.append(self.cantidadBolsaMediana)
+            if not str(self.cantidadBolsaPequeña).replace(".", "", 1).isdigit():
+                error.append(self.cantidadBolsaPequeña)
+            if error != []:
+                raise ExcepcionNumeroNoString(error)
+        except ExcepcionNumeroNoString as chicarron:
+            messagebox.showwarning(title="Alerta", message=chicarron.mensaje_completo)
+            return True
+        if error == []:
+            try:
+                if self.cantidadBolsaGrande < 0:
+                    error.append(self.cantidadBolsaGrande)
+                if self.cantidadBolsaMediana < 0:
+                    error.append(self.cantidadBolsaMediana)
+                if self.cantidadBolsaPequeña < 0:
+                    error.append(self.cantidadBolsaPequeña)
+                if error != []:
+                    raise ExcepcionValorNoValido(error)
+            except ExcepcionValorNoValido as jiejie:
+                messagebox.showwarning(title="Alerta", message=jiejie.mensaje_completo)
+                return True
+                
         revisionBolsa= self.verificarCantidadBolsa()
         self.outputFacturacion.config(state="normal")
         self.outputFacturacion.delete("1.0", "end")
