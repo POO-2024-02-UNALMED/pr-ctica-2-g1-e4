@@ -711,6 +711,10 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
             self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
 
+        if len(criterios)>0:
+            self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
+            self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
+
             self.fieldTransferencia = fieldFrame.FieldFrame(self.contenedorFieldTransferencia, f"\nPara la {sede} tenemos", criterios, "Desea transferir el insumo o comprarlo", ["T/C" for i in range(len(criterios))], [True for i in range(len(criterios))], 20, True, 10, callbackAceptar=lambda : self.otraSede(),aceptar=True, borrar=True)
             self.fieldTransferencia.pack(anchor="s",  expand=True, fill="both")
         else:
