@@ -1563,7 +1563,7 @@ Ya terminamos, tenga buen día.""")
             prenda=None
             
             try: 
-                if not (self.datosEntradasFacturacion.getValue("Prenda").lower() == "camisa" or self.datosEntradasFacturacion.getValue("Prenda").lower() == "pantalon"):
+                if self.datosEntradasFacturacion.getValue("Prenda").lower() not in ["camisa","pantalon"]:
                     raise ExcepcionPrendaNoExistente(self.datosEntradasFacturacion.getValue("Prenda"))
             except ExcepcionPrendaNoExistente as b:
                     messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
