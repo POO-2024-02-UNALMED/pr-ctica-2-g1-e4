@@ -1394,14 +1394,14 @@ Ya terminamos, tenga buen día.""")
         porcentaje=0
         mensaje=""
         
-        if not self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").isdigit():
-            if str(self.datosEntradasFacturacion).replace(".", "", 1).isdigit():
-                if  self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%") < 0:
-                    try:
-                        raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
-                    except ExcepcionValorNoValido as mon:
-                        messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
-                        return True
+        if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").isdigit():
+            if  self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%") <= 0:
+                try:
+                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
+                except ExcepcionValorNoValido as mon:
+                    messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
+                    return True
+        elif not self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").isdigit():    
             try:
                 raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))
             except ExcepcionNumeroNoString as b:
@@ -1722,50 +1722,50 @@ Ya terminamos, tenga buen día.""")
             messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
             return True
         if error == []:
-            listaClientes = []
-            for clienteI in Persona.getListaPersonas():
-                listaClientes.append(clienteI.getNombre())
-            try:
-                if self.datosEntradasFacturacion.getValue("Cliente") not in listaClientes:
-                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Cliente"))
-            except ExcepcionValorNoValido as z:
-                messagebox.showwarning(title="Alerta", message=z.mensaje_completo)
-                return True
-            listaVendedor = []
-            for vendedorI in Sede.getListaEmpleadosTotal():
-                listaVendedor.append(vendedorI.getNombre())
-            if self.datosEntradasFacturacion.getValue("Vendedor") not in listaVendedor:
+                listaClientes = []
+                for clienteI in Persona.getListaPersonas():
+                    listaClientes.append(clienteI.getNombre())
                 try:
-                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Vendedor"))
+                    if self.datosEntradasFacturacion.getValue("Cliente") not in listaClientes:
+                        raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Cliente"))
                 except ExcepcionValorNoValido as z:
                     messagebox.showwarning(title="Alerta", message=z.mensaje_completo)
                     return True
-            listaEmpleadoCaja = []
-            for cajaI in Sede.getListaEmpleadosTotal():
-                listaEmpleadoCaja.append(cajaI.getNombre())
-            if self.datosEntradasFacturacion.getValue("Empleado caja") not in listaEmpleadoCaja:
-                try:
-                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Empleado caja"))
-                except ExcepcionValorNoValido as z:
-                    messagebox.showwarning(title="Alerta", message=z.mensaje_completo)
-                    return True
-            cantidadI = self.datosEntradasFacturacion.getValue("Cantidad")
-            if not (cantidadI).replace(" ", "").replace("-", "", 1).replace(".", "", 1).isdigit():
-                try:
-                    raise ExcepcionNumeroNoString(cantidadI)
-                except ExcepcionNumeroNoString as pi:
-                    messagebox.showwarning(title="Alerta", message=pi.mensaje_completo)
-                    return True
-            else:
-                cantidadI = int(self.datosEntradasFacturacion.getValue("Cantidad"))
-                try:
-                    if cantidadI < 0:
-                        raise ExcepcionValorNoValido(cantidadI)
-                except ExcepcionValorNoValido as wiwiwi:
-                    messagebox.showwarning(title="Alerta", message=wiwiwi.mensaje_completo)
-                    return True
+                listaVendedor = []
+                for vendedorY in Sede.getListaEmpleadosTotal():
+                    listaVendedor.append(vendedorY.getNombre())
+                if self.datosEntradasFacturacion.getValue("Vendedor") not in listaVendedor:
+                    try:
+                        raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Vendedor"))
+                    except ExcepcionValorNoValido as z:
+                        messagebox.showwarning(title="Alerta", message=z.mensaje_completo)
+                        return True
 
-                        
+                listaEmpleadoCaja = []
+                for cajaI in Sede.getListaEmpleadosTotal():
+                    listaEmpleadoCaja.append(cajaI.getNombre())
+                if self.datosEntradasFacturacion.getValue("Empleado caja") not in listaEmpleadoCaja:
+                    try:
+                        raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Empleado caja"))
+                    except ExcepcionValorNoValido as z:
+                        messagebox.showwarning(title="Alerta", message=z.mensaje_completo)
+                        return True
+                cantidadI = self.datosEntradasFacturacion.getValue("Cantidad")
+                if not (cantidadI).replace(" ", "").replace("-", "", 1).replace(".", "", 1).isdigit():
+                    try:
+                        raise ExcepcionNumeroNoString(cantidadI)
+                    except ExcepcionNumeroNoString as pi:
+                        messagebox.showwarning(title="Alerta", message=pi.mensaje_completo)
+                        return True
+                else:
+                    cantidadI = int(self.datosEntradasFacturacion.getValue("Cantidad"))
+                    try:
+                        if cantidadI < 0:
+                            raise ExcepcionValorNoValido(cantidadI)
+                    except ExcepcionValorNoValido as wiwiwi:
+                        messagebox.showwarning(title="Alerta", message=wiwiwi.mensaje_completo)
+                        return True
+                            
         if error == []:
             self.cliente=cliente
             self.vendedor=self.sede.getEmpleado(self.datosEntradasFacturacion.getValue("Vendedor"))
