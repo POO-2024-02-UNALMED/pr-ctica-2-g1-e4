@@ -3,6 +3,7 @@ class Fecha:
         self.dia = dia
         self.mes = mes
         self.ano = ano
+        self.anio = ano % 100
     def getDia(self):
         return self.dia
     def setDia(self, dia):
@@ -58,3 +59,30 @@ class Fecha:
         return f"Día: {self.dia} Mes: {self.mes} Año: {self.ano}"
     def strCorto(self):
         return f"{self.dia}/{self.mes}/{self.ano}"
+    
+    def esBisiesto(self):
+        """Determina si el año (solo con dos cifras) es bisiesto."""
+        return (self.anio % 4 == 0 and self.anio % 100 != 0) or (self.anio % 400 == 0)
+
+    def diasEnMes(self):
+        """Retorna la cantidad de días que tiene el mes actual."""
+        if self.mes in [4, 6, 9, 11]:  # Abril, Junio, Septiembre, Noviembre
+            return 30
+        elif self.mes == 2:  # Febrero
+            return 29 if self.esBisiesto() else 28
+        else:  # Meses con 31 días
+            return 31
+
+    def aDiasTotales(self):
+        """Convierte la fecha a un número total de días desde el año 00."""
+        totalDias = self.dia
+        
+        # Sumar días de los años anteriores (solo tomando en cuenta los últimos dos dígitos del año)
+        for year in range(0, self.anio):
+            totalDias += 366 if Fecha(1, 1, year).esBisiesto() else 365
+
+        # Sumar días de los meses anteriores en el mismo año
+        for mes in range(1, self.mes):
+            totalDias += Fecha(1, mes, self.anio).diasEnMes()
+
+        return totalDias

@@ -1102,19 +1102,19 @@ class Main:
         # CREACION DE TODOS LOS REPUESTOS QUE MANEJAREMOS PARA LA FUNCIONALIDAD
         # PRODUCCION
         AgujasMC = Repuesto("Agujas de la Maquina de coser", p13, 12)
-        Aceite = Repuesto("Aceite", p16, 60, 1, None, 70)
+        Aceite = Repuesto("Aceite", p16, 60)
 
         Cuchillas = Repuesto("Cuchillas", p19, 60)
-        Afiladores = Repuesto("Afiladores", p22, 750)
+        Afiladores = Repuesto("Afiladores", p22, 750, 1, None, 751)
         ResistenciaElectrica = Repuesto("Resistencia Electrica", p25, 1500)
-        MangueraDeVapor = Repuesto("Manguera de Vapor", p27, 750, 1, None)
+        MangueraDeVapor = Repuesto("Manguera de Vapor", p27, 750, 1, None, 751)
         AgujasBI = Repuesto("Agujas de la Bordadora Industrial", p29, 25)
         BandasDeTransmision = Repuesto("Bandas de Transmision", p31, 2500)
-        TintaN = Repuesto("Tinta Negra Impresora", p33, 3000, 1, None, 3100)
+        TintaN = Repuesto("Tinta Negra Impresora", p33, 3000)
         Lector = Repuesto("Lector de barras", p35, 3000)
-        PapelQuimico = Repuesto("Papel quimico", p37, 72)
+        PapelQuimico = Repuesto("Papel quimico", p37, 72, 1, None, 73)
         Cargador = Repuesto("Cargador Computador", p39, 6000)
-        Mouse = Repuesto("Mouse Computador", p41, 900, 1, None, 1000)
+        Mouse = Repuesto("Mouse Computador", p41, 900)
 
         # CREACION DE LAS SEDES QUE MANEJAREMOS, CON SUS RESPECTIVAS MAQUINAS EN CADA
         # UNA DE ELLAS
