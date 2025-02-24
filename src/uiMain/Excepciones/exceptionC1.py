@@ -1,5 +1,6 @@
 from tkinter import messagebox
 from src.uiMain.Excepciones.errorAplicacion import ErrorAplicacion
+
 class ExceptionC1(ErrorAplicacion):
     def __init__(self, mensaje):
         self.mensajeValoresNovalidos=f" Error de entrada de dato: {mensaje} "
