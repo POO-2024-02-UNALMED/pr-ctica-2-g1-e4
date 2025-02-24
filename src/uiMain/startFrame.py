@@ -203,6 +203,14 @@ class StartFrame(tk.Tk):
         self.frameInicial.rowconfigure(1, weight=3)
         self.frameInicial.rowconfigure(2, weight=3)
 
+        self.bind("<Configure>", self.actualizarWrapLengths)
+    
+    def actualizarWrapLengths(self,_event):
+        self.descripcionFrameInicial.config(wraplength=self.frameInicial.winfo_width()*0.9)
+        self.instruccionesFrameInicial.config(wraplength=self.contenedorFecha.winfo_width()*0.9)
+        if self.winfo_width()<400:
+            self.labelFotoEcomoda.place(relx=0.5, rely=0.2, relwidth=1, relheight=0.3, anchor="n")
+
 
 
         # Función que se ejecutará al presionar el botón
