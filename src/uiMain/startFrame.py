@@ -2064,10 +2064,12 @@ Ya terminamos, tenga buen día.""")
 
         tituloF5 = tk.Label(self.frameConTitulo, text="Producción", bg="medium orchid", relief="ridge", height=2, font=("Arial",16, "bold"))
         tituloF5.grid(row=0, column=0, sticky="we")
+        tituloF5.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(tituloF5))
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
         self.descripcionF5 = tk.Label(self.frameConTitulo, text="Se registra la producción de prendas y actualiza su inventario: Se toma la cantidad necesaria del stock de materiales para fabricar nuevas prendas y se actualizan los datos, tanto de lo que se descontó de Stock como lo que se agregó a la cantidad de pendas.", height=3,wraplength=800, font=("Arial", 10, "italic"))
         self.descripcionF5.grid(row=1, column=0, sticky="we")
+        self.descripcionF5.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF5))
 
         self.frameCambianteProduccion = tk.Frame(self.frameConTitulo, bg="white")
         self.frameCambianteProduccion.grid(row=2, column=0, sticky="nswe")
@@ -2150,6 +2152,7 @@ Ya terminamos, tenga buen día.""")
         if Sede.getListaSedes()[0].getCantidadInsumosBodega()[0] < 200 or Sede.getListaSedes()[1].getCantidadInsumosBodega()[0] < 200:
             labelDesp = tk.Label(StartFrame.frameDeTrabajo, text="NO HAY INSUMOS SUFICIENTES\nVUELVE CUANDO HAYAS CONSEGUIDO MAS\n\nREDIRIGIENDO...", font=("Arial", 14, "bold italic"), bg="white")
             labelDesp.place(relx=0.5, rely=0.5, anchor="center")
+            labelDesp.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(labelDesp))
             StartFrame.ventanaPrincipal.after(1500, self.volverMenu2)
             return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
