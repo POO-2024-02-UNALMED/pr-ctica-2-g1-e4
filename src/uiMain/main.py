@@ -580,8 +580,8 @@ class Main:
             repuesto = infoRepuesto[0]
             proveedor = infoRepuesto[1]
             maquina = infoRepuesto[2]
-            sede:Sede = Sede.getSedePorNombre(nombreSede)
-            sede.getCuentaSede().restarDinero(proveedor.getPrecio())
+            sede:Sede = cls.sedePorNombre(nombreSede)
+            sede.getCuentaSede().transaccion(-proveedor.getPrecio())
             cls.comprarRepuesto(repuesto, proveedor, maquina)
         else:
             return False
