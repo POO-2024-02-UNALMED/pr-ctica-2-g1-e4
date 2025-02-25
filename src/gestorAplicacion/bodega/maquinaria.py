@@ -94,7 +94,7 @@ class Maquinaria:
     def getSede(self) -> 'Sede':
         return self.sede
     
-    #@classmethod # Este metodo se corre en un hilo invocado en el metodo activar de startFrame.
+    #@classmethod
     def agruparMaquinasDisponibles(self, fecha) -> List['Maquinaria']:
         from .repuesto import Repuesto
         from src.uiMain.main import Main
@@ -102,8 +102,8 @@ class Maquinaria:
         from src.gestorAplicacion.bodega.insumo import Insumo
         from src.uiMain.startFrame import StartFrame
         stf = StartFrame()
-        # Quito el print, porque no se debe imprimir en la consola, sino en la interfaz.
-        # Para depurar, use un breakpoint.
+        
+        print(f"los repuestos mas actuales creados: {Repuesto.getListadoRepuestos()}\n y hay en total: {len(Repuesto.getListadoRepuestos())}")
         maqDisponibles = []
         todosProvBaratos = []
         encontrado = False
@@ -113,18 +113,22 @@ class Maquinaria:
             for cadaMaquina in cadaSede.getListaMaquinas():
                 if cadaMaquina.mantenimiento is True:
                     if self.hanPasadoMasDeTresDias(cadaMaquina.ultFechaRevision, fecha):
+                        print(f"\nya me arreglaron")
                         cadaMaquina.mantenimiento = False
                         cadaMaquina.horasUso = 0
-                    # Quitar prints que reportaban la nececidad o no de mantenimiento.
+                    else:
+                        print(f"\nARREGLENME POR FAVOR")
                 if (cadaMaquina.getHoraRevision() - cadaMaquina.getHorasUso()) > 0:
+                    if not cadaMaquina.mantenimiento:
+                        cadaMaquina.mantenimiento = False
                     for cadaRepuesto in cadaMaquina.getRepuestos():
                         if (cadaRepuesto.getHorasDeVidaUtil() - cadaRepuesto.getHorasDeUso()) <= 0:
-                            # Quitar print indirecto
-                            todosProvBaratos = Maquinaria.encontrarProveedoresBaratos()
-                            # Quitar print de provedores baratos
+                            stf.receptor(Main.printsInt1(1, cadaRepuesto, cadaMaquina, cadaSede))
+                            todosProvBaratos = self.encontrarProveedoresBaratos()
+                            print(len(todosProvBaratos))
                             for elMasEconomico in todosProvBaratos:
                                 if elMasEconomico.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
-                                    # Quitar print que indicaba el encontrar el proveedor correcto.
+                                    print("adentro")
                                     proveedorBarato = elMasEconomico
                                     stf.recibeProveedorB(proveedorBarato)
                                     print(proveedorBarato.getNombre())
@@ -186,9 +190,8 @@ class Maquinaria:
         print("finish interaccion 1")
         return maqDisponibles
 
-    #retorna una lista, que por cada indice en la lista de repuestos, pone el proveedor mas economico.
-    @classmethod
-    def encontrarProveedoresBaratos(cls):
+    #@classmethod
+    def encontrarProveedoresBaratos(self):
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from .repuesto import Repuesto
         listProveedoresBaratos = []
