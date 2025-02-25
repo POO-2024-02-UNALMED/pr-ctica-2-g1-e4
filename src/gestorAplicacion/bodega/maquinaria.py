@@ -164,8 +164,9 @@ class Maquinaria:
 
                            
                 else:
-                    cadaMaquina.mantenimiento = True
-                    cadaMaquina.ultFechaRevision = fecha
+                    if cadaMaquina.mantenimiento is False:
+                        cadaMaquina.mantenimiento = True
+                        cadaMaquina.ultFechaRevision = fecha
                 pista = 0
                 for rep in cadaMaquina.getRepuestos():
                     if rep.isEstado():
