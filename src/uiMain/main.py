@@ -537,6 +537,7 @@ class Main:
     def agruparMaquinasDisponibles(cls):
         from src.gestorAplicacion.bodega.repuesto import Repuesto
         from src.uiMain.main import Main
+        from src.uiMain.startFrame import StartFrame
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.bodega.insumo import Insumo
         
@@ -557,6 +558,7 @@ class Main:
                                 if elMasEconomico.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
                                     proveedorBarato = elMasEconomico
                                     break
+                            StartFrame.recibeProveedorB(proveedorBarato)
                             cls.infoRepuestosAComprar.append([cadaRepuesto, proveedorBarato,cadaMaquina])
                         cadaMaquina.ultFechaRevision = cls.fecha
                 
@@ -572,6 +574,8 @@ class Main:
                     maqDisponibles.append(cadaMaquina)
                 else:
                     maquinasPaRevisar.append(cadaMaquina)
+        StartFrame.recibeMaqPaRevisar(maquinasPaRevisar)
+        StartFrame.recibeMaqDisp(maqDisponibles)       
     
     @classmethod
     def procederConCompraRepuesto(cls,nombreSede):
@@ -583,12 +587,15 @@ class Main:
             sede:Sede = cls.sedePorNombre(nombreSede)
             sede.getCuentaSede().transaccion(-proveedor.getPrecio())
             cls.comprarRepuesto(repuesto, proveedor, maquina)
+            return True
         else:
             return False
     
     @classmethod
     def comprarRepuesto(cls, repuestoAnterior, proveedor, maquina):
-        maquina.getRepuestos().remove(repuestoAnterior)
+        for repuesto in maquina.getRepuestos():
+            if repuesto.getNombre() == repuestoAnterior.getNombre():
+                maquina.getRepuestos().remove(repuesto)
         repuestoNuevo = repuestoAnterior.copiarConProveedor(proveedor)
         repuestoNuevo.setPrecioCompra(proveedor.getPrecio())
         repuestoNuevo.addFechaCompra(cls.fecha)

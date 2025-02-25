@@ -283,12 +283,11 @@ class Sede:
         return insumos
 
     @classmethod
-    def planProduccion(cls, maqDisponible: List, fecha: 'Fecha') -> List[List[List[int]]]:
+    def planProduccion(cls, maqDisponible: List, fecha: 'Fecha', containerBig, cont, field_frame, labelTotalGastado, cont2, field_frame2, frame, plaproduccion) -> List[List[List[int]]]:
         from .bodega.maquinaria import Maquinaria
         from src.uiMain.main import Main
         import math
         from src.uiMain.startFrame import StartFrame
-        stf2 = StartFrame()
         aProducirFinal = []; aProducir = []; listaEspera = []; listaDeCeros = [0, 0]
         listaEsperaVacia = [listaDeCeros.copy(), listaDeCeros.copy()]
         maqSedeP = []; maqSede2 = []
@@ -320,13 +319,13 @@ class Sede:
         if len(Sede.getListaSedes()[1].maqProduccion) > 3:
             senal += 10
         #print(f"\nlas maq de produccion de la sede p son: {Sede.getListaSedes()[0].maqProduccion}")
-        stf2.recibeMaqDispSeparadas(Sede.getListaSedes()[0].maqProduccion, Sede.getListaSedes()[1].maqProduccion)
+        StartFrame.recibeMaqDispSeparadas(Sede.getListaSedes()[0].maqProduccion, Sede.getListaSedes()[1].maqProduccion)
 
         if senal == 5:
-            stf2.recibeTextIndicador(Main.printsInt2(1), 1)
-            Main.evento_ui.clear()  
+            StartFrame.recibeTextIndicador(Main.printsInt2(1), 1)
+            #Main.evento_ui.clear()  
             #print("\nEsperando confirmación para seguir con la produccion")
-            Main.evento_ui.wait()
+            #Main.evento_ui.wait()
             #print("Seguir planificando produccion en la sede principal\n")
                 #Envia la produccion de la sede 2 a producir la otra semana en la sede Principal
             aProducir.insert(0, Main.calcProduccionSedes(fecha)[0])
@@ -337,10 +336,10 @@ class Sede:
             aProducirFinal.insert(1, listaEspera)
                 
         elif senal == 10:
-            stf2.recibeTextIndicador(Main.printsInt2(3), 2)
-            Main.evento_ui.clear()  
+            StartFrame.recibeTextIndicador(Main.printsInt2(3), 2)
+            #Main.evento_ui.clear()  
             #print("\nEsperando confirmación para seguir con la produccion")
-            Main.evento_ui.wait()
+            #Main.evento_ui.wait()
             #print("Seguir planificando produccion en la sede 2\n")
                     #Envia la produccion de la sede Principal a producir la otra semana en la sede 2
             aProducir.insert(0, listaDeCeros.copy())
@@ -352,10 +351,10 @@ class Sede:
 
         elif senal == 15:
             # Se produce todo entre las dos sedes
-            stf2.recibeTextIndicador(Main.printsInt2(12), 3)
-            Main.evento_ui.clear()  
+            StartFrame.recibeTextIndicador(Main.printsInt2(12), 3)
+            #Main.evento_ui.clear()  
             #print("\nEsperando confirmación para seguir con la produccion")
-            Main.evento_ui.wait()
+            #Main.evento_ui.wait()
             #print("Seguir planificando produccion en las dos sedes...\n")
             senalRec = Main.sobreCargada(fecha)
             if senalRec == 5:
@@ -392,16 +391,17 @@ class Sede:
         else:
                 #no se puede producir nada porque ninguna sede esta disponible, enviar el print siguiente a la interfaz y darle un boton para volver
             aProducirFinal = None
-            stf2.recibeTextIndicador(Main.printsInt2(11), 4)
+            StartFrame.recibeTextIndicador(Main.printsInt2(11), 4)
         
         if aProducirFinal is not None:
-            stf2.recibeProdFinal(aProducirFinal)
-        return aProducirFinal
+            StartFrame.recibeProdFinal(aProducirFinal)
+        
+        StartFrame.inicioInt2(containerBig, cont, field_frame, labelTotalGastado, cont2, field_frame2, frame,plaproduccion)
 
     @classmethod
     def sedeExiste(cls,nombre):
         for sede in cls.listaSedes:
-            if sede.getNombre().lower() == nombre.lower():
+            if sede.normalizar_textoSede(sede.getNombre()) == sede.normalizar_textoSede(nombre):
                 return True
         return False
     def getEmpleado(self, nombre):
