@@ -138,8 +138,11 @@ class StartFrame(tk.Tk):
             bienvenida.pasarAVentanaBienvenida()
         else:
             self.abrirFrameInicial()
-        
-
+            
+    def ajustar_wraplengthhola(self,label):        
+        nuevo_wraplength = label.winfo_width()
+        if label.cget("wraplength") != nuevo_wraplength:
+            label.config(wraplength=nuevo_wraplength)
     
     def acercaDe(self):
         tk.messagebox.showinfo("Acerca de", "Andres David Calderón Jiménez \nGelsy Jackelin Lozano Blanquiceth \nAndrea Merino Mesa \nLuis Rincon \nJuanita Valentina Rosero")
@@ -161,8 +164,8 @@ class StartFrame(tk.Tk):
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
         self.descripcionFrameInicial = tk.Label(self.frameInicial, text="Realiza un proceso de facturación, surte insumos, produce prendas, gestiona a tus empleados y revisa el estado financiero de tu empresa :)", relief="ridge")
+        self.descripcionFrameInicial.bind('<Configure>', lambda e: self.descripcionFrameInicial.config(wraplength=self.descripcionFrameInicial.winfo_width()))
         self.descripcionFrameInicial.place(relx=0.5, rely=0.15, relwidth=1, relheight=0.1, anchor="n")
-
         self.contenedorFecha = tk.Frame(self.frameInicial, bg="light gray")
         self.contenedorFecha.place(relx=0.5, rely=0.25, relwidth=1, relheight=0.8, anchor="n")
 
@@ -206,7 +209,7 @@ class StartFrame(tk.Tk):
         self.frameInicial.rowconfigure(1, weight=3)
         self.frameInicial.rowconfigure(2, weight=3)
 
-        self.bind("<Configure>", self.actualizarWrapLengths)
+        self.descripcionFrameInicial.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionFrameInicial))
     
     def actualizarWrapLengths(self,_event):
         if self.pagina=="inicial":
@@ -246,8 +249,8 @@ class StartFrame(tk.Tk):
             self.borrar()
             return hayExcepcion
                
-        self.ingresarFecha(FDia,FMes,FAño)
-        if isinstance(self.ingresarFecha(FDia,FMes,FAño),Fecha):
+        fecha_ingresada=self.ingresarFecha(FDia,FMes,FAño)
+        if isinstance(fecha_ingresada,Fecha):
             self.confirmacion.config(text="Fecha ingresada correctamente, estamos en "+Main.fecha.strCorto())
         pass
 
