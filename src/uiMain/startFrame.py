@@ -40,6 +40,7 @@ class StartFrame(tk.Tk):
     balance_anterior=0
     diferencia_estimada=0
     analisis_futuro=0
+    HilosProduccion=[] # Para lidiar con producción.
 
     def __init__(self):
         self.bolsas=0
@@ -122,6 +123,7 @@ class StartFrame(tk.Tk):
         self.cambiarFrame(self.producir(self))
         
     def cambiarFrame(self, reemplazo:tk.Frame):
+        self.matarHilos()
         self.areaPrincipal = reemplazo
         reemplazo.pack(fill="both", expand=True, padx=7, pady=7)
     
@@ -442,7 +444,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.widgetsTablaInsuficientes.append((nombre, area, rendimiento, rendimientoDeseado, accion))
             row += 1
         
-        self.botonSeguirPreInteraccion=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=lambda : self.pantallaEleccionDespedir(True))
+        self.botonSeguirPreInteraccion=ttk.Button(self.frameCambianteGHumana, text="Siguiente", command=lambda : self.pantallaEleccionDespedir(True))
         self.botonSeguirPreInteraccion.grid(row=row, column=0, columnspan=5)
 
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
@@ -2094,15 +2096,16 @@ Ya terminamos, tenga buen día.""")
         StartFrame.aProdFinal = []
         StartFrame.aProducirPaEnviar = []
         StartFrame.num3 = 0
+        StartFrame.HilosProduccion=[]
         if Sede.getListaSedes()[0].getCantidadInsumosBodega()[0] < 200 or Sede.getListaSedes()[1].getCantidadInsumosBodega()[0] < 200:
             labelDesp = tk.Label(StartFrame.frameDeTrabajo, text="NO HAY INSUMOS SUFICIENTES\nVUELVE CUANDO HAYAS CONSEGUIDO MAS\n\nREDIRIGIENDO...", font=("Arial", 14, "bold italic"), bg="white")
             labelDesp.place(relx=0.5, rely=0.5, anchor="center")
             StartFrame.ventanaPrincipal.after(1500, self.volverMenu2)
             return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
-
-        maqPrueba = Maquinaria("sede")
-        threading.Thread(target=maqPrueba.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
+        StartFrame.hiloMaquinas=threading.Thread(target= Maquinaria("prueba").agruparMaquinasDisponibles, args=(Main.fecha,self), daemon=True)
+        StartFrame.hiloMaquinas.start()
+        StartFrame.HilosProduccion.append(StartFrame.hiloMaquinas)
         
     senal= 0
     def receptor(self, texto):
@@ -2119,6 +2122,8 @@ Ya terminamos, tenga buen día.""")
                 #self.after(100, lambda: StartFrame.indicaRepMalo.config(text=texto, font=("Arial", 16, "bold")))
                 #self.after(100, lambda: StartFrame.indicaRepMalo.place(relx=0.5, rely=0.2, anchor="center"))
                 #StartFrame.ventanaPrincipal.update_idletasks()
+
+
 
     indicaRepMalo = None
     frameDeTrabajo = None
@@ -2362,7 +2367,9 @@ Ya terminamos, tenga buen día.""")
         field_frame2.destroy()
         event.widget.destroy()
         StartFrame.frameDeTrabajo.config(bg="white")
-        threading.Thread(target=Sede.planProduccion, args=(StartFrame.maqDisponibless, Main.fecha), daemon=True).start()
+        StartFrame.hiloPlanProduccion=threading.Thread(target=Sede.planProduccion, args=(StartFrame.maqDisponibless, Main.fecha), daemon=True)
+        StartFrame.hiloPlanProduccion.start()
+        StartFrame.HilosProduccion.append(StartFrame.hiloPlanProduccion)
 
         StartFrame.even2.wait()
         StartFrame.even2.clear()
@@ -2691,6 +2698,8 @@ Ya terminamos, tenga buen día.""")
 
     aProducirPaEnviar = []
     creadas = None
+    
+    
     def recibeCreadasOrNo(self, creadasss):
         from src.gestorAplicacion.bodega.prenda import Prenda
         StartFrame.creadas = creadasss
@@ -2841,6 +2850,13 @@ Ya terminamos, tenga buen día.""")
                     maquina.mantenimiento = True
                     maquina.ultFechaRevision = Main.fecha
 
+
+    def matarHilos(self):
+        for hilo in StartFrame.HilosProduccion:
+            hilo.join()
+        StartFrame.HilosProduccion.clear()
+    
+
         
     contenedorGrande = None
     def inicioInt3(self):
@@ -2891,7 +2907,10 @@ Ya terminamos, tenga buen día.""")
         StartFrame.labelPrueba = tk.Label(StartFrame.contSeleccionModista, text="No hay insumos :(\n\ncompra mas para producir\n\nvolviendo...", font=("Arial", 10, "bold italic"), wraplength=300, justify="center")
         StartFrame.labelPrueba.pack(pady=5)
         StartFrame.frameDeTrabajo.update_idletasks()
-        threading.Thread(target=Prenda.producirPrendas, args=(StartFrame.aProducirPaEnviar, Main.fecha), daemon=True).start()
+
+        StartFrame.hiloProducirPrendas=threading.Thread(target=Prenda.producirPrendas, args=(StartFrame.aProducirPaEnviar, Main.fecha), daemon=True)
+        StartFrame.hiloProducirPrendas.start()
+        StartFrame.HilosProduccion.append(StartFrame.hiloProducirPrendas)
         #print("\nsigo después del hilo")
         
         #print(f"\nla tela en la sede p es: {Sede.getListaSedes()[0].getCantidadInsumosBodega()[0]}")

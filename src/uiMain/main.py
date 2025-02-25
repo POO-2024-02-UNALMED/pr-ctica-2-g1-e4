@@ -27,6 +27,7 @@ class Main:
     proveedorBdelmain=None
     evento_ui = threading.Event()
     evento_ui2 = threading.Event()
+    eventoTerminarProduccion = threading.Event()
     nuevoBalance=None
     diferenciaEstimado=0
     pesimismoPorSede = [2,2]

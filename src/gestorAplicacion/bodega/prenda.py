@@ -50,7 +50,9 @@ class Prenda(GastoMensual):
                     alcanzaInsumos = False
             diaDeProduccion = diaDeProduccion.diaSiguiente()
         stf3.recibeCreadasOrNo(alcanzaInsumos)
-        return alcanzaInsumos
+        Main.eventoTerminarProduccion.set()
+        return
+    
 
     @staticmethod
     def producirListaPrendas(planProduccion, sede, fechaProduccion):
