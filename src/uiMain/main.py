@@ -527,8 +527,7 @@ class Main:
             if string.isdigit():
                 cantidadesExtra.append(int(string))
             else:
-               # EXCEPCION
-               pass
+               return False
 
         idxInsumoExtra=0
         for idxSede ,sede in enumerate(cls.extraPorComprar):

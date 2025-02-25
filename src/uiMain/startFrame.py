@@ -854,7 +854,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.frameCambianteInsumos.columnconfigure(0, weight=1)
     
     def comprarExtra(self):
-        Main.terminarCompraDeInsumos(self.fieldCompraExtra.obtenerTodosLosValores())
+        entradaValida=Main.terminarCompraDeInsumos(self.fieldCompraExtra.obtenerTodosLosValores())
+        if not entradaValida:
+            pass # BOOM! excepcion
         self.dibujarDeudas()
     
     def dibujarDeudas(self):
