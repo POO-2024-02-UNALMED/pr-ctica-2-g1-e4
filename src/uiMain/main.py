@@ -38,7 +38,7 @@ class Main:
 
 
 
-    #region gestión humana
+    #region Gestión Humana
 #------------------------------------------- Gestión Humana --------------------------------------------------------------------
     
     # Lo que siguen son para la versión grafica, o metodos puente para ella, y no usan print.-------------------------------
@@ -179,8 +179,8 @@ class Main:
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
 #endregion
 
-    #region financiera
-#---------------------------------------------- Financiera ------------------------------------------------------------
+    #region Sistema Financiero
+#---------------------------------------------- Sistema Financiero ------------------------------------------------------------
 
     #Directivos disponibles
     def Directivos():
@@ -483,6 +483,7 @@ class Main:
         return filas
     
     #endregion
+#region Producción    
 #--------------------------------------------------------- Producción -----------------------------------------------------------------------------------
 
     @classmethod
@@ -534,8 +535,8 @@ class Main:
             for idxInsumo, insumo in enumerate(sede[0]):
                 cantidadExtra=cantidadesExtra[idxInsumoExtra]
                 cls.comprarInsumo(sede[1][idxInsumo]+cantidadExtra, insumo, insumo.getProveedor(), Sede.getListaSedes()[cls.extraPorComprar.index(sede)])
-
-#region facturacion
+#endregion
+#region Facturacion
 #---------------------------------------------------------- Facturación -----------------------------------------------------------------------------------
 
     def listaVendedores(sede):
