@@ -27,6 +27,7 @@ class Main:
     proveedorBdelmain=None
     evento_ui = threading.Event()
     evento_ui2 = threading.Event()
+    eventoTerminarProduccion = threading.Event()
     nuevoBalance=None
     diferenciaEstimado=0
     pesimismoPorSede = [2,2]
@@ -59,13 +60,14 @@ class Main:
     def despedirEmpleados(cls, nombres):
         empleados = []
         for nombre in nombres:
-            encontrado=False
-            for emp in Sede.getListaEmpleadosTotal():
-                if emp.getNombre().lower() == nombre.lower():
-                    empleados.append(emp)
-                    encontrado=True
-            if not encontrado:
-                return (False,[])
+            instanciaEmpleado=None
+            for sede in Sede.getListaSedes():
+                instanciaEmpleado=sede.getEmpleado(nombre)
+                if instanciaEmpleado is not None:
+                    empleados.append(instanciaEmpleado)
+                    break
+                if instanciaEmpleado is None:
+                    return (False,[])
                 
         Empleado.despedirEmpleados(empleados, True, Main.fecha)
         cls.despedidos = empleados
@@ -143,7 +145,8 @@ class Main:
         for nombre in reemplazos:
             encontrado=False
             for emp in cls.opcionesParaReemplazo:
-                if emp.getNombre().lower() == nombre.lower():
+                from src.uiMain.startFrame import StartFrame
+                if StartFrame.normalizar_texto(emp.getNombre().lower()) == StartFrame.normalizar_texto(nombre.lower()):
                     encontrado=True
                     empleadosReemplazadores.append(emp)
             if not encontrado:

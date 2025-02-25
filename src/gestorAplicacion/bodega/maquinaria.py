@@ -95,13 +95,11 @@ class Maquinaria:
         return self.sede
     
     #@classmethod
-    def agruparMaquinasDisponibles(self, fecha) -> List['Maquinaria']:
+    def agruparMaquinasDisponibles(self, fecha,startFrame) -> List['Maquinaria']:
         from .repuesto import Repuesto
         from src.uiMain.main import Main
         from src.gestorAplicacion.bodega.proveedor import Proveedor
         from src.gestorAplicacion.bodega.insumo import Insumo
-        from src.uiMain.startFrame import StartFrame
-        stf = StartFrame()
         
         #print(f"los repuestos mas actuales creados: {Repuesto.getListadoRepuestos()}\n y hay en total: {len(Repuesto.getListadoRepuestos())}")
         maqDisponibles = []
@@ -124,17 +122,17 @@ class Maquinaria:
                         cadaMaquina.mantenimiento = False
                     for cadaRepuesto in cadaMaquina.getRepuestos():
                         if (cadaRepuesto.getHorasDeVidaUtil() - cadaRepuesto.getHorasDeUso()) <= 0:
-                            stf.receptor(Main.printsInt1(1, cadaRepuesto, cadaMaquina, cadaSede))
+                            startFrame.receptor(Main.printsInt1(1, cadaRepuesto, cadaMaquina, cadaSede))
                             todosProvBaratos = Main.encontrarProveedoresBaratos()
                             for elMasEconomico in todosProvBaratos:
                                 if elMasEconomico.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
                                     proveedorBarato = elMasEconomico
-                                    stf.recibeProveedorB(proveedorBarato)
+                                    startFrame.recibeProveedorB(proveedorBarato)
                                     Main.recibeProveedorB(proveedorBarato)
                                     break
                             Main.evento_ui.clear()
                             Main.evento_ui.wait()
-                            stf.receptor("No hay mas repuestos por cambiar,\npresiona el boton de abajo para ver el resumen de la revisión...")
+                            startFrame.receptor("No hay mas repuestos por cambiar,\npresiona el boton de abajo para ver el resumen de la revisión...")
                             for sedeCreada in Sede.getListaSedes():
                                 if sedeCreada.getCuentaSede().getAhorroBanco() >= proveedorBarato.getPrecio():
                                     cadaMaquina.setRepuestos(cadaRepuesto)
@@ -163,9 +161,9 @@ class Maquinaria:
                 else:
                     maquinasPaRevisar.append(cadaMaquina)
                 
-        stf.recibeProveedorB(None)
-        stf.recibeMaqPaRevisar(maquinasPaRevisar)
-        stf.recibeMaqDisp(maqDisponibles)
+        startFrame.recibeProveedorB(None)
+        startFrame.recibeMaqPaRevisar(maquinasPaRevisar)
+        startFrame.recibeMaqDisp(maqDisponibles)
         return maqDisponibles
 
     @staticmethod

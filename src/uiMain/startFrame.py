@@ -40,6 +40,7 @@ class StartFrame(tk.Tk):
     balance_anterior=0
     diferencia_estimada=0
     analisis_futuro=0
+    HilosProduccion=[] # Para lidiar con producción.
 
     def __init__(self):
         self.bolsas=0
@@ -82,6 +83,7 @@ class StartFrame(tk.Tk):
         self.abrirFrameInicial()
 
     #-------------------------------------------- Listeners para el menú superior ------------------------------------------------------------------
+    @classmethod
     def normalizar_texto(self,texto):
         return unicodedata.normalize("NFKD", texto).encode("ASCII", "ignore").decode("utf-8").strip().lower()
    
@@ -441,7 +443,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.widgetsTablaInsuficientes.append((nombre, area, rendimiento, rendimientoDeseado, accion))
             row += 1
         
-        self.botonSeguirPreInteraccion=tk.Button(self.frameCambianteGHumana, text="Siguiente", font=("Arial", 12, "bold"), command=lambda : self.pantallaEleccionDespedir(True))
+        self.botonSeguirPreInteraccion=ttk.Button(self.frameCambianteGHumana, text="Siguiente", command=lambda : self.pantallaEleccionDespedir(True))
         self.botonSeguirPreInteraccion.grid(row=row, column=0, columnspan=5)
 
         self.frameCambianteGHumana.rowconfigure(0, weight=1)
@@ -697,14 +699,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.dibujarTandaDeReemplazo(Main.getTandaReemplazo())
         else:
             try:
-                if int(self.seleccionadorReemplazo.getValue(f"Reemplazo {i}")):
+                if self.seleccionadorReemplazo.getValue(f"Reemplazo {i}").isdigit():
                     raise ExcepcionStringNoNumero(self.seleccionadorReemplazo.getValue(f"Reemplazo {i}"))
+                else:
+                    raise ExcepcionEmpleadoNoEncontrado()
             except ExcepcionStringNoNumero as estoyCansadojefe:
                 messagebox.showwarning(title="Alerta", message=estoyCansadojefe.mensaje_completo)
                 return True
-            
-            try:
-                raise ExcepcionEmpleadoNoEncontrado()
+
             except ExcepcionEmpleadoNoEncontrado as tururu:
                 messagebox.showwarning(title="Alerta", message=tururu.mensaje_completo)
                 return True
@@ -1000,6 +1002,7 @@ Ya terminamos, tenga buen día.""")
                 
                 confirmacion2 = tk.Label(self.estimadoVentasDeudas, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center", wraplength=600)
                 confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+                confirmacion2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(confirmacion2))
                 
                 texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
                 texto2.pack(fill="both", expand=True)
@@ -1054,7 +1057,7 @@ Ya terminamos, tenga buen día.""")
                 
                 bancos=Banco.getListaBancos()
 
-                tituloNombre=tk.Label(frameb, text="Nombre", font=("Arial", 10))
+                tituloNombre=tk.Label(frameb, text="Nombre", font=("Arial", 10))       
                 tituloDeuda=tk.Label(frameb, text="Deuda inicial", font=("Arial", 10))
                 tituloAhorro=tk.Label(frameb, text="Ahorros", font=("Arial", 10))
                 tituloInter=tk.Label(frameb, text="Interés", font=("Arial", 10))
@@ -1069,9 +1072,9 @@ Ya terminamos, tenga buen día.""")
                     deudaInicial=0
                     for deuda in Banco.getDeuda(banco):
                         deudaInicial+=Deuda.getValorInicialDeuda(deuda)
-                    deuda = tk.Label(frameb, text=deudaInicial, font=("Arial", 10))
-                    ahorro = tk.Label(frameb, text=Banco.getAhorroBanco(banco), font=("Arial", 10))
-                    Interes = tk.Label(frameb, text=Banco.getInteres(banco), font=("Arial", 10))
+                    deuda = tk.Label(frameb, text=deudaInicial, font=("Arial", 10))       
+                    ahorro = tk.Label(frameb, text=Banco.getAhorroBanco(banco), font=("Arial", 10))         
+                    Interes = tk.Label(frameb, text=Banco.getInteres(banco), font=("Arial", 10))         
                     nombre.grid(row=row+3, column=0)
                     deuda.grid(row=row+3, column=1)
                     ahorro.grid(row=row+3, column=2)
@@ -1305,7 +1308,7 @@ Ya terminamos, tenga buen día.""")
             field_frame.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
             frame3 = tk.Frame(framePrincipal)
             frame3.pack(anchor="s",  expand=True, fill="both")
-            label7 = tk.Label(frame3, text="Directivos disponibles:",anchor="w", font=("Arial",12, "bold"))
+            label7 = tk.Label(frame3, text="",anchor="w", font=("Arial",12, "bold"))
             label7.place(relx=0.5, rely=0.6, relwidth=1, relheight=1, anchor="s")
             label7.config(padx=200)
             label7.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(label7))            
@@ -1321,6 +1324,7 @@ Ya terminamos, tenga buen día.""")
             confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
             espacio=tk.Label(confirmacion, text="", font=("Arial", 10), wraplength=600)
             espacio.place(relx=0, rely=0, relwidth=1, relheight=1, anchor="c")
+            espacio.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(espacio))          
             confirmacion.update_idletasks()  # Asegura que el tamaño se actualice correctamente
 
             texto = tk.Text(confirmacion, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
@@ -1351,16 +1355,18 @@ Ya terminamos, tenga buen día.""")
 
         self.tituloF1 = tk.Label(self.framePrincipal, text="Facturacion", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
         self.tituloF1.grid(row=0, column=0, sticky="nswe")
-        
+        self.tituloF1.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloF1))
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
         self.descripcionF1 = tk.Label(self.framePrincipal, wraplength=700 ,text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial", 10))
-        self.descripcionF1.grid(row=1, column=0, sticky="nswe")        
+        self.descripcionF1.grid(row=1, column=0, sticky="nswe")  
+        self.descripcionF1.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF1))      
         
         self.freameCambianteFacturacion = tk.Frame(self.framePrincipal)
         self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
 
         self.outputFacturacion=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2, bg="#f0f0f0")
         self.outputFacturacion.grid(row=3, column=0, sticky="nswe")
+        
         
         self.framePrincipal.columnconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(0, weight=1)
@@ -1449,6 +1455,7 @@ Ya terminamos, tenga buen día.""")
         self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Fondos" ,["Transferir fondos a la cuenta principal","Porcentaje a transferir"],"", ["Si/No","20% o 60%"],[True,False],ancho_entry=25, tamañoFuente=10)
         self.datosEntradasFacturacion.configurarCallBack("Transferir fondos a la cuenta principal", "<Return>", self.transferirDinero)
         self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
+        
         
         self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10,  "bold"), command=self.leer5Facturacion)
         self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10,  "bold"), command=self.datosEntradasFacturacion.borrar)
@@ -1709,6 +1716,7 @@ Ya terminamos, tenga buen día.""")
 
         self.descripcionAñadirDespedido = tk.Label(self.freameCambianteFacturacion, text="""La prenda que desea añadir y la cantidad a comprar""", relief="ridge", font=("Arial", 10))
         self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=4)
+        self.descripcionAñadirDespedido.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionAñadirDespedido))
 
         self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Añadir Prenda" ,["Prenda","Cantidad"],"valor", ["Camisa/Pantalon","0"],[True,False],ancho_entry=25, tamañoFuente=10, callbackAceptar= self.actualizarDatosAñadirSede())
         self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
@@ -2091,15 +2099,16 @@ Ya terminamos, tenga buen día.""")
         StartFrame.aProdFinal = []
         StartFrame.aProducirPaEnviar = []
         StartFrame.num3 = 0
+        StartFrame.HilosProduccion=[]
         if Sede.getListaSedes()[0].getCantidadInsumosBodega()[0] < 200 or Sede.getListaSedes()[1].getCantidadInsumosBodega()[0] < 200:
             labelDesp = tk.Label(StartFrame.frameDeTrabajo, text="NO HAY INSUMOS SUFICIENTES\nVUELVE CUANDO HAYAS CONSEGUIDO MAS\n\nREDIRIGIENDO...", font=("Arial", 14, "bold italic"), bg="white")
             labelDesp.place(relx=0.5, rely=0.5, anchor="center")
             StartFrame.ventanaPrincipal.after(1500, self.volverMenu2)
             return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
-
-        maqPrueba = Maquinaria("sede")
-        threading.Thread(target=maqPrueba.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
+        StartFrame.hiloMaquinas=threading.Thread(target= Maquinaria("prueba").agruparMaquinasDisponibles, args=(Main.fecha,self), daemon=True)
+        StartFrame.hiloMaquinas.start()
+        StartFrame.HilosProduccion.append(StartFrame.hiloMaquinas)
         
     senal= 0
     def receptor(self, texto):
@@ -2116,6 +2125,8 @@ Ya terminamos, tenga buen día.""")
                 #self.after(100, lambda: StartFrame.indicaRepMalo.config(text=texto, font=("Arial", 16, "bold")))
                 #self.after(100, lambda: StartFrame.indicaRepMalo.place(relx=0.5, rely=0.2, anchor="center"))
                 #StartFrame.ventanaPrincipal.update_idletasks()
+
+
 
     indicaRepMalo = None
     frameDeTrabajo = None
@@ -2359,7 +2370,9 @@ Ya terminamos, tenga buen día.""")
         field_frame2.destroy()
         event.widget.destroy()
         StartFrame.frameDeTrabajo.config(bg="white")
-        threading.Thread(target=Sede.planProduccion, args=(StartFrame.maqDisponibless, Main.fecha), daemon=True).start()
+        StartFrame.hiloPlanProduccion=threading.Thread(target=Sede.planProduccion, args=(StartFrame.maqDisponibless, Main.fecha), daemon=True)
+        StartFrame.hiloPlanProduccion.start()
+        StartFrame.HilosProduccion.append(StartFrame.hiloPlanProduccion)
 
         StartFrame.even2.wait()
         StartFrame.even2.clear()
@@ -2688,6 +2701,8 @@ Ya terminamos, tenga buen día.""")
 
     aProducirPaEnviar = []
     creadas = None
+    
+    
     def recibeCreadasOrNo(self, creadasss):
         from src.gestorAplicacion.bodega.prenda import Prenda
         StartFrame.creadas = creadasss
@@ -2838,6 +2853,8 @@ Ya terminamos, tenga buen día.""")
                     maquina.mantenimiento = True
                     maquina.ultFechaRevision = Main.fecha
 
+
+
         
     contenedorGrande = None
     def inicioInt3(self):
@@ -2888,7 +2905,10 @@ Ya terminamos, tenga buen día.""")
         StartFrame.labelPrueba = tk.Label(StartFrame.contSeleccionModista, text="No hay insumos :(\n\ncompra mas para producir\n\nvolviendo...", font=("Arial", 10, "bold italic"), wraplength=300, justify="center")
         StartFrame.labelPrueba.pack(pady=5)
         StartFrame.frameDeTrabajo.update_idletasks()
-        threading.Thread(target=Prenda.producirPrendas, args=(StartFrame.aProducirPaEnviar, Main.fecha), daemon=True).start()
+
+        StartFrame.hiloProducirPrendas=threading.Thread(target=Prenda.producirPrendas, args=(StartFrame.aProducirPaEnviar, Main.fecha), daemon=True)
+        StartFrame.hiloProducirPrendas.start()
+        StartFrame.HilosProduccion.append(StartFrame.hiloProducirPrendas)
         #print("\nsigo después del hilo")
         
         #print(f"\nla tela en la sede p es: {Sede.getListaSedes()[0].getCantidadInsumosBodega()[0]}")
