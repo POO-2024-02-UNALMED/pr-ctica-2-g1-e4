@@ -2562,7 +2562,7 @@ Ya terminamos, tenga buen día.""")
             respuesta = messagebox.askyesno("Confirmación", f"¿Deseas continuar?\n\n* Sobre Costo de la Sede Principal = {listSobreCostos[0]}\n* Sobre Costo de la Sede 2 = {listSobreCostos[1]}")
             
             if respuesta:
-                self.inicioInt3()
+                Prenda.producirPrendas(StartFrame.aProducirPaEnviar, Main.fecha)
 
             else:
                 #print("El usuario canceló la acción.")
@@ -2960,12 +2960,6 @@ Ya terminamos, tenga buen día.""")
         StartFrame.labelPrueba.pack(pady=5)
         StartFrame.frameDeTrabajo.update_idletasks()
 
-        StartFrame.hiloProducirPrendas=threading.Thread(target=Prenda.producirPrendas, args=(StartFrame.aProducirPaEnviar, Main.fecha), daemon=True)
-        StartFrame.hiloProducirPrendas.start()
-        StartFrame.HilosProduccion.append(StartFrame.hiloProducirPrendas)
-        #print("\nsigo después del hilo")
-        
-        #print(f"\nla tela en la sede p es: {Sede.getListaSedes()[0].getCantidadInsumosBodega()[0]}")
         if Sede.getListaSedes()[0].getCantidadInsumosBodega()[0] < 200 or Sede.getListaSedes()[1].getCantidadInsumosBodega()[0] < 200:
             StartFrame.evento_senalizador.set()
 
