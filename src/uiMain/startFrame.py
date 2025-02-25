@@ -2082,7 +2082,8 @@ Ya terminamos, tenga buen día.""")
             return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
 
-        threading.Thread(target=Maquinaria.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
+        maqPrueba = Maquinaria("sede")
+        threading.Thread(target=maqPrueba.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
         
     senal= 0
     def receptor(self, texto):
@@ -2248,7 +2249,7 @@ Ya terminamos, tenga buen día.""")
         labelSaldo.destroy()
         event.widget.destroy()
         Main.evento_ui.set()
-        print(StartFrame.proveedorB)
+        #print(StartFrame.proveedorB)
         self.buscarProveedor(StartFrame.frameDeTrabajo, 1, 1)
 
     nomListMaqRev = []
@@ -2347,7 +2348,7 @@ Ya terminamos, tenga buen día.""")
         StartFrame.even2.wait()
         StartFrame.even2.clear()
         criterios = StartFrame.nomMaqProdDispSedeP
-        print(f"\nlas maq disponiles en la sede p son: {len(StartFrame.nomMaqProdDispSedeP)}")
+        #print(f"\nlas maq disponiles en la sede p son: {len(StartFrame.nomMaqProdDispSedeP)}")
         valores = StartFrame.horasUsoMaqProdDispSedeP
         habilitado = [False for _ in range(len(StartFrame.nomMaqProdDispSedeP))]
 
@@ -2422,10 +2423,10 @@ Ya terminamos, tenga buen día.""")
             for listas2 in listas1:
                 for listas3 in listas2:
                     tempProd.append(listas3)
-        print("\n",len(tempProd) , f"- la produccion en una sola lista es: {tempProd}\n")
+        #print("\n",len(tempProd) , f"- la produccion en una sola lista es: {tempProd}\n")
         StartFrame.aProdFinal.append(tempProd[0]); StartFrame.aProdFinal.append(tempProd[1]); StartFrame.aProdFinal.append(tempProd[4]); StartFrame.aProdFinal.append(tempProd[5])
         StartFrame.aProdFinal.append(tempProd[2]); StartFrame.aProdFinal.append(tempProd[3]); StartFrame.aProdFinal.append(tempProd[6]); StartFrame.aProdFinal.append(tempProd[7])
-        print("\n",len(StartFrame.aProdFinal) , f"- la produccion cruzada en una sola lista es: {StartFrame.aProdFinal}\n")
+        #print("\n",len(StartFrame.aProdFinal) , f"- la produccion cruzada en una sola lista es: {StartFrame.aProdFinal}\n")
         StartFrame.evento_senalizador.set()
 
     enlacesP = [(0, 2), (0, 4), (0, 6)] ; enlacesPSede2 = [(4, 6)]
@@ -2483,7 +2484,7 @@ Ya terminamos, tenga buen día.""")
             respuesta = messagebox.askyesno("Confirmación", f"¿Deseas continuar?\n\n* Sobre Costo de la Sede Principal = {listSobreCostos[0]}\n* Sobre Costo de la Sede 2 = {listSobreCostos[1]}")
             
             if respuesta:
-                print("El usuario eligió continuar.")
+                #print("El usuario eligió continuar.")
                 contBigRecor.destroy() ; contRe1.destroy() ; recorderis.destroy() ; textRecorderis.destroy() ; separador.destroy()
                 contRe2.destroy() ; recorderis2.destroy() ; textRecorderis2.destroy() ; frameGeneral.destroy() ; frameIzq.destroy() ; frameDer.destroy()
                 for subf in subframes:
@@ -2492,14 +2493,15 @@ Ya terminamos, tenga buen día.""")
                 StartFrame.ventanaPrincipal.after(100, self.inicioInt3)
 
             else:
-                print("El usuario canceló la acción.")
+                #print("El usuario canceló la acción.")
+                pass
 
         def produccionPaEnviar():
             valores = [int(modificados.get()) for modificados in varEntries]
             list1 = [valores[0], valores[1]] ; list2 = [valores[4], valores[5]] ; listProdHoy = [list1, list2]
             list3 = [valores[2], valores[3]] ; list4 = [valores[6], valores[7]] ; listProdOWeek = [list3, list4]
             StartFrame.aProducirPaEnviar.append(listProdHoy) ; StartFrame.aProducirPaEnviar.append(listProdOWeek)
-            print(f"\nproduccion pa enviar: {StartFrame.aProducirPaEnviar}")
+            #print(f"\nproduccion pa enviar: {StartFrame.aProducirPaEnviar}")
 
         def calcularSobreCostos():
             import math
@@ -2675,7 +2677,7 @@ Ya terminamos, tenga buen día.""")
         StartFrame.creadas = creadasss
         #StartFrame.indicaRepMalo = None
         if not Prenda.prendasUltimaProduccion:
-            print("\nADIOS...")
+            #print("\nADIOS...")
             StartFrame.ventanaPrincipal.after(700, self.volverMenu2)
             return
         
@@ -2685,7 +2687,7 @@ Ya terminamos, tenga buen día.""")
         prendasHoy = [] ; hoySedeP = [] ; hoySede2 = [] ; pHoySedeP = [] ; pHoySede2 = [] ; cHoySedeP = [] ; cHoySede2 = []
         prendasOW = [] ; OWSedeP = [] ; OWSede2 = [] ; pOWSedeP = [] ; pOWSede2 = [] ; cOWSedeP = [] ; cOWSede2 = []
         diaRef = Prenda.prendasUltimaProduccion[0].getFecha().getDia()
-        print(f"dia de referencia: {diaRef}")
+        #print(f"dia de referencia: {diaRef}")
         for prendaPorFecha in Prenda.prendasUltimaProduccion:
             if prendaPorFecha.getFecha().getDia() == diaRef:
                 prendasHoy.append(prendaPorFecha)
@@ -2829,9 +2831,9 @@ Ya terminamos, tenga buen día.""")
         from src.uiMain.fieldFrame import FieldFrame
 
         criterios1 = [] ; criterios2 = [] ; valores1 = [] ; valores2 = []
-        print("\nComienzo de la interacción 3...")
-        print(f"\n Lista de insumos actual de la sede Principal: {Sede.getListaSedes()[0].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[0].getCantidadInsumosBodega()}")
-        print(f"\n Lista de insumos actual de la sede 2: {Sede.getListaSedes()[1].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[1].getCantidadInsumosBodega()}\n")
+        #print("\nComienzo de la interacción 3...")
+        #print(f"\n Lista de insumos actual de la sede Principal: {Sede.getListaSedes()[0].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[0].getCantidadInsumosBodega()}")
+        #print(f"\n Lista de insumos actual de la sede 2: {Sede.getListaSedes()[1].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[1].getCantidadInsumosBodega()}\n")
         #contenedorGrande = tk.Frame(frameDeTrabajo, bg="light gray")
         #contenedorGrande.pack(pady=5)
 
@@ -2917,7 +2919,7 @@ Ya terminamos, tenga buen día.""")
         if StartFrame.printModistaGlobal is not None:
             StartFrame.labelPrueba.config(text=StartFrame.printModistaGlobal)
             StartFrame.frameDeTrabajo.update_idletasks()
-            print("\nVOLVI A ENTRARRRRR")
+            #print("\nVOLVI A ENTRARRRRR")
             Main.evento_ui.set()
         else:
             StartFrame.ventanaPrincipal.after(100, self.verificarEvento)
@@ -2936,14 +2938,14 @@ Ya terminamos, tenga buen día.""")
             for modista in StartFrame.listModistas:
                 if modista.getNombre().lower() == nombreElegido.lower():
                     StartFrame.indexx = StartFrame.listModistas.index(modista)
-            print(f"\nnumero de indice: {StartFrame.indexx}")
+            #print(f"\nnumero de indice: {StartFrame.indexx}")
             contPaEliminar.destroy()
             Main.evento_ui2.set()
         else:
             for modista in StartFrame.listModistas:
                 if modista.getNombre().lower() == nombreElegido.lower():
                     StartFrame.indexx = StartFrame.listModistas.index(modista)
-            print(f"\nnumero de indice: {StartFrame.indexx}")
+            #print(f"\nnumero de indice: {StartFrame.indexx}")
             contPaEliminar.pack_forget()
             Main.evento_ui2.set()
         StartFrame.num2 = StartFrame.num2 + 1
