@@ -1368,7 +1368,7 @@ Ya terminamos, tenga buen día.""")
         self.freameCambianteFacturacion = tk.Frame(self.framePrincipal, height=150)
         self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
         
-        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Fondos" ,["Transferir fondos a la cuenta principal","¿Qué porcentaje desea transferir?"],"", ["Si/No","20% o 60%"],[True,False],ancho_entry=25, tamañoFuente=10)
+        self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Fondos" ,["Transferir fondos a la cuenta principal","Porcentaje a transferir"],"", ["Si/No","20% o 60%"],[True,False],ancho_entry=25, tamañoFuente=10)
         self.datosEntradasFacturacion.configurarCallBack("Transferir fondos a la cuenta principal", "<Return>", self.transferirDinero)
         self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
         
@@ -1386,17 +1386,17 @@ Ya terminamos, tenga buen día.""")
         self.framePrincipal.rowconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(1, weight=1)
 
-    def transferirDinero(self, evento):
+    def transferirDinero(self,event):
         self.dineroTransferido=True
-        if (self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower())=="si":
-            self.datosEntradasFacturacion.habilitarEntry("¿Qué porcentaje desea transferir?", True)
+        if (self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower())=="si" or (self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower())=="no":
+            self.datosEntradasFacturacion.habilitarEntry("Porcentaje a transferir", True)
         else:
             valor = (self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower())
             try: 
                 if not isinstance(valor, str):
                     raise ExcepcionStringNoNumero((self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")))
                 if valor =="":
-                    raise ExcepcionContenidoVacio(["¿Qué porcentaje desea transferir?"])
+                    raise ExcepcionContenidoVacio(["Porcentaje a transferir"])
             except ExcepcionContenidoVacio as cabezaHueca:
                 messagebox.showwarning(title="Alerta", message=cabezaHueca.mensaje_completo)
            
@@ -1412,40 +1412,37 @@ Ya terminamos, tenga buen día.""")
         porcentaje=0
         mensaje=""
         
+        if not (self.datosEntradasFacturacion.getValue("Porcentaje a transferir").isdigit()):    
+            try:
+                raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("Porcentaje a transferir"))
+            except ExcepcionNumeroNoString as b:
+                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
+                return True          
 
-        valor = self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip().strip("%")
-
-        if valor.replace(".", "", 1).replace("-", "", 1).isdigit(): 
-            valor = int(valor)
-            if valor <= 0:
+        elif self.datosEntradasFacturacion.getValue("Porcentaje a transferir").replace(" ", "", 1).isdigit():
+            if int(self.datosEntradasFacturacion.getValue("Porcentaje a transferir").strip("%")) <= 0:
                 try:
-                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))  
+                    raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Porcentaje a transferir"))  
                 except ExcepcionValorNoValido as mon:
                     messagebox.showwarning(title="Alerta", message=mon.mensaje_completo)
                     return True
-        elif not self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").isdigit():    
-            try:
-                raise ExcepcionNumeroNoString(self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?"))
-            except ExcepcionNumeroNoString as b:
-                messagebox.showwarning(title="Alerta", message=b.mensaje_completo)
-                return True
-        else:
-            if self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?")!=None and self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")!=None:
-                string=self.datosEntradasFacturacion.getValue("¿Qué porcentaje desea transferir?").strip("%")
-                if str(string).replace(".", "", 1).isdigit():
-                    porcentaje=int(string)
-                if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" or self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="no":
-                    if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" and porcentaje>=20 and porcentaje <=60:
-                        mensajeFinal,mensaje=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), porcentaje)
-                    else:
-                        mensajeFinal=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), 0)
-                        mensaje="No se transfirió el dinero a la cuenta principal."
-                    self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
-                    self.siguiente.grid(row=2, column=3)   
-                self.outputFacturacion.config(state="normal")
-                self.outputFacturacion.delete("1.0", "end")
-                self.outputFacturacion.insert("1.0",mensaje)
-                self.outputFacturacion.config(state="disabled")   
+            else:
+                if self.datosEntradasFacturacion.getValue("Porcentaje a transferir")!=None and self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal")!=None:
+                    string=self.datosEntradasFacturacion.getValue("Porcentaje a transferir").strip("%")
+                    if str(string).replace(".", "", 1).isdigit():
+                        porcentaje=int(string)
+                    if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" or self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="no":
+                        if self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower()=="si" and porcentaje>=20 and porcentaje <=60:
+                            mensajeFinal,mensaje=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), porcentaje)
+                        else:
+                            mensajeFinal=Main.ingresoEmpresa(self.venta, self.datosEntradasFacturacion.getValue("Transferir fondos a la cuenta principal").lower(), 0)
+                            mensaje="No se transfirió el dinero a la cuenta principal."
+                        self.siguiente=tk.Button(self.freameCambianteFacturacion, text="Siguiente", font=("Arial", 10, "bold"), command=lambda:self.interaccion6Facturacion(mensajeFinal))
+                        self.siguiente.grid(row=2, column=3)   
+                    self.outputFacturacion.config(state="normal")
+                    self.outputFacturacion.delete("1.0", "end")
+                    self.outputFacturacion.insert("1.0",mensaje)
+                    self.outputFacturacion.config(state="disabled")   
 
     def interaccion4Facturacion(self):
         self.cantidadBolsaGrande=0
@@ -1791,8 +1788,8 @@ Ya terminamos, tenga buen día.""")
 
                 listaEmpleadoCaja = []
                 for cajaI in Sede.getListaEmpleadosTotal():
-                    listaEmpleadoCaja.append(cajaI.getNombre())
-                if self.datosEntradasFacturacion.getValue("Empleado caja") not in listaEmpleadoCaja:
+                    listaEmpleadoCaja.append(self.normalizar_texto(cajaI.getNombre()))
+                if self.normalizar_texto(self.datosEntradasFacturacion.getValue("Empleado caja")) not in listaEmpleadoCaja:
                     try:
                         raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Empleado caja"))
                     except ExcepcionValorNoValido as z:
@@ -2023,8 +2020,8 @@ Ya terminamos, tenga buen día.""")
             StartFrame.ventanaPrincipal.after(1500, self.volverMenu2)
             return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
-
-        threading.Thread(target=Maquinaria.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
+        maqPrueba = Maquinaria("nombrePrueba")
+        threading.Thread(target=maqPrueba.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
         
     senal= 0
     def receptor(self, texto):

@@ -1,3 +1,4 @@
+import unicodedata
 from src.gestorAplicacion.administracion.rol import Rol
 from src.gestorAplicacion.bodega.insumo import Insumo
 from .fecha import Fecha
@@ -456,7 +457,7 @@ class Sede:
         return False
     def getEmpleado(self, nombre):
         for empleado in self.listaEmpleado:
-            if empleado.getNombre().lower() == nombre.lower():
+            if self.normalizar_textoSede(empleado.getNombre()) == self.normalizar_textoSede(nombre):
                 return empleado
         return None
     @classmethod
@@ -472,3 +473,7 @@ class Sede:
             for venta in lista:
                 if venta.getSede()==sede:
                     sede.getHistorialVentas().append(venta)
+                    
+    def normalizar_textoSede(self,texto):
+        return unicodedata.normalize("NFKD", texto).encode("ASCII", "ignore").decode("utf-8").strip().lower()
+   
