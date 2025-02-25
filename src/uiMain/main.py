@@ -32,12 +32,7 @@ class Main:
     diferenciaEstimado=0
     pesimismoPorSede = [2,2]
     
-    
-    def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
-        from src.gestorAplicacion.bodega.prenda import Prenda
-        #print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
-        #print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
-        pass
+
 
 
 
@@ -614,6 +609,16 @@ class Main:
         if modistas[1] > 0 and ((produccionSedes[1][0] + produccionSedes[1][1]) / modistas[1]) > 400:
             senal += 10
         return senal
+
+    # interaccion 3
+    @classmethod
+    def getListaModistasElaboracion(cls):
+        modistas = []
+        sede = Prenda.getSedeTandaActual()
+        for empleado in sede.getListaEmpleados():
+            if empleado.getRol() == Rol.MODISTA:
+                modistas.append(empleado)
+        return modistas
 
     @classmethod
     def calcProduccionSedes(cls,ventana) -> List[List[int]]:

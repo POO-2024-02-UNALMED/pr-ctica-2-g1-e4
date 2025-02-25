@@ -2562,8 +2562,8 @@ Ya terminamos, tenga buen día.""")
             respuesta = messagebox.askyesno("Confirmación", f"¿Deseas continuar?\n\n* Sobre Costo de la Sede Principal = {listSobreCostos[0]}\n* Sobre Costo de la Sede 2 = {listSobreCostos[1]}")
             
             if respuesta:
-                Prenda.prepararElaboracion()
-                self.inicioInt3()
+                Prenda.prepararElaboracion(StartFrame.aProducirPaEnviar)
+                self.dibujarTandaElaboracion()
 
             else:
                 #print("El usuario canceló la acción.")
@@ -2754,17 +2754,12 @@ Ya terminamos, tenga buen día.""")
         from src.gestorAplicacion.bodega.prenda import Prenda
         StartFrame.creadas = creadasss
         #StartFrame.indicaRepMalo = None
-        if not Prenda.prendasUltimaProduccion:
-            #print("\nADIOS...")
-            StartFrame.ventanaPrincipal.after(700, self.volverMenu2)
-            return
-        
         StartFrame.contenedorGrande.destroy()
         resultado = None
 
         prendasHoy = [] ; hoySedeP = [] ; hoySede2 = [] ; pHoySedeP = [] ; pHoySede2 = [] ; cHoySedeP = [] ; cHoySede2 = []
         prendasOW = [] ; OWSedeP = [] ; OWSede2 = [] ; pOWSedeP = [] ; pOWSede2 = [] ; cOWSedeP = [] ; cOWSede2 = []
-        diaRef = Prenda.prendasUltimaProduccion[0].getFecha().getDia()
+        diaRef = Main.fecha
         #print(f"dia de referencia: {diaRef}")
         for prendaPorFecha in Prenda.prendasUltimaProduccion:
             if prendaPorFecha.getFecha().getDia() == diaRef:
@@ -2846,7 +2841,7 @@ Ya terminamos, tenga buen día.""")
         contDERECHA = tk.Frame(contCONTENEDOR, bg="#E0A8F2")
         contDERECHA.pack(side="left", pady=5, padx=5)
 
-        labelProdSal2 = tk.Label(contDERECHA, text="PRODUCCIÓN LANZADA\nLA OTRA SEMANA", font=("Arial", 15, "bold italic"), bg="#E0A8F2")
+        labelProdSal2 = tk.Label(contDERECHA, text="PRODUCCIÓN LANZADA\nA MAÑANA", font=("Arial", 15, "bold italic"), bg="#E0A8F2")
         labelProdSal2.pack(pady=7)
 
         contSEDES2 = tk.Frame(contDERECHA, bg="#E0A8F2")
@@ -2885,26 +2880,12 @@ Ya terminamos, tenga buen día.""")
         labelResultado = tk.Label(StartFrame.frameDeTrabajo, text=resultado, bg="white", font=("Arial", 18, "bold italic"), wraplength=500, justify="center")
         labelResultado.pack(pady=15)
 
-        botonVOLVER = tk.Button(StartFrame.frameDeTrabajo, text="Volver al Menu", font=("Arial", 16, "bold italic"))
-        botonVOLVER.pack(pady=10)
-        botonVOLVER.bind("<Button-1>", self.volverMenu)
-
-        for maquina in Sede.getListaSedes()[0].maqProduccion:
-            if maquina.mantenimiento is False:
-                if maquina.getHoraRevision() - maquina.getHorasUso() <= 0:
-                    maquina.mantenimiento = True
-                    maquina.ultFechaRevision = Main.fecha
-        for maquina in Sede.getListaSedes()[1].maqProduccion:
-            if maquina.mantenimiento is False:
-                if maquina.getHoraRevision() - maquina.getHorasUso() <= 0:
-                    maquina.mantenimiento = True
-                    maquina.ultFechaRevision = Main.fecha
 
 
 
         
     contenedorGrande = None
-    def inicioInt3(self):
+    def dibujarTandaElaboracion(self):
         from src.gestorAplicacion.bodega.prenda import Prenda
         from src.uiMain.main import Main
         from src.gestorAplicacion.sede import Sede
@@ -2956,10 +2937,6 @@ Ya terminamos, tenga buen día.""")
             #CONTENEDOR DERECHA ----------------------------------------------------------------------------
         StartFrame.contSeleccionModista = tk.Frame(StartFrame.contenedorGrande, bg="white")
         StartFrame.contSeleccionModista.pack(side="left", padx=5, pady=5)
-        StartFrame.frameDeTrabajo.update_idletasks()
-        StartFrame.labelPrueba = tk.Label(StartFrame.contSeleccionModista, text="No hay insumos :(\n\ncompra mas para producir\n\nvolviendo...", font=("Arial", 10, "bold italic"), wraplength=300, justify="center")
-        StartFrame.labelPrueba.pack(pady=5)
-        StartFrame.frameDeTrabajo.update_idletasks()
 
         if Sede.getListaSedes()[0].getCantidadInsumosBodega()[0] < 200 or Sede.getListaSedes()[1].getCantidadInsumosBodega()[0] < 200:
             StartFrame.evento_senalizador.set()
@@ -2967,11 +2944,10 @@ Ya terminamos, tenga buen día.""")
         StartFrame.evento_senalizador.wait()
         StartFrame.evento_senalizador.clear()
 
-        self.verificarEvento()
         contBotonesModistas = tk.Frame(StartFrame.contSeleccionModista, bg="white")
         contBotonesModistas.pack(pady=3)
 
-        for modista in StartFrame.listModistas:
+        for modista in Main.getListaModistasElaboracion():
             contInternoBotones = tk.Frame(contBotonesModistas, bg="white")
             contInternoBotones.pack(pady=4)
             boton = tk.Button(contInternoBotones, text=modista.getNombre(), font=("Arial", 9, "italic"))
@@ -2980,7 +2956,7 @@ Ya terminamos, tenga buen día.""")
             labelFlecha.pack(side="left", padx=2)
             labelPericia = tk.Label(contInternoBotones, text=f"Pericia: {round(modista.getPericia(), 2)}", bg="white", font=("Arial", 9, "italic"))
             labelPericia.pack(side="left", padx=2)
-            boton.bind("<Button-1>", lambda event : self.botonesModistas(event, contBotonesModistas))
+            boton.bind("<Button-1>", lambda event : self.botonesModistas(modista))
 
     even = threading.Event()
     printModistaGlobal = None
@@ -2997,43 +2973,16 @@ Ya terminamos, tenga buen día.""")
             self.verificarEvento()
         StartFrame.numero = StartFrame.numero + 1       
 
-    num3 = 0
-    def verificarEvento(self):
-        from src.uiMain.main import Main
-        #colocar a esperar dos segundos si no funciona
-        if StartFrame.printModistaGlobal is not None:
-            StartFrame.labelPrueba.config(text=StartFrame.printModistaGlobal)
-            StartFrame.frameDeTrabajo.update_idletasks()
-            #print("\nVOLVI A ENTRARRRRR")
-            Main.evento_ui.set()
-        else:
-            StartFrame.ventanaPrincipal.after(100, self.verificarEvento)
-        
-        if StartFrame.num3 >= 1:
-            self.crearBotones()
-        StartFrame.num3 = StartFrame.num3 + 1
-
 
     indexx = 10
     num2 = 0
-    def botonesModistas(self, event, contPaEliminar):
-        from src.uiMain.main import Main
-        nombreElegido = event.widget.cget("text")
-        if StartFrame.num2 == 0:
-            for modista in StartFrame.listModistas:
-                if modista.getNombre().lower() == nombreElegido.lower():
-                    StartFrame.indexx = StartFrame.listModistas.index(modista)
-            #print(f"\nnumero de indice: {StartFrame.indexx}")
-            contPaEliminar.destroy()
-            Main.evento_ui2.set()
+    def botonesModistas(self, modista):
+        from src.gestorAplicacion.bodega.prenda import Prenda
+        terminamos= Prenda.getSiguienteTanda(modista)
+        if terminamos:
+            self.recibeCreadasOrNo(not Prenda.faltaInsumos)
         else:
-            for modista in StartFrame.listModistas:
-                if modista.getNombre().lower() == nombreElegido.lower():
-                    StartFrame.indexx = StartFrame.listModistas.index(modista)
-            #print(f"\nnumero de indice: {StartFrame.indexx}")
-            contPaEliminar.pack_forget()
-            Main.evento_ui2.set()
-        StartFrame.num2 = StartFrame.num2 + 1
+            self.dibujarTandaElaboracion()
 
     def getIndexx(self):
         if StartFrame.indexx != 10:

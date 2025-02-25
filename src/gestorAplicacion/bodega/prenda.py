@@ -56,10 +56,10 @@ class Prenda(GastoMensual):
         diaDeProduccion = Main.fecha
         for dia in planProduccion:
             for i, sede in enumerate(Sede.listaSedes):
-                if not Prenda.producirListaPrendas(dia[i], sede, diaDeProduccion):
-                    cls.planesDeProduccion.append([diaDeProduccion[0],diaDeProduccion,sede])
+                cls.planesDeProduccion.append([dia[i],diaDeProduccion,sede])
         
         cls.prendasTandaActual=cls.getInstanciasPrenda(cls.planesDeProduccion[0][0],cls.planesDeProduccion[0][2],cls.planesDeProduccion[0][1])
+        cls.separarPrendasPorMaquina(cls.prendasTandaActual)
     
     @classmethod
     def getSedeTandaActual(cls):
@@ -71,16 +71,17 @@ class Prenda(GastoMensual):
 
         
     @classmethod
-    def getSiguienteTanda(cls,nombreModista)->bool: # Retorna si terminamos la producción
-        sede:Sede=cls.planesDeProduccion[cls.idxPlanProduccion][2]
-        modista=sede.getEmpleado(nombreModista)
+    def getSiguienteTanda(cls,modista)->bool: # Retorna si terminamos la producción
         terminamosPrendas=cls.producirListaPrendas(cls.planesDeProduccion[cls.idxPlanProduccion][2],modista)
+        cls.separarPrendasPorMaquina(cls.prendasTandaActual)
         if terminamosPrendas:
             cls.idxPlanProduccion+=1
             if cls.idxPlanProduccion>=len(cls.planesDeProduccion):
                 return True
             nuevaSede=cls.planesDeProduccion[cls.idxPlanProduccion][2]
             cls.prendasTandaActual=cls.getInstanciasPrenda(cls.planesDeProduccion[cls.idxPlanProduccion][0],nuevaSede,cls.planesDeProduccion[cls.idxPlanProduccion][1])
+            cls.separarPrendasPorMaquina(cls.prendasTandaActual)
+        return False
 
     @classmethod
     def avisarFaltaDeInsumos(cls):
@@ -106,8 +107,7 @@ class Prenda(GastoMensual):
                 pantalon = Pantalon(fechaProduccion, None, False, False, sede, insumosPantalon)
                 prendas.append(pantalon)
             else:
-                alcanzaInsumos = False
-                cls.aviarFaltaDeInsumos()
+                cls.avisarFaltaDeInsumos()
                 break
         insumosCamisa = sede.insumosPorNombre(Camisa.getTipoInsumo()) # Es posible que no se encuentren insumos de tal nombre en la bodega de la sede.
         if not insumosCamisa:
@@ -119,10 +119,8 @@ class Prenda(GastoMensual):
                 camisa = Camisa(fechaProduccion, None, False, False, sede, insumosCamisa)
                 prendas.append(camisa)
             else:
-                alcanzaInsumos = False
                 cls.avisarFaltaDeInsumos()
                 break
-        idxTanda = 0
         return prendas
 
     @classmethod
