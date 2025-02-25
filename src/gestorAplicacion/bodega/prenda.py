@@ -53,13 +53,14 @@ class Prenda(GastoMensual):
         Main.eventoTerminarProduccion.set()
         return
     
+    tandasTotales=[] # Una lista de listas
+    # Cada lista tiene indice 0 la lista de prendas. Indice 1 
 
-    @staticmethod
-    def producirListaPrendas(planProduccion, sede, fechaProduccion):
+    @classmethod
+    def getInstanciasPrenda(cls,planProduccion,sede,fechaProduccion):
         from src.gestorAplicacion.bodega.camisa import Camisa
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.uiMain.main import Main
-        alcanzaInsumos = True
         cantidadPantalones = planProduccion[0]
         cantidadCamisas = planProduccion[1]
         prendas = []
@@ -92,27 +93,39 @@ class Prenda(GastoMensual):
                 Main.avisarFaltaDeInsumos(sede, fechaProduccion, "Camisa")
                 break
         idxTanda = 0
+        return prendas
+
+    @classmethod
+    def producirListaPrendas(cls,planProduccion, sede, fechaProduccion):
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        from src.uiMain.main import Main
+        alcanzaInsumos = True
+        cantidadPantalones = planProduccion[0]
+        cantidadCamisas = planProduccion[1]
+        prendas = cls.getInstanciasPrenda(planProduccion, sede, fechaProduccion)
+        idxTanda = 0
         while prendas:
-            tandas = [[] for _ in range(7)]
+            tandasPorMaquina = [[] for _ in range(7)]
             for prenda in prendas:
                 siguientePaso = prenda.siguientePaso()
                 paso = siguientePaso[0].lower()
                 if paso == "maquina de corte":
-                    tandas[3].append(prenda)
+                    tandasPorMaquina[3].append(prenda)
                 elif paso == "maquina de tijereado":
-                    tandas[4].append(prenda)
+                    tandasPorMaquina[4].append(prenda)
                 elif paso == "maquina de coser industrial":
-                    tandas[5].append(prenda)
+                    tandasPorMaquina[5].append(prenda)
                 elif paso == "maquina de bordadora":
-                    tandas[1].append(prenda)
+                    tandasPorMaquina[1].append(prenda)
                 elif paso == "maquina de termofijado":
-                    tandas[0].append(prenda)
+                    tandasPorMaquina[0].append(prenda)
                 elif paso == "plancha industrial":
-                    tandas[2].append(prenda)
+                    tandasPorMaquina[2].append(prenda)
                 elif paso == "bordadora industrial":
-                    tandas[6].append(prenda)
+                    tandasPorMaquina[6].append(prenda)
             modista = Main.pedirModista(len(prendas), sede, idxTanda)
-            for tanda in tandas:
+            for tanda in tandasPorMaquina:
                 if not tanda:
                     continue
                 maquina = Maquinaria.seleccionarDeTipo(sede, tanda[0].ultimoPaso[0])
