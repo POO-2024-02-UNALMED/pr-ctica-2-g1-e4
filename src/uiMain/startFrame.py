@@ -726,12 +726,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.tituloF2 = tk.Label(self.framePrincipal, text="Surtir Insumos", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
         self.tituloF2.grid(row=0, column=0, sticky="nswe")
+        self.tituloF2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloF2))
 
             ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
         self.descripcionF2 = tk.Label(self.framePrincipal, 
                             text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", 
                             relief="ridge", wraplength=600)
         self.descripcionF2.grid(row=1, column=0, sticky="nswe")
+        self.descripcionF2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF2))
 
         self.pesimismo(Main.datosParaFieldPesimismo())
 
@@ -775,6 +777,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         label3 = tk.Label(self.framePrediccion, text="Según dicha predicción se hará la compra de los insumos")
         label3.grid(row=1, column=0, sticky="nswe")    
+        label3.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(label3))
         aceptar = tk.Button(self.framePrediccion, text="Siguiente", command=lambda: self.pasarAInteraccion2())
         aceptar.grid(row=1, column=1, sticky="nswe")
         self.framePrediccion.rowconfigure(0, weight=1)
@@ -792,7 +795,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         if self.frameCambianteInsumos is not None:
             self.frameCambianteInsumos.destroy()
         self.descripcionF2.config(text=Main.infoPostCoordinacion+"\nEsta tabla le muestra los insumos necesarios para producir, y de donde se pueden sacar.")
-        
+        self.descripcionF2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF2))
         self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
         self.elementosTabla = []
@@ -814,6 +817,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         
         self.seguirDeTabla=tk.Button(self.frameCambianteInsumos, text="Elegir sobre transferencias", command=lambda: self.transferir(Main.getCriteriosCoordinarBodegas(), Main.getNombreSedeActualCoordinacion()))
         self.seguirDeTabla.grid(row=idxFila+1, column=0)
+        self.seguirDeTabla.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.seguirDeTabla))
         self.frameCambianteInsumos.rowconfigure(idxFila+1, weight=1)
         self.frameCambianteInsumos.columnconfigure(0, weight=1) #insumo
         self.frameCambianteInsumos.columnconfigure(1, weight=1) # cantidad en bodega
@@ -828,6 +832,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
         self.descripcionF2.config(text="Estos insumos no estan en esta sede, pero pueden traerse de otra o comprarse.")
+        self.descripcionF2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF2))
         if len(criterios)>0:
             self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
             self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
@@ -871,6 +876,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         else:
             self.explicacion=tk.Label(self.frameCambianteInsumos, text="No se deben comprar insumos adicionales, los precios están estables o subiendo, ya compramos todo.", font=("Arial", 10))
             self.explicacion.grid(row=0, column=0)
+            self.explicacion.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.explicacion))
             self.seguirADeudas=tk.Button(self.frameCambianteInsumos, text="Ver deudas", command=self.dibujarDeudas)
             self.seguirADeudas.grid(row=1, column=0)
             self.frameCambianteInsumos.rowconfigure(0, weight=1)
@@ -885,6 +891,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def dibujarDeudas(self):
         self.descripcionF2.config(text="""A continuación se muestra la deuda con los proveedores, y el estado de la misma, comprar insumos aumenta la deuda.
 Ya terminamos, tenga buen día.""")
+        self.descripcionF2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF2))
         self.frameCambianteInsumos.destroy()
         self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
