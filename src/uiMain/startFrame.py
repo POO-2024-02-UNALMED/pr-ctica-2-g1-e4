@@ -861,19 +861,25 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.fieldTransferencia=None
 
     def otraSede(self):
-        existeOtraSede=Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores() if self.fieldTransferencia is not None else [])
-        if existeOtraSede:
-            self.criterios = Main.coordinarBodega()
-            self.tablaInsumos(Main.infoTablaInsumos)
-        if Main.errorEnRespuestas:
+        errorEnRespuestas = False
+        for respuesta in self.fieldTransferencia.obtenerTodosLosValores():
+            if respuesta.lower() != "t" and respuesta.lower() != "c":
+                errorEnRespuestas = True
+                break
+        if errorEnRespuestas:
             try:
                 raise ExcepcionValorNoValido(Main.respuestaIncorrecta)
             except ExcepcionValorNoValido as hambre:
                 messagebox.showwarning(title="Alerta", message=hambre.mensaje_completo)
                 return True
         else:
-            self.frameCambianteInsumos.destroy()
-            self.dibujarTablaCompraExtra(Main.comprarInsumos())
+            existeOtraSede = Main.siguienteSedeCoordinarBodegas(self.fieldTransferencia.obtenerTodosLosValores())
+            if existeOtraSede:
+                self.criterios = Main.coordinarBodega()
+                self.tablaInsumos(Main.infoTablaInsumos)
+            else:
+                self.frameCambianteInsumos.destroy()
+                self.dibujarTablaCompraExtra(Main.comprarInsumos())
     
     def dibujarTablaCompraExtra(self, criterios)->None:
         self.frameCambianteInsumos=tk.Frame(self.framePrincipal)
@@ -2097,9 +2103,17 @@ Ya terminamos, tenga buen día.""")
         self.frameCambianteProduccion.rowconfigure(0, weight=1)
 
     def pasarSiguienteRepuesto(self):
-        if self.idxRepuesto<len(Main.infoRepuestosAComprar):
-            sedeExiste=Main.procederConCompraRepuesto(self.fieldCompraRepuesto.getValue("Sede para pagar"))
-            self.dibujarSiguienteRepuesto()
+        if Main.idxRepuesto<len(Main.infoRepuestosAComprar):
+            try :
+                nombreSede=self.fieldCompraRepuesto.getValue("Sede para pagar")
+                sedeExiste=Main.procederConCompraRepuesto(nombreSede)
+                if not sedeExiste:
+                    raise ExcepcionValorNoValido(nombreSede)
+            except ExcepcionValorNoValido as e:
+                messagebox.showwarning(title="Alerta", message=e.mensaje_completo)
+                return
+            else:
+                self.dibujarSiguienteRepuesto()
         else:
             pass
     
