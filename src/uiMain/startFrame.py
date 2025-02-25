@@ -1746,7 +1746,7 @@ Ya terminamos, tenga buen día.""")
             excepcion = messagebox.askyesno(title = "Confirmación", message= e.mensaje_completo)           
         cliente=None
         for persona in Persona.getListaPersonas():
-            if persona.getNombre() == self.datosEntradasFacturacion.getValue("Cliente"):
+            if self.normalizar_texto(persona.getNombre()) == self.normalizar_texto(self.datosEntradasFacturacion.getValue("Cliente")):
                 cliente=persona  
       
         try:
@@ -1817,8 +1817,8 @@ Ya terminamos, tenga buen día.""")
 
                 listaEmpleadoCaja = []
                 for cajaI in Sede.getListaEmpleadosTotal():
-                    listaEmpleadoCaja.append(cajaI.getNombre())
-                if self.datosEntradasFacturacion.getValue("Empleado caja") not in listaEmpleadoCaja:
+                    listaEmpleadoCaja.append(self.normalizar_texto(cajaI.getNombre()))
+                if self.normalizar_texto(self.datosEntradasFacturacion.getValue("Empleado caja")) not in listaEmpleadoCaja:
                     try:
                         raise ExcepcionValorNoValido(self.datosEntradasFacturacion.getValue("Empleado caja"))
                     except ExcepcionValorNoValido as z:
