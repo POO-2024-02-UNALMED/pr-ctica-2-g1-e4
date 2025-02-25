@@ -82,6 +82,7 @@ class StartFrame(tk.Tk):
         self.abrirFrameInicial()
 
     #-------------------------------------------- Listeners para el menú superior ------------------------------------------------------------------
+    @classmethod
     def normalizar_texto(self,texto):
         return unicodedata.normalize("NFKD", texto).encode("ASCII", "ignore").decode("utf-8").strip().lower()
    
@@ -697,14 +698,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.dibujarTandaDeReemplazo(Main.getTandaReemplazo())
         else:
             try:
-                if int(self.seleccionadorReemplazo.getValue(f"Reemplazo {i}")):
+                if self.seleccionadorReemplazo.getValue(f"Reemplazo {i}").isdigit():
                     raise ExcepcionStringNoNumero(self.seleccionadorReemplazo.getValue(f"Reemplazo {i}"))
+                else:
+                    raise ExcepcionEmpleadoNoEncontrado()
             except ExcepcionStringNoNumero as estoyCansadojefe:
                 messagebox.showwarning(title="Alerta", message=estoyCansadojefe.mensaje_completo)
                 return True
-            
-            try:
-                raise ExcepcionEmpleadoNoEncontrado()
+
             except ExcepcionEmpleadoNoEncontrado as tururu:
                 messagebox.showwarning(title="Alerta", message=tururu.mensaje_completo)
                 return True
