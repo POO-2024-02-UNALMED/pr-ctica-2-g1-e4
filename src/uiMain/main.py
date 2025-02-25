@@ -387,6 +387,8 @@ class Main:
     @classmethod
     def siguienteSedeCoordinarBodegas(cls,respuestas)->bool:
         cls.infoPostCoordinacion=""
+        cls.errorEnRespuestas = False
+        cls.respuestaIncorrecta = ""
         for idxRespuesta,respuesta in enumerate(respuestas):
             insumoTransferible:Insumo=cls.productosOpcionTransferencia[idxRespuesta][0]
             cantidad=cls.productosOpcionTransferencia[idxRespuesta][4]
@@ -400,7 +402,8 @@ class Main:
                     cls.planDeCompra[cls.indexSedeCoordinarBodegas][1].append(restante)
                     cls.infoPostCoordinacion+=f"Se transfirieron {cantidad-restante} {insumoTransferible.getNombre()} de {cls.productosOpcionTransferencia[idxRespuesta][2].getNombre()}, faltaron {restante}, esa cantidad debe comprarse.\n"
             else:
-                pass #EXCEPCION
+                 cls.errorEnRespuestas = True
+                 cls.respuestaIncorrecta = respuesta #EXCEPCION
         cls.infoTablaInsumos.clear()
         cls.productosOpcionTransferencia.clear()
         if cls.indexSedeCoordinarBodegas>=len(Sede.getListaSedes())-1:
@@ -408,7 +411,7 @@ class Main:
         else:
             cls.indexSedeCoordinarBodegas+=1
             return True
-
+     
     opcionesCompraExtra=[] # Generado en comprarInsumos. 1 lista por insumo. Insumos que no se compraron inmediatamante por una rebaja de precio.
     # Cada 1 con indice 0 el insumo, indice 1 proveedor, indice 2 diferencial de precio, indice 3 sede compradora.
 
@@ -520,13 +523,15 @@ class Main:
     
     @classmethod
     def terminarCompraDeInsumos(cls,extra): # Extra es una lista de enteros con la cantidad extra de insumos a comprar
+        cls.unaExcepcion = False
+        cls.laExcepcions = ""
         cantidadesExtra=[]
         for string in extra:
             if string.isdigit():
                 cantidadesExtra.append(int(string))
             else:
-               # EXCEPCION
-               pass
+               cls.unaExcepcion = True
+               cls.laExcepcions = string
 
         idxInsumoExtra=0
         for idxSede ,sede in enumerate(cls.extraPorComprar):
