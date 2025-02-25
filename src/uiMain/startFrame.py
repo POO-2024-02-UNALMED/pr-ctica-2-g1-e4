@@ -2049,6 +2049,8 @@ Ya terminamos, tenga buen día.""")
         framePrincipal =  tk.Frame(ventana, bg="blue")
         framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
 
+        Main.empezarProduccion()
+
         frame1 = tk.Frame(framePrincipal)
         frame1.pack(side="top", fill="x")
 
@@ -2102,7 +2104,6 @@ Ya terminamos, tenga buen día.""")
             StartFrame.ventanaPrincipal.after(1500, self.volverMenu2)
             return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
-        StartFrame.hiloMaquinas=threading.Thread(target= Maquinaria("prueba").agruparMaquinasDisponibles, args=(Main.fecha,self), daemon=True)
         StartFrame.hiloMaquinas.start()
         StartFrame.HilosProduccion.append(StartFrame.hiloMaquinas)
         

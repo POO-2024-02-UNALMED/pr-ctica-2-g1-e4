@@ -94,77 +94,6 @@ class Maquinaria:
     def getSede(self) -> 'Sede':
         return self.sede
     
-    #@classmethod
-    def agruparMaquinasDisponibles(self, fecha,startFrame) -> List['Maquinaria']:
-        from .repuesto import Repuesto
-        from src.uiMain.main import Main
-        from src.gestorAplicacion.bodega.proveedor import Proveedor
-        from src.gestorAplicacion.bodega.insumo import Insumo
-        
-        #print(f"los repuestos mas actuales creados: {Repuesto.getListadoRepuestos()}\n y hay en total: {len(Repuesto.getListadoRepuestos())}")
-        maqDisponibles = []
-        todosProvBaratos = []
-        encontrado = False
-        proveedorBarato = None
-        maquinasPaRevisar = []
-        for cadaSede in Sede.getListaSedes():
-            for cadaMaquina in cadaSede.getListaMaquinas():
-                if cadaMaquina.mantenimiento is True:
-                    if self.hanPasadoMasDeTresDias(cadaMaquina.ultFechaRevision, fecha):
-                        #print(f"\nya me arreglaron")
-                        cadaMaquina.mantenimiento = False
-                        cadaMaquina.horasUso = 0
-                    else:
-                        pass
-                        #print(f"\nARREGLENME POR FAVOR")
-                if (cadaMaquina.getHoraRevision() - cadaMaquina.getHorasUso()) > 0:
-                    if not cadaMaquina.mantenimiento:
-                        cadaMaquina.mantenimiento = False
-                    for cadaRepuesto in cadaMaquina.getRepuestos():
-                        if (cadaRepuesto.getHorasDeVidaUtil() - cadaRepuesto.getHorasDeUso()) <= 0:
-                            startFrame.receptor(Main.printsInt1(1, cadaRepuesto, cadaMaquina, cadaSede))
-                            todosProvBaratos = Main.encontrarProveedoresBaratos()
-                            for elMasEconomico in todosProvBaratos:
-                                if elMasEconomico.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
-                                    proveedorBarato = elMasEconomico
-                                    startFrame.recibeProveedorB(proveedorBarato)
-                                    Main.recibeProveedorB(proveedorBarato)
-                                    break
-                            Main.evento_ui.clear()
-                            Main.evento_ui.wait()
-                            startFrame.receptor("No hay mas repuestos por cambiar,\npresiona el boton de abajo para ver el resumen de la revisión...")
-                            for sedeCreada in Sede.getListaSedes():
-                                if sedeCreada.getCuentaSede().getAhorroBanco() >= proveedorBarato.getPrecio():
-                                    cadaMaquina.setRepuestos(cadaRepuesto)
-                                    Repuesto.removeRepuesto(cadaRepuesto)
-                                    cadaMaquina.getRepuestos().append(cadaRepuesto.copiarConProveedor(proveedorBarato))
-                                    cadaRepuesto.setPrecioCompra(proveedorBarato.getPrecio())
-                                    cadaRepuesto.addFechaCompra(fecha)
-                                    encontrado = True
-                                    break
-                            if not encontrado:
-                                cadaRepuesto.setEstado()
-                else:
-                    if cadaMaquina.mantenimiento is False:
-                        cadaMaquina.mantenimiento = True
-                        cadaMaquina.ultFechaRevision = fecha
-                pista = 0
-                for rep in cadaMaquina.getRepuestos():
-                    if rep.isEstado():
-                        pista += 1
-                if len(cadaMaquina.getRepuestos()) == pista:
-                    cadaMaquina.estado = True
-                else:
-                    cadaMaquina.estado = False
-                if cadaMaquina.mantenimiento is False and cadaMaquina.estado is True:
-                    maqDisponibles.append(cadaMaquina)
-                else:
-                    maquinasPaRevisar.append(cadaMaquina)
-                
-        startFrame.recibeProveedorB(None)
-        startFrame.recibeMaqPaRevisar(maquinasPaRevisar)
-        startFrame.recibeMaqDisp(maqDisponibles)
-        return maqDisponibles
 
     @staticmethod
     def asignarMaquinaria(emp):
@@ -205,8 +134,9 @@ class Maquinaria:
 
     def setHorasUso(self, horas):
         self.horasUso = horas
-    #@classmethod
-    def hanPasadoMasDeTresDias(self, fecha1: Fecha, fecha2: Fecha) -> bool:
+
+    @classmethod
+    def hanPasadoMasDeTresDias(cls, fecha1: Fecha, fecha2: Fecha) -> bool:
         diferencia = 0
         diferencia = fecha2.aDiasTotales() - fecha1.aDiasTotales()
         return diferencia > 3
