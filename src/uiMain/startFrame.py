@@ -2562,13 +2562,7 @@ Ya terminamos, tenga buen día.""")
             respuesta = messagebox.askyesno("Confirmación", f"¿Deseas continuar?\n\n* Sobre Costo de la Sede Principal = {listSobreCostos[0]}\n* Sobre Costo de la Sede 2 = {listSobreCostos[1]}")
             
             if respuesta:
-                #print("El usuario eligió continuar.")
-                sobreCostos.destroy() ; contRe1.destroy() ; recorderis.destroy() ; textRecorderis.destroy() ; separador.destroy()
-                contRe2.destroy() ; recorderis2.destroy() ; textRecorderis2.destroy() ; frameGeneral.destroy() ; frameIzq.destroy() ; frameDer.destroy()
-                for subf in subframes:
-                    subf.destroy()
-                frameBotones.destroy() ; frameEntry.destroy()
-                StartFrame.ventanaPrincipal.after(100, self.inicioInt3)
+                self.inicioInt3()
 
             else:
                 #print("El usuario canceló la acción.")
@@ -2710,41 +2704,41 @@ Ya terminamos, tenga buen día.""")
             etiqueta = tk.Label(subframes[i // 2], text=text, font=("Arial", 10, "bold"), bg="#E6E6FA")
             etiqueta.pack(pady=2)
 
-            frameEntry = tk.Frame(subframes[i // 2])
-            frameEntry.pack()
+            frameBotonesAbajo = tk.Frame(subframes[i // 2])
+            frameBotonesAbajo.pack()
             
-            flecha = tk.Label(frameEntry, text="", font=("Arial", 12))
+            flecha = tk.Label(frameBotonesAbajo, text="", font=("Arial", 12))
             flecha.pack(side=tk.LEFT)
             flechas.append(flecha)
             
-            entry = tk.Entry(frameEntry, textvariable=varEntries[i], width=10, justify="center", state="readonly")
+            entry = tk.Entry(frameBotonesAbajo, textvariable=varEntries[i], width=10, justify="center", state="readonly")
             entry.pack(side=tk.LEFT)
             entries.append(entry)
 
         # Contenedor de botones
-        frameBotones = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
-        frameBotones.grid(row=2, column=0, sticky="nswe")
+        frameBotonesArriba = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
+        frameBotonesArriba.grid(row=2, column=0)
 
         StartFrame.frameDeTrabajo.columnconfigure(0, weight=1)
 
-        botonModificarP = tk.Button(frameBotones, text="Modificar Pantalones", command=cambiarEnlaceP, font=("Arial", 11, "bold italic"), bg="light gray")
-        entryIntermedio = tk.Entry(frameBotones, textvariable=varIntermedio, width=15, justify="center", font=("Arial", 11), fg="gray", bg="light gray")
+        botonModificarP = tk.Button(frameBotonesArriba, text="Modificar Pantalones", command=cambiarEnlaceP, font=("Arial", 11, "bold italic"), bg="light gray")
+        entryIntermedio = tk.Entry(frameBotonesArriba, textvariable=varIntermedio, width=15, justify="center", font=("Arial", 11), fg="gray", bg="light gray")
         entryIntermedio.insert(0, "Modifica aquí...")  # Texto inicial
         entryIntermedio.bind("<FocusIn>", onFocusIn)
         entryIntermedio.bind("<FocusOut>", onFocusOut)
         entryIntermedio.bind("<Return>", actualizarValores)
-        botonCambiarC = tk.Button(frameBotones, text="Modificar Camisas", command=cambiarEnlaceC, font=("Arial", 11, "bold italic"))
+        botonCambiarC = tk.Button(frameBotonesArriba, text="Modificar Camisas", command=cambiarEnlaceC, font=("Arial", 11, "bold italic"))
 
         botonModificarP.pack(side=tk.LEFT, padx=15, pady=1)
         entryIntermedio.pack(side=tk.LEFT, padx=15, pady=1)
         botonCambiarC.pack(side=tk.LEFT, padx=15, pady=1)
 
         # Entry para ingresar cantidad
-        frameEntry = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
-        frameEntry.grid(row=3, column=0, sticky="nswe")
-        botonCambiarDir = tk.Button(frameEntry, text="Cambiar Dirección", command=cambiarDireccion, font=("Arial", 11, "bold italic"))
+        frameBotonesAbajo = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
+        frameBotonesAbajo.grid(row=3, column=0)
+        botonCambiarDir = tk.Button(frameBotonesAbajo, text="Cambiar Dirección", command=cambiarDireccion, font=("Arial", 11, "bold italic"))
         botonCambiarDir.pack(side="left", padx=15)
-        botonContinue = tk.Button(frameEntry, text="CONTINUAR", font=("Arial", 13, "bold italic"))
+        botonContinue = tk.Button(frameBotonesAbajo, text="CONTINUAR", font=("Arial", 13, "bold italic"))
         botonContinue.pack(side="left", padx=15)
         botonContinue.bind("<Button-1>", confirmarProduccion)
 
@@ -2915,12 +2909,20 @@ Ya terminamos, tenga buen día.""")
         from src.gestorAplicacion.sede import Sede
         from src.uiMain.fieldFrame import FieldFrame
 
+        self.frameCambianteProduccion.destroy()
+        self.frameCambianteProduccion = tk.Frame(self.frameConTitulo, bg="white")
+        self.frameCambianteProduccion.grid(row=2, column=0, sticky="nswe")
+
+        StartFrame.frameDeTrabajo = tk.Frame(self.frameCambianteProduccion, bg="white")
+        StartFrame.frameDeTrabajo.grid(row=0, column=0, sticky="nswe")
+        StartFrame.frameDeTrabajo.columnconfigure(0, weight=1)
+        StartFrame.frameDeTrabajo.rowconfigure(0, weight=1)
+        
+        self.frameCambianteProduccion.columnconfigure(0, weight=1)
+        self.frameCambianteProduccion.rowconfigure(0, weight=1)
+        
+
         criterios1 = [] ; criterios2 = [] ; valores1 = [] ; valores2 = []
-        #print("\nComienzo de la interacción 3...")
-        #print(f"\n Lista de insumos actual de la sede Principal: {Sede.getListaSedes()[0].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[0].getCantidadInsumosBodega()}")
-        #print(f"\n Lista de insumos actual de la sede 2: {Sede.getListaSedes()[1].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[1].getCantidadInsumosBodega()}\n")
-        #contenedorGrande = tk.Frame(frameDeTrabajo, bg="light gray")
-        #contenedorGrande.pack(pady=5)
 
         StartFrame.contenedorGrande = tk.Frame(StartFrame.frameDeTrabajo, bg="light gray")
         StartFrame.contenedorGrande.pack(pady=5)
