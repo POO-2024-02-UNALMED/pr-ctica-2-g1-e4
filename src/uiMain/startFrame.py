@@ -2100,8 +2100,8 @@ Ya terminamos, tenga buen día.""")
         infoActual=Main.infoRepuestosAComprar[Main.idxRepuesto]
         proveedor=infoActual[0]
         precio=infoActual[1]
-        maquina=infoActual[2]
-        self.fieldCompraRepuesto = FieldFrame(self.frameCambianteProduccion,"Propiedad del repuesto",["costo","proveedor mas economico","maquina","Sede para pagar"],"Valor",[precio,proveedor.getNombre(),maquina.getNombre(),"Sede Principal"], [False,False,False,True],ancho_entry=28, aceptar=True,borrar=True,callbackAceptar=self.pasarSiguienteRepuesto)
+        Máquina=infoActual[2]
+        self.fieldCompraRepuesto = FieldFrame(self.frameCambianteProduccion,"Propiedad del repuesto",["Proveedor barato","Repuesto","Máquina","Sede para pagar"],"Valor",[precio,proveedor.getNombre(),Máquina.getNombre(),"Sede Principal"], [False,False,False,True],ancho_entry=28, aceptar=True,borrar=True,callbackAceptar=self.pasarSiguienteRepuesto)
         self.fieldCompraRepuesto.grid(row=0, column=0,sticky="nswe")
         self.frameCambianteProduccion.columnconfigure(0, weight=1)
         self.frameCambianteProduccion.rowconfigure(0, weight=1)
@@ -2527,7 +2527,7 @@ Ya terminamos, tenga buen día.""")
         contRe1.grid(row=1, column=0, sticky="nswe")
         recorderis = tk.Label(contRe1, text="Si en la produccion de hoy\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"), justify="center")
         recorderis.pack(side="left", padx=10, pady=2, fill="both",expand=True)
-        textRecorderis = tk.Label(contRe1, text="Sobre costo = 5000 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"), justify="center")
+        textRecorderis = tk.Label(contRe1, text="Sobre Proveedor barato = 5000 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"), justify="center")
         textRecorderis.pack(side="left", padx=10, pady=2, fill="both",expand=True)
         #separador
         separador = ttk.Separator(sobreCostos, orient="horizontal")
@@ -2536,7 +2536,7 @@ Ya terminamos, tenga buen día.""")
         contRe2.grid(row=3, column=0, sticky="nswe")
         recorderis2 = tk.Label(contRe2, text="Si en la produccion de la otra semana\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"), justify="center")
         recorderis2.pack(padx=10, pady=2, expand=True, fill="both",side="left")
-        textRecorderis2 = tk.Label(contRe2, text="Sobre costo = 2500 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"), justify="center")
+        textRecorderis2 = tk.Label(contRe2, text="Sobre Proveedor barato = 2500 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"), justify="center")
         textRecorderis2.pack(padx=10, pady=2,expand=True, fill="both",side="left")
 
         sobreCostos.columnconfigure(0, weight=1)
@@ -2889,16 +2889,16 @@ Ya terminamos, tenga buen día.""")
         botonVOLVER.pack(pady=10)
         botonVOLVER.bind("<Button-1>", self.volverMenu)
 
-        for maquina in Sede.getListaSedes()[0].maqProduccion:
-            if maquina.mantenimiento is False:
-                if maquina.getHoraRevision() - maquina.getHorasUso() <= 0:
-                    maquina.mantenimiento = True
-                    maquina.ultFechaRevision = Main.fecha
-        for maquina in Sede.getListaSedes()[1].maqProduccion:
-            if maquina.mantenimiento is False:
-                if maquina.getHoraRevision() - maquina.getHorasUso() <= 0:
-                    maquina.mantenimiento = True
-                    maquina.ultFechaRevision = Main.fecha
+        for Máquina in Sede.getListaSedes()[0].maqProduccion:
+            if Máquina.mantenimiento is False:
+                if Máquina.getHoraRevision() - Máquina.getHorasUso() <= 0:
+                    Máquina.mantenimiento = True
+                    Máquina.ultFechaRevision = Main.fecha
+        for Máquina in Sede.getListaSedes()[1].maqProduccion:
+            if Máquina.mantenimiento is False:
+                if Máquina.getHoraRevision() - Máquina.getHorasUso() <= 0:
+                    Máquina.mantenimiento = True
+                    Máquina.ultFechaRevision = Main.fecha
 
 
 
