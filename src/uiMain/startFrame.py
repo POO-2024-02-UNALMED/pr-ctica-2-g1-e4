@@ -902,7 +902,11 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def comprarExtra(self):
         entradaValida=Main.terminarCompraDeInsumos(self.fieldCompraExtra.obtenerTodosLosValores())
         if not entradaValida:
-            pass # BOOM! excepcion
+            try:
+                raise ExcepcionValorNoValido(Main.valor)
+            except ExcepcionValorNoValido as sueñito:
+                messagebox.showwarning(title="Alerta", message=sueñito.mensaje_completo)
+                return True
         self.dibujarDeudas()
     
     def dibujarDeudas(self):

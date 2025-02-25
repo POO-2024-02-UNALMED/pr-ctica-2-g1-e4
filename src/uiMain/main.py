@@ -492,11 +492,13 @@ class Main:
     
     @classmethod
     def terminarCompraDeInsumos(cls,extra): # Extra es una lista de enteros con la cantidad extra de insumos a comprar
+        cls.valor = ""
         cantidadesExtra=[]
         for string in extra:
             if string.isdigit():
                 cantidadesExtra.append(int(string))
             else:
+               cls.valor = string
                return False
 
         idxInsumoExtra=0
