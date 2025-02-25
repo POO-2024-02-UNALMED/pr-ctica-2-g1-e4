@@ -616,8 +616,10 @@ class Main:
         return senal
 
     @classmethod
-    def calcProduccionSedes(cls, fecha: 'Fecha') -> List[List[int]]:
+    def calcProduccionSedes(cls,ventana) -> List[List[int]]:
         from src.gestorAplicacion.venta import Venta
+        from src.uiMain.startFrame import StartFrame
+        fecha=Main.fecha
         prodSedesCalculada = []; prodCalculadaSedeP = []; prodCalculadaSede2 = []
         prodCalculadaSedeP.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Pantalon"))
         prodCalculadaSedeP.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Camisa"))

@@ -283,7 +283,7 @@ class Sede:
         return insumos
 
     @classmethod
-    def planProduccion(cls, maqDisponible: List, fecha: 'Fecha', containerBig, cont, field_frame, labelTotalGastado, cont2, field_frame2, frame, plaproduccion) -> List[List[List[int]]]:
+    def planProduccion(cls, maqDisponible: List, fecha: 'Fecha', containerBig, cont, field_frame, labelTotalGastado, cont2, field_frame2, ventana) -> List[List[List[int]]]:
         from .bodega.maquinaria import Maquinaria
         from src.uiMain.main import Main
         import math
@@ -396,7 +396,7 @@ class Sede:
         if aProducirFinal is not None:
             StartFrame.recibeProdFinal(aProducirFinal)
         
-        StartFrame.inicioInt2(containerBig, cont, field_frame, labelTotalGastado, cont2, field_frame2, frame,plaproduccion)
+        ventana.inicioInt2(containerBig, cont, field_frame, labelTotalGastado, cont2, field_frame2)
 
     @classmethod
     def sedeExiste(cls,nombre):

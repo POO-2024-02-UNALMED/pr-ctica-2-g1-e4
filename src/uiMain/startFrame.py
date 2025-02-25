@@ -2370,7 +2370,7 @@ Ya terminamos, tenga buen día.""")
 
         botonInt2 = tk.Button(self.frameCambianteProduccion, text="Maquinaria Disponible", font=("Arial", 12, "bold italic"))
         botonInt2.grid(row=1, column=0, pady=10)
-        botonInt2.bind("<Button-1>", lambda event: Sede.planProduccion(StartFrame.maqDisponibless, Main.fecha,containerBig, cont, field_frame, labelTotalGastado, cont2, field_frame2, self.frameCambianteProduccion, self.planProduccionn))
+        botonInt2.bind("<Button-1>", lambda event: Sede.planProduccion(StartFrame.maqDisponibless, Main.fecha,containerBig, cont, field_frame, labelTotalGastado, cont2, field_frame2, self))
 
 
     maqDisponibless = []
@@ -2408,8 +2408,7 @@ Ya terminamos, tenga buen día.""")
         StartFrame.senalizador = senal
         StartFrame.evento_senalizador.set()
 
-    @classmethod
-    def inicioInt2(cls,containerBig, cont, field_frame, labelTG, cont2, field_frame2, frame, plaproduccion):
+    def inicioInt2(self,containerBig, cont, field_frame, labelTG, cont2, field_frame2):
         from src.uiMain.fieldFrame import FieldFrame
         from src.gestorAplicacion.sede import Sede
         from src.uiMain.main import Main
@@ -2419,11 +2418,9 @@ Ya terminamos, tenga buen día.""")
         labelTG.destroy()
         cont2.destroy()
         field_frame2.destroy()
-        StartFrame.frameDeTrabajo = frame
+        StartFrame.frameDeTrabajo = self.frameCambianteProduccion
         StartFrame.frameDeTrabajo.config(bg="white")
 
-        StartFrame.even2.wait()
-        StartFrame.even2.clear()
         criterios = StartFrame.nomMaqProdDispSedeP
         #print(f"\nlas maq disponiles en la sede p son: {len(StartFrame.nomMaqProdDispSedeP)}")
         valores = StartFrame.horasUsoMaqProdDispSedeP
@@ -2431,9 +2428,6 @@ Ya terminamos, tenga buen día.""")
 
         containerBig = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
         containerBig.grid(row=0, column=0, sticky="nswe")
-
-        StartFrame.evento_senalizador.wait()
-        StartFrame.evento_senalizador.clear()
         
         if StartFrame.senalizador == 2 or StartFrame.senalizador == 4:
             cont = tk.Frame(containerBig, bg="gray")
@@ -2466,13 +2460,13 @@ Ya terminamos, tenga buen día.""")
         labelTextIndicador.pack(pady=0)
 
         btnPlanificarProd = tk.Button(StartFrame.frameDeTrabajo, text="Planificar Produccion", font=("Arial", 12, "bold italic"))
-        
+
         if StartFrame.senalizador == 2:
-            btnPlanificarProd.bind("<Button-1>", lambda event: plaproduccion(event, containerBig, contLabelYBoton, 1))
+            btnPlanificarProd.bind("<Button-1>", lambda event: self.planProduccionn(event, containerBig, contLabelYBoton, 1))
         elif StartFrame.senalizador == 1:
-            btnPlanificarProd.bind("<Button-1>", lambda event: plaproduccion(event, containerBig, contLabelYBoton, 2))
+            btnPlanificarProd.bind("<Button-1>", lambda event: self.planProduccionn(event, containerBig, contLabelYBoton, 2))
         elif StartFrame.senalizador == 3:
-            btnPlanificarProd.bind("<Button-1>", lambda event: plaproduccion(event, containerBig, contLabelYBoton, 3))
+            btnPlanificarProd.bind("<Button-1>", lambda event: self.planProduccionn(event, containerBig, contLabelYBoton, 3))
         elif StartFrame.senalizador == 4:
             # Cuando ninguna sede esta disponible, entonces aqui se debe crear un boton pa volver
             btnPlanificarProd.config(text="Volver al inicio")
@@ -2514,28 +2508,28 @@ Ya terminamos, tenga buen día.""")
     modoP = True
     idx1, idx2 = enlacesP[indiceEnlaceP]
     idx3, idx4 = enlacesPSede2[0]
+    
     def planProduccionn(self, event, containerBig, contLyB, indicador):
         from src.uiMain.main import Main
         containerBig.destroy()
         contLyB.destroy()
-        StartFrame.descripcionF5.destroy()
         event.widget.destroy()
         StartFrame.frameDeTrabajo.config(bg="white")
         contBigRecor = tk.Frame(StartFrame.frameDeTrabajo)
-        contBigRecor.pack(fill="x")
+        contBigRecor.grid(row=0, column=0, sticky="we")
 
         
         contRe1 = tk.Frame(contBigRecor)
-        contRe1.pack(pady=3)
+        contRe1.grid(row=1, column=0, sticky="nswe")
         recorderis = tk.Label(contRe1, text="Si en la produccion de hoy\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"))
         recorderis.pack(side="left", padx=10, pady=2)
         textRecorderis = tk.Label(contRe1, text="Sobre costo = 5000 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"))
         textRecorderis.pack(side="left", padx=10, pady=2)
         #separador
         separador = ttk.Separator(contBigRecor, orient="horizontal")
-        separador.pack(fill="x", padx=50)
+        separador.grid(row=2, column=0, sticky="nswe")
         contRe2 = tk.Frame(contBigRecor)
-        contRe2.pack(pady=3)
+        contRe2.grid(row=3, column=0, sticky="nswe")
         recorderis2 = tk.Label(contRe2, text="Si en la produccion de la otra semana\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"))
         recorderis2.pack(side="left", padx=10, pady=2)
         textRecorderis2 = tk.Label(contRe2, text="Sobre costo = 2500 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"))
@@ -2550,6 +2544,7 @@ Ya terminamos, tenga buen día.""")
         entries = []
         flechas = []
         varIntermedio = tk.StringVar()
+        Main.calcProduccionSedes(self)
 
         def confirmarProduccion(event):
             from tkinter import messagebox
