@@ -363,23 +363,26 @@ class StartFrame(tk.Tk):
 
         
     def inicialGestionHumana(self):
-        self.framePrincipal =  tk.Frame(self.gestionHumana, bg="blue")
+        self.framePrincipal =  tk.Frame(self.gestionHumana)
         self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
 
         self.tituloF1 = tk.Label(self.framePrincipal, text="Gestión Humana", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
         self.tituloF1.grid(row=0, column=0, sticky="nswe")
+        self.tituloF1.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloF1))
         
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
         self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
 
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-        self.descripcionF1 = tk.Label(self.frameCambianteGHumana, wraplength=700 ,text="""Este área analiza la lista de todos los empleados y permite modificarla:
+        self.descripcionF1 = tk.Label(self.frameCambianteGHumana, text="""Este área analiza la lista de todos los empleados y permite modificarla:
 Se puede contratar a un nuevo empleado, establecer su salario y el rol o las funciones que cumple en la empresa.
 También se puede despedir a un empleado ya existente en el equipo de trabajo.
         
 Con ese fin, analizamos el rendimiento de los empleados de la empresa, y llegamos a la siguiente lista de empleados insuficientes,
 estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?, podrá elegirlos para despedirlos en la siguiente pantalla.""".replace("\n"," "), relief="ridge", font=("Arial", 10))
         self.descripcionF1.grid(row=1, column=0, sticky="nswe",columnspan=5)
+        
+        self.descripcionF1.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF1))
 
         if Main.fecha is not None:
             infoMalos = Main.listaInicialDespedirEmpleado()
@@ -400,6 +403,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.tituloRendimientoEsperado=tk.Label(self.frameCambianteGHumana, text="Rendimiento esperado", font=("Arial", 10))
         self.tituloAccion=tk.Label(self.frameCambianteGHumana, text="Acción", font=("Arial", 10))
         
+        self.tituloNombre.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloNombre))
+        self.tituloArea.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloArea))
+        self.tituloRendimiento.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloRendimiento))
+        self.tituloRendimientoEsperado.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloRendimientoEsperado))
+        self.tituloAccion.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloAccion))   
+             
         self.tituloNombre.grid(row=2, column=0)
         self.tituloArea.grid(row=2, column=1)
         self.tituloRendimiento.grid(row=2, column=2)
@@ -466,6 +475,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.labelPreConsulta=tk.Label(self.frameCambianteGHumana, text=empleadosMalosString, relief="ridge", font=("Arial", 10))
         self.labelPreConsulta.grid(row=1, column=0, sticky="nswe",columnspan=4)
+        self.labelPreConsulta.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.labelPreConsulta))
 
         nombres=""
         for empleado in self.posiblesDespedidos:
@@ -552,6 +562,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.descripcionAñadirDespedido = tk.Label(self.frameCambianteGHumana, text="""Inserte los datos de el empleado a añadir a la lista, el panel de la derecha le ayudará, presione Enter al terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
         self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=4)
+        self.descripcionAñadirDespedido.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionAñadirDespedido))
 
         self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Dato del empleado" ,["sede","nombre"],"valor", ["",""],[True,False],ancho_entry=25, tamañoFuente=10)
         self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosAñadirSede)
@@ -623,6 +634,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados, verificamos si se pueden reemplazar
         con gente de otras sedes""", relief="ridge", font=("Arial", 10))
         self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
+        self.descripcionCambioSede.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionCambioSede))
         Main.prepararCambioSede()
         tanda = Main.getTandaReemplazo()
         if tanda is None:
@@ -655,6 +667,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.tituloTanda=tk.Label(self.contenedorTandaTransferencia, text=textoReemplazo, font=("Arial", 10))
         self.tituloTanda.grid(row=0, column=0, sticky="nswe", columnspan=4)
+        self.tituloTanda.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloTanda))
 
         self.seleccionadorReemplazo=FieldFrame(self.contenedorTandaTransferencia,"Reemplazo numero", [f"Reemplazo {i}" for i in range(1,cantidad+1)], "Nombre", aceptar=True, borrar=True,callbackAceptar=self.terminarTanda)
         self.seleccionadorReemplazo.grid(row=1, column=0, sticky="nswe", columnspan=4)
@@ -677,6 +690,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
                 self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text=f"""Se ha completado el reemplazo de los empleados, tenga buen día.""", relief="ridge", font=("Arial", 10))
                 self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
+                self.descripcionCambioSede.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionCambioSede))
                 self.frameCambianteGHumana.columnconfigure(0, weight=3)
                 self.frameCambianteGHumana.rowconfigure(0, weight=3)
             else:
