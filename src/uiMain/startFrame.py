@@ -2763,44 +2763,6 @@ Ya terminamos, tenga buen día.""")
         prendasHoy = [] ; hoySedeP = [] ; hoySede2 = [] ; pHoySedeP = [] ; pHoySede2 = [] ; cHoySedeP = [] ; cHoySede2 = []
         prendasOW = [] ; OWSedeP = [] ; OWSede2 = [] ; pOWSedeP = [] ; pOWSede2 = [] ; cOWSedeP = [] ; cOWSede2 = []
         diaRef = Main.fecha
-        #print(f"dia de referencia: {diaRef}")
-        for prendaPorFecha in Prenda.prendasUltimaProduccion:
-            if prendaPorFecha.getFecha().getDia() == diaRef:
-                prendasHoy.append(prendaPorFecha)
-            else:
-                prendasOW.append(prendaPorFecha)
-        #print(f"Numero de producidas hoy: {len(prendasHoy)}, numero de producidas la otra semana: {len(prendasOW)}")
-        for lodelaP in prendasHoy:
-            if lodelaP.getSede().getNombre().lower() == "sede principal":
-                hoySedeP.append(lodelaP)
-            else:
-                hoySede2.append(lodelaP)
-        for lodelaP2 in prendasOW:
-            if lodelaP2.getSede().getNombre().lower() == "sede principal":
-                OWSedeP.append(lodelaP2)
-            else:
-                OWSede2.append(lodelaP2)
-        #TENIENDO LA PRODUCCION DE HOY Y DE LA OTRA SEMANA SEPARADAS, vamos separar por pantalones y camisas...
-        for prendaEs in hoySedeP:
-            if prendaEs.getNombre().lower() == "pantalon":
-                pHoySedeP.append(prendaEs)
-            else:
-                cHoySedeP.append(prendaEs)
-        for prendaEs2 in hoySede2:
-            if prendaEs2.getNombre().lower() == "pantalon":
-                pHoySede2.append(prendaEs2)
-            else:
-                cHoySede2.append(prendaEs2)
-        for prendaEs3 in OWSedeP:
-            if prendaEs3.getNombre().lower() == "pantalon":
-                pOWSedeP.append(prendaEs3)
-            else:
-                cOWSedeP.append(prendaEs3)
-        for prendaEs4 in OWSede2:
-            if prendaEs4.getNombre().lower() == "pantalon":
-                pOWSede2.append(prendaEs4)
-            else:
-                cOWSede2.append(prendaEs4)
         
         #print(f"\n[{len(pHoySedeP)}, {len(cHoySedeP)}, {len(pHoySede2)}, {len(cHoySede2)} --- {len(pOWSedeP)}, {len(cOWSedeP)}, {len(pOWSede2)}, {len(cOWSede2)}]")
 
@@ -2825,19 +2787,19 @@ Ya terminamos, tenga buen día.""")
         label1 = tk.Label(contSedeP, bg="#E6E6FA", text="Sede Principal", font=("Arial", 13, "bold italic"))
         label1.pack(pady=4, padx=4)
 
-        label2 = tk.Label(contSedeP, bg="#E6E6FA", text=f"Pantalones: {len(pHoySedeP)}", font=("Arial", 10, "italic"))
+        label2 = tk.Label(contSedeP, bg="#E6E6FA", text=f"Pantalones: {len(Prenda.filtrarProduccion(Main.fecha,"Sede Principal","pantalon"))}", font=("Arial", 10, "italic"))
         label2.pack(pady=2, padx=4)
 
-        label3 = tk.Label(contSedeP, bg="#E6E6FA", text=f"Camisas: {len(cHoySedeP)}", font=("Arial", 10, "italic"))
+        label3 = tk.Label(contSedeP, bg="#E6E6FA", text=f"Camisas: {len(Prenda.filtrarProduccion(Main.fecha,"Sede Principal","camisa"))}", font=("Arial", 10, "italic"))
         label3.pack(pady=2, padx=4)
 
         label4 = tk.Label(contSede2, bg="#E6E6FA", text="Sede 2", font=("Arial", 11, "bold italic"))
         label4.pack(pady=4, padx=4)
 
-        label5 = tk.Label(contSede2, bg="#E6E6FA", text=f"Pantalones: {len(pHoySede2)}", font=("Arial", 10, "italic"))
+        label5 = tk.Label(contSede2, bg="#E6E6FA", text=f"Pantalones: {len(Prenda.filtrarProduccion(Main.fecha,"Sede 2","pantalon"))}", font=("Arial", 10, "italic"))
         label5.pack(pady=2, padx=4)
 
-        label6 = tk.Label(contSede2, bg="#E6E6FA", text=f"Camisas: {len(cHoySede2)}", font=("Arial", 10, "italic"))
+        label6 = tk.Label(contSede2, bg="#E6E6FA", text=f"Camisas: {len(Prenda.filtrarProduccion(Main.fecha,"Sede 2","camisa"))}", font=("Arial", 10, "italic"))
         label6.pack(pady=2, padx=4)
 
             #resultados de lo de la otra semana...

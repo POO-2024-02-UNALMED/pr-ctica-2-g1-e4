@@ -53,13 +53,28 @@ class Prenda(GastoMensual):
         cls.cantidadUltimaProduccion = 0
         cls.prendasUltimaProduccion = []
 
-        diaDeProduccion = Main.fecha
+        diaDeProduccion:Fecha = Main.fecha
         for dia in planProduccion:
             for i, sede in enumerate(Sede.listaSedes):
                 cls.planesDeProduccion.append([dia[i],diaDeProduccion,sede])
+            diaDeProduccion = diaDeProduccion.diaSiguiente()
         
         cls.prendasTandaActual=cls.getInstanciasPrenda(cls.planesDeProduccion[0][0],cls.planesDeProduccion[0][2],cls.planesDeProduccion[0][1])
         cls.separarPrendasPorMaquina(cls.prendasTandaActual)
+    
+    @classmethod
+    def filtrarProduccion(cls,fecha,nombreSede,tipoDePrenda):
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        seleccion=[]
+        for prenda in cls.prendasUltimaProduccion:
+            if Fecha.compararFecha(prenda.fechaFabricacion,fecha) and prenda.sede.getNombre().lower()==nombreSede.lower():
+                if tipoDePrenda=="pantalon" and isinstance(prenda,Pantalon):
+                    seleccion.append(prenda)
+                elif tipoDePrenda=="camisa" and isinstance(prenda,Camisa):
+                    seleccion.append(prenda)
+        return seleccion
+            
     
     @classmethod
     def getSedeTandaActual(cls):
