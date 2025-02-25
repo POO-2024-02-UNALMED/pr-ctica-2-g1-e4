@@ -2026,10 +2026,15 @@ Ya terminamos, tenga buen día.""")
         if StartFrame.senal == 1:
             if StartFrame.indicaRepMalo:
                 StartFrame.indicaRepMalo.config(text=texto, font=("Arial", 16, "bold"))
+                #self.after(100, lambda: StartFrame.indicaRepMalo.config(text=texto, font=("Arial", 16, "bold")))
+                #StartFrame.ventanaPrincipal.update_idletasks()
         else:
             if StartFrame.indicaRepMalo:
                 StartFrame.indicaRepMalo.config(text=texto, font=("Arial", 16, "bold"))
-                StartFrame.indicaRepMalo.place(relx=0.5, rely=0.2, anchor="center")        
+                StartFrame.indicaRepMalo.place(relx=0.5, rely=0.2, anchor="center")   
+                #self.after(100, lambda: StartFrame.indicaRepMalo.config(text=texto, font=("Arial", 16, "bold")))
+                #self.after(100, lambda: StartFrame.indicaRepMalo.place(relx=0.5, rely=0.2, anchor="center"))
+                #StartFrame.ventanaPrincipal.update_idletasks()
 
     indicaRepMalo = None
     frameDeTrabajo = None
@@ -2604,7 +2609,7 @@ Ya terminamos, tenga buen día.""")
     def recibeCreadasOrNo(self, creadasss):
         from src.gestorAplicacion.bodega.prenda import Prenda
         StartFrame.creadas = creadasss
-
+        #StartFrame.indicaRepMalo = None
         if not Prenda.prendasUltimaProduccion:
             print("\nADIOS...")
             StartFrame.ventanaPrincipal.after(700, self.volverMenu2)
@@ -2739,6 +2744,17 @@ Ya terminamos, tenga buen día.""")
         botonVOLVER = tk.Button(StartFrame.frameDeTrabajo, text="Volver al Menu", font=("Arial", 16, "bold italic"))
         botonVOLVER.pack(pady=10)
         botonVOLVER.bind("<Button-1>", self.volverMenu)
+
+        for maquina in Sede.getListaSedes()[0].maqProduccion:
+            if maquina.mantenimiento is False:
+                if maquina.getHoraRevision() - maquina.getHorasUso() <= 0:
+                    maquina.mantenimiento = True
+                    maquina.ultFechaRevision = Main.fecha
+        for maquina in Sede.getListaSedes()[1].maqProduccion:
+            if maquina.mantenimiento is False:
+                if maquina.getHoraRevision() - maquina.getHorasUso() <= 0:
+                    maquina.mantenimiento = True
+                    maquina.ultFechaRevision = Main.fecha
 
         
     contenedorGrande = None
