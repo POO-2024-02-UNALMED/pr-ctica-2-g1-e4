@@ -2064,10 +2064,12 @@ Ya terminamos, tenga buen día.""")
 
         tituloF5 = tk.Label(self.frameConTitulo, text="Producción", bg="medium orchid", relief="ridge", height=2, font=("Arial",16, "bold"))
         tituloF5.grid(row=0, column=0, sticky="we")
+        tituloF5.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(tituloF5))
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
         self.descripcionF5 = tk.Label(self.frameConTitulo, text="Se registra la producción de prendas y actualiza su inventario: Se toma la cantidad necesaria del stock de materiales para fabricar nuevas prendas y se actualizan los datos, tanto de lo que se descontó de Stock como lo que se agregó a la cantidad de pendas.", height=3,wraplength=800, font=("Arial", 10, "italic"))
         self.descripcionF5.grid(row=1, column=0, sticky="we")
+        self.descripcionF5.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF5))
 
         self.frameCambianteProduccion = tk.Frame(self.frameConTitulo, bg="white")
         self.frameCambianteProduccion.grid(row=2, column=0, sticky="nswe")
@@ -2100,8 +2102,8 @@ Ya terminamos, tenga buen día.""")
         infoActual=Main.infoRepuestosAComprar[Main.idxRepuesto]
         proveedor=infoActual[0]
         precio=infoActual[1]
-        maquina=infoActual[2]
-        self.fieldCompraRepuesto = FieldFrame(self.frameCambianteProduccion,"Propiedad del repuesto",["costo","proveedor mas economico","maquina","Sede para pagar"],"Valor",[precio,proveedor.getNombre(),maquina.getNombre(),"Sede Principal"], [False,False,False,True],ancho_entry=28, aceptar=True,borrar=True,callbackAceptar=self.pasarSiguienteRepuesto)
+        Máquina=infoActual[2]
+        self.fieldCompraRepuesto = FieldFrame(self.frameCambianteProduccion,"Propiedad del repuesto",["Proveedor barato","Repuesto","Máquina","Sede para pagar"],"Valor",[precio,proveedor.getNombre(),Máquina.getNombre(),"Sede Principal"], [False,False,False,True],ancho_entry=28, aceptar=True,borrar=True,callbackAceptar=self.pasarSiguienteRepuesto)
         self.fieldCompraRepuesto.grid(row=0, column=0,sticky="nswe")
         self.frameCambianteProduccion.columnconfigure(0, weight=1)
         self.frameCambianteProduccion.rowconfigure(0, weight=1)
@@ -2150,6 +2152,7 @@ Ya terminamos, tenga buen día.""")
         if Sede.getListaSedes()[0].getCantidadInsumosBodega()[0] < 200 or Sede.getListaSedes()[1].getCantidadInsumosBodega()[0] < 200:
             labelDesp = tk.Label(StartFrame.frameDeTrabajo, text="NO HAY INSUMOS SUFICIENTES\nVUELVE CUANDO HAYAS CONSEGUIDO MAS\n\nREDIRIGIENDO...", font=("Arial", 14, "bold italic"), bg="white")
             labelDesp.place(relx=0.5, rely=0.5, anchor="center")
+            labelDesp.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(labelDesp))
             StartFrame.ventanaPrincipal.after(1500, self.volverMenu2)
             return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
@@ -2527,7 +2530,7 @@ Ya terminamos, tenga buen día.""")
         contRe1.grid(row=1, column=0, sticky="nswe")
         recorderis = tk.Label(contRe1, text="Si en la produccion de hoy\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"), justify="center")
         recorderis.pack(side="left", padx=10, pady=2, fill="both",expand=True)
-        textRecorderis = tk.Label(contRe1, text="Sobre costo = 5000 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"), justify="center")
+        textRecorderis = tk.Label(contRe1, text="Sobre Proveedor barato = 5000 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"), justify="center")
         textRecorderis.pack(side="left", padx=10, pady=2, fill="both",expand=True)
         #separador
         separador = ttk.Separator(sobreCostos, orient="horizontal")
@@ -2536,7 +2539,7 @@ Ya terminamos, tenga buen día.""")
         contRe2.grid(row=3, column=0, sticky="nswe")
         recorderis2 = tk.Label(contRe2, text="Si en la produccion de la otra semana\nhay mas de 400 prendas por modista:", font=("Arial", 10, "bold italic"), justify="center")
         recorderis2.pack(padx=10, pady=2, expand=True, fill="both",side="left")
-        textRecorderis2 = tk.Label(contRe2, text="Sobre costo = 2500 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"), justify="center")
+        textRecorderis2 = tk.Label(contRe2, text="Sobre Proveedor barato = 2500 x prenda\n(para las prendas que excedan)", font=("Arial", 10, "italic"), justify="center")
         textRecorderis2.pack(padx=10, pady=2,expand=True, fill="both",side="left")
 
         sobreCostos.columnconfigure(0, weight=1)
