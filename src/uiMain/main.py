@@ -32,12 +32,7 @@ class Main:
     diferenciaEstimado=0
     pesimismoPorSede = [2,2]
     
-    
-    def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
-        from src.gestorAplicacion.bodega.prenda import Prenda
-        #print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
-        #print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
-        pass
+
 
 
 
@@ -507,10 +502,102 @@ class Main:
                 cantidadExtra=cantidadesExtra[idxInsumoExtra]
                 cls.comprarInsumo(sede[1][idxInsumo]+cantidadExtra, insumo, insumo.getProveedor(), Sede.getListaSedes()[cls.extraPorComprar.index(sede)])
         return True
-
+    
     #endregion
 #region Producción    
 #--------------------------------------------------------- Producción -----------------------------------------------------------------------------------
+
+    infoRepuestosAComprar=[] # Lista de listas, repuesto en indice 0, proveedor en indice 1, maquina en indice 2
+    idxRepuesto=0
+
+    @classmethod
+    def empezarProduccion(cls):
+        cls.infoRepuestosAComprar=[]
+        cls.idxRepuesto=0
+        cls.terminarMantenimientos()
+        cls.agruparMaquinasDisponibles()
+
+    @classmethod
+    def terminarMantenimientos(cls):
+        from src.gestorAplicacion.bodega.maquinaria import Maquinaria
+        for cadaSede in Sede.getListaSedes():
+            for cadaMaquina in cadaSede.getListaMaquinas():
+                if cadaMaquina.mantenimiento is True:
+                    if Maquinaria.hanPasadoMasDeTresDias(cadaMaquina.ultFechaRevision, cls.fecha):
+                        #print(f"\nya me arreglaron")
+                        cadaMaquina.mantenimiento = False
+                        cadaMaquina.horasUso = 0
+
+
+    @classmethod
+    def agruparMaquinasDisponibles(cls):
+        from src.gestorAplicacion.bodega.repuesto import Repuesto
+        from src.uiMain.main import Main
+        from src.uiMain.startFrame import StartFrame
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        from src.gestorAplicacion.bodega.insumo import Insumo
+        
+        #print(f"los repuestos mas actuales creados: {Repuesto.getListadoRepuestos()}\n y hay en total: {len(Repuesto.getListadoRepuestos())}")
+        maqDisponibles = []
+        todosProvBaratos = []
+        encontrado = False
+        proveedorBarato = None
+        maquinasPaRevisar = []
+        for cadaSede in Sede.getListaSedes():
+            for cadaMaquina in cadaSede.getListaMaquinas():
+                if (cadaMaquina.getHoraRevision() - cadaMaquina.getHorasUso()) > 0:
+                    for cadaRepuesto in cadaMaquina.getRepuestos():
+                        if (cadaRepuesto.getHorasDeVidaUtil() - cadaRepuesto.getHorasDeUso()) <= 0:
+                            cadaMaquina.mantenimiento=True
+                            todosProvBaratos = Main.encontrarProveedoresBaratos()
+                            for elMasEconomico in todosProvBaratos:
+                                if elMasEconomico.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
+                                    proveedorBarato = elMasEconomico
+                                    break
+                            StartFrame.recibeProveedorB(proveedorBarato)
+                            cls.infoRepuestosAComprar.append([cadaRepuesto, proveedorBarato,cadaMaquina])
+                        cadaMaquina.ultFechaRevision = cls.fecha
+                
+                repuestosBuenos = 0
+                for rep in cadaMaquina.getRepuestos():
+                    if rep.isEstado():
+                        repuestosBuenos += 1
+                if len(cadaMaquina.getRepuestos()) == repuestosBuenos:
+                    cadaMaquina.estado = True
+                else:
+                    cadaMaquina.estado = False
+                if cadaMaquina.mantenimiento is False and cadaMaquina.estado is True:
+                    maqDisponibles.append(cadaMaquina)
+                else:
+                    maquinasPaRevisar.append(cadaMaquina)
+        StartFrame.recibeMaqPaRevisar(maquinasPaRevisar)
+        StartFrame.recibeMaqDisp(maqDisponibles)       
+    
+    @classmethod
+    def procederConCompraRepuesto(cls,nombreSede):
+        infoRepuesto = cls.infoRepuestosAComprar[cls.idxRepuesto]
+        if Sede.sedeExiste(nombreSede):
+            repuesto = infoRepuesto[0]
+            proveedor = infoRepuesto[1]
+            maquina = infoRepuesto[2]
+            sede:Sede = cls.sedePorNombre(nombreSede)
+            sede.getCuentaSede().transaccion(-proveedor.getPrecio())
+            cls.comprarRepuesto(repuesto, proveedor, maquina)
+            return True
+        else:
+            return False
+    
+    @classmethod
+    def comprarRepuesto(cls, repuestoAnterior, proveedor, maquina):
+        for repuesto in maquina.getRepuestos():
+            if repuesto.getNombre() == repuestoAnterior.getNombre():
+                maquina.getRepuestos().remove(repuesto)
+        repuestoNuevo = repuestoAnterior.copiarConProveedor(proveedor)
+        repuestoNuevo.setPrecioCompra(proveedor.getPrecio())
+        repuestoNuevo.addFechaCompra(cls.fecha)
+        maquina.getRepuestos().append(repuestoNuevo)
+        return repuestoNuevo
+
 
     @classmethod
     def sobreCargada(cls, fecha: 'Fecha') -> int:
@@ -524,9 +611,21 @@ class Main:
             senal += 10
         return senal
 
+    # interaccion 3
     @classmethod
-    def calcProduccionSedes(cls, fecha: 'Fecha') -> List[List[int]]:
+    def getListaModistasElaboracion(cls):
+        modistas = []
+        sede = Prenda.getSedeTandaActual()
+        for empleado in sede.getListaEmpleados():
+            if empleado.getRol() == Rol.MODISTA:
+                modistas.append(empleado)
+        return modistas
+
+    @classmethod
+    def calcProduccionSedes(cls,ventana) -> List[List[int]]:
         from src.gestorAplicacion.venta import Venta
+        from src.uiMain.startFrame import StartFrame
+        fecha=Main.fecha
         prodSedesCalculada = []; prodCalculadaSedeP = []; prodCalculadaSede2 = []
         prodCalculadaSedeP.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Pantalon"))
         prodCalculadaSedeP.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Camisa"))

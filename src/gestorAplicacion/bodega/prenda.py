@@ -34,32 +34,83 @@ class Prenda(GastoMensual):
         elif terminada:
             modista.prendasProducidas += 1
 
-    @staticmethod
-    def producirPrendas(planProduccion, hoy):
+    prendasTandaActual=[] # Lista de prendas separadas por maquina
+    planesDeProduccion = [] # Contiene una lista con los numeros por prenda, la fecha y la sede.
+    tandasPorMaquina=[] # Preparado por getSiguienteTanda y seprarPrendasPorMaquina
+    idxPlanProduccion = 0
+    idxTanda = 0
+    faltaInsumos = False
+
+    @classmethod
+    def prepararElaboracion(cls,planProduccion):
         from src.uiMain.main import Main
-        from src.uiMain.startFrame import StartFrame
-        stf3 = StartFrame()
-        Prenda.cantidadTelaUltimaProduccion = 0
-        Prenda.cantidadUltimaProduccion = 0
-        Prenda.prendasUltimaProduccion = []
-        diaDeProduccion = hoy
-        alcanzaInsumos = True
+        cls.prendasTandaActual=[] # Lista de prendas separadas por maquina
+        cls.idxDiaProduccion = 0
+        cls.idxTanda = 0
+        cls.faltaInsumos = False
+
+        cls.cantidadTelaUltimaProduccion = 0
+        cls.cantidadUltimaProduccion = 0
+        cls.prendasUltimaProduccion = []
+
+        diaDeProduccion:Fecha = Main.fecha
         for dia in planProduccion:
             for i, sede in enumerate(Sede.listaSedes):
-                if not Prenda.producirListaPrendas(dia[i], sede, diaDeProduccion):
-                    alcanzaInsumos = False
+                cls.planesDeProduccion.append([dia[i],diaDeProduccion,sede])
             diaDeProduccion = diaDeProduccion.diaSiguiente()
-        stf3.recibeCreadasOrNo(alcanzaInsumos)
-        Main.eventoTerminarProduccion.set()
-        return
+        
+        cls.prendasTandaActual=cls.getInstanciasPrenda(cls.planesDeProduccion[0][0],cls.planesDeProduccion[0][2],cls.planesDeProduccion[0][1])
+        cls.separarPrendasPorMaquina(cls.prendasTandaActual)
     
+    @classmethod
+    def filtrarProduccion(cls,fecha,nombreSede,tipoDePrenda):
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        seleccion=[]
+        for prenda in cls.prendasUltimaProduccion:
+            if Fecha.compararFecha(prenda.fechaFabricacion,fecha) and prenda.sede.getNombre().lower()==nombreSede.lower():
+                if tipoDePrenda=="pantalon" and isinstance(prenda,Pantalon):
+                    seleccion.append(prenda)
+                elif tipoDePrenda=="camisa" and isinstance(prenda,Camisa):
+                    seleccion.append(prenda)
+        return seleccion
+            
+    
+    @classmethod
+    def getSedeTandaActual(cls):
+        return cls.planesDeProduccion[cls.idxPlanProduccion][2]
+    
+    @classmethod
+    def getFechaTandaActual(cls):
+        return cls.planesDeProduccion[cls.idxPlanProduccion][1]
 
-    @staticmethod
-    def producirListaPrendas(planProduccion, sede, fechaProduccion):
+    @classmethod
+    def cantidadPrendasTanda(cls):
+        return len(cls.prendasTandaActual)
+
+        
+    @classmethod
+    def getSiguienteTanda(cls,modista)->bool: # Retorna si terminamos la producción
+        terminamosPrendas=cls.producirListaPrendas(cls.planesDeProduccion[cls.idxPlanProduccion][2],modista)
+        cls.separarPrendasPorMaquina(cls.prendasTandaActual)
+        if terminamosPrendas:
+            cls.idxPlanProduccion+=1
+            if cls.idxPlanProduccion>=len(cls.planesDeProduccion):
+                return True
+            nuevaSede=cls.planesDeProduccion[cls.idxPlanProduccion][2]
+            cls.prendasTandaActual=cls.getInstanciasPrenda(cls.planesDeProduccion[cls.idxPlanProduccion][0],nuevaSede,cls.planesDeProduccion[cls.idxPlanProduccion][1])
+            cls.separarPrendasPorMaquina(cls.prendasTandaActual)
+        return False
+
+    @classmethod
+    def avisarFaltaDeInsumos(cls):
+        cls.faltaInsumos=True
+
+    @classmethod
+    def getInstanciasPrenda(cls,planProduccion,sede,fechaProduccion):
         from src.gestorAplicacion.bodega.camisa import Camisa
         from src.gestorAplicacion.bodega.pantalon import Pantalon
         from src.uiMain.main import Main
-        alcanzaInsumos = True
         cantidadPantalones = planProduccion[0]
         cantidadCamisas = planProduccion[1]
         prendas = []
@@ -75,12 +126,11 @@ class Prenda(GastoMensual):
                 pantalon = Pantalon(fechaProduccion, None, False, False, sede, insumosPantalon)
                 prendas.append(pantalon)
             else:
-                alcanzaInsumos = False
-                Main.avisarFaltaDeInsumos(sede, fechaProduccion, "Pantalon")
+                cls.avisarFaltaDeInsumos()
                 break
         insumosCamisa = sede.insumosPorNombre(Camisa.getTipoInsumo()) # Es posible que no se encuentren insumos de tal nombre en la bodega de la sede.
         if not insumosCamisa:
-            Main.avisarFaltaDeInsumos(sede, fechaProduccion, "Camisa")
+            cls.avisarFaltaDeInsumos()
             return False
         for _ in range(cantidadCamisas):
             if sede.quitarInsumos(insumosCamisa, Camisa.getCantidadInsumo()):
@@ -88,49 +138,57 @@ class Prenda(GastoMensual):
                 camisa = Camisa(fechaProduccion, None, False, False, sede, insumosCamisa)
                 prendas.append(camisa)
             else:
-                alcanzaInsumos = False
-                Main.avisarFaltaDeInsumos(sede, fechaProduccion, "Camisa")
+                cls.avisarFaltaDeInsumos()
                 break
+        return prendas
+
+    @classmethod
+    def separarPrendasPorMaquina(cls,prendas):
+        cls.tandasPorMaquina = [[] for _ in range(7)]
+        for prenda in prendas:
+            siguientePaso = prenda.siguientePaso()
+            paso = siguientePaso[0].lower()
+            if paso == "maquina de corte":
+                cls.tandasPorMaquina[3].append(prenda)
+            elif paso == "maquina de tijereado":
+                cls.tandasPorMaquina[4].append(prenda)
+            elif paso == "maquina de coser industrial":
+                cls.tandasPorMaquina[5].append(prenda)
+            elif paso == "maquina de bordadora":
+                cls.tandasPorMaquina[1].append(prenda)
+            elif paso == "maquina de termofijado":
+                cls.tandasPorMaquina[0].append(prenda)
+            elif paso == "plancha industrial":
+                cls.tandasPorMaquina[2].append(prenda)
+            elif paso == "bordadora industrial":
+                cls.tandasPorMaquina[6].append(prenda)
+        
+
+    @classmethod
+    def producirListaPrendas(cls,sede,modista)->bool: # Retorna True si se acabaron las prendas a producir
+        from src.gestorAplicacion.bodega.camisa import Camisa
+        from src.gestorAplicacion.bodega.pantalon import Pantalon
+        from src.uiMain.main import Main
         idxTanda = 0
-        while prendas:
-            tandas = [[] for _ in range(7)]
-            for prenda in prendas:
-                siguientePaso = prenda.siguientePaso()
-                paso = siguientePaso[0].lower()
-                if paso == "maquina de corte":
-                    tandas[3].append(prenda)
-                elif paso == "maquina de tijereado":
-                    tandas[4].append(prenda)
-                elif paso == "maquina de coser industrial":
-                    tandas[5].append(prenda)
-                elif paso == "maquina de bordadora":
-                    tandas[1].append(prenda)
-                elif paso == "maquina de termofijado":
-                    tandas[0].append(prenda)
-                elif paso == "plancha industrial":
-                    tandas[2].append(prenda)
-                elif paso == "bordadora industrial":
-                    tandas[6].append(prenda)
-            modista = Main.pedirModista(len(prendas), sede, idxTanda)
-            for tanda in tandas:
-                if not tanda:
-                    continue
-                maquina = Maquinaria.seleccionarDeTipo(sede, tanda[0].ultimoPaso[0])
-                for prenda in tanda:
-                    maquina.usar(prenda.ultimoPaso[1])
-                    resultado = prenda.realizarPaso(modista)
-                    if resultado == "DESCARTAR":
-                        prenda.descartada = True
-                        modista.prendasDescartadas += 1
-                        prendas.remove(prenda)
-                    elif resultado == "LISTO":
-                        prenda.terminada = True
-                        modista.prendasProducidas += 1
-                        Prenda.prendasUltimaProduccion.append(prenda)
-                        prendas.remove(prenda)
-                        Prenda.cantidadUltimaProduccion += 1
-            idxTanda += 1
-        return alcanzaInsumos
+        for tanda in cls.tandasPorMaquina:
+            if not tanda:
+                continue
+            maquina = Maquinaria.seleccionarDeTipo(sede, tanda[0].ultimoPaso[0])
+            for prenda in tanda:
+                maquina.usar(prenda.ultimoPaso[1])
+                resultado = prenda.realizarPaso(modista)
+                if resultado == "DESCARTAR":
+                    prenda.descartada = True
+                    modista.prendasDescartadas += 1
+                    cls.prendasTandaActual.remove(prenda)
+                elif resultado == "LISTO":
+                    prenda.terminada = True
+                    modista.prendasProducidas += 1
+                    Prenda.prendasUltimaProduccion.append(prenda)
+                    cls.prendasTandaActual.remove(prenda)
+                    Prenda.cantidadUltimaProduccion += 1
+        idxTanda += 1
+        return len(cls.prendasTandaActual) == 0
 
     @abstractmethod
     def siguientePaso(self):
