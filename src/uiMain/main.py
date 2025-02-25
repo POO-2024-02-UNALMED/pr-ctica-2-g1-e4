@@ -1,4 +1,4 @@
-#region imports
+#region Imports
 import math
 import random
 from src.gestorAplicacion.administracion.banco import Banco
