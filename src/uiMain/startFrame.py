@@ -740,7 +740,16 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def dibujarPrediccion(self):
         
         pesimismos=self.fieldPesimismo.obtenerTodosLosValores()
-        self.retorno = Main.planificarProduccion(pesimismos)
+        for pesimismo in pesimismos:
+            if 0 > int(pesimismo) or int(pesimismo) > 100:  
+                try:
+                    raise ExcepcionValorNoValido(pesimismo)
+                except ExcepcionValorNoValido as guagua:
+                    messagebox.showwarning(title="Alerta", message=guagua.mensaje_completo)
+                    return True          
+            else:
+                self.retorno = Main.planificarProduccion(pesimismos)
+                
         self.textoPrediccion = Main.texto
         self.framePrediccion = tk.Frame(self.frameCambianteInsumos, bg="#f0f0f0")
         self.framePrediccion.grid(row=1, column=0, sticky="nswe")
