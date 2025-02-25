@@ -118,7 +118,7 @@ class StartFrame(tk.Tk):
             return
         self.pagina="produccion"
         self.areaPrincipal.destroy()
-        self.cambiarFrame(self.producir(self))
+        self.cambiarFrame(self.producir())
         
     def cambiarFrame(self, reemplazo:tk.Frame):
         self.areaPrincipal = reemplazo
@@ -1948,10 +1948,8 @@ Ya terminamos, tenga buen día.""")
     #region produccion
 #---------------------------------------------------------------------- Producción ----------------------------------------------------------------------------------------------------
 
-    def producir(self, ventana:tk.Frame):
-        StartFrame.ventanaPrincipal = ventana
-        framePrincipal =  tk.Frame(ventana, bg="blue")
-        framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+    def producir(self):
+        framePrincipal =  tk.Frame(bg="blue")
 
         frame1 = tk.Frame(framePrincipal)
         frame1.pack(side="top", fill="x")
@@ -2207,7 +2205,7 @@ Ya terminamos, tenga buen día.""")
         cont2 = tk.Frame(containerBig, bg="medium orchid")
         cont2.pack(side="left", pady=20, padx=5)
         
-        field_frame2 = FieldFrame(cont2, "Maquinas inhabilidas\npor falta de revisión:", criterios2, "", valores2, habilitado2)
+        field_frame2 = FieldFrame(cont2, "Maquinas inhabilitadas\npor falta de revisión:", criterios2, "", valores2, habilitado2)
         field_frame2.pack(padx=10, pady=10)
 
         #labelTotalGastado = tk.Label(cont, text=f"Total gastado: {totalGastado} pesos", font=("Arial", 12, "italic"))
