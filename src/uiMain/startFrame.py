@@ -2511,10 +2511,14 @@ Ya terminamos, tenga buen día.""")
     
     def planProduccionn(self, event, containerBig, contLyB, indicador):
         from src.uiMain.main import Main
-        containerBig.destroy()
-        contLyB.destroy()
-        event.widget.destroy()
+        self.frameCambianteProduccion.destroy()
+        self.frameCambianteProduccion = tk.Frame(self.frameConTitulo, bg="white")
+        self.frameCambianteProduccion.grid(row=2, column=0, sticky="nswe")
+        StartFrame.frameDeTrabajo = tk.Frame(self.frameCambianteProduccion, bg="white")
+        StartFrame.frameDeTrabajo.grid(row=0, column=0, sticky="nswe")
         StartFrame.frameDeTrabajo.config(bg="white")
+        self.frameCambianteProduccion.columnconfigure(0, weight=1)
+        self.frameCambianteProduccion.rowconfigure(0, weight=1)
         contBigRecor = tk.Frame(StartFrame.frameDeTrabajo)
         contBigRecor.grid(row=0, column=0, sticky="we")
 
@@ -2669,7 +2673,8 @@ Ya terminamos, tenga buen día.""")
                 event.widget.config(fg="gray")
             # Contenedores principales con títulos
         frameGeneral = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
-        frameGeneral.pack(pady=10)
+        frameGeneral.grid(row=1, column=0, sticky="nswe")
+        self.frameCambianteProduccion.rowconfigure(1, weight=1)
 
         if indicador == 1: # Sede Principal no disponible
             frameIzq = tk.LabelFrame(frameGeneral, text="Sede Principal", padx=17, pady=3, bg="light gray", font=("Arial", 14, "bold italic"))
@@ -2716,7 +2721,9 @@ Ya terminamos, tenga buen día.""")
 
         # Contenedor de botones
         frameBotones = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
-        frameBotones.pack(pady=5)
+        frameBotones.grid(row=2, column=0, sticky="nswe")
+
+        StartFrame.frameDeTrabajo.columnconfigure(0, weight=1)
 
         botonModificarP = tk.Button(frameBotones, text="Modificar Pantalones", command=cambiarEnlaceP, font=("Arial", 11, "bold italic"), bg="light gray")
         entryIntermedio = tk.Entry(frameBotones, textvariable=varIntermedio, width=15, justify="center", font=("Arial", 11), fg="gray", bg="light gray")
@@ -2732,7 +2739,7 @@ Ya terminamos, tenga buen día.""")
 
         # Entry para ingresar cantidad
         frameEntry = tk.Frame(StartFrame.frameDeTrabajo, bg="white")
-        frameEntry.pack(pady=10)
+        frameEntry.grid(row=3, column=0, sticky="nswe")
         botonCambiarDir = tk.Button(frameEntry, text="Cambiar Dirección", command=cambiarDireccion, font=("Arial", 11, "bold italic"))
         botonCambiarDir.pack(side="left", padx=15)
         botonContinue = tk.Button(frameEntry, text="CONTINUAR", font=("Arial", 13, "bold italic"))
