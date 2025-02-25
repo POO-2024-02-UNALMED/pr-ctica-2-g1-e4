@@ -1,3 +1,5 @@
-.venv\Scripts\python.exe -m src.uiMain.main
+pip install multimethod
+pip install pillow
+python -m src.uiMain.main
 @echo off
 pause
