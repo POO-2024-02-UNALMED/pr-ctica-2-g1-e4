@@ -64,6 +64,10 @@ class Prenda(GastoMensual):
     @classmethod
     def getSedeTandaActual(cls):
         return cls.planesDeProduccion[cls.idxPlanProduccion][2]
+    
+    @classmethod
+    def getFechaTandaActual(cls):
+        return cls.planesDeProduccion[cls.idxPlanProduccion][1]
 
     @classmethod
     def cantidadPrendasTanda(cls):

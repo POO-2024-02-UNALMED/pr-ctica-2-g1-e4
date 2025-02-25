@@ -2936,16 +2936,13 @@ Ya terminamos, tenga buen día.""")
 
         ffInsumosSede2 = FieldFrame(contenedorInsumos, "Insumos que hay en\nla Sede 2", criteriosInsumosSede2, "", valores2, habilitado2)
         ffInsumosSede2.pack(pady=2)
-        StartFrame.frameDeTrabajo.update_idletasks()
+
             #CONTENEDOR DERECHA ----------------------------------------------------------------------------
         StartFrame.contSeleccionModista = tk.Frame(StartFrame.contenedorGrande, bg="white")
         StartFrame.contSeleccionModista.pack(side="left", padx=5, pady=5)
 
-        if Sede.getListaSedes()[0].getCantidadInsumosBodega()[0] < 200 or Sede.getListaSedes()[1].getCantidadInsumosBodega()[0] < 200:
-            StartFrame.evento_senalizador.set()
-
-        StartFrame.evento_senalizador.wait()
-        StartFrame.evento_senalizador.clear()
+        self.descripcionTanda= tk.Label(StartFrame.contSeleccionModista, text=f"Selecciona un modista para\nelaborar {len(Prenda.prendasTandaActual)} prendas en {Prenda.getSedeTandaActual().getNombre()} \n el dia {Prenda.getFechaTandaActual()}", font=("Arial", 12, "bold italic"), bg="white")
+        self.descripcionTanda.pack(pady=5)
 
         contBotonesModistas = tk.Frame(StartFrame.contSeleccionModista, bg="white")
         contBotonesModistas.pack(pady=3)
