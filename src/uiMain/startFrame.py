@@ -60,7 +60,7 @@ class StartFrame(tk.Tk):
         self.config(menu=self.barraMenus)
         self.archivoMenu = tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Archivo", menu=self.archivoMenu)
-        self.archivoMenu.add_command(label="Aplicacion", command = lambda : tk.messagebox.showinfo("Informacion", "Aplicacion de Ecomoda"))
+        self.archivoMenu.add_command(label="Aplicacion", command = lambda : tk.messagebox.showinfo("Informacion", "La aplicación se enfoca principalmente en la creación de un sistema integral que aborda los retos operativos más relevantes de una industria textil, como lo es la empresa de Ecomoda, donde se maneja aspectos de gestión humana, manejo de insumos, planificación financiera, procesos de facturación y producción de prendas."))
         self.archivoMenu.add_command(label="Salir", command = lambda : self.pasarABienvenida())
         self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
