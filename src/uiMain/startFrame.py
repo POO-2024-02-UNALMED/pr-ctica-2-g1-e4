@@ -120,7 +120,7 @@ class StartFrame(tk.Tk):
             return
         self.pagina="produccion"
         self.areaPrincipal.destroy()
-        self.cambiarFrame(self.producir(self))
+        self.cambiarFrame(self.producir())
         
     def cambiarFrame(self, reemplazo:tk.Frame):
         self.areaPrincipal = reemplazo
@@ -2044,37 +2044,64 @@ Ya terminamos, tenga buen día.""")
     #region produccion
 #---------------------------------------------------------------------- Producción ----------------------------------------------------------------------------------------------------
 
-    def producir(self, ventana:tk.Frame):
-        StartFrame.ventanaPrincipal = ventana
-        framePrincipal =  tk.Frame(ventana, bg="blue")
-        framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
+    def producir(self):
+        self.framePrincipal =  tk.Frame(bg="blue")
 
         Main.empezarProduccion()
 
-        frame1 = tk.Frame(framePrincipal)
-        frame1.pack(side="top", fill="x")
+        self.frameConTitulo = tk.Frame( self.framePrincipal)
+        self.frameConTitulo.grid(row=0, column=0, sticky="nswe")
 
-        tituloF5 = tk.Label(frame1, text="Producción", bg="medium orchid", relief="ridge", height=2, font=("Arial",16, "bold"))
-        tituloF5.pack(fill="both", expand=True) 
+        tituloF5 = tk.Label(self.frameConTitulo, text="Producción", bg="medium orchid", relief="ridge", height=2, font=("Arial",16, "bold"))
+        tituloF5.grid(row=0, column=0, sticky="we")
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
-        StartFrame.descripcionF5 = tk.Label(frame1, text="Se registra la producción de prendas y actualiza su inventario: Se toma la cantidad necesaria del stock de materiales para fabricar nuevas prendas y se actualizan los datos, tanto de lo que se descontó de Stock como lo que se agregó a la cantidad de pendas.", height=3,wraplength=800, font=("Arial", 10, "italic"))
-        StartFrame.descripcionF5.pack(fill="both", expand=True)
+        self.descripcionF5 = tk.Label(self.frameConTitulo, text="Se registra la producción de prendas y actualiza su inventario: Se toma la cantidad necesaria del stock de materiales para fabricar nuevas prendas y se actualizan los datos, tanto de lo que se descontó de Stock como lo que se agregó a la cantidad de pendas.", height=3,wraplength=800, font=("Arial", 10, "italic"))
+        self.descripcionF5.grid(row=1, column=0, sticky="we")
 
-        frame2 = tk.Frame(framePrincipal, bg="white")
-        frame2.pack(anchor="s",  expand=True, fill="both")
-        StartFrame.frameDeTrabajo = frame2
+        self.frameCambianteProduccion = tk.Frame(self.frameConTitulo, bg="white")
+        self.frameCambianteProduccion.grid(row=2, column=0, sticky="nswe")
+        StartFrame.frameDeTrabajo = self.frameCambianteProduccion
 
-        descripcion1 = tk.Label(frame2, text="Presiona 'CONTINUAR' para evaluar el estado de la maquinaria disponible en cada sede", wraplength=500, justify="center", font=("Arial", 14, "italic"), bg="white")
+        descripcion1 = tk.Label(self.frameCambianteProduccion, text="Presiona 'CONTINUAR' para evaluar el estado de la maquinaria disponible en cada sede", wraplength=500, justify="center", font=("Arial", 14, "italic"), bg="white")
         descripcion1.place(relx=0.4, rely=0.16, anchor="center")
 
-        botonContinuar = tk.Button(frame2, text="CONTINUAR", command=lambda : self.activar(frame2, descripcion1, botonContinuar), font=("Arial", 12, "italic"), bg="white")
+        botonContinuar = tk.Button(self.frameCambianteProduccion, text="CONTINUAR", command=self.dibujarSiguienteRepuesto, font=("Arial", 12, "italic"), bg="white")
         botonContinuar.place(relx=0.8, rely=0.16, anchor="center")
 
-        StartFrame.indicaRepMalo = tk.Label(frame2, text="", bg="white")
+        StartFrame.indicaRepMalo = tk.Label(self.frameCambianteProduccion, text="", bg="white")
         StartFrame.indicaRepMalo.place(relx=0.5, rely=0.35, anchor="center")
 
-        return framePrincipal
+        self.frameConTitulo.columnconfigure(0, weight=1)
+        self.frameConTitulo.rowconfigure(0, weight=1)
+        self.frameConTitulo.rowconfigure(1, weight=1)
+        self.frameConTitulo.rowconfigure(2, weight=10)
+
+        self.framePrincipal.rowconfigure(0, weight=1)
+        self.framePrincipal.columnconfigure(0, weight=1)
+
+
+        return self.framePrincipal
+    
+    def dibujarSiguienteRepuesto(self):
+        self.frameCambianteProduccion.destroy()
+        self.frameCambianteProduccion = tk.Frame(self.frameConTitulo, bg="white")
+        self.frameCambianteProduccion.grid(row=2, column=0, sticky="nswe")
+        infoActual=Main.infoRepuestosAComprar[Main.idxRepuesto]
+        proveedor=infoActual[0]
+        precio=infoActual[1]
+        maquina=infoActual[2]
+        self.fieldCompraRepuesto = FieldFrame(self.frameCambianteProduccion,"Propiedad del repuesto",["costo","proveedor mas economico","maquina","Sede para pagar"],"Valor",[precio,proveedor.getNombre(),maquina.getNombre(),"Sede Principal"], [False,False,False,True],ancho_entry=28, aceptar=True,borrar=True,callbackAceptar=self.pasarSiguienteRepuesto)
+        self.fieldCompraRepuesto.grid(row=0, column=0,sticky="nswe")
+        self.frameCambianteProduccion.columnconfigure(0, weight=1)
+        self.frameCambianteProduccion.rowconfigure(0, weight=1)
+
+    def pasarSiguienteRepuesto(self):
+        if self.idxRepuesto<len(Main.infoRepuestosAComprar):
+            sedeExiste=Main.procederConCompraRepuesto(self.fieldCompraRepuesto.getValue("Sede para pagar"))
+            self.dibujarSiguienteRepuesto()
+        else:
+            pass
     
     def activar(self, ventana:tk.Frame, descrip1:tk.Label, botonContinuar:tk.Button):  #creo que al poner varias variables en global no sirve para modificarlas globalmente, verificar
         from src.gestorAplicacion.bodega.maquinaria import Maquinaria
@@ -2104,8 +2131,6 @@ Ya terminamos, tenga buen día.""")
             StartFrame.ventanaPrincipal.after(1500, self.volverMenu2)
             return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
-        StartFrame.hiloMaquinas.start()
-        StartFrame.HilosProduccion.append(StartFrame.hiloMaquinas)
         
     senal= 0
     def receptor(self, texto):

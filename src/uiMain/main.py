@@ -509,13 +509,15 @@ class Main:
 #region Producción    
 #--------------------------------------------------------- Producción -----------------------------------------------------------------------------------
 
-    infoRepuestosAComprar=[]
+    infoRepuestosAComprar=[] # Lista de listas, repuesto en indice 0, proveedor en indice 1, maquina en indice 2
+    idxRepuesto=0
 
     @classmethod
     def empezarProduccion(cls):
+        cls.infoRepuestosAComprar=[]
+        cls.idxRepuesto=0
         cls.terminarMantenimientos()
         cls.agruparMaquinasDisponibles()
-        cls.infoRepuestosAComprar=[]
 
     @classmethod
     def terminarMantenimientos(cls):
@@ -545,41 +547,22 @@ class Main:
         for cadaSede in Sede.getListaSedes():
             for cadaMaquina in cadaSede.getListaMaquinas():
                 if (cadaMaquina.getHoraRevision() - cadaMaquina.getHorasUso()) > 0:
-                    if not cadaMaquina.mantenimiento:
-                        cadaMaquina.mantenimiento = False
                     for cadaRepuesto in cadaMaquina.getRepuestos():
                         if (cadaRepuesto.getHorasDeVidaUtil() - cadaRepuesto.getHorasDeUso()) <= 0:
-                            startFrame.receptor(Main.printsInt1(1, cadaRepuesto, cadaMaquina, cadaSede))
+                            cadaMaquina.mantenimiento=True
                             todosProvBaratos = Main.encontrarProveedoresBaratos()
                             for elMasEconomico in todosProvBaratos:
                                 if elMasEconomico.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
                                     proveedorBarato = elMasEconomico
-                                    startFrame.recibeProveedorB(proveedorBarato)
-                                    Main.recibeProveedorB(proveedorBarato)
                                     break
-                            Main.evento_ui.clear()
-                            Main.evento_ui.wait()
-                            startFrame.receptor("No hay mas repuestos por cambiar,\npresiona el boton de abajo para ver el resumen de la revisión...")
-                            for sedeCreada in Sede.getListaSedes():
-                                if sedeCreada.getCuentaSede().getAhorroBanco() >= proveedorBarato.getPrecio():
-                                    cadaMaquina.setRepuestos(cadaRepuesto)
-                                    Repuesto.removeRepuesto(cadaRepuesto)
-                                    cadaMaquina.getRepuestos().append(cadaRepuesto.copiarConProveedor(proveedorBarato))
-                                    cadaRepuesto.setPrecioCompra(proveedorBarato.getPrecio())
-                                    cadaRepuesto.addFechaCompra(fecha)
-                                    encontrado = True
-                                    break
-                            if not encontrado:
-                                cadaRepuesto.setEstado()
-                else:
-                    if cadaMaquina.mantenimiento is False:
-                        cadaMaquina.mantenimiento = True
-                        cadaMaquina.ultFechaRevision = fecha
-                pista = 0
+                            cls.infoRepuestosAComprar.append([cadaRepuesto, proveedorBarato,cadaMaquina])
+                        cadaMaquina.ultFechaRevision = cls.fecha
+                
+                repuestosBuenos = 0
                 for rep in cadaMaquina.getRepuestos():
                     if rep.isEstado():
-                        pista += 1
-                if len(cadaMaquina.getRepuestos()) == pista:
+                        repuestosBuenos += 1
+                if len(cadaMaquina.getRepuestos()) == repuestosBuenos:
                     cadaMaquina.estado = True
                 else:
                     cadaMaquina.estado = False
@@ -587,11 +570,30 @@ class Main:
                     maqDisponibles.append(cadaMaquina)
                 else:
                     maquinasPaRevisar.append(cadaMaquina)
-                
-        startFrame.recibeProveedorB(None)
-        startFrame.recibeMaqPaRevisar(maquinasPaRevisar)
-        startFrame.recibeMaqDisp(maqDisponibles)
-        return maqDisponibles
+    
+    @classmethod
+    def procederConCompraRepuesto(cls,nombreSede):
+        infoRepuesto = cls.infoRepuestosAComprar[cls.idxRepuesto]
+        if Sede.sedeExiste(nombreSede):
+            repuesto = infoRepuesto[0]
+            proveedor = infoRepuesto[1]
+            maquina = infoRepuesto[2]
+            sede:Sede = Sede.getSedePorNombre(nombreSede)
+            sede.getCuentaSede().restarDinero(proveedor.getPrecio())
+            cls.comprarRepuesto(repuesto, proveedor, maquina)
+        else:
+            return False
+    
+    @classmethod
+    def comprarRepuesto(cls, repuestoAnterior, proveedor, maquina):
+        maquina.getRepuestos().remove(repuestoAnterior)
+        repuestoNuevo = repuestoAnterior.copiarConProveedor(proveedor)
+        repuestoNuevo.setPrecioCompra(proveedor.getPrecio())
+        repuestoNuevo.addFechaCompra(cls.fecha)
+        maquina.getRepuestos().append(repuestoNuevo)
+        return repuestoNuevo
+
+
     @classmethod
     def sobreCargada(cls, fecha: 'Fecha') -> int:
         senal = 0
