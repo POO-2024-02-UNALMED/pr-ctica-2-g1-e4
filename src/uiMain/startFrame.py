@@ -123,7 +123,6 @@ class StartFrame(tk.Tk):
         self.cambiarFrame(self.producir(self))
         
     def cambiarFrame(self, reemplazo:tk.Frame):
-        self.matarHilos()
         self.areaPrincipal = reemplazo
         reemplazo.pack(fill="both", expand=True, padx=7, pady=7)
     
@@ -2851,11 +2850,6 @@ Ya terminamos, tenga buen día.""")
                     maquina.ultFechaRevision = Main.fecha
 
 
-    def matarHilos(self):
-        for hilo in StartFrame.HilosProduccion:
-            hilo.join()
-        StartFrame.HilosProduccion.clear()
-    
 
         
     contenedorGrande = None
