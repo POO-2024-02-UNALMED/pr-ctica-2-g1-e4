@@ -240,7 +240,7 @@ class Main:
         return analisisFuturo
 #endregion
 
-#region insumos
+#region Insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
 
@@ -483,6 +483,7 @@ class Main:
         return filas
     
     #endregion
+#--------------------------------------------------------- Producción -----------------------------------------------------------------------------------
 
     @classmethod
     def dondeRetirar(cls):
@@ -535,6 +536,7 @@ class Main:
                 cls.comprarInsumo(sede[1][idxInsumo]+cantidadExtra, insumo, insumo.getProveedor(), Sede.getListaSedes()[cls.extraPorComprar.index(sede)])
 
 #region facturacion
+#---------------------------------------------------------- Facturación -----------------------------------------------------------------------------------
 
     def listaVendedores(sede):
         from src.gestorAplicacion.administracion.area import Area
@@ -551,7 +553,6 @@ class Main:
             if Empleado.getAreaActual(empleado) == Area.VENTAS:
                 listaEmpleado.append(empleado)
         return listaEmpleado
-#-----------------------------------------------------------------Facturación-----------------------------------------------------------------------------------
 
     def vender(cliente, sede, encargado, vendedor, productosSeleccionados, cantidadProductos):
         from ..gestorAplicacion.administracion.empleado import Empleado
