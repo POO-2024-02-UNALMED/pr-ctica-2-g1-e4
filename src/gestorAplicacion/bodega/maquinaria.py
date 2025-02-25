@@ -103,7 +103,7 @@ class Maquinaria:
         from src.uiMain.startFrame import StartFrame
         stf = StartFrame()
         
-        print(f"los repuestos mas actuales creados: {Repuesto.getListadoRepuestos()}\n y hay en total: {len(Repuesto.getListadoRepuestos())}")
+        #print(f"los repuestos mas actuales creados: {Repuesto.getListadoRepuestos()}\n y hay en total: {len(Repuesto.getListadoRepuestos())}")
         maqDisponibles = []
         todosProvBaratos = []
         encontrado = False
@@ -113,60 +113,39 @@ class Maquinaria:
             for cadaMaquina in cadaSede.getListaMaquinas():
                 if cadaMaquina.mantenimiento is True:
                     if self.hanPasadoMasDeTresDias(cadaMaquina.ultFechaRevision, fecha):
-                        print(f"\nya me arreglaron")
+                        #print(f"\nya me arreglaron")
                         cadaMaquina.mantenimiento = False
                         cadaMaquina.horasUso = 0
                     else:
-                        print(f"\nARREGLENME POR FAVOR")
+                        pass
+                        #print(f"\nARREGLENME POR FAVOR")
                 if (cadaMaquina.getHoraRevision() - cadaMaquina.getHorasUso()) > 0:
                     if not cadaMaquina.mantenimiento:
                         cadaMaquina.mantenimiento = False
                     for cadaRepuesto in cadaMaquina.getRepuestos():
                         if (cadaRepuesto.getHorasDeVidaUtil() - cadaRepuesto.getHorasDeUso()) <= 0:
                             stf.receptor(Main.printsInt1(1, cadaRepuesto, cadaMaquina, cadaSede))
-                            todosProvBaratos = self.encontrarProveedoresBaratos()
-                            print(len(todosProvBaratos))
+                            todosProvBaratos = Main.encontrarProveedoresBaratos()
                             for elMasEconomico in todosProvBaratos:
                                 if elMasEconomico.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
-                                    print("adentro")
                                     proveedorBarato = elMasEconomico
                                     stf.recibeProveedorB(proveedorBarato)
-                                    print(proveedorBarato.getNombre())
                                     Main.recibeProveedorB(proveedorBarato)
                                     break
-
-                            Main.evento_ui.clear()  
-                            print("Esperando confirmación del usuario en la UI...")
+                            Main.evento_ui.clear()
                             Main.evento_ui.wait()
                             stf.receptor("No hay mas repuestos por cambiar,\npresiona el boton de abajo para ver el resumen de la revisión...")
-                            print("Usuario confirmó la compra. Continuando...")
-
                             for sedeCreada in Sede.getListaSedes():
                                 if sedeCreada.getCuentaSede().getAhorroBanco() >= proveedorBarato.getPrecio():
-                                    #Main.dondeRetirar()
-                                    #print(f"\nla cantidad de repuestos que tiene {cadaMaquina.getNombre()} antes son: {len(cadaMaquina.getRepuestos())}")
-                                    #print(f"repuestos de {cadaMaquina.getNombre()} son: {cadaMaquina.getRepuestos()}")
-                                    #print(f"hay en total al iniciar {len(Repuesto.getListadoRepuestos())} repuestos creados")
-                                    #print(f"soy {cadaRepuesto.getNombre()} de la maquina: {cadaMaquina.getNombre()}, de la sede: {cadaMaquina.getSede().getNombre()}")
                                     cadaMaquina.setRepuestos(cadaRepuesto)
-                                    #print(f"\nla cantidad de repuestos que tiene {cadaMaquina.getNombre()} ahora mismo son: {len(cadaMaquina.getRepuestos())}")
-                                    #print(f"repuestos de {cadaMaquina.getNombre()} son: {cadaMaquina.getRepuestos()}")
                                     Repuesto.removeRepuesto(cadaRepuesto)
-                                    #print(f"\nahora hay {len(Repuesto.getListadoRepuestos())} repuestos creados\n")
                                     cadaMaquina.getRepuestos().append(cadaRepuesto.copiarConProveedor(proveedorBarato))
-                                    #print(f"repuestos de {cadaMaquina.getNombre()} son: {cadaMaquina.getRepuestos()}")
-                                    #print(f"los repuestos mas actuales creados: {Repuesto.getListadoRepuestos()}\n y hay en total: {len(Repuesto.getListadoRepuestos())}")
                                     cadaRepuesto.setPrecioCompra(proveedorBarato.getPrecio())
                                     cadaRepuesto.addFechaCompra(fecha)
                                     encontrado = True
                                     break
                             if not encontrado:
-                                #llamar metodo en F5Produccion para mostrar algun label que diga que no 
-                                #se pudo comprar el repuesto porque no hay plata en ninguna sede,
-                                #este label iría en donde se elige de cual sede descontar la plata 
                                 cadaRepuesto.setEstado()
-
-                           
                 else:
                     if cadaMaquina.mantenimiento is False:
                         cadaMaquina.mantenimiento = True
@@ -187,25 +166,7 @@ class Maquinaria:
         stf.recibeProveedorB(None)
         stf.recibeMaqPaRevisar(maquinasPaRevisar)
         stf.recibeMaqDisp(maqDisponibles)
-        print("finish interaccion 1")
         return maqDisponibles
-
-    #@classmethod
-    def encontrarProveedoresBaratos(self):
-        from src.gestorAplicacion.bodega.proveedor import Proveedor
-        from .repuesto import Repuesto
-        listProveedoresBaratos = []
-        for cadaRepuesto in Repuesto.getListadoRepuestos():
-            proveedorBarato = None
-            for proveedores in Proveedor.getListaProveedores():
-                if proveedores.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
-                    if proveedorBarato is None:
-                        proveedorBarato = proveedores
-                    elif proveedores.getInsumo().getPrecioIndividual() <= proveedorBarato.getInsumo().getPrecioIndividual():
-                        proveedorBarato = proveedores
-            if proveedorBarato not in listProveedoresBaratos:
-                listProveedoresBaratos.append(proveedorBarato)
-        return listProveedoresBaratos
 
     @staticmethod
     def asignarMaquinaria(emp):
