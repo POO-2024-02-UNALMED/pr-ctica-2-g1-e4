@@ -583,16 +583,35 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         else:
             self.datosDespedido.habilitarEntry("sede", True)
             self.datosDespedido.habilitarEntry("nombre", False)
-            tk.messagebox.showwarning("La sede no existe", "Intente otra vez, luego de verificar el nombre de la sede")
+            try:
+                if not isinstance(self.datosDespedido.getValue("sede"),str):
+                    raise ExcepcionStringNoNumero(self.datosDespedido.getValue("sede"))
+            except ExcepcionStringNoNumero as wey:
+                messagebox.showwarning(title="Alerta", message=wey.mensaje_completo)
+            try:
+                raise ExcepcionValorNoValido(self.datosDespedido.getValue("sede"))
+            except ExcepcionValorNoValido as otei:
+                messagebox.showwarning(title="Alerta", message=otei.mensaje_completo)
+                return True
 
     def actualizarDatosAñadirEmpleado(self):
         if self.sede.getEmpleado(self.datosDespedido.getValue("nombre")) is None:
-            tk.messagebox.showwarning("El empleado no trabaja aquí", "Intente otra vez, luego de verificar el nombre del empleado")
-
+            try:
+                if int(self.datosDespedido.getValue("nombre")):
+                    raise ExcepcionStringNoNumero(self.datosDespedido.getValue("nombre"))
+            except ExcepcionStringNoNumero as yay:
+                messagebox.showwarning(title="Alerta", message=yay.mensaje_completo)
+                return True
+            try:
+                raise ExcepcionEmpleadoNoEncontrado()
+            except ExcepcionEmpleadoNoEncontrado as buey:
+                messagebox.showwarning(title="Alerta", message=buey.mensaje_completo)
+                return True
     def enviarEmpleadoNuevo(self):
         if self.sede is not None and self.sede.getEmpleado(self.datosDespedido.getValue("nombre")) is not None:
             self.posiblesDespedidos.append(self.sede.getEmpleado(self.datosDespedido.getValue("nombre")))
         self.pantallaEleccionDespedir(True)
+    
 
     def reemplazarPorCambioSede(self):
         self.frameCambianteGHumana.destroy()
@@ -660,7 +679,18 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             else:
                 self.dibujarTandaDeReemplazo(Main.getTandaReemplazo())
         else:
-            tk.messagebox.showwarning("Empleado no valido","Verifique que el empleado esta en la lista de candidatos.")
+            try:
+                if int(self.seleccionadorReemplazo.getValue(f"Reemplazo {i}")):
+                    raise ExcepcionStringNoNumero(self.seleccionadorReemplazo.getValue(f"Reemplazo {i}"))
+            except ExcepcionStringNoNumero as estoyCansadojefe:
+                messagebox.showwarning(title="Alerta", message=estoyCansadojefe.mensaje_completo)
+                return True
+            
+            try:
+                raise ExcepcionEmpleadoNoEncontrado()
+            except ExcepcionEmpleadoNoEncontrado as tururu:
+                messagebox.showwarning(title="Alerta", message=tururu.mensaje_completo)
+                return True
 #endregion
 
 # region insumos
