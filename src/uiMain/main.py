@@ -506,7 +506,8 @@ class Main:
             for idxInsumo, insumo in enumerate(sede[0]):
                 cantidadExtra=cantidadesExtra[idxInsumoExtra]
                 cls.comprarInsumo(sede[1][idxInsumo]+cantidadExtra, insumo, insumo.getProveedor(), Sede.getListaSedes()[cls.extraPorComprar.index(sede)])
-    
+        return True
+
     #endregion
 #region Producción    
 #--------------------------------------------------------- Producción -----------------------------------------------------------------------------------
