@@ -1003,11 +1003,6 @@ class Main:
 
 
     @classmethod
-    def crearSedesMaquinasRepuestos(cls):
-        pass
-
-
-    @classmethod
     def fijarUltimoPrecioInicial(cls):
         for sede in Sede.getListaSedes():
             for insumo in sede.getListaInsumosBodega():
