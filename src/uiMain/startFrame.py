@@ -2562,7 +2562,8 @@ Ya terminamos, tenga buen día.""")
             respuesta = messagebox.askyesno("Confirmación", f"¿Deseas continuar?\n\n* Sobre Costo de la Sede Principal = {listSobreCostos[0]}\n* Sobre Costo de la Sede 2 = {listSobreCostos[1]}")
             
             if respuesta:
-                Prenda.producirPrendas(StartFrame.aProducirPaEnviar, Main.fecha)
+                Prenda.prepararElaboracion()
+                self.inicioInt3()
 
             else:
                 #print("El usuario canceló la acción.")
@@ -2922,7 +2923,7 @@ Ya terminamos, tenga buen día.""")
         self.frameCambianteProduccion.rowconfigure(0, weight=1)
         
 
-        criterios1 = [] ; criterios2 = [] ; valores1 = [] ; valores2 = []
+        criteriosInsumosSedeP = [] ; criteriosInsumosSede2 = [] ; valores1 = [] ; valores2 = []
 
         StartFrame.contenedorGrande = tk.Frame(StartFrame.frameDeTrabajo, bg="light gray")
         StartFrame.contenedorGrande.pack(pady=5)
@@ -2933,23 +2934,23 @@ Ya terminamos, tenga buen día.""")
             #field Frame de los insumos disponibles en sede Principal
         for insumosProd in Sede.getListaSedes()[0].getListaInsumosBodega():
             if insumosProd.getNombre() != "Bolsa":
-                criterios1.append(insumosProd)
-        for index1, valor1 in enumerate(criterios1):
+                criteriosInsumosSedeP.append(insumosProd)
+        for index1, valor1 in enumerate(criteriosInsumosSedeP):
             valores1.append(Sede.getListaSedes()[0].getCantidadInsumosBodega()[index1])
-        habilitado1 = [False for _ in range(len(criterios1))]
+        habilitado1 = [False for _ in range(len(criteriosInsumosSedeP))]
 
-        ffInsumosSedeP = FieldFrame(contenedorInsumos, "Insumos que hay en\nla Sede Principal", criterios1, "", valores1, habilitado1)
+        ffInsumosSedeP = FieldFrame(contenedorInsumos, "Insumos que hay en\nla Sede Principal", criteriosInsumosSedeP, "", valores1, habilitado1)
         ffInsumosSedeP.pack(pady=2)
         
             #field Frame de los insumos disponibles en sede 2
         for insumosProd2 in Sede.getListaSedes()[1].getListaInsumosBodega():
             if insumosProd2.getNombre() != "Bolsa":
-                criterios2.append(insumosProd2)
-        for index2, valor2 in enumerate(criterios2):
+                criteriosInsumosSede2.append(insumosProd2)
+        for index2, valor2 in enumerate(criteriosInsumosSede2):
             valores2.append(Sede.getListaSedes()[1].getCantidadInsumosBodega()[index2])
-        habilitado2 = [False for _ in range(len(criterios2))]
+        habilitado2 = [False for _ in range(len(criteriosInsumosSede2))]
 
-        ffInsumosSede2 = FieldFrame(contenedorInsumos, "Insumos que hay en\nla Sede 2", criterios2, "", valores2, habilitado2)
+        ffInsumosSede2 = FieldFrame(contenedorInsumos, "Insumos que hay en\nla Sede 2", criteriosInsumosSede2, "", valores2, habilitado2)
         ffInsumosSede2.pack(pady=2)
         StartFrame.frameDeTrabajo.update_idletasks()
             #CONTENEDOR DERECHA ----------------------------------------------------------------------------
