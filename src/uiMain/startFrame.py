@@ -1340,16 +1340,18 @@ Ya terminamos, tenga buen día.""")
 
         self.tituloF1 = tk.Label(self.framePrincipal, text="Facturacion", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
         self.tituloF1.grid(row=0, column=0, sticky="nswe")
-        
+        self.tituloF1.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloF1))
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
         self.descripcionF1 = tk.Label(self.framePrincipal, wraplength=700 ,text="Se encarga de registrar cada una de las ventas, generando la factura al cliente con los datos necesarios.", relief="ridge", font=("Arial", 10))
-        self.descripcionF1.grid(row=1, column=0, sticky="nswe")        
+        self.descripcionF1.grid(row=1, column=0, sticky="nswe")  
+        self.descripcionF1.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF1))      
         
         self.freameCambianteFacturacion = tk.Frame(self.framePrincipal)
         self.freameCambianteFacturacion.grid(row=2, column=0, sticky="nswe")
 
         self.outputFacturacion=tk.Text(master=self.framePrincipal,state="disabled", font=("Arial", 10),height=2, bg="#f0f0f0")
         self.outputFacturacion.grid(row=3, column=0, sticky="nswe")
+        
         
         self.framePrincipal.columnconfigure(0, weight=1)
         self.framePrincipal.rowconfigure(0, weight=1)
@@ -1438,6 +1440,7 @@ Ya terminamos, tenga buen día.""")
         self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Fondos" ,["Transferir fondos a la cuenta principal","Porcentaje a transferir"],"", ["Si/No","20% o 60%"],[True,False],ancho_entry=25, tamañoFuente=10)
         self.datosEntradasFacturacion.configurarCallBack("Transferir fondos a la cuenta principal", "<Return>", self.transferirDinero)
         self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
+        
         
         self.aceptar=tk.Button(self.freameCambianteFacturacion, text="Aceptar", font=("Arial", 10,  "bold"), command=self.leer5Facturacion)
         self.botonBorrarSeleccion=tk.Button(self.freameCambianteFacturacion, text="Borrar", font=("Arial", 10,  "bold"), command=self.datosEntradasFacturacion.borrar)
@@ -1698,6 +1701,7 @@ Ya terminamos, tenga buen día.""")
 
         self.descripcionAñadirDespedido = tk.Label(self.freameCambianteFacturacion, text="""La prenda que desea añadir y la cantidad a comprar""", relief="ridge", font=("Arial", 10))
         self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=4)
+        self.descripcionAñadirDespedido.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionAñadirDespedido))
 
         self.datosEntradasFacturacion=FieldFrame(self.freameCambianteFacturacion, "Añadir Prenda" ,["Prenda","Cantidad"],"valor", ["Camisa/Pantalon","0"],[True,False],ancho_entry=25, tamañoFuente=10, callbackAceptar= self.actualizarDatosAñadirSede())
         self.datosEntradasFacturacion.grid(row=1, column=0, columnspan=2)
