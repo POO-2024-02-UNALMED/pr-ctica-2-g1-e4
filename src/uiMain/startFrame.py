@@ -987,6 +987,7 @@ Ya terminamos, tenga buen día.""")
                 
                 confirmacion2 = tk.Label(self.estimadoVentasDeudas, text="Calculando estimado entre Ventas y Deudas para ver el estado de endeudamiento de la empresa...", anchor="center", wraplength=600)
                 confirmacion2.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
+                confirmacion2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(confirmacion2))
                 
                 texto2 = tk.Text(confirmacion2, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
                 texto2.pack(fill="both", expand=True)
@@ -1041,7 +1042,7 @@ Ya terminamos, tenga buen día.""")
                 
                 bancos=Banco.getListaBancos()
 
-                tituloNombre=tk.Label(frameb, text="Nombre", font=("Arial", 10))
+                tituloNombre=tk.Label(frameb, text="Nombre", font=("Arial", 10))       
                 tituloDeuda=tk.Label(frameb, text="Deuda inicial", font=("Arial", 10))
                 tituloAhorro=tk.Label(frameb, text="Ahorros", font=("Arial", 10))
                 tituloInter=tk.Label(frameb, text="Interés", font=("Arial", 10))
@@ -1056,9 +1057,9 @@ Ya terminamos, tenga buen día.""")
                     deudaInicial=0
                     for deuda in Banco.getDeuda(banco):
                         deudaInicial+=Deuda.getValorInicialDeuda(deuda)
-                    deuda = tk.Label(frameb, text=deudaInicial, font=("Arial", 10))
-                    ahorro = tk.Label(frameb, text=Banco.getAhorroBanco(banco), font=("Arial", 10))
-                    Interes = tk.Label(frameb, text=Banco.getInteres(banco), font=("Arial", 10))
+                    deuda = tk.Label(frameb, text=deudaInicial, font=("Arial", 10))       
+                    ahorro = tk.Label(frameb, text=Banco.getAhorroBanco(banco), font=("Arial", 10))         
+                    Interes = tk.Label(frameb, text=Banco.getInteres(banco), font=("Arial", 10))         
                     nombre.grid(row=row+3, column=0)
                     deuda.grid(row=row+3, column=1)
                     ahorro.grid(row=row+3, column=2)
@@ -1292,7 +1293,7 @@ Ya terminamos, tenga buen día.""")
             field_frame.place(relx=1, rely=0.7, relwidth=1, relheight=1, anchor="e")
             frame3 = tk.Frame(framePrincipal)
             frame3.pack(anchor="s",  expand=True, fill="both")
-            label7 = tk.Label(frame3, text="Directivos disponibles:",anchor="w", font=("Arial",12, "bold"))
+            label7 = tk.Label(frame3, text="",anchor="w", font=("Arial",12, "bold"))
             label7.place(relx=0.5, rely=0.6, relwidth=1, relheight=1, anchor="s")
             label7.config(padx=200)
             label7.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(label7))            
@@ -1308,6 +1309,7 @@ Ya terminamos, tenga buen día.""")
             confirmacion.place(relx=0, rely=0.7, relwidth=1, relheight=0.3)
             espacio=tk.Label(confirmacion, text="", font=("Arial", 10), wraplength=600)
             espacio.place(relx=0, rely=0, relwidth=1, relheight=1, anchor="c")
+            espacio.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(espacio))          
             confirmacion.update_idletasks()  # Asegura que el tamaño se actualice correctamente
 
             texto = tk.Text(confirmacion, width=50, height=5, font=("Arial", 10), bg="#f0f0f0")  # Usa valores válidos
