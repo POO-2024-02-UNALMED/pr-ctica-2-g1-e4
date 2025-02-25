@@ -1386,15 +1386,17 @@ class Main:
         Wilson.setRendimientoBonificacion(com6)
         maxProductos = 5
         minProductos = 1
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Cata, 300, sedeP)
-        Main.crearVentaAleatoria(minProductos,1, Fecha(24,11,24), Aura, Mario, 300, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,24), Aura, Cata, 600, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,25), Aura, Mario, 600, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Cata, 700, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Mario, 700, sede2)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Cata, 700, sede2)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Mario, 700, sede2)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia , 300, sede2)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Cata, 200, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Freddy, Patricia ,200, sede2)
+        Main.crearVentaAleatoria(minProductos,1, Fecha(24,11,24), Aura, Mario, 100, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,24), Aura, Cata, 100, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,25), Gabriela,Robles, 100, sede2)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Cata, 100, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Mario, 100, sede2)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia, 100, sede2)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Gabriela,Robles, 100, sede2)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Cata, 100, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Mario, 100, sedeP)
         
         Main.fijarUltimoPrecioInicial()
     
