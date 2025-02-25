@@ -835,6 +835,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         if existeOtraSede:
             self.criterios = Main.coordinarBodega()
             self.tablaInsumos(Main.infoTablaInsumos)
+        if Main.errorEnRespuestas:
+            try:
+                raise ExcepcionValorNoValido(Main.respuestaIncorrecta)
+            except ExcepcionValorNoValido as hambre:
+                messagebox.showwarning(title="Alerta", message=hambre.mensaje_completo)
+                return True
         else:
             self.frameCambianteInsumos.destroy()
             self.dibujarTablaCompraExtra(Main.comprarInsumos())

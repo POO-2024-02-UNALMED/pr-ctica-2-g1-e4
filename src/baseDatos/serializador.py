@@ -14,5 +14,5 @@ def serializar():
                 Banco.getListaBancos(), Banco.getCuentaPrincipal(),
                 Persona.getListaPersonas(),
                 Venta.getCodigosRegalo(), Venta.getMontosRegalo(),
-                Proveedor.getListaProveedores(), Deuda.getListaDeudas(),Sede.getHistoialTotalVentas()), archivo)
+                Proveedor.getListaProveedores(), Deuda.getListaDeudas(),Sede.getHistorialTotalVentas()), archivo)
     archivo.close()

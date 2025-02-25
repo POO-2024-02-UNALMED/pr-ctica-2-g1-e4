@@ -461,7 +461,7 @@ class Sede:
                 return empleado
         return None
     @classmethod
-    def getHistoialTotalVentas(cls):
+    def getHistorialTotalVentas(cls):
         historial = []
         for sede in cls.listaSedes:
             for venta in sede.getHistorialVentas():
