@@ -930,6 +930,13 @@ class Main:
         return mensajes.get(senall)
 
     @classmethod
+    def printsInt1(cls, signal, rep, maq, sede):
+        if signal == 1:
+            return f"{rep.getNombre()} se debe cambiar.\nMaquina afectada: {maq.getNombre()}  -  Sede afectada: {sede.getNombre()}"
+        elif signal == 2:
+            print(f"*El proveedor mas barato se llama '{cls.proveedorBdelmain.getNombre()}', y lo vende a: {cls.proveedorBdelmain.getPrecio()}\n")
+
+    @classmethod
     def printsInt11(cls, rep, maq, sede, senal):
         if senal == 1:
             print(f"Repuesto: '{rep.getNombre()}' añadido correctamente a la {maq.getNombre()}, de la: {sede.getNombre()}")
