@@ -138,8 +138,11 @@ class StartFrame(tk.Tk):
             bienvenida.pasarAVentanaBienvenida()
         else:
             self.abrirFrameInicial()
-        
-
+            
+    def ajustar_wraplengthhola(self,label):        
+        nuevo_wraplength = label.winfo_width()
+        if label.cget("wraplength") != nuevo_wraplength:
+            label.config(wraplength=nuevo_wraplength)
     
     def acercaDe(self):
         tk.messagebox.showinfo("Acerca de", "Andres David Calderón Jiménez \nGelsy Jackelin Lozano Blanquiceth \nAndrea Merino Mesa \nLuis Rincon \nJuanita Valentina Rosero")
@@ -161,8 +164,8 @@ class StartFrame(tk.Tk):
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
 
         self.descripcionFrameInicial = tk.Label(self.frameInicial, text="Realiza un proceso de facturación, surte insumos, produce prendas, gestiona a tus empleados y revisa el estado financiero de tu empresa :)", relief="ridge")
+        self.descripcionFrameInicial.bind('<Configure>', lambda e: self.descripcionFrameInicial.config(wraplength=self.descripcionFrameInicial.winfo_width()))
         self.descripcionFrameInicial.place(relx=0.5, rely=0.15, relwidth=1, relheight=0.1, anchor="n")
-
         self.contenedorFecha = tk.Frame(self.frameInicial, bg="light gray")
         self.contenedorFecha.place(relx=0.5, rely=0.25, relwidth=1, relheight=0.8, anchor="n")
 
@@ -206,7 +209,7 @@ class StartFrame(tk.Tk):
         self.frameInicial.rowconfigure(1, weight=3)
         self.frameInicial.rowconfigure(2, weight=3)
 
-        self.bind("<Configure>", self.actualizarWrapLengths)
+        self.descripcionFrameInicial.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionFrameInicial))
     
     def actualizarWrapLengths(self,_event):
         if self.pagina=="inicial":
@@ -246,8 +249,8 @@ class StartFrame(tk.Tk):
             self.borrar()
             return hayExcepcion
                
-        self.ingresarFecha(FDia,FMes,FAño)
-        if isinstance(self.ingresarFecha(FDia,FMes,FAño),Fecha):
+        fecha_ingresada=self.ingresarFecha(FDia,FMes,FAño)
+        if isinstance(fecha_ingresada,Fecha):
             self.confirmacion.config(text="Fecha ingresada correctamente, estamos en "+Main.fecha.strCorto())
         pass
 
@@ -360,23 +363,26 @@ class StartFrame(tk.Tk):
 
         
     def inicialGestionHumana(self):
-        self.framePrincipal =  tk.Frame(self.gestionHumana, bg="blue")
+        self.framePrincipal =  tk.Frame(self.gestionHumana)
         self.framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
 
         self.tituloF1 = tk.Label(self.framePrincipal, text="Gestión Humana", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
         self.tituloF1.grid(row=0, column=0, sticky="nswe")
+        self.tituloF1.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloF1))
         
         self.frameCambianteGHumana = tk.Frame(self.framePrincipal)
         self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
 
         ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
-        self.descripcionF1 = tk.Label(self.frameCambianteGHumana, wraplength=700 ,text="""Este área analiza la lista de todos los empleados y permite modificarla:
+        self.descripcionF1 = tk.Label(self.frameCambianteGHumana, text="""Este área analiza la lista de todos los empleados y permite modificarla:
 Se puede contratar a un nuevo empleado, establecer su salario y el rol o las funciones que cumple en la empresa.
 También se puede despedir a un empleado ya existente en el equipo de trabajo.
         
 Con ese fin, analizamos el rendimiento de los empleados de la empresa, y llegamos a la siguiente lista de empleados insuficientes,
 estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?, podrá elegirlos para despedirlos en la siguiente pantalla.""".replace("\n"," "), relief="ridge", font=("Arial", 10))
         self.descripcionF1.grid(row=1, column=0, sticky="nswe",columnspan=5)
+        
+        self.descripcionF1.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF1))
 
         if Main.fecha is not None:
             infoMalos = Main.listaInicialDespedirEmpleado()
@@ -397,6 +403,12 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.tituloRendimientoEsperado=tk.Label(self.frameCambianteGHumana, text="Rendimiento esperado", font=("Arial", 10))
         self.tituloAccion=tk.Label(self.frameCambianteGHumana, text="Acción", font=("Arial", 10))
         
+        self.tituloNombre.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloNombre))
+        self.tituloArea.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloArea))
+        self.tituloRendimiento.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloRendimiento))
+        self.tituloRendimientoEsperado.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloRendimientoEsperado))
+        self.tituloAccion.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloAccion))   
+             
         self.tituloNombre.grid(row=2, column=0)
         self.tituloArea.grid(row=2, column=1)
         self.tituloRendimiento.grid(row=2, column=2)
@@ -463,6 +475,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.labelPreConsulta=tk.Label(self.frameCambianteGHumana, text=empleadosMalosString, relief="ridge", font=("Arial", 10))
         self.labelPreConsulta.grid(row=1, column=0, sticky="nswe",columnspan=4)
+        self.labelPreConsulta.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.labelPreConsulta))
 
         nombres=""
         for empleado in self.posiblesDespedidos:
@@ -549,6 +562,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.descripcionAñadirDespedido = tk.Label(self.frameCambianteGHumana, text="""Inserte los datos de el empleado a añadir a la lista, el panel de la derecha le ayudará, presione Enter al terminar de escribir un valor""", relief="ridge", font=("Arial", 10))
         self.descripcionAñadirDespedido.grid(row=0, column=0, sticky="nswe", columnspan=4)
+        self.descripcionAñadirDespedido.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionAñadirDespedido))
 
         self.datosDespedido=FieldFrame(self.frameCambianteGHumana, "Dato del empleado" ,["sede","nombre"],"valor", ["",""],[True,False],ancho_entry=25, tamañoFuente=10)
         self.datosDespedido.configurarCallBack("sede", "<Return>", self.actualizarDatosAñadirSede)
@@ -620,6 +634,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text=f"""Se han despedido {len(self.empleadosADespedir)} empleados, verificamos si se pueden reemplazar
         con gente de otras sedes""", relief="ridge", font=("Arial", 10))
         self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
+        self.descripcionCambioSede.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionCambioSede))
         Main.prepararCambioSede()
         tanda = Main.getTandaReemplazo()
         if tanda is None:
@@ -652,6 +667,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.tituloTanda=tk.Label(self.contenedorTandaTransferencia, text=textoReemplazo, font=("Arial", 10))
         self.tituloTanda.grid(row=0, column=0, sticky="nswe", columnspan=4)
+        self.tituloTanda.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloTanda))
 
         self.seleccionadorReemplazo=FieldFrame(self.contenedorTandaTransferencia,"Reemplazo numero", [f"Reemplazo {i}" for i in range(1,cantidad+1)], "Nombre", aceptar=True, borrar=True,callbackAceptar=self.terminarTanda)
         self.seleccionadorReemplazo.grid(row=1, column=0, sticky="nswe", columnspan=4)
@@ -674,6 +690,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
                 self.frameCambianteGHumana.grid(row=1, column=0, sticky="nswe")
                 self.descripcionCambioSede = tk.Label(self.frameCambianteGHumana, text=f"""Se ha completado el reemplazo de los empleados, tenga buen día.""", relief="ridge", font=("Arial", 10))
                 self.descripcionCambioSede.grid(row=0, column=0 ,sticky="nswe")
+                self.descripcionCambioSede.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionCambioSede))
                 self.frameCambianteGHumana.columnconfigure(0, weight=3)
                 self.frameCambianteGHumana.rowconfigure(0, weight=3)
             else:
@@ -709,12 +726,14 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         self.tituloF2 = tk.Label(self.framePrincipal, text="Surtir Insumos", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
         self.tituloF2.grid(row=0, column=0, sticky="nswe")
+        self.tituloF2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.tituloF2))
 
             ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
         self.descripcionF2 = tk.Label(self.framePrincipal, 
                             text="Registra la llegada de nuevos insumos: Incluye una predicción de ventas del siguiente mes para hacer la compra de los insumos, actualiza la deuda con los proveedores y añade los nuevos insumos a la cantidad en Stock.", 
                             relief="ridge", wraplength=600)
         self.descripcionF2.grid(row=1, column=0, sticky="nswe")
+        self.descripcionF2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF2))
 
         self.pesimismo(Main.datosParaFieldPesimismo())
 
@@ -767,6 +786,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
 
         label3 = tk.Label(self.framePrediccion, text="Según dicha predicción se hará la compra de los insumos")
         label3.grid(row=1, column=0, sticky="nswe")    
+        label3.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(label3))
         aceptar = tk.Button(self.framePrediccion, text="Siguiente", command=lambda: self.pasarAInteraccion2())
         aceptar.grid(row=1, column=1, sticky="nswe")
         self.framePrediccion.rowconfigure(0, weight=1)
@@ -784,7 +804,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         if self.frameCambianteInsumos is not None:
             self.frameCambianteInsumos.destroy()
         self.descripcionF2.config(text=Main.infoPostCoordinacion+"\nEsta tabla le muestra los insumos necesarios para producir, y de donde se pueden sacar.")
-        
+        self.descripcionF2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF2))
         self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
         self.elementosTabla = []
@@ -806,6 +826,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         
         self.seguirDeTabla=tk.Button(self.frameCambianteInsumos, text="Elegir sobre transferencias", command=lambda: self.transferir(Main.getCriteriosCoordinarBodegas(), Main.getNombreSedeActualCoordinacion()))
         self.seguirDeTabla.grid(row=idxFila+1, column=0)
+        self.seguirDeTabla.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.seguirDeTabla))
         self.frameCambianteInsumos.rowconfigure(idxFila+1, weight=1)
         self.frameCambianteInsumos.columnconfigure(0, weight=1) #insumo
         self.frameCambianteInsumos.columnconfigure(1, weight=1) # cantidad en bodega
@@ -820,6 +841,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
         self.descripcionF2.config(text="Estos insumos no estan en esta sede, pero pueden traerse de otra o comprarse.")
+        self.descripcionF2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF2))
         if len(criterios)>0:
             self.contenedorFieldTransferencia = tk.Frame(self.frameCambianteInsumos)
             self.contenedorFieldTransferencia.pack(anchor="s", expand=True, fill="both")
@@ -863,6 +885,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         else:
             self.explicacion=tk.Label(self.frameCambianteInsumos, text="No se deben comprar insumos adicionales, los precios están estables o subiendo, ya compramos todo.", font=("Arial", 10))
             self.explicacion.grid(row=0, column=0)
+            self.explicacion.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.explicacion))
             self.seguirADeudas=tk.Button(self.frameCambianteInsumos, text="Ver deudas", command=self.dibujarDeudas)
             self.seguirADeudas.grid(row=1, column=0)
             self.frameCambianteInsumos.rowconfigure(0, weight=1)
@@ -877,6 +900,7 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
     def dibujarDeudas(self):
         self.descripcionF2.config(text="""A continuación se muestra la deuda con los proveedores, y el estado de la misma, comprar insumos aumenta la deuda.
 Ya terminamos, tenga buen día.""")
+        self.descripcionF2.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(self.descripcionF2))
         self.frameCambianteInsumos.destroy()
         self.frameCambianteInsumos = tk.Frame(self.framePrincipal)
         self.frameCambianteInsumos.grid(row=2, column=0, sticky="nswe")
@@ -1262,9 +1286,11 @@ Ya terminamos, tenga buen día.""")
             frame1.pack(side="top", fill="x")
             tituloF3 = tk.Label(frame1, text="Gestión Financiera", bg="medium orchid", relief="ridge", font=("Arial",16, "bold"))
             tituloF3.place(relx=0.5, rely=0.6, relwidth=1, relheight=0.6, anchor="s") 
+            tituloF3.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(tituloF3))
             ## relwidth y relheight reciben el porcentaje de tamaño respecto al contenedor
             descripcionF3 = tk.Label(frame1, text="Se realiza una evaluación del estado financiero de la empresa haciendo el cálculo de los activos y los pasivos, para indicarle al usuario qué tan bien administrada está, mostrandole los resulatdos y su significado", relief="ridge", wraplength=600)
             descripcionF3.place(relx=1, rely=0.7, relwidth=1, relheight=0.4, anchor="e")
+            descripcionF3.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(descripcionF3))
             frame2 = tk.Frame(framePrincipal)
             frame2.pack(anchor="s",  expand=True, fill="both")
             criterios = ["Proveedor", "Banco"]
@@ -1278,6 +1304,7 @@ Ya terminamos, tenga buen día.""")
             label7 = tk.Label(frame3, text="Directivos disponibles:",anchor="w", font=("Arial",12, "bold"))
             label7.place(relx=0.5, rely=0.6, relwidth=1, relheight=1, anchor="s")
             label7.config(padx=200)
+            label7.bind('<Configure>', lambda e: self.ajustar_wraplengthhola(label7))            
             Lista=Main.Directivos()
             placeholder = tk.StringVar(master=label7, value="Elije al directivo")
             combo = ttk.Combobox(master=label7,values=Lista, textvariable=placeholder,state="readonly")
@@ -2067,7 +2094,8 @@ Ya terminamos, tenga buen día.""")
             return
         self.buscarProveedor(ventana, descrip1, botonContinuar)
 
-        threading.Thread(target=Maquinaria.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
+        maqPrueba = Maquinaria("sede")
+        threading.Thread(target=maqPrueba.agruparMaquinasDisponibles, args=(Main.fecha,), daemon=True).start()
         
     senal= 0
     def receptor(self, texto):
@@ -2233,7 +2261,7 @@ Ya terminamos, tenga buen día.""")
         labelSaldo.destroy()
         event.widget.destroy()
         Main.evento_ui.set()
-        print(StartFrame.proveedorB)
+        #print(StartFrame.proveedorB)
         self.buscarProveedor(StartFrame.frameDeTrabajo, 1, 1)
 
     nomListMaqRev = []
@@ -2332,7 +2360,7 @@ Ya terminamos, tenga buen día.""")
         StartFrame.even2.wait()
         StartFrame.even2.clear()
         criterios = StartFrame.nomMaqProdDispSedeP
-        print(f"\nlas maq disponiles en la sede p son: {len(StartFrame.nomMaqProdDispSedeP)}")
+        #print(f"\nlas maq disponiles en la sede p son: {len(StartFrame.nomMaqProdDispSedeP)}")
         valores = StartFrame.horasUsoMaqProdDispSedeP
         habilitado = [False for _ in range(len(StartFrame.nomMaqProdDispSedeP))]
 
@@ -2407,10 +2435,10 @@ Ya terminamos, tenga buen día.""")
             for listas2 in listas1:
                 for listas3 in listas2:
                     tempProd.append(listas3)
-        print("\n",len(tempProd) , f"- la produccion en una sola lista es: {tempProd}\n")
+        #print("\n",len(tempProd) , f"- la produccion en una sola lista es: {tempProd}\n")
         StartFrame.aProdFinal.append(tempProd[0]); StartFrame.aProdFinal.append(tempProd[1]); StartFrame.aProdFinal.append(tempProd[4]); StartFrame.aProdFinal.append(tempProd[5])
         StartFrame.aProdFinal.append(tempProd[2]); StartFrame.aProdFinal.append(tempProd[3]); StartFrame.aProdFinal.append(tempProd[6]); StartFrame.aProdFinal.append(tempProd[7])
-        print("\n",len(StartFrame.aProdFinal) , f"- la produccion cruzada en una sola lista es: {StartFrame.aProdFinal}\n")
+        #print("\n",len(StartFrame.aProdFinal) , f"- la produccion cruzada en una sola lista es: {StartFrame.aProdFinal}\n")
         StartFrame.evento_senalizador.set()
 
     enlacesP = [(0, 2), (0, 4), (0, 6)] ; enlacesPSede2 = [(4, 6)]
@@ -2468,7 +2496,7 @@ Ya terminamos, tenga buen día.""")
             respuesta = messagebox.askyesno("Confirmación", f"¿Deseas continuar?\n\n* Sobre Costo de la Sede Principal = {listSobreCostos[0]}\n* Sobre Costo de la Sede 2 = {listSobreCostos[1]}")
             
             if respuesta:
-                print("El usuario eligió continuar.")
+                #print("El usuario eligió continuar.")
                 contBigRecor.destroy() ; contRe1.destroy() ; recorderis.destroy() ; textRecorderis.destroy() ; separador.destroy()
                 contRe2.destroy() ; recorderis2.destroy() ; textRecorderis2.destroy() ; frameGeneral.destroy() ; frameIzq.destroy() ; frameDer.destroy()
                 for subf in subframes:
@@ -2477,14 +2505,15 @@ Ya terminamos, tenga buen día.""")
                 StartFrame.ventanaPrincipal.after(100, self.inicioInt3)
 
             else:
-                print("El usuario canceló la acción.")
+                #print("El usuario canceló la acción.")
+                pass
 
         def produccionPaEnviar():
             valores = [int(modificados.get()) for modificados in varEntries]
             list1 = [valores[0], valores[1]] ; list2 = [valores[4], valores[5]] ; listProdHoy = [list1, list2]
             list3 = [valores[2], valores[3]] ; list4 = [valores[6], valores[7]] ; listProdOWeek = [list3, list4]
             StartFrame.aProducirPaEnviar.append(listProdHoy) ; StartFrame.aProducirPaEnviar.append(listProdOWeek)
-            print(f"\nproduccion pa enviar: {StartFrame.aProducirPaEnviar}")
+            #print(f"\nproduccion pa enviar: {StartFrame.aProducirPaEnviar}")
 
         def calcularSobreCostos():
             import math
@@ -2660,7 +2689,7 @@ Ya terminamos, tenga buen día.""")
         StartFrame.creadas = creadasss
         #StartFrame.indicaRepMalo = None
         if not Prenda.prendasUltimaProduccion:
-            print("\nADIOS...")
+            #print("\nADIOS...")
             StartFrame.ventanaPrincipal.after(700, self.volverMenu2)
             return
         
@@ -2670,7 +2699,7 @@ Ya terminamos, tenga buen día.""")
         prendasHoy = [] ; hoySedeP = [] ; hoySede2 = [] ; pHoySedeP = [] ; pHoySede2 = [] ; cHoySedeP = [] ; cHoySede2 = []
         prendasOW = [] ; OWSedeP = [] ; OWSede2 = [] ; pOWSedeP = [] ; pOWSede2 = [] ; cOWSedeP = [] ; cOWSede2 = []
         diaRef = Prenda.prendasUltimaProduccion[0].getFecha().getDia()
-        print(f"dia de referencia: {diaRef}")
+        #print(f"dia de referencia: {diaRef}")
         for prendaPorFecha in Prenda.prendasUltimaProduccion:
             if prendaPorFecha.getFecha().getDia() == diaRef:
                 prendasHoy.append(prendaPorFecha)
@@ -2814,9 +2843,9 @@ Ya terminamos, tenga buen día.""")
         from src.uiMain.fieldFrame import FieldFrame
 
         criterios1 = [] ; criterios2 = [] ; valores1 = [] ; valores2 = []
-        print("\nComienzo de la interacción 3...")
-        print(f"\n Lista de insumos actual de la sede Principal: {Sede.getListaSedes()[0].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[0].getCantidadInsumosBodega()}")
-        print(f"\n Lista de insumos actual de la sede 2: {Sede.getListaSedes()[1].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[1].getCantidadInsumosBodega()}\n")
+        #print("\nComienzo de la interacción 3...")
+        #print(f"\n Lista de insumos actual de la sede Principal: {Sede.getListaSedes()[0].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[0].getCantidadInsumosBodega()}")
+        #print(f"\n Lista de insumos actual de la sede 2: {Sede.getListaSedes()[1].getListaInsumosBodega()}, su cantidad: {Sede.getListaSedes()[1].getCantidadInsumosBodega()}\n")
         #contenedorGrande = tk.Frame(frameDeTrabajo, bg="light gray")
         #contenedorGrande.pack(pady=5)
 
@@ -2902,7 +2931,7 @@ Ya terminamos, tenga buen día.""")
         if StartFrame.printModistaGlobal is not None:
             StartFrame.labelPrueba.config(text=StartFrame.printModistaGlobal)
             StartFrame.frameDeTrabajo.update_idletasks()
-            print("\nVOLVI A ENTRARRRRR")
+            #print("\nVOLVI A ENTRARRRRR")
             Main.evento_ui.set()
         else:
             StartFrame.ventanaPrincipal.after(100, self.verificarEvento)
@@ -2921,14 +2950,14 @@ Ya terminamos, tenga buen día.""")
             for modista in StartFrame.listModistas:
                 if modista.getNombre().lower() == nombreElegido.lower():
                     StartFrame.indexx = StartFrame.listModistas.index(modista)
-            print(f"\nnumero de indice: {StartFrame.indexx}")
+            #print(f"\nnumero de indice: {StartFrame.indexx}")
             contPaEliminar.destroy()
             Main.evento_ui2.set()
         else:
             for modista in StartFrame.listModistas:
                 if modista.getNombre().lower() == nombreElegido.lower():
                     StartFrame.indexx = StartFrame.listModistas.index(modista)
-            print(f"\nnumero de indice: {StartFrame.indexx}")
+            #print(f"\nnumero de indice: {StartFrame.indexx}")
             contPaEliminar.pack_forget()
             Main.evento_ui2.set()
         StartFrame.num2 = StartFrame.num2 + 1

@@ -18,6 +18,7 @@ from src.gestorAplicacion.administracion.empleado import Empleado
 from src.baseDatos.serializador import serializar
 from src.baseDatos.deserializador import deserializar
 import threading
+from typing import List
 #endregion
 
 class Main:
@@ -33,8 +34,9 @@ class Main:
     
     def  avisarFaltaDeInsumos(sede, fecha, tipo_prenda):
         from src.gestorAplicacion.bodega.prenda import Prenda
-        print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
-        print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
+        #print(f"No se pudo producir {tipo_prenda} en la sede {sede.getNombre()} por falta de insumos en la fecha {fecha}.")
+        #print(f"Hasta el momento se ha usado {Prenda.getCantidadTelaUltimaProduccion()} en tela.")
+        pass
 
 
 
@@ -485,44 +487,6 @@ class Main:
                 filas.append([proveedor.getNombre(),str(deuda.getValorInicialDeuda()),str(deuda.getCapitalPagado()),str(deuda.getInteres()),str(deuda.cuotas),"si" if deuda.getEstadoDePago() else "no"])
         return filas
     
-    #endregion
-#region Producción    
-#--------------------------------------------------------- Producción -----------------------------------------------------------------------------------
-
-    @classmethod
-    def dondeRetirar(cls):
-        print("\n*Seleccione la sede desde donde comprara el Repuesto:\n")
-        if Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0])) >= Proveedor.getPrecio(Main.proveedorBdelmain):
-            print(f"1. {Sede.getNombre(Sede.getListaSedes()[0])} tiene disponible: {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0]))}")
-        if Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1])) >= Proveedor.getPrecio(Main.proveedorBdelmain):
-            print(f"2. {Sede.getNombre(Sede.getListaSedes()[1])} tiene disponible: {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]))}")
-
-        opcion = 0
-        while opcion != 1 and opcion != 2:
-            opcion = int(input())
-            if opcion == 1:
-                nuevoDineroSede = Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1])) - Insumo.getPrecioIndividual(Proveedor.getInsumo(Main.proveedorBdelmain))
-                Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0]),nuevoDineroSede)
-                print(f"El repuesto se compro exitosamente desde la {Sede.getNombre(Sede.getListaSedes()[0])}, saldo disponible:")
-                print(f"{Sede.getNombre(Sede.getListaSedes()[0])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0]))}")
-                print(f"{Sede.getNombre(Sede.getListaSedes()[1])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]))}")
-            elif opcion == 2:
-                nuevoDineroSede = Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1])) - Insumo.getPrecioIndividual(Proveedor.getInsumo(Main.proveedorBdelmain))
-                Banco.setAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]),nuevoDineroSede)
-                print(f"El repuesto se compro exitosamente desde la sede {Sede.getNombre(Sede.getListaSedes()[1])}, saldo disponible:")
-                print(f"{Sede.getNombre(Sede.getListaSedes()[0])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[0]))}")
-                print(f"{Sede.getNombre(Sede.getListaSedes()[1])} = {Banco.getAhorroBanco(Sede.getCuentaSede(Sede.getListaSedes()[1]))}")
-            else:
-                print("Opcion incorrecta, marque 1 o 2 segun desee")
-
-    @staticmethod
-    def recibeProveedorB(proveedorB):
-        Main.proveedorBdelmain = proveedorB
-
-    @classmethod
-    def retornaProveedorB(cls):
-        return cls.proveedorBdelmain
-    
     @classmethod
     def terminarCompraDeInsumos(cls,extra): # Extra es una lista de enteros con la cantidad extra de insumos a comprar
         cantidadesExtra=[]
@@ -537,6 +501,117 @@ class Main:
             for idxInsumo, insumo in enumerate(sede[0]):
                 cantidadExtra=cantidadesExtra[idxInsumoExtra]
                 cls.comprarInsumo(sede[1][idxInsumo]+cantidadExtra, insumo, insumo.getProveedor(), Sede.getListaSedes()[cls.extraPorComprar.index(sede)])
+    
+    #endregion
+#region Producción    
+#--------------------------------------------------------- Producción -----------------------------------------------------------------------------------
+
+    @classmethod
+    def sobreCargada(cls, fecha: 'Fecha') -> int:
+        senal = 0
+        produccionSedes = cls.calcProduccionSedes(fecha)
+        #print(f"La produccion por ahora es: {produccionSedes}")
+        modistas = cls.modistasQueHay()
+        if modistas[0] > 0 and ((produccionSedes[0][0] + produccionSedes[0][1]) / modistas[0]) > 400:
+            senal = 5
+        if modistas[1] > 0 and ((produccionSedes[1][0] + produccionSedes[1][1]) / modistas[1]) > 400:
+            senal += 10
+        return senal
+
+    @classmethod
+    def calcProduccionSedes(cls, fecha: 'Fecha') -> List[List[int]]:
+        from src.gestorAplicacion.venta import Venta
+        prodSedesCalculada = []; prodCalculadaSedeP = []; prodCalculadaSede2 = []
+        prodCalculadaSedeP.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Pantalon"))
+        prodCalculadaSedeP.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[0], "Camisa"))
+        prodCalculadaSede2.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[1], "Pantalon"))
+        prodCalculadaSede2.append(Venta.predecirVentas(fecha, Sede.getListaSedes()[1], "Camisa"))
+        prodSedesCalculada.append(prodCalculadaSedeP)
+        prodSedesCalculada.append(prodCalculadaSede2)
+        return prodSedesCalculada
+
+    @classmethod
+    def modistasQueHay(cls) -> List[int]:
+        modistasEnCadaSede = [0, 0]
+        for empCreados in Sede.listaEmpleadosTotal:
+            if empCreados.getAreaActual().getNombre().lower() == "corte":
+                if empCreados.getSede().getNombre().lower() == "sede principal":
+                    modistasEnCadaSede[0] += 1
+                elif empCreados.getSede().getNombre().lower() == "sede 2":
+                    modistasEnCadaSede[1] += 1
+        return modistasEnCadaSede
+
+    @classmethod
+    def encontrarProveedoresBaratos(cls):
+        from src.gestorAplicacion.bodega.proveedor import Proveedor
+        from src.gestorAplicacion.bodega.repuesto import Repuesto
+        listProveedoresBaratos = []
+        for cadaRepuesto in Repuesto.getListadoRepuestos():
+            proveedorBarato = None
+            for proveedores in Proveedor.getListaProveedores():
+                if proveedores.getInsumo().getNombre().lower() == cadaRepuesto.getNombre().lower():
+                    if proveedorBarato is None:
+                        proveedorBarato = proveedores
+                    elif proveedores.getInsumo().getPrecioIndividual() <= proveedorBarato.getInsumo().getPrecioIndividual():
+                        proveedorBarato = proveedores
+            if proveedorBarato not in listProveedoresBaratos:
+                listProveedoresBaratos.append(proveedorBarato)
+        return listProveedoresBaratos
+
+    def pedirModista(cantidadPrendas, sede, idxTanda):
+        from src.uiMain.startFrame import StartFrame
+        stf33 = StartFrame()
+        printModista = None
+        printModista = f"Seleccione el modista que se encargará de la tanda #{idxTanda} de producción de {cantidadPrendas} prendas en {sede.getNombre()}:"
+        modistas = [empleado for empleado in sede.getListaEmpleados() if empleado.getRol() == Rol.MODISTA]
+        stf33.recibePrintModista(printModista, modistas)
+        Main.evento_ui.wait()
+        Main.evento_ui.clear()
+        #for i, modista in enumerate(modistas):
+            #print(f"{i}. {modista.getNombre()}")
+        Main.evento_ui2.clear()
+        Main.evento_ui2.wait()
+        while True:
+            seleccion = stf33.getIndexx() #metodo para traer de F5Produccion la senal, puede ser un getSenal(), definirlo en F5Produccion
+            if 0 <= seleccion < len(modistas):
+                return modistas[seleccion]
+            else:
+                #print("Opción inválida. Intente nuevamente.")
+                pass
+
+    @classmethod
+    def prodTransferida1(cls, fecha) -> List[int]:
+        produccionSedes = cls.calcProduccionSedes(fecha)
+        return [produccionSedes[1][0], produccionSedes[1][1]]
+
+    @classmethod
+    def prodTransferida2(cls, fecha) -> List[int]:
+        produccionSedes = cls.calcProduccionSedes(fecha)
+        return [produccionSedes[0][0], produccionSedes[0][1]]
+
+    @staticmethod
+    def recibeProveedorB(proveedorB):
+        Main.proveedorBdelmain = proveedorB
+
+    @classmethod
+    def retornaProveedorB(cls):
+        return cls.proveedorBdelmain
+
+    @classmethod
+    def printsInt2(cls, senall):
+        mensajes = {
+            1: "Sede Principal disponible\nLa Sede 2 no puede trabajar por falta de maquinaria...",
+            3: "Sede 2 disponible\nLa Sede Principal no puede trabajar por falta de maquinaria...",     
+            11: "\n Lo sentimos, se debe arreglar la maquinaria en alguna de las dos sedes para comenzar a producir...\n",         
+            12: "Las dos sedes están disponibles"
+        }
+        return mensajes.get(senall)
+
+    @classmethod
+    def printsInt1(cls, signal, rep, maq, sede):
+        if signal == 1:
+            return f"{rep.getNombre()} se debe cambiar.\nMaquina afectada: {maq.getNombre()}  -  Sede afectada: {sede.getNombre()}"
+    
 #endregion
 #region Facturacion
 #---------------------------------------------------------- Facturación -----------------------------------------------------------------------------------
@@ -888,74 +963,13 @@ class Main:
                 random.shuffle(nuevos)
                 for i, prov in enumerate(compatibles):
                     prov.setPrecio(nuevos[i].getPrecio())
+
+            # -----------------------------------------PRODUCCION ---------------------------------------------------------------------
+                    
     #endregion
-    def pedirModista(cantidadPrendas, sede, idxTanda):
-        from src.uiMain.startFrame import StartFrame
-        stf33 = StartFrame()
-        printModista = None
-        printModista = f"Seleccione el modista que se encargará de la tanda #{idxTanda} de producción de {cantidadPrendas} prendas en {sede.getNombre()}:"
-        print(printModista)
-        modistas = [empleado for empleado in sede.getListaEmpleados() if empleado.getRol() == Rol.MODISTA]
-        stf33.recibePrintModista(printModista, modistas)
-        Main.evento_ui.wait()
-        print("\nestoy esperando a que me dejen pasar...\n")
-        Main.evento_ui.clear()
-        for i, modista in enumerate(modistas):
-            print(f"{i}. {modista.getNombre()}")
-        Main.evento_ui2.clear()
-        print("\nesperando respuesta con el boton.....\n")
-        Main.evento_ui2.wait()
-        while True:
-            seleccion = stf33.getIndexx() #metodo para traer de F5Produccion la senal, puede ser un getSenal(), definirlo en F5Produccion
-            if 0 <= seleccion < len(modistas):
-                return modistas[seleccion]
-            else:
-                print("Opción inválida. Intente nuevamente.")
-
-    @classmethod
-    def printsInt2(cls, senall):
-        mensajes = {
-            1: "Sede Principal disponible\nLa Sede 2 no puede trabajar por falta de maquinaria...",
-            #2: "\n Marque una opcion correcta entre 1 o 2...\n",
-            3: "Sede 2 disponible\nLa Sede Principal no puede trabajar por falta de maquinaria...",
-            4: "\n Marque una opcion correcta entre 1 o 2...\n",
-            5: "La Sede Principal esta sobrecargada, ¿Que desea hacer? \n1. Enviar parte de la produccion a la Sede 2, para producir por partes iguales.\n2. Ejecutar produccion, asumiendo todo el costo por sobrecarga en la Sede Principal.",
-            #6: "Coloca una opcion indicada entre 1 o 2...",
-            7: "La Sede 2 esta sobrecargada, ¿Que desea hacer? \n1. Enviar parte de la produccion a la Sede Principal, para producir por partes iguales.\n2. Ejecutar produccion, asumiendo todo el costo por sobrecarga en la Sede 2.",
-            #8: "Coloca una opcion indicada entre 1 o 2...",
-            #9: "Las dos sedes estan sobrecargadas, ¿Que quieres hacer?...\n1. Producir mañana las prendas que generan sobrecarga.\n2. Producir todo hoy, asumiendo el costo por sobrecarga.",
-            10: "Seleccione una opcion indicada entre 1 o 2...",
-            11: "\n Lo sentimos, se debe arreglar la maquinaria en alguna de las dos sedes para comenzar a producir...\n",
-            
-            12: "Las dos sedes están disponibles"
-        }
-        print(mensajes.get(senall, ""))
-        return mensajes.get(senall)
-
-    @classmethod
-    def printsInt1(cls, signal, rep, maq, sede):
-        if signal == 1:
-            return f"{rep.getNombre()} se debe cambiar.\nMaquina afectada: {maq.getNombre()}  -  Sede afectada: {sede.getNombre()}"
-        elif signal == 2:
-            print(f"*El proveedor mas barato se llama '{cls.proveedorBdelmain.getNombre()}', y lo vende a: {cls.proveedorBdelmain.getPrecio()}\n")
-
-    @classmethod
-    def printsInt11(cls, rep, maq, sede, senal):
-        if senal == 1:
-            print(f"Repuesto: '{rep.getNombre()}' añadido correctamente a la {maq.getNombre()}, de la: {sede.getNombre()}")
-        elif senal == 2:
-            print("Ninguna de las sedes cuenta con dinero suficiente, considere pedir un prestamo.")
-        elif senal == 3:
-            print(f"\n--> Por ende, la {maq.getNombre()} de la {maq.getSede().getNombre()}, se encuentra inhabilitada.")
     
-    @classmethod
-    def printsInt111(cls, maq, senal):
-        if senal == 4:
-            print(f"\n--> La {maq.getNombre()} de la {maq.getSede().getNombre()} requiere mantenimiento.\n")
+        
 
-    @classmethod
-    def crearSedesMaquinasRepuestos(cls):
-        pass
 
 
     @classmethod
