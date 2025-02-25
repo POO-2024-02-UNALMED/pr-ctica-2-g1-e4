@@ -60,7 +60,7 @@ class StartFrame(tk.Tk):
         self.config(menu=self.barraMenus)
         self.archivoMenu = tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Archivo", menu=self.archivoMenu)
-        self.archivoMenu.add_command(label="Aplicacion", command = lambda : tk.messagebox.showinfo("Informacion", "Aplicacion de Ecomoda"))
+        self.archivoMenu.add_command(label="Aplicacion", command = lambda : tk.messagebox.showinfo("Informacion", "La aplicación se enfoca principalmente en la creación de un sistema integral que aborda los retos operativos más relevantes de una industria textil, como lo es la empresa de Ecomoda, donde se maneja aspectos de gestión humana, manejo de insumos, planificación financiera, procesos de facturación y producción de prendas."))
         self.archivoMenu.add_command(label="Salir", command = lambda : self.pasarABienvenida())
         self.procesosMenu= tk.Menu(self.barraMenus, tearoff=0)
         self.barraMenus.add_cascade(label="Procesos y Consultas", menu=self.procesosMenu)
@@ -118,7 +118,7 @@ class StartFrame(tk.Tk):
             return
         self.pagina="produccion"
         self.areaPrincipal.destroy()
-        self.cambiarFrame(self.producir())
+        self.cambiarFrame(self.producir(self))
         
     def cambiarFrame(self, reemplazo:tk.Frame):
         self.areaPrincipal = reemplazo
@@ -860,13 +860,9 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
             self.frameCambianteInsumos.columnconfigure(0, weight=1)
     
     def comprarExtra(self):
-        Main.terminarCompraDeInsumos(self.fieldCompraExtra.obtenerTodosLosValores())
-        if Main.unaExcepcion:
-            try:
-                raise ExcepcionValorNoValido(Main.laExcepcions)
-            except ExcepcionValorNoValido as coliflor:
-                messagebox.showwarning(title="Alerta", message=coliflor.mensaje_completo)
-                return True
+        entradaValida=Main.terminarCompraDeInsumos(self.fieldCompraExtra.obtenerTodosLosValores())
+        if not entradaValida:
+            pass # BOOM! excepcion
         self.dibujarDeudas()
     
     def dibujarDeudas(self):
@@ -2004,8 +2000,10 @@ Ya terminamos, tenga buen día.""")
     #region produccion
 #---------------------------------------------------------------------- Producción ----------------------------------------------------------------------------------------------------
 
-    def producir(self):
-        framePrincipal =  tk.Frame(bg="blue")
+    def producir(self, ventana:tk.Frame):
+        StartFrame.ventanaPrincipal = ventana
+        framePrincipal =  tk.Frame(ventana, bg="blue")
+        framePrincipal.pack(fill="both", expand=True, padx=7, pady=7)
 
         frame1 = tk.Frame(framePrincipal)
         frame1.pack(side="top", fill="x")
@@ -2266,7 +2264,7 @@ Ya terminamos, tenga buen día.""")
         cont2 = tk.Frame(containerBig, bg="medium orchid")
         cont2.pack(side="left", pady=20, padx=5)
         
-        field_frame2 = FieldFrame(cont2, "Maquinas inhabilitadas\npor falta de revisión:", criterios2, "", valores2, habilitado2)
+        field_frame2 = FieldFrame(cont2, "Maquinas inhabilidas\npor falta de revisión:", criterios2, "", valores2, habilitado2)
         field_frame2.pack(padx=10, pady=10)
 
         #labelTotalGastado = tk.Label(cont, text=f"Total gastado: {totalGastado} pesos", font=("Arial", 12, "italic"))

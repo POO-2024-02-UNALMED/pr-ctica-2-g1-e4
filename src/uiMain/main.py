@@ -1,4 +1,4 @@
-#region imports
+#region Imports
 import math
 import random
 from src.gestorAplicacion.administracion.banco import Banco
@@ -38,7 +38,7 @@ class Main:
 
 
 
-    #region gestión humana
+    #region Gestión Humana
 #------------------------------------------- Gestión Humana --------------------------------------------------------------------
     
     # Lo que siguen son para la versión grafica, o metodos puente para ella, y no usan print.-------------------------------
@@ -179,8 +179,8 @@ class Main:
         return cls.opcionesParaReemplazo,None, cls.rolesAReemplazar[cls.idxRol], cls.cantidadAContratar[cls.idxRol]
 #endregion
 
-    #region financiera
-#---------------------------------------------- Financiera ------------------------------------------------------------
+    #region Sistema Financiero
+#---------------------------------------------- Sistema Financiero ------------------------------------------------------------
 
     #Directivos disponibles
     def Directivos():
@@ -240,7 +240,7 @@ class Main:
         return analisisFuturo
 #endregion
 
-#region insumos
+#region Insumos
 #-----------------------------------------------------------------Insumos------------------------------------------------------------------------------------
    
 
@@ -486,6 +486,8 @@ class Main:
         return filas
     
     #endregion
+#region Producción    
+#--------------------------------------------------------- Producción -----------------------------------------------------------------------------------
 
     @classmethod
     def dondeRetirar(cls):
@@ -523,23 +525,21 @@ class Main:
     
     @classmethod
     def terminarCompraDeInsumos(cls,extra): # Extra es una lista de enteros con la cantidad extra de insumos a comprar
-        cls.unaExcepcion = False
-        cls.laExcepcions = ""
         cantidadesExtra=[]
         for string in extra:
             if string.isdigit():
                 cantidadesExtra.append(int(string))
             else:
-               cls.unaExcepcion = True
-               cls.laExcepcions = string
+               return False
 
         idxInsumoExtra=0
         for idxSede ,sede in enumerate(cls.extraPorComprar):
             for idxInsumo, insumo in enumerate(sede[0]):
                 cantidadExtra=cantidadesExtra[idxInsumoExtra]
                 cls.comprarInsumo(sede[1][idxInsumo]+cantidadExtra, insumo, insumo.getProveedor(), Sede.getListaSedes()[cls.extraPorComprar.index(sede)])
-
-#region facturacion
+#endregion
+#region Facturacion
+#---------------------------------------------------------- Facturación -----------------------------------------------------------------------------------
 
     def listaVendedores(sede):
         from src.gestorAplicacion.administracion.area import Area
@@ -556,7 +556,6 @@ class Main:
             if Empleado.getAreaActual(empleado) == Area.VENTAS:
                 listaEmpleado.append(empleado)
         return listaEmpleado
-#-----------------------------------------------------------------Facturación-----------------------------------------------------------------------------------
 
     def vender(cliente, sede, encargado, vendedor, productosSeleccionados, cantidadProductos):
         from ..gestorAplicacion.administracion.empleado import Empleado
@@ -932,6 +931,13 @@ class Main:
         }
         print(mensajes.get(senall, ""))
         return mensajes.get(senall)
+
+    @classmethod
+    def printsInt1(cls, signal, rep, maq, sede):
+        if signal == 1:
+            return f"{rep.getNombre()} se debe cambiar.\nMaquina afectada: {maq.getNombre()}  -  Sede afectada: {sede.getNombre()}"
+        elif signal == 2:
+            print(f"*El proveedor mas barato se llama '{cls.proveedorBdelmain.getNombre()}', y lo vende a: {cls.proveedorBdelmain.getPrecio()}\n")
 
     @classmethod
     def printsInt11(cls, rep, maq, sede, senal):
@@ -1383,15 +1389,17 @@ class Main:
         Wilson.setRendimientoBonificacion(com6)
         maxProductos = 5
         minProductos = 1
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Cata, 300, sedeP)
-        Main.crearVentaAleatoria(minProductos,1, Fecha(24,11,24), Aura, Mario, 300, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,24), Aura, Cata, 600, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,25), Aura, Mario, 600, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Cata, 700, sedeP)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Mario, 700, sede2)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Cata, 700, sede2)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Mario, 700, sede2)
-        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia , 300, sede2)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Aura, Cata, 200, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(29,11,24), Freddy, Patricia ,200, sede2)
+        Main.crearVentaAleatoria(minProductos,1, Fecha(24,11,24), Aura, Mario, 100, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,24), Aura, Cata, 100, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,2,25), Gabriela,Robles, 100, sede2)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Cata, 100, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,12,24), Aura, Mario, 100, sede2)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Freddy,Patricia, 100, sede2)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Gabriela,Robles, 100, sede2)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Cata, 100, sedeP)
+        Main.crearVentaAleatoria(minProductos,maxProductos, Fecha(20,1,25), Aura, Mario, 100, sedeP)
         
         Main.fijarUltimoPrecioInicial()
     
