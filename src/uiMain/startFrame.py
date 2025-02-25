@@ -501,10 +501,25 @@ estos pudieron ser cambiados de area o sede, y si estan marcados con ¿despedir?
         self.seleccionador.grid(row=2, column=0,columnspan=1)
     
     def actualizarCantidadDespedidos(self):
-        self.cantidadADespedir=int(self.seleccionador.getValue("Cantidad de despedidos"))
-        self.seleccionador.destroy()
-        self.seleccionadorDespedidos()
-    
+        try:
+            if isinstance(self.seleccionador.getValue("Cantidad de despedidos"), str) and not\
+                self.seleccionador.getValue("Cantidad de despedidos").lstrip('-').replace('.', '', 1).isdigit():
+                raise ExcepcionNumeroNoString(self.seleccionador.getValue("Cantidad de despedidos"))
+        except ExcepcionNumeroNoString as iguana:
+            messagebox.showwarning(title="Alerta", message=iguana.mensaje_completo)
+            return True
+        else:
+            try:
+               if int(self.seleccionador.getValue("Cantidad de despedidos")) < 0:
+                raise ExcepcionValorNoValido(self.seleccionador.getValue("Cantidad de despedidos"))
+            except ExcepcionValorNoValido as tabl:
+                messagebox.showwarning(title="Alerta", message=tabl.mensaje_completo)
+                return True
+            else:
+                self.cantidadADespedir=int(self.seleccionador.getValue("Cantidad de despedidos"))
+                self.seleccionador.destroy()
+                self.seleccionadorDespedidos()
+
     def despedir(self):
         nombresADespedir=self.seleccionador.obtenerTodosLosValores()
         del nombresADespedir[0]
