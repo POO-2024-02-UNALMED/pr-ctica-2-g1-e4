@@ -487,6 +487,21 @@ class Main:
                 filas.append([proveedor.getNombre(),str(deuda.getValorInicialDeuda()),str(deuda.getCapitalPagado()),str(deuda.getInteres()),str(deuda.cuotas),"si" if deuda.getEstadoDePago() else "no"])
         return filas
     
+    @classmethod
+    def terminarCompraDeInsumos(cls,extra): # Extra es una lista de enteros con la cantidad extra de insumos a comprar
+        cantidadesExtra=[]
+        for string in extra:
+            if string.isdigit():
+                cantidadesExtra.append(int(string))
+            else:
+               return False
+
+        idxInsumoExtra=0
+        for idxSede ,sede in enumerate(cls.extraPorComprar):
+            for idxInsumo, insumo in enumerate(sede[0]):
+                cantidadExtra=cantidadesExtra[idxInsumoExtra]
+                cls.comprarInsumo(sede[1][idxInsumo]+cantidadExtra, insumo, insumo.getProveedor(), Sede.getListaSedes()[cls.extraPorComprar.index(sede)])
+    
     #endregion
 #region Producción    
 #--------------------------------------------------------- Producción -----------------------------------------------------------------------------------
@@ -525,20 +540,6 @@ class Main:
     def retornaProveedorB(cls):
         return cls.proveedorBdelmain
     
-    @classmethod
-    def terminarCompraDeInsumos(cls,extra): # Extra es una lista de enteros con la cantidad extra de insumos a comprar
-        cantidadesExtra=[]
-        for string in extra:
-            if string.isdigit():
-                cantidadesExtra.append(int(string))
-            else:
-               return False
-
-        idxInsumoExtra=0
-        for idxSede ,sede in enumerate(cls.extraPorComprar):
-            for idxInsumo, insumo in enumerate(sede[0]):
-                cantidadExtra=cantidadesExtra[idxInsumoExtra]
-                cls.comprarInsumo(sede[1][idxInsumo]+cantidadExtra, insumo, insumo.getProveedor(), Sede.getListaSedes()[cls.extraPorComprar.index(sede)])
 #endregion
 #region Facturacion
 #---------------------------------------------------------- Facturación -----------------------------------------------------------------------------------
